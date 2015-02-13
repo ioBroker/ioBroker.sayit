@@ -1,0 +1,108 @@
+{
+    "common": {
+        "name":                     "sayit",
+        "version":                  "0.0.1",
+        "title":                    "Text to speech Adapter",
+        "desc":                     {
+			"en": "Text to speeech with Google API. Rus on windows, linux and OSX. It can play mp3/wav too.",
+			"de": "Text to speech mit Google API für windows, linux und OSX. Mp3 und Wav können auch abgespielt werden.",
+			"ru": "Синтезатор речи на Google API работает под windows, linux и OSX. Mp3 и Wav можно тоже проигрывать."
+		},
+        "authors": [
+            "bluefox <bluefox@ccu.io>"
+        ],
+        "license":                  "MIT",
+        "platform":                 "Javascript/Node.js",
+        "mode":                     "daemon",
+        "loglevel":                 "info",
+        "icon":                     "sayit.png",
+        "keywords":                 ["TTS", "voice", "speech"],
+        "extIcon":                  "https://raw.githubusercontent.com/ioBroker/ioBroker.sayit/master/admin/sayit.png"
+    },
+    "native": {
+        "type":                     "system",
+        "volume":                   "100",
+		"cache":                    true,
+        "engine":                   "en",
+        "server":                   {
+            "ip":                   "0.0.0.0",
+            "port":                 8088
+        },
+        "sonos":                    {
+            "device":               ""
+        },
+        "mp24":                     {
+            "server":               "",
+            "port":                 0
+        },
+        "browser":                  {
+            "instance":             ""
+        },
+        "cacheDir":                 "../../cache/"
+    },
+    "instanceObjects": [
+        {
+        "_id":  "tts",
+        "type": "channel",
+        "common": {
+          "name": "Google text to speech",
+          "role": "media.tts"
+        },
+        "native": {}
+      },
+      {
+        "_id":  "tts.volume",
+        "type": "state",
+        "common": {
+          "role":  "level.volume",
+          "name":  "TTS Volume",
+          "min":   0,
+          "max":   100,
+          "def":   70,
+          "type":  "number",
+          "read":  true,
+          "write": true,
+          "desc":  "System volume or remote device volume"
+        },
+        "native": {}
+      },
+      {
+        "_id":  "tts.text",
+        "type": "state",
+        "common": {
+          "role":  "media.tts.text",
+          "name":  "Text to speech",
+          "type":  "string",
+          "read":  true,
+          "write": true,
+          "desc":  "This text will be converted to speech"
+        },
+        "native": {}
+      },
+      {
+        "_id":  "tts.playing",
+        "type": "state",
+        "common": {
+          "role":  "media.tts.text",
+          "name":  "Is now speaking",
+          "type":  "boolean",
+          "read":  true,
+          "write": false,
+          "desc":  "Is true while speaking"
+        },
+        "native": {}
+      },
+      {
+        "_id":  "tts.mp3",
+        "type": "state",
+        "common": {
+          "name":  "Binary mp3 file",
+          "type":  "object",
+          "read":  true,
+          "write": false,
+          "desc":  "Can be accessed from web server under http://ip:8082/state/sayit.0.tts.mp3"
+        },
+        "native": {}
+      }
+    ]
+}
