@@ -11,43 +11,126 @@
 
 <script type="text/javascript">
     systemDictionary = {
-        "simpleAPI adapter settings": {
-            "de": "simpleAPI adapter settings",
-            "ru": "simpleAPI adapter settings"
+        "sayIt adapter settings": {
+            "de": "sayIt Einstellungen",
+            "ru": "sayIt Настройки"
         },
-        "IP:":              {"de": "IP:",                     "ru": "IP:"},
-        "Port:":            {"de": "Port:",                   "ru": "Порт:"},
-        "Secure(HTTPS):":   {"de": "Verschlüsselung(HTTPS):", "ru": "Шифрование(HTTPS):"},
-        "Authentication:":  {"de": "Authentifikation:",       "ru": "Аутентификация:"},
-        "Public certificate:":    {"en": "Public certificate:",     "de": "Publikzertifikat:",       "ru": "'Public' сертификат:"},
-        "Private certificate:":   {"en": "Private certificate:",    "de": "Privatzertifikat:",       "ru": "'Private' сертификат:"},
-        "Set certificates or load it first in the system settings (right top).":    {
-            "en": "Set certificates or load it first in the system settings (right top).",
-            "de": "Setze Zertificate oder lade die erst unter System/Einstellungen (oben rechts).",
-            "ru": "Нужно выбрать сертификаты или сначала загрузить их в системных настройках (вверху справа)."
-        }
+        "Language:": {"en": "Language:", "de": "Sprache:", "ru": "Язык:"},
+        "Type:": {"en": "Type:", "de": "Typ:", "ru": "Тип:"},
+        "Cache:": {"en": "Cache:", "de": "Cache:", "ru": "Кэш:"},
+        "Server:": {"en": "Server:", "de": "Server:", "ru": "Сервер:"},
+        "Port:": {"en": "Port:", "de": "Port:", "ru": "Порт:"},
+        "User:": {"en": "User:", "de": "Anwender:", "ru": "Пользователь:"},
+        "Password:": {"en": "Password:", "de": "Kennwort:", "ru": "Пароль:"},
+        "Browser instance:": {"en": "Browser instance:", "de": "Browser-Instanz:", "ru": "ID броузера:"},
+        "Device:": {"en": "Device:", "de": "Gerät:", "ru": "Устройство:"},
+        "Web server IP:": {"en": "Web server IP:", "de": "Web server IP:", "ru": "IP Вэб сервера:"}
     };
 
+    var sayitOptions = {
+        "browser": {name: "Browser",           params: ['cache', 'instance']},
+        "system" : {name: "System",            params: ['cache']},
+        "windows": {name: "Windows default",   params: []},
+        "sonos":   {name: "Sonos",             params: ['device', 'web']},
+        "mp24ftp": {name: "MediaPlayer24+FTP", params: ['cache', 'server', 'port', 'user', 'pass']},
+        "mp24"   : {name: "MediaPlayer24",     params: ['server']}
+    };
+
+    var webServers = null;
+
     function showHideSettings() {
-        if ($('#secure').prop('checked')) {
-            $('#_certPublic').show();
-            $('#_certPrivate').show();
-        } else {
-            $('#_certPublic').hide();
-            $('#_certPrivate').hide();
+        $('.variable').hide();
+        var type = $('#type').val();
+        for (var i = 0; i < sayitOptions[type].params.length; i++) {
+            $('#tr_' + sayitOptions[type].params[i]).show();
         }
+    }
+
+    function fillSonosDevices(elem, current) {
+        socket.emit('getObjectView', 'system', 'channel', {startkey: 'sonos.', endkey: 'sonos.\u9999'}, function (err, res) {
+            if (!err && res) {
+                for (var i = 0; i < res.rows.length; i++) {
+                    $(elem).append('<option value="' + res.rows[i].id + '">' + res.rows[i].id + '</option>');
+                }
+            }
+            $(elem).val(current);
+        });
+    }
+
+    function checkWeb(elem, current) {
+        var web = $('#web').val();
+        for (var i = 0; i < webServers.length; i++) {
+            if (webServers[i].id == 'system.adapter.' + web) {
+                if (webServers[i].value.native.auth) {
+                    showMessage(_('Cannot use web server with authentication'), null, 'info');
+                }
+                if (webServers[i].value.native.bind == 'localhost' || webServers[i].value.native.bind == '127.0.0.1' || webServers[i].value.native.bind == '::1') {
+                    showMessage(_('Cannot use web server only on localhost'), null, 'info');
+                }
+
+                if (webServers[i].value.native.bind == '0.0.0.0') {
+                    $('#tr_webServer').show();
+                    $('#webServer').html('');
+                    // read all ipv4 addresses of host
+                    socket.emit('getObject', 'system.host.' + webServers[i].value.common.host, function (err, obj) {
+                        if (!err && obj && obj.native) {
+                            for (var iface in obj.native.hardware.networkInterfaces) {
+                                for (var i = 0; i < obj.native.hardware.networkInterfaces[iface].length; i++) {
+                                    if (obj.native.hardware.networkInterfaces[iface][i].family == "IPv4" && !obj.native.hardware.networkInterfaces[iface][i].internal) {
+                                        $('#webServer').append('<option value="' + obj.native.hardware.networkInterfaces[iface][i].address + '">[IPv4] ' + obj.native.hardware.networkInterfaces[iface][i].address + ' - ' + iface + '</option>');
+                                    }
+                                }
+                            }
+                        }
+
+                        if (current)  $('#webServer').val(current);
+                    });
+                } else if (webServers[i].value.native.bind == '::') {
+                    // read all ipv6 addresses of host
+                    socket.emit('getObject', 'system.host.' + webServers[i].value.common.host, function (err, obj) {
+                        if (!err && obj && obj.native) {
+                            for (var iface in obj.native.hardware.networkInterfaces) {
+                                for (var i = 0; i < obj.native.hardware.networkInterfaces[iface].length; i++) {
+                                    if (obj.native.hardware.networkInterfaces[iface][i].family == "IPv6" && !obj.native.hardware.networkInterfaces[iface][i].internal) {
+                                        $('#webServer').append('<option value="' + obj.native.hardware.networkInterfaces[iface][i].address + '">[IPv6] ' + obj.native.hardware.networkInterfaces[iface][i].address + ' - ' + iface + '</option>');
+                                    }
+                                }
+                            }
+                        }
+                        if (current)  $('#webServer').val(current);
+                    });
+                } else {
+                    $('#tr_webServer').hide();
+                }
+            }
+        }
+    }
+
+    function fillWebServices(elem, current, type, webServer) {
+        socket.emit('getObjectView', 'system', 'instance', {startkey: 'system.adapter.web.', endkey: 'system.adapter.web.\u9999'}, function (err, res) {
+            if (!err && res) {
+                webServers = res.rows;
+                for (var i = 0; i < res.rows.length; i++) {
+                    var n =  res.rows[i].id.replace('system.adapter.', '');
+                    var auth =  res.rows[i].value.native.auth ? 'data-auth="true"' : '';
+                    $(elem).append('<option value="' + n + '" ' + auth + '>' + n + '</option>');
+                }
+            }
+            $(elem).val(current);
+            if (type == 'sonos') {
+                checkWeb('#web', webServer);
+            }
+        });
     }
 
     // the function loadSettings has to exist ...
     function load(settings, onChange) {
         if (!settings) return;
 
-        getIPs(function(ips) {
-            for (var i = 0; i < ips.length; i++) {
-                $('#bind').append('<option value="' + ips[i].address + '">' + ips[i].name + '</option>');
-            }
-            $('#bind.value').val(settings.bind);
-        });
+        var $t = $('#type');
+        for (var name in sayitOptions) {
+            $t.append('<option value="' + name + '">' + sayitOptions[name].name + '</option>');
+        }
 
         for (var key in settings) {
             // example: select elements with id=key and class=value and insert value
@@ -56,20 +139,33 @@
                     if ($('#auth').prop('checked')) {
                         $('#secure').prop('checked', true);
                     }
-                    onChange();
                     showHideSettings();
                 });
             } else {
                 $('#' + key + '.value').val(settings[key]).change(function() {
+                    if ($(this).attr('id') == 'type') {
+                        showHideSettings();
+                        if ($(this).val() == 'sonos') checkWeb('#web');
+                    }
+                    if ($(this).attr('id') == 'web') checkWeb('#web');
                     onChange();
                 }).keyup(function() {
-                    onChange();
+                    $(this).trigger('change');
                 });
             }
         }
+        if (!settings.engine) {
+            settings.engine = systemLang;
+            $('#language').val(systemLang).trigger('change');
+        }
+        if (!settings.instance) {
+            settings.instance = 'FFFFFFFF';
+            $('#instance').val(settings.instance).trigger('change');
+        }
 
-        fillSelectCertificates('#certPublic',  'public',  settings.certPublic);
-        fillSelectCertificates('#certPrivate', 'private', settings.certPrivate);
+        fillSonosDevices('#device', settings.device);
+        fillWebServices('#web', settings.web, settings.type, settings.webServer);
+
         showHideSettings();
         onChange(false);
     }
@@ -88,11 +184,6 @@
             }
         });
 
-        if ($('#secure').prop('checked') && (!$('#certPrivate').val() || !$('#certPublic').val())) {
-            showMessage(_('Set certificates or load it first in the system settings (right top).'));
-            return;
-        }
-
         callback(obj);
     }
 </script>
@@ -100,22 +191,30 @@
 <!-- you have to put your config page in a div with id adapter-container -->
 <div id="adapter-container">
 
-    <table><tr><td><img src="simple-api.png"></td><td><h3 class="translate">simpleAPI adapter settings</h3></td></tr></table>
+    <table><tr><td><img src="sayit.png"></td><td><h3 class="translate">sayIt adapter settings</h3></td></tr></table>
 
     <table>
-        <tr><td class="translate">IP:</td><td>            <select class="value" id="bind"></select></td></tr>
-        <tr><td class="translate">Port:</td><td>          <input  class="value" id="port" size="5"  maxlength="5"/></td></tr>
-        <tr><td class="translate">Secure(HTTPS):</td><td> <input  class="value" id="secure" type="checkbox" /></td></tr>
-        <tr id="_certPublic">
-            <td class="translate">Public certificate:</td>
-            <td><select id="certPublic" class="value"></select></td>
-        </tr>
-        <tr id="_certPrivate">
-            <td class="translate">Private certificate:</td>
-            <td><select id="certPrivate" class="value"></select></td>
-        </tr>
-        <tr><td class="translate">Authentication:</td><td><input  class="value" id="auth"   type="checkbox" /></td></tr>
+        <tr><td class="translate">Language:</td><td><select class="value" id="engine">
+            <option value="en">Google - English</option>
+            <option value="de">Google - Deutsch</option>
+            <option value="ru">Google - Русский</option>
+            <option value="it">Google - Italiano</option>
+            <option value="es">Google - Español</option>
+            <option value="fr">Google - Français</option>
+        </select></td></tr>
 
+        <tr><td class="translate">Type:</td><td><select class="value" id="type">
+        </select></td></tr>
+
+        <tr id="tr_cache"     class="variable"><td class="translate">Cache:</td>   <td><input class="value" type="checkbox" id="cache"></td></tr>
+        <tr id="tr_server"    class="variable"><td class="translate">Server:</td>  <td><input class="value" id="server" type="text" /></td></tr>
+        <tr id="tr_port"      class="variable"><td class="translate">Port:</td>    <td><input class="value" id="port" size="5"  maxlength="5"/></td></tr>
+        <tr id="tr_user"      class="variable"><td class="translate">User:</td>    <td><input class="value" id="user" type="text" /></td></tr>
+        <tr id="tr_pass"      class="variable"><td class="translate">Password:</td><td><input class="value" id="pass" type="text" /></td></tr>
+        <tr id="tr_instance"  class="variable"><td class="translate">Browser instance:</td><td><input class="value" id="instance" type="text" /></td></tr>
+        <tr id="tr_device"    class="variable"><td class="translate">Device:</td><td><select class="value" id="device" type="text"><option value="" class="translate">All</option></select></td></tr>
+        <tr id="tr_web"       class="variable"><td class="translate">Web instance:</td><td><select class="value" id="web" type="text"></select></td></tr>
+        <tr id="tr_webServer" class="variable"><td class="translate">Web server IP:</td><td><select class="value" id="webServer" type="text"></select></td></tr>
     </table>
 </div>
 </html>

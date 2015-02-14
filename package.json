@@ -18,8 +18,7 @@
     "url": "https://github.com/ioBroker/ioBroker.sayit"
   },
   "dependencies": {
-    "jsftp": "~1.5.0",
-    "request": "~2.53.0"
+    "jsftp": "~1.5.0"
   },
   "devDependencies": {
     "grunt": "~0.4.4",

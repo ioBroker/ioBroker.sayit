@@ -21,23 +21,16 @@
     },
     "native": {
         "type":                     "system",
-        "volume":                   "100",
 		"cache":                    true,
-        "engine":                   "en",
-        "server":                   {
-            "ip":                   "0.0.0.0",
-            "port":                 8088
-        },
-        "sonos":                    {
-            "device":               ""
-        },
-        "mp24":                     {
-            "server":               "",
-            "port":                 0
-        },
-        "browser":                  {
-            "instance":             ""
-        },
+        "engine":                   "",
+        "sonos":                    "",
+        "server":                   "",
+        "port":                     0,
+        "user":                     "",
+        "pass":                     "",
+        "instance":                 "",
+        "web":                      "",
+        "webServer":                "",
         "cacheDir":                 "../../cache/"
     },
     "instanceObjects": [

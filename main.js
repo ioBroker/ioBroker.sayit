@@ -30,6 +30,7 @@ var sayLastGeneratedText = "";
 var sayLastVolume        = null;
 var cacheDir             = '';
 var isPlaying            = false;
+var webLink              = '';
 
 function mkpathSync(rootpath, dirpath) {
     // Remove filename
@@ -185,7 +186,9 @@ function sayItBrowser(text, language, volume) {
         fileData = libs.fs.readFileSync(__dirname + '/say.mp3');
     }
     adapter.setBinaryState(adapter.namespace + '.tts.mp3', fileData);
-//    adapter.setState((adapter.config.))
+    adapter.setForeignState('vis.0.control.instance', adapter.config.instance);
+    adapter.setForeignState('vis.0.control.data',     '/state/' + adapter.namespace + '.tts.mp3');
+    adapter.setForeignState('vis.0.control.command',  'playSound');
 }
 
 function sayItSonos(text, language, volume) {
@@ -201,22 +204,20 @@ function sayItSonos(text, language, volume) {
 
     adapter.setBinaryState(adapter.namespace + '.tts.mp3', fileData);
 
-    if (adapter.config.sonos.device && adapter.config.server.ip && adapter.config.server.port) {
-        adapter.setForeignState(adapter.config.sonos.device + '.tts', volume + ';http://' + adapter.config.server.ip + ':' + adapter.config.server.port + '/state/' + adapter.namespace + '.tts.mp3');
-    } else if (!adapter.config.sonos.device) {
-        adapter.log.warn('Sonos device is not specified');
-    } else if (!adapter.config.server.ip) {
-        adapter.log.warn('Web server for sonos is not specified');
-    } else if (!adapter.config.server.port) {
-        adapter.log.warn('Web port for sonos is not specified');
+    if (adapter.config.device && webLink) {
+        adapter.setForeignState(adapter.config.device + '.tts', volume + ';' + webLink + '/state/' + adapter.namespace + '.tts.mp3');
+    } else if (webLink) {
+        adapter.sendTo('sonos', 'send', volume + ';' + webLink + '/state/' + adapter.namespace + '.tts.mp3');
+    } else {
+        adapter.log.warn('Web server is unavailable!');
     }
 }
 
 function sayItMP24(text, language, volume) {
-    if (adapter.config.mp24.server && !sayItIsPlayFile(text)) {
-        adapter.log.debug('Request MediaPlayer24 "http://' + adapter.config.mp24.server + ':50000/tts=' + encodeURI(text) + '"');
+    if (adapter.config.server && !sayItIsPlayFile(text)) {
+        adapter.log.debug('Request MediaPlayer24 "http://' + adapter.config.server + ':50000/tts=' + encodeURI(text) + '"');
         var opts = {
-            host: adapter.config.mp24.server,
+            host: adapter.config.server,
             port: 50000,
             path: '/tts=' + encodeURI(text),
         }
@@ -227,16 +228,16 @@ function sayItMP24(text, language, volume) {
             });
             res.on('end', function() {
                 // all data has been downloaded
-                adapter.log.debug('Response from MediaPlayer24 "' + adapter.config.mp24.server + '": ' + body);
+                adapter.log.debug('Response from MediaPlayer24 "' + adapter.config.server + '": ' + body);
             });
             res.on('error', function(e) {
-                adapter.log.error('Cannot say text on MediaPlayer24 "' + adapter.config.mp24.server + '":' + e.message);
+                adapter.log.error('Cannot say text on MediaPlayer24 "' + adapter.config.server + '":' + e.message);
             });
         }).on('error', function(e) {
             if (e.message == 'Parse Error') {
                 adapter.log.debug('Played successfully');
             } else {
-                adapter.log.error('Cannot say text on MediaPlayer24 "' + adapter.config.mp24.server + '":' + e.message);
+                adapter.log.error('Cannot say text on MediaPlayer24 "' + adapter.config.server + '":' + e.message);
             }
         });
     }
@@ -244,15 +245,15 @@ function sayItMP24(text, language, volume) {
 
 function sayItMP24ftp(text, language, volume) {
     // Copy mp3 file to android device to play it later with MediaPlayer
-    if (adapter.config.mp24.port && adapter.config.mp24.server) {
+    if (adapter.config.port && adapter.config.server) {
 
         var file = sayItGetFileName(text);
 
         var ftp = new libs.jsftp({
-            host: adapter.config.mp24.server,
-            port: parseInt(adapter.config.mp24.port, 10), // defaults to 21
-            user: adapter.config.mp24.user || "anonymous", // defaults to "anonymous"
-            pass: adapter.config.mp24.pass || "anonymous"  // defaults to "anonymous"
+            host: adapter.config.server,
+            port: parseInt(adapter.config.port, 10), // defaults to 21
+            user: adapter.config.user || "anonymous", // defaults to "anonymous"
+            pass: adapter.config.pass || "anonymous"  // defaults to "anonymous"
         });
 
         try {
@@ -260,7 +261,7 @@ function sayItMP24ftp(text, language, volume) {
             ftp.put(file, __dirname + '/say.mp3', function(hadError) {
                 if (!hadError) {
                     var opts = {
-                        host: adapter.config.mp24.server,
+                        host: adapter.config.server,
                         port: 50000,
                         path: '/track=say.mp3',
                     }
@@ -271,16 +272,16 @@ function sayItMP24ftp(text, language, volume) {
                         });
                         res.on('end', function() {
                             // all data has been downloaded
-                            adapter.log.debug('Response from MediaPlayer24 "' + adapter.config.mp24.server + '": ' + body);
+                            adapter.log.debug('Response from MediaPlayer24 "' + adapter.config.server + '": ' + body);
                         });
                         res.on('error', function(e) {
-                            adapter.log.error('Cannot say text on MediaPlayer24 "' + adapter.config.mp24.server + '":' + e.message);
+                            adapter.log.error('Cannot say text on MediaPlayer24 "' + adapter.config.server + '":' + e.message);
                         });
                     }).on('error', function(e) {
                         if (e.message == 'Parse Error') {
                             adapter.log.debug('Played successfully');
                         } else {
-                            adapter.log.error('Cannot say text on MediaPlayer24 "' + adapter.config.mp24.server + '":' + e.message);
+                            adapter.log.error('Cannot say text on MediaPlayer24 "' + adapter.config.server + '":' + e.message);
                         }
                     });
                 } else {
@@ -292,7 +293,7 @@ function sayItMP24ftp(text, language, volume) {
                 });
             });
         } catch (e) {
-            adapter.log.error('Cannot upload file to ' + adapter.config.mp24.server + ':' + adapter.config.mp24.port);
+            adapter.log.error('Cannot upload file to ' + adapter.config.server + ':' + adapter.config.port);
         }
     }
 }
@@ -484,7 +485,8 @@ var sayitEngines = {
     "de":     {name: "Google - Deutsch",         engine: "google"},
     "ru":     {name: "Google - Русский",         engine: "google"},
     "it":     {name: "Google - Italiano",        engine: "google"},
-    "es":     {name: "Google - Espaniol",        engine: "google"}
+    "es":     {name: "Google - Espaniol",        engine: "google"},
+    "fr":     {name: "Google - Français",        engine: "google"}
 };
 
 function main() {
@@ -513,7 +515,7 @@ function main() {
         }
     });
 
-    if (adapter.config.type == "system") {
+    if (adapter.config.type == 'system') {
         // Read volume
         adapter.getState('tts.volume', function (err, state) {
             if (!err && state) {
@@ -523,6 +525,34 @@ function main() {
             }
         });
     }
+
+    if (adapter.config.type == 'sonos') {
+        adapter.getForeignObject('system.adapter.' + adapter.config.web, function (err, obj) {
+            if (!err && obj && obj.native) {
+                webLink = 'http';
+                if (obj.native.auth) {
+                    adapter.log.error('Cannot use server "' + adapter.config.web + '" with authentication for sonos. Select other or create another one.');
+                } else {
+                    if (obj.native.secure) webLink += 's';
+                    webLink += '://';
+                    if (obj.native.bind == 'localhost' || obj.native.bind == '127.0.0.1') {
+                        adapter.log.error('Selected web server "' + adapter.config.web + '" is only on local device available. Select other or create another one.');
+                    } else {
+                        if (obj.native.bind == '0.0.0.0') {
+                            webLink += adapter.config.webServer;
+                        } else {
+                            webLink += obj.native.bind;
+                        }
+                    }
+
+                    webLink += ':' + obj.native.port;
+                }
+            } else {
+                adapter.log.error('Cannot read information about "' + adapter.config.web + '". No web server is active');
+            }
+        });
+    }
+
     adapter.subscribeStates('*');
 }
 
