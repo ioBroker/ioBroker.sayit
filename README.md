@@ -17,8 +17,8 @@ To enable the text to speech on RaspberryPI or linux system call one time follow
 **The mp3/wav files can be played to by wrinting its name into the object. (e.g. "dashui/img/door-bell.mp3")** (Nto work now)
 
 ## Changelog
-### 0.0.1 (2015-02-12)
-* (bluefox) Initial commit
+### 0.1.0 (2015-03-02)
+* (bluefox) queue texts
 
 ### 0.0.1 (2015-02-06)
 * (bluefox) initial commit

@@ -31,6 +31,7 @@ var sayLastVolume        = null;
 var cacheDir             = '';
 var isPlaying            = false;
 var webLink              = '';
+var list                 = [];
 
 function mkpathSync(rootpath, dirpath) {
     // Remove filename
@@ -68,13 +69,63 @@ function copyFile(text, language, volume, source, dest, callback) {
     }
 }
 
-function sayItGetSpeechGoogle(text, language, volume, callback) {
-    if (text.length == 0) return;
+function getLength(fileName, callback) {
+    // create a new parser from a node ReadStream
+    var stat = libs.fs.statSync(fileName);
+    var size = stat.size;
+    if (callback) callback(Math.ceil(size / 4096));
+}
 
+function splitText(text, max) {
+    if (!max) max = 70;
+    if (text.length > max) {
+        var parts = text.split(' ');
+        var result = [];
+        var i = 0;
+        for (var w = 0; w < parts.length; w++) {
+            if (result[i] && ((result[i] || '') + ' ' + parts[w]).length > max) {
+                i++;
+            }
+            if (!result[i]) {
+                result.push(parts[w]);
+            } else {
+                result[i] += ' ' + parts[w];
+            }
+        }
+        return result;
+    } else {
+        return [text];
+    }
+}
+
+function sayFinished(duration) {
+    console.log('Duration "' + list[0].text + ' ' + duration);
+    setTimeout(function () {
+        if (list.length) list.shift();
+        if (list.length) {
+            sayIt(list[0].text, list[0].language, list[0].volume, true);
+        }
+    }, duration * 1000);
+}
+
+function sayItGetSpeechGoogle(text, language, volume, callback) {
     if (typeof volume == 'function') {
         callback = volume;
         volume = undefined;
     }
+
+    if (text.length == 0) {
+        if (callback) callback('', language, volume, 0);
+        return;
+    };
+
+    if (text.length > 70) {
+        var parts = splitText(text);
+        for (var t = 1; t < parts.length; t++) {
+            sayIt(parts[t], language, volume);
+        }
+        text = parts[0];
+    };
 
     language = language || adapter.config.engine;
 
@@ -92,7 +143,13 @@ function sayItGetSpeechGoogle(text, language, volume, callback) {
     var md5filename = cacheDir + libs.crypto.createHash('md5').update(language + ';' + text).digest('hex') + '.mp3';
 
     if (libs.fs.existsSync(md5filename)) {
-        copyFile(text, language, volume, md5filename, __dirname + '/say.mp3', callback)
+        getLength(__dirname + '/say.mp3', function (seconds) {
+            copyFile(text, language, volume, md5filename, __dirname + '/say.mp3', function () {
+                getLength(__dirname + '/say.mp3', function (seconds) {
+                    if (callback) callback(text, language, volume, seconds);
+                })
+            });
+        });
     } else {
         adapter.log.debug('cache file "' + md5filename + '" does not exist, fetching new file ...');
         var options = {
@@ -125,7 +182,9 @@ function sayItGetSpeechGoogle(text, language, volume, callback) {
                     else {
                         if (adapter.config.cache) copyFile(text, language, volume, __dirname + '/say.mp3', md5filename);
 
-                        if (callback) callback(text, language, volume);
+                        getLength(__dirname + '/say.mp3', function (seconds) {
+                            if (callback) callback(text, language, volume, seconds);
+                        });
                     }
                 });
             })
@@ -177,7 +236,7 @@ function sayItGetSpeech(text, language, volume, callback) {
     }
 }
 
-function sayItBrowser(text, language, volume) {
+function sayItBrowser(text, language, volume, duration) {
     var fileData;
     if (sayItIsPlayFile(text)) {
         fileData = libs.fs.readFileSync(text);
@@ -189,9 +248,10 @@ function sayItBrowser(text, language, volume) {
     adapter.setForeignState('vis.0.control.instance', adapter.config.instance);
     adapter.setForeignState('vis.0.control.data',     '/state/' + adapter.namespace + '.tts.mp3');
     adapter.setForeignState('vis.0.control.command',  'playSound');
+    sayFinished(duration);
 }
 
-function sayItSonos(text, language, volume) {
+function sayItSonos(text, language, volume, duration) {
     var fileData;
     if (sayItIsPlayFile(text)) {
         fileData = libs.fs.readFileSync(text);
@@ -211,9 +271,10 @@ function sayItSonos(text, language, volume) {
     } else {
         adapter.log.warn('Web server is unavailable!');
     }
+    sayFinished(duration);
 }
 
-function sayItMP24(text, language, volume) {
+function sayItMP24(text, language, volume, duration) {
     if (adapter.config.server && !sayItIsPlayFile(text)) {
         adapter.log.debug('Request MediaPlayer24 "http://' + adapter.config.server + ':50000/tts=' + encodeURI(text) + '"');
         var opts = {
@@ -241,9 +302,10 @@ function sayItMP24(text, language, volume) {
             }
         });
     }
+    sayFinished(duration + 2);
 }
 
-function sayItMP24ftp(text, language, volume) {
+function sayItMP24ftp(text, language, volume, duration) {
     // Copy mp3 file to android device to play it later with MediaPlayer
     if (adapter.config.port && adapter.config.server) {
 
@@ -296,6 +358,7 @@ function sayItMP24ftp(text, language, volume) {
             adapter.log.error('Cannot upload file to ' + adapter.config.server + ':' + adapter.config.port);
         }
     }
+    sayFinished(duration + 2);
 }
 
 function sayItIsPlayFile(text) {
@@ -315,7 +378,7 @@ function sayItGetFileName(text) {
     return __dirname + '/say.mp3';
 }
 
-function sayItSystem(text, language, volume) {
+function sayItSystem(text, language, volume, duration) {
     var p = libs.os.platform();
     var ls = null;
     var file = sayItGetFileName(text);
@@ -353,9 +416,10 @@ function sayItSystem(text, language, volume) {
             throw new Error('sayIt.play: there was an error while playing the mp3 file:' + e);
         });
     }
+    sayFinished(duration + 2);
 }
 
-function sayItWindows(text, language, volume) {
+function sayItWindows(text, language, volume, duration) {
     // If mp3 file
     if (sayItIsPlayFile(text)) {
         sayItSystem(text, language, volume);
@@ -387,6 +451,7 @@ function sayItWindows(text, language, volume) {
             throw new Error('sayIt.play: there was an error while text2speech on window:' + e);
         });
     }
+    sayFinished(duration + 2);
 }
 
 function sayItSystemVolume(level) {
@@ -423,9 +488,16 @@ function sayItSystemVolume(level) {
     }
 }
 
-function sayIt(text, language, volume) {
-    if (text.length == 0) return;
+function sayIt(text, language, volume, process) {
+    if (!process) {
+        list.push({text: text, language: language, volume: volume});
+        if (list.length > 1) return;
+    }
 
+    if (text.length == 0) {
+        sayFinished(0);
+        return;
+    }
     adapter.log.info('saying: ' + text);
 
     // Extract language from "en;Text to say"
@@ -458,6 +530,7 @@ function sayIt(text, language, volume) {
     }
 
     var isGenerate = false;
+
     // find out if say.mp3 must be generated
     if (!sayItIsPlayFile(text)) isGenerate = sayitOptions[adapter.config.type].mp3Required;
 
@@ -467,17 +540,27 @@ function sayIt(text, language, volume) {
         sayItGetSpeech(text, language, volume, sayitOptions[adapter.config.type].func);
     }
     else {
-        sayitOptions[adapter.config.type].func(text, language, volume);
+        if (sayItIsPlayFile(text)) {
+            getLength(text, function (duration) {
+                sayitOptions[adapter.config.type].func(text, language, volume, duration);
+            });
+        }
+        else {
+            getLength(__dirname + '/say.mp3', function (duration) {
+                sayitOptions[adapter.config.type].func(text, language, volume, duration);
+            });
+        }
+
     }
 }
 
 var sayitOptions = {
-    "browser": {name: "Browser",           mp3Required: true,  func: sayItBrowser, server: true,  libs: ['fs', 'crypto', 'http']},
-    "mp24ftp": {name: "MediaPlayer24+FTP", mp3Required: true,  func: sayItMP24ftp, server: false, libs: ['fs', 'crypto', 'http', 'jsftp']},
-    "mp24"   : {name: "MediaPlayer24",     mp3Required: false, func: sayItMP24,    server: false, libs: ['fs', 'crypto', 'http']},
-    "system" : {name: "System",            mp3Required: true,  func: sayItSystem,  server: false, libs: ['fs', 'crypto', 'http', 'child_process', 'os']},
-    "windows": {name: "Windows default",   mp3Required: false, func: sayItWindows, server: false, libs: ['fs']},
-    "sonos":   {name: "Sonos",             mp3Required: true,  func: sayItSonos,   server: true,  libs: ['fs', 'crypto', 'http']}
+    "browser": {name: "Browser",           mp3Required: true,  checkLength: true,  func: sayItBrowser, server: true,  libs: ['fs', 'crypto', 'http']},
+    "mp24ftp": {name: "MediaPlayer24+FTP", mp3Required: true,  checkLength: true,  func: sayItMP24ftp, server: false, libs: ['fs', 'crypto', 'http', 'jsftp']},
+    "mp24"   : {name: "MediaPlayer24",     mp3Required: false, checkLength: true,  func: sayItMP24,    server: false, libs: ['fs', 'crypto', 'http']},
+    "system" : {name: "System",            mp3Required: true,  checkLength: false, func: sayItSystem,  server: false, libs: ['fs', 'crypto', 'http', 'child_process', 'os']},
+    "windows": {name: "Windows default",   mp3Required: false, checkLength: true,  func: sayItWindows, server: false, libs: ['fs']},
+    "sonos":   {name: "Sonos",             mp3Required: true,  checkLength: true,  func: sayItSonos,   server: true,  libs: ['fs', 'crypto', 'http']}
 };
 
 var sayitEngines = {
