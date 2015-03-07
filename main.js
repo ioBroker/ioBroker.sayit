@@ -33,6 +33,25 @@ var isPlaying            = false;
 var webLink              = '';
 var list                 = [];
 
+var sayitOptions = {
+    "browser": {name: "Browser",           mp3Required: true,  checkLength: true,  func: sayItBrowser, server: true,  libs: ['fs', 'crypto', 'http']},
+    "mp24ftp": {name: "MediaPlayer24+FTP", mp3Required: true,  checkLength: true,  func: sayItMP24ftp, server: false, libs: ['fs', 'crypto', 'http', 'jsftp']},
+    "mp24":    {name: "MediaPlayer24",     mp3Required: false, checkLength: true,  func: sayItMP24,    server: false, libs: ['fs', 'crypto', 'http']},
+    "system":  {name: "System",            mp3Required: true,  checkLength: false, func: sayItSystem,  server: false, libs: ['fs', 'crypto', 'http', 'child_process', 'os']},
+    "windows": {name: "Windows default",   mp3Required: false, checkLength: true,  func: sayItWindows, server: false, libs: ['fs']},
+    "sonos":   {name: "Sonos",             mp3Required: true,  checkLength: true,  func: sayItSonos,   server: true,  libs: ['fs', 'crypto', 'http']}
+};
+
+var sayitEngines = {
+    "en":     {name: "Google - English",         engine: "google"},
+    "de":     {name: "Google - Deutsch",         engine: "google"},
+    "ru":     {name: "Google - Русский",         engine: "google"},
+    "it":     {name: "Google - Italiano",        engine: "google"},
+    "es":     {name: "Google - Espaniol",        engine: "google"},
+    "fr":     {name: "Google - Français",        engine: "google"},
+    "ru_YA":  {name: "Yandex - Русский",         engine: "yandex"}
+};
+
 function mkpathSync(rootpath, dirpath) {
     // Remove filename
     dirpath = dirpath.split('/');
@@ -49,16 +68,24 @@ function mkpathSync(rootpath, dirpath) {
             }
         }
     }
-};
+}
 
 function copyFile(text, language, volume, source, dest, callback) {
     try {
         var input  = libs.fs.createReadStream(source);               // Input stream
         var output = libs.fs.createWriteStream(dest);                // Output stream
 
-        input.on("data",  function(d) { output.write(d); });         // Copy in to out
-        input.on("error", function(err) { throw err; });             // Raise errors
-        input.on("end",   function() {                               // When input ends
+        input.on("data",  function (d) {
+            output.write(d);
+        });
+
+        // Copy in to out
+        input.on("error", function (err) {
+            throw err;
+        });
+
+        // Raise errors
+        input.on("end",   function () {                               // When input ends
             output.end();                                            // close output
             adapter.log.info("Copied file '" + source + "' to '" + dest + "'");
             if (callback) callback(text, language, volume);          // And notify callback
@@ -99,6 +126,7 @@ function splitText(text, max) {
 }
 
 function sayFinished(duration) {
+    duration = duration || 0;
     console.log('Duration "' + list[0].text + ' ' + duration);
     setTimeout(function () {
         if (list.length) list.shift();
@@ -114,10 +142,10 @@ function sayItGetSpeechGoogle(text, language, volume, callback) {
         volume = undefined;
     }
 
-    if (text.length == 0) {
+    if (text.length === 0) {
         if (callback) callback('', language, volume, 0);
         return;
-    };
+    }
 
     if (text.length > 70) {
         var parts = splitText(text);
@@ -125,7 +153,7 @@ function sayItGetSpeechGoogle(text, language, volume, callback) {
             sayIt(parts[t], language, volume);
         }
         text = parts[0];
-    };
+    }
 
     language = language || adapter.config.engine;
 
@@ -147,7 +175,7 @@ function sayItGetSpeechGoogle(text, language, volume, callback) {
             copyFile(text, language, volume, md5filename, __dirname + '/say.mp3', function () {
                 getLength(__dirname + '/say.mp3', function (seconds) {
                     if (callback) callback(text, language, volume, seconds);
-                })
+                });
             });
         });
     } else {
@@ -160,26 +188,26 @@ function sayItGetSpeechGoogle(text, language, volume, callback) {
 
         if (language == "ru") {
             options.headers = {
-                "User-Agent"     : "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:25.0) Gecko/20100101 Firefox/25.0",
-                "Accept"         : "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                "User-Agent":      "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:25.0) Gecko/20100101 Firefox/25.0",
+                "Accept":          "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
                 "Accept-Language": "ru-RU,ru;q=0.8,en-US;q=0.5,en;q=0.3",
                 "Accept-Encoding": "gzip, deflate"
             };
         }
 
-        libs.http.get(options, function(res){
-            var sounddata = ''
-            res.setEncoding('binary')
+        libs.http.get(options, function (res) {
+            var sounddata = '';
+            res.setEncoding('binary');
 
-            res.on('data', function(chunk){
-                sounddata += chunk
+            res.on('data', function (chunk) {
+                sounddata += chunk;
             });
 
-            res.on('end', function(){
-                libs.fs.writeFile(__dirname + '/say.mp3', sounddata, 'binary', function(err){
-                    if (err)
+            res.on('end', function () {
+                libs.fs.writeFile(__dirname + '/say.mp3', sounddata, 'binary', function (err) {
+                    if (err) {
                         adapter.log.error ('File error: ' + err);
-                    else {
+                    } else {
                         if (adapter.config.cache) copyFile(text, language, volume, __dirname + '/say.mp3', md5filename);
 
                         getLength(__dirname + '/say.mp3', function (seconds) {
@@ -187,7 +215,7 @@ function sayItGetSpeechGoogle(text, language, volume, callback) {
                         });
                     }
                 });
-            })
+            });
         });
     }
 }
@@ -195,43 +223,99 @@ function sayItGetSpeechGoogle(text, language, volume, callback) {
 function sayItGetSpeechAcapela(text, language, volume, callback) {
     var options = {
         host: 'vaassl3.acapela-group.com',
-        path: '/Services/Synthesizer?prot_vers=2&req_voice='+language+'22k&cl_env=FLASH_AS_3.0&req_text=%5Cvct%3D100%5C+%5Cspd%3D180%5C+' +
-        encodeURI(text) + '&req_asw_type=STREAM&cl_vers=1-30&req_err_as_id3=yes&cl_login=ACAPELA_BOX&cl_app=PROD&cl_pwd=0g7znor2aa'
+        path: '/Services/Synthesizer?prot_vers=2&req_voice=' + language + '22k&cl_env=FLASH_AS_3.0&req_text=%5Cvct%3D100%5C+%5Cspd%3D180%5C+' +
+              encodeURI(text) + '&req_asw_type=STREAM&cl_vers=1-30&req_err_as_id3=yes&cl_login=ACAPELA_BOX&cl_app=PROD&cl_pwd=0g7znor2aa'
     };
 
-    libs.https.get(options, function(res){
-        var sounddata = ''
-        res.setEncoding('binary')
+    if (!libs.https) libs.https = require('https');
 
-        res.on('data', function(chunk){
-            sounddata += chunk
-        })
+    libs.https.get(options, function (res) {
+        var sounddata = '';
+        res.setEncoding('binary');
 
-        res.on('end', function(){
-            libs.fs.writeFile(__dirname + '/say.mp3', sounddata, 'binary', function(err){
+        res.on('data', function (chunk) {
+            sounddata += chunk;
+        });
+
+        res.on('end', function () {
+            libs.fs.writeFile(__dirname + '/say.mp3', sounddata, 'binary', function (err) {
                 if (err) {
                     adapter.log.error('File error:' + err);
-                }
-                else {
+                } else {
                     console.log('File saved.');
                     if (callback) callback(text, language, volume);
                 }
             });
-        })
+        });
+    });
+}
+
+function sayItGetSpeechYandex(text, language, volume, callback) {
+    if (language == 'ru' || language == 'ru_YA') {
+        language = 'ru-RU';
+    }
+
+    if (!libs.https) libs.https = require('https');
+
+    /*emotion: good, neutral, evil, mixed
+    drunk:   true, false
+    ill:     true, false
+    robot:   true, false
+    */
+    var options = {
+        host: 'tts.voicetech.yandex.net',
+        path: '/generate?lang=' + language + '&format=mp3&speaker=' + adapter.config.voice + '&key=' + adapter.config.key +
+              '&text=' + encodeURI(text.trim())
+    };
+
+    if (adapter.config.emotion && adapter.config.emotion != 'none') options.path += '&emotion=' + adapter.config.emotion;
+    if (adapter.config.drunk === 'true' || adapter.config.drunk === true) options.path += '&drunk=true';
+    if (adapter.config.ill   === 'true' || adapter.config.ill   === true) options.path += '&ill=true';
+    if (adapter.config.robot === 'true' || adapter.config.robot === true) options.path += '&robot=true';
+
+    libs.https.get(options, function (res) {
+        var sounddata = '';
+        res.setEncoding('binary');
+
+        res.on('data', function (chunk) {
+            sounddata += chunk;
+        });
+
+        res.on('end', function () {
+            libs.fs.writeFile(__dirname + '/say.mp3', sounddata, 'binary', function (err) {
+                if (err) {
+                    adapter.log.error('File error:' + err);
+                } else {
+                    console.log('File saved.');
+                    if (callback) callback(text, language, volume);
+                }
+            });
+        });
     });
 }
 
 function sayItGetSpeech(text, language, volume, callback) {
     if (sayitEngines[language] && sayitEngines[language].engine) {
-        if (sayitEngines[language].engine == 'google') {
-            sayItGetSpeechGoogle(text, language, volume, callback);
+        switch (sayitEngines[language].engine) {
+            case 'google':
+                sayItGetSpeechGoogle(text, language, volume, callback);
+                break;
+
+            case 'yandex':
+                sayItGetSpeechYandex(text, language, volume, callback);
+                break;
+
+            case 'acapela':
+                sayItGetSpeechAcapela(text, language, volume, callback);
+                break;
+
+            default:
+                adapter.log.warn('Engine ' + sayitEngines[language].engine + ' not yet supported.');
+                sayFinished();
+                break;
+
         }
-        else
-        if (sayitEngines[language].engine == 'acapela') {
-            sayItGetSpeechAcapela(text, language, volume, callback);
-        }
-    }
-    else {
+    } else {
         sayItGetSpeechGoogle(text, language, volume, callback);
     }
 }
@@ -240,8 +324,7 @@ function sayItBrowser(text, language, volume, duration) {
     var fileData;
     if (sayItIsPlayFile(text)) {
         fileData = libs.fs.readFileSync(text);
-    }
-    else {
+    } else {
         fileData = libs.fs.readFileSync(__dirname + '/say.mp3');
     }
     adapter.setBinaryState(adapter.namespace + '.tts.mp3', fileData);
@@ -255,8 +338,7 @@ function sayItSonos(text, language, volume, duration) {
     var fileData;
     if (sayItIsPlayFile(text)) {
         fileData = libs.fs.readFileSync(text);
-    }
-    else {
+    } else {
         fileData = libs.fs.readFileSync(__dirname + '/say.mp3');
     }
 
@@ -281,20 +363,20 @@ function sayItMP24(text, language, volume, duration) {
             host: adapter.config.server,
             port: 50000,
             path: '/tts=' + encodeURI(text),
-        }
+        };
         libs.http.get(opts, function (res) {
             var body = '';
-            res.on('data', function(chunk) {
+            res.on('data', function (chunk) {
                 body += chunk;
             });
-            res.on('end', function() {
+            res.on('end', function () {
                 // all data has been downloaded
                 adapter.log.debug('Response from MediaPlayer24 "' + adapter.config.server + '": ' + body);
             });
-            res.on('error', function(e) {
+            res.on('error', function (e) {
                 adapter.log.error('Cannot say text on MediaPlayer24 "' + adapter.config.server + '":' + e.message);
             });
-        }).on('error', function(e) {
+        }).on('error', function (e) {
             if (e.message == 'Parse Error') {
                 adapter.log.debug('Played successfully');
             } else {
@@ -320,26 +402,26 @@ function sayItMP24ftp(text, language, volume, duration) {
 
         try {
             // Copy file to FTP server
-            ftp.put(file, __dirname + '/say.mp3', function(hadError) {
+            ftp.put(file, __dirname + '/say.mp3', function (hadError) {
                 if (!hadError) {
                     var opts = {
                         host: adapter.config.server,
                         port: 50000,
                         path: '/track=say.mp3',
-                    }
+                    };
                     libs.http.get(opts, function (res) {
                         var body = '';
-                        res.on('data', function(chunk) {
+                        res.on('data', function (chunk) {
                             body += chunk;
                         });
-                        res.on('end', function() {
+                        res.on('end', function () {
                             // all data has been downloaded
                             adapter.log.debug('Response from MediaPlayer24 "' + adapter.config.server + '": ' + body);
                         });
-                        res.on('error', function(e) {
+                        res.on('error', function (e) {
                             adapter.log.error('Cannot say text on MediaPlayer24 "' + adapter.config.server + '":' + e.message);
                         });
-                    }).on('error', function(e) {
+                    }).on('error', function (e) {
                         if (e.message == 'Parse Error') {
                             adapter.log.debug('Played successfully');
                         } else {
@@ -349,7 +431,7 @@ function sayItMP24ftp(text, language, volume, duration) {
                 } else {
                     adapter.log.error ('FTP error:' + hadError);
                 }
-                ftp.raw.quit(function(err, data) {
+                ftp.raw.quit(function (err, data) {
                     if (err) adapter.log.error(err);
                     ftp.destroy();
                 });
@@ -412,7 +494,7 @@ function sayItSystem(text, language, volume, duration) {
     }
 
     if (ls) {
-        ls.on('error', function(e) {
+        ls.on('error', function (e) {
             throw new Error('sayIt.play: there was an error while playing the mp3 file:' + e);
         });
     }
@@ -431,7 +513,7 @@ function sayItWindows(text, language, volume, duration) {
     var ls   = null;
     var file = sayItGetFileName(text);
 
-    if (volume != '' && volume !== null && volume !== undefined) sayItSystemVolume(volume);
+    if (volume || volume === 0) sayItSystemVolume(volume);
 
     if (p.match(/^win/)) {
         //windows
@@ -441,13 +523,12 @@ function sayItWindows(text, language, volume, duration) {
             adapter.setState('tts.playing', false);
             isPlaying = false;
         });
-    }
-    else {
+    } else {
         adapter.log.error ('sayItWindows: only windows OS is supported for Windows default mode');
     }
 
     if (ls) {
-        ls.on('error', function(e) {
+        ls.on('error', function (e) {
             throw new Error('sayIt.play: there was an error while text2speech on window:' + e);
         });
     }
@@ -482,7 +563,7 @@ function sayItSystemVolume(level) {
     }
 
     if (ls) {
-        ls.on('error', function(e) {
+        ls.on('error', function (e) {
             throw new Error('sayIt.play: there was an error while playing the mp3 file:' + e);
         });
     }
@@ -490,11 +571,19 @@ function sayItSystemVolume(level) {
 
 function sayIt(text, language, volume, process) {
     if (!process) {
-        list.push({text: text, language: language, volume: volume});
+        var time = (new Date()).getTime();
+
+        // Workaround for double text
+        if (list.length > 1 && list[list.length - 1].text == text && time - list[list.length - 1].time < 500) {
+            adapter.warn('Same text in less than a second.. Strange. Ignore it.');
+            return;
+        }
+
+        list.push({text: text, language: language, volume: volume, time: time});
         if (list.length > 1) return;
     }
 
-    if (text.length == 0) {
+    if (!text.length) {
         sayFinished(0);
         return;
     }
@@ -508,20 +597,17 @@ function sayIt(text, language, volume, process) {
             // If number
             if (parseInt(arr[0]) == arr[0]) {
                 volume = arr[0];
-            }
-            else {
+            } else {
                 language = arr[0];
             }
             text = arr[1];
-        }
-        // If language;volume;text or volume;language;text
-        else if (arr.length == 3) {
+        } else if (arr.length == 3) {
+            // If language;volume;text or volume;language;text
             // If number
             if (parseInt(arr[0]) == arr[0]) {
                 volume   = arr[0];
                 language = arr[1];
-            }
-            else {
+            } else {
                 volume   = arr[1];
                 language = arr[0];
             }
@@ -530,6 +616,8 @@ function sayIt(text, language, volume, process) {
     }
 
     var isGenerate = false;
+    if (!language) language = adapter.config.engine;
+    if (!volume && adapter.config.volume)   volume = adapter.config.volume;
 
     // find out if say.mp3 must be generated
     if (!sayItIsPlayFile(text)) isGenerate = sayitOptions[adapter.config.type].mp3Required;
@@ -538,14 +626,12 @@ function sayIt(text, language, volume, process) {
     if (isGenerate && sayLastGeneratedText != '[' + language + ']' + text) {
         sayLastGeneratedText = '[' + language + ']' + text;
         sayItGetSpeech(text, language, volume, sayitOptions[adapter.config.type].func);
-    }
-    else {
+    } else {
         if (sayItIsPlayFile(text)) {
             getLength(text, function (duration) {
                 sayitOptions[adapter.config.type].func(text, language, volume, duration);
             });
-        }
-        else {
+        } else {
             getLength(__dirname + '/say.mp3', function (duration) {
                 sayitOptions[adapter.config.type].func(text, language, volume, duration);
             });
@@ -554,27 +640,9 @@ function sayIt(text, language, volume, process) {
     }
 }
 
-var sayitOptions = {
-    "browser": {name: "Browser",           mp3Required: true,  checkLength: true,  func: sayItBrowser, server: true,  libs: ['fs', 'crypto', 'http']},
-    "mp24ftp": {name: "MediaPlayer24+FTP", mp3Required: true,  checkLength: true,  func: sayItMP24ftp, server: false, libs: ['fs', 'crypto', 'http', 'jsftp']},
-    "mp24"   : {name: "MediaPlayer24",     mp3Required: false, checkLength: true,  func: sayItMP24,    server: false, libs: ['fs', 'crypto', 'http']},
-    "system" : {name: "System",            mp3Required: true,  checkLength: false, func: sayItSystem,  server: false, libs: ['fs', 'crypto', 'http', 'child_process', 'os']},
-    "windows": {name: "Windows default",   mp3Required: false, checkLength: true,  func: sayItWindows, server: false, libs: ['fs']},
-    "sonos":   {name: "Sonos",             mp3Required: true,  checkLength: true,  func: sayItSonos,   server: true,  libs: ['fs', 'crypto', 'http']}
-};
-
-var sayitEngines = {
-    "en":     {name: "Google - English",         engine: "google"},
-    "de":     {name: "Google - Deutsch",         engine: "google"},
-    "ru":     {name: "Google - Русский",         engine: "google"},
-    "it":     {name: "Google - Italiano",        engine: "google"},
-    "es":     {name: "Google - Espaniol",        engine: "google"},
-    "fr":     {name: "Google - Français",        engine: "google"}
-};
-
 function main() {
     // Load libs
-    for (var i = 0; i < sayitOptions[adapter.config.type].libs.length; i++){
+    for (var i = 0; i < sayitOptions[adapter.config.type].libs.length; i++) {
         libs[sayitOptions[adapter.config.type].libs[i]] = require(sayitOptions[adapter.config.type].libs[i]);
     }
     adapter.getState('tts.text', function (err, state) {

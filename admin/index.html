@@ -15,16 +15,24 @@
             "de": "sayIt Einstellungen",
             "ru": "sayIt Настройки"
         },
-        "Language:": {"en": "Language:", "de": "Sprache:", "ru": "Язык:"},
-        "Type:": {"en": "Type:", "de": "Typ:", "ru": "Тип:"},
-        "Cache:": {"en": "Cache:", "de": "Cache:", "ru": "Кэш:"},
-        "Server:": {"en": "Server:", "de": "Server:", "ru": "Сервер:"},
-        "Port:": {"en": "Port:", "de": "Port:", "ru": "Порт:"},
-        "User:": {"en": "User:", "de": "Anwender:", "ru": "Пользователь:"},
-        "Password:": {"en": "Password:", "de": "Kennwort:", "ru": "Пароль:"},
+        "Language:":        {"en": "Language:",         "de": "Sprache:",       "ru": "Язык:"},
+        "Type:":            {"en": "Type:",             "de": "Typ:",           "ru": "Тип:"},
+        "Cache:":           {"en": "Cache:",            "de": "Cache:",         "ru": "Кэш:"},
+        "Server:":          {"en": "Server:",           "de": "Server:",        "ru": "Сервер:"},
+        "Port:":            {"en": "Port:",             "de": "Port:",          "ru": "Порт:"},
+        "User:":            {"en": "User:",             "de": "Anwender:",      "ru": "Пользователь:"},
+        "Password:":        {"en": "Password:",         "de": "Kennwort:",      "ru": "Пароль:"},
         "Browser instance:": {"en": "Browser instance:", "de": "Browser-Instanz:", "ru": "ID броузера:"},
-        "Device:": {"en": "Device:", "de": "Gerät:", "ru": "Устройство:"},
-        "Web server IP:": {"en": "Web server IP:", "de": "Web server IP:", "ru": "IP Вэб сервера:"}
+        "Device:":          {"en": "Device:",           "de": "Gerät:",         "ru": "Устройство:"},
+        "Web server IP:":   {"en": "Web server IP:",    "de": "Web server IP:", "ru": "IP Веб сервера:"},
+        "All":              {"en": "All",               "de": "Alle",           "ru": "Все"},
+        "Web instance:":    {"en": "Web instance:",     "de": "Web instance:",  "ru": "Web instance:"},
+        "Voice:":           {"en": "Voice:",            "de": "Stimme:",        "ru": "Голос:"},
+        "API Key:":         {"en": "API Key:",          "de": "API Key:",       "ru": "API Key:"},
+        "Emotion:":         {"en": "Emotion:",          "de": "Emotion:",       "ru": "Емоциональный окрас:"},
+        "Drunk:":           {"en": "Drunk:",            "de": "Betrunken:",     "ru": "Пьяный голос:"},
+        "Ill:":             {"en": "Ill:",              "de": "Krank:",         "ru": "Больной голос:"},
+        "Robot:":           {"en": "Robot:",            "de": "Roboter:",       "ru": "Голос робота:"}
     };
 
     var sayitOptions = {
@@ -36,6 +44,16 @@
         "mp24"   : {name: "MediaPlayer24",     params: ['server']}
     };
 
+    var sayitEngines = {
+        "en":     {name: "Google - English",         engine: "google", params: []},
+        "de":     {name: "Google - Deutsch",         engine: "google", params: []},
+        "ru":     {name: "Google - Русский",         engine: "google", params: []},
+        "it":     {name: "Google - Italiano",        engine: "google", params: []},
+        "es":     {name: "Google - Espaniol",        engine: "google", params: []},
+        "fr":     {name: "Google - Français",        engine: "google", params: []},
+        "ru_YA":  {name: "Yandex - Русский",         engine: "yandex", params: ['key', 'voice', 'emotion', 'ill', 'drunk', 'robot'], voice: ['jane', 'zahar'], emotion: ['none', 'good', 'neutral', 'evil', 'mixed']}
+    };
+
     var webServers = null;
 
     function showHideSettings() {
@@ -43,6 +61,33 @@
         var type = $('#type').val();
         for (var i = 0; i < sayitOptions[type].params.length; i++) {
             $('#tr_' + sayitOptions[type].params[i]).show();
+        }
+
+        $('.engine').hide();
+        var engine = $('#engine').val();
+        for (var i = 0; i < sayitEngines[engine].params.length; i++) {
+            $('#tr_' + sayitEngines[engine].params[i]).show();
+            if (sayitEngines[engine][sayitEngines[engine].params[i]]) {
+                var arr = sayitEngines[engine][sayitEngines[engine].params[i]];
+                var param = sayitEngines[engine].params[i];
+
+                if (arr.length) {
+                    var val = $('#' + param).val();
+                    var text = '';
+                    for (var j = 0; j < arr.length; j++) {
+                        text += '<option value="' + arr[j] + '">' + arr[j] + '</option>';
+                    }
+                    $('#' + param).html(text);
+                    if (val) {
+                        $('#' + param).val(val);
+                    } else {
+                        $('#' + param).val(arr[0]);
+                    }
+                } else {
+                    $('#' + param).html('');
+                }
+            }
+
         }
     }
 
@@ -128,32 +173,39 @@
         if (!settings) return;
 
         var $t = $('#type');
-        for (var name in sayitOptions) {
+        for (name in sayitOptions) {
             $t.append('<option value="' + name + '">' + sayitOptions[name].name + '</option>');
         }
 
+        var $e = $('#engine');
+        for (var name in sayitEngines) {
+            $e.append('<option value="' + name + '">' + sayitEngines[name].name + '</option>');
+        }
         for (var key in settings) {
-            // example: select elements with id=key and class=value and insert value
             if ($('#' + key + '.value').attr('type') == 'checkbox') {
-                $('#' + key + '.value').prop('checked', settings[key]).change(function() {
-                    if ($('#auth').prop('checked')) {
-                        $('#secure').prop('checked', true);
-                    }
-                    showHideSettings();
-                });
+                $('#' + key + '.value').prop('checked', settings[key]);
             } else {
-                $('#' + key + '.value').val(settings[key]).change(function() {
-                    if ($(this).attr('id') == 'type') {
-                        showHideSettings();
-                        if ($(this).val() == 'sonos') checkWeb('#web');
-                    }
-                    if ($(this).attr('id') == 'web') checkWeb('#web');
-                    onChange();
-                }).keyup(function() {
-                    $(this).trigger('change');
-                });
+                $('#' + key + '.value').val(settings[key]);
             }
         }
+        $('.value').each(function () {
+            $(this).change(function() {
+                var key = $(this).attr('id');
+
+                if (key == 'auth' && $('#auth').prop('checked')) $('#secure').prop('checked', true);
+
+                if (key == 'type' || key == 'engine') {
+                    showHideSettings();
+                    if ($(this).val() == 'sonos') checkWeb('#web');
+                }
+
+                if (key == 'web') checkWeb('#web');
+                onChange();
+            }).keyup(function() {
+                $(this).trigger('change');
+            });
+        });
+
         if (!settings.engine) {
             settings.engine = systemLang;
             $('#language').val(systemLang).trigger('change');
@@ -167,6 +219,7 @@
         fillWebServices('#web', settings.web, settings.type, settings.webServer);
 
         showHideSettings();
+        $('#voice').val(settings.voice);
         onChange(false);
     }
 
@@ -194,27 +247,26 @@
     <table><tr><td><img src="sayit.png"></td><td><h3 class="translate">sayIt adapter settings</h3></td></tr></table>
 
     <table>
-        <tr><td class="translate">Language:</td><td><select class="value" id="engine">
-            <option value="en">Google - English</option>
-            <option value="de">Google - Deutsch</option>
-            <option value="ru">Google - Русский</option>
-            <option value="it">Google - Italiano</option>
-            <option value="es">Google - Español</option>
-            <option value="fr">Google - Français</option>
-        </select></td></tr>
+        <tr><td class="translate">Language:</td><td><select class="value" id="engine"></select></td></tr>
 
         <tr><td class="translate">Type:</td><td><select class="value" id="type">
         </select></td></tr>
 
-        <tr id="tr_cache"     class="variable"><td class="translate">Cache:</td>   <td><input class="value" type="checkbox" id="cache"></td></tr>
-        <tr id="tr_server"    class="variable"><td class="translate">Server:</td>  <td><input class="value" id="server" type="text" /></td></tr>
-        <tr id="tr_port"      class="variable"><td class="translate">Port:</td>    <td><input class="value" id="port" size="5"  maxlength="5"/></td></tr>
-        <tr id="tr_user"      class="variable"><td class="translate">User:</td>    <td><input class="value" id="user" type="text" /></td></tr>
-        <tr id="tr_pass"      class="variable"><td class="translate">Password:</td><td><input class="value" id="pass" type="text" /></td></tr>
+        <tr id="tr_cache"     class="variable"><td class="translate">Cache:</td>   <td><input class="value" id="cache"   type="checkbox" ></td></tr>
+        <tr id="tr_server"    class="variable"><td class="translate">Server:</td>  <td><input class="value" id="server"  type="text" /></td></tr>
+        <tr id="tr_port"      class="variable"><td class="translate">Port:</td>    <td><input class="value" id="port"    type="text"size="5"  maxlength="5"/></td></tr>
+        <tr id="tr_user"      class="variable"><td class="translate">User:</td>    <td><input class="value" id="user"    type="text" /></td></tr>
+        <tr id="tr_pass"      class="variable"><td class="translate">Password:</td><td><input class="value" id="pass"    type="text" /></td></tr>
         <tr id="tr_instance"  class="variable"><td class="translate">Browser instance:</td><td><input class="value" id="instance" type="text" /></td></tr>
-        <tr id="tr_device"    class="variable"><td class="translate">Device:</td><td><select class="value" id="device" type="text"><option value="" class="translate">All</option></select></td></tr>
-        <tr id="tr_web"       class="variable"><td class="translate">Web instance:</td><td><select class="value" id="web" type="text"></select></td></tr>
-        <tr id="tr_webServer" class="variable"><td class="translate">Web server IP:</td><td><select class="value" id="webServer" type="text"></select></td></tr>
+        <tr id="tr_device"    class="variable"><td class="translate">Device:</td><td><select class="value" id="device"><option value="" class="translate">All</option></select></td></tr>
+        <tr id="tr_web"       class="variable"><td class="translate">Web instance:</td><td><select class="value" id="web"></select></td></tr>
+        <tr id="tr_webServer" class="variable"><td class="translate">Web server IP:</td><td><select class="value" id="webServer"></select></td></tr>
+        <tr id="tr_voice"     class="engine"  ><td class="translate">Voice:</td><td><select class="value" id="voice"></select></td></tr>
+        <tr id="tr_key"       class="engine"  ><td class="translate">API Key:</td><td><input class="value" id="key" type="text"/></td></tr>
+        <tr id="tr_emotion"   class="engine"  ><td class="translate">Emotion:</td><td><select class="value" id="emotion"></select></td></tr>
+        <tr id="tr_drunk"     class="engine"  ><td class="translate">Drunk:</td><td><input type="checkbox" class="value" id="drunk"/></td></tr>
+        <tr id="tr_ill"       class="engine"  ><td class="translate">Ill:</td><td><input type="checkbox" class="value" id="ill"/></td></tr>
+        <tr id="tr_robot"     class="engine"  ><td class="translate">Robot:</td><td><input type="checkbox" class="value" id="robot"/></td></tr>
     </table>
 </div>
 </html>

@@ -16,7 +16,14 @@ To enable the text to speech on RaspberryPI or linux system call one time follow
 
 **The mp3/wav files can be played to by wrinting its name into the object. (e.g. "dashui/img/door-bell.mp3")** (Nto work now)
 
+To use Yandex voices you must request the API key here: [https://tech.yandex.ru/speechkit/cloud/doc/dg/concepts/About-docpage/](https://tech.yandex.ru/speechkit/cloud/doc/dg/concepts/About-docpage/).
+
+Actual Yandex supports only russian.
+
 ## Changelog
+### 0.2.0 (2015-03-02)
+* (bluefox) add yandex-russian support
+
 ### 0.1.0 (2015-03-02)
 * (bluefox) queue texts
 
