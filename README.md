@@ -14,13 +14,41 @@ Actuall following outputs are supported:
 
 To enable the text to speech on RaspberryPI or linux system call one time following command ```sudo apt-get -y install mpg321``` to install mpg321.
 
-**The mp3/wav files can be played to by wrinting its name into the object. (e.g. "dashui/img/door-bell.mp3")** (Nto work now)
+The mp3/wav files can be played to by wrinting its name into the object. (e.g. "/vis.0/main/img/door-bell.mp3")
+
+The file must be first loaded.
 
 To use Yandex voices you must request the API key here: [https://tech.yandex.ru/speechkit/cloud/doc/dg/concepts/About-docpage/](https://tech.yandex.ru/speechkit/cloud/doc/dg/concepts/About-docpage/).
 
 Actual Yandex supports only russian.
 
+Usage:
+SayIt adapter cannot be used alone. It must be controlled from javascript adapter or from "vis" with specific widget.
+After creation of adapter instance will can find following objects:
+- sayit.N.tts.text: Frase to be spoken.
+- sayit.N.tts.volume: volume which will be used by playing of the frase.
+- sayit.N.tts.playing: true if text is now playing and false if not. Supported only for "windows" and "system" play mode.
+
+State **tts.text** supports extended syntax, so the langugage/engine and volume can be defined together with text. It is used to enable multi-language text2speech engines.
+E.g. if adapter has engine "Google-english", it is possible with frase ```de:Sag es``` to force to use Google-Deustch speech engine.
+
+With ```ru;75;Погода хорошая``` we can force to use russian language and volume 75%.
+Following values for engines are possible:
+
+- en:   Google - English
+- de:   Google - Deutsch
+- ru:   Google - Русский
+- it:   Google - Italiano
+- es:   Google - Espaniol
+- fr:   Google - Français
+- ru_YA:Yandex - Русский
+
+**Note:** "N" is depends on index of the adapter instance.
+
 ## Changelog
+### 0.2.1 (2015-03-07)
+* (bluefox) fix error by buffering of non-generated texts.
+
 ### 0.2.0 (2015-03-02)
 * (bluefox) add yandex-russian support
 

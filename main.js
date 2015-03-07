@@ -29,7 +29,6 @@ var sayIndex             = 0;
 var sayLastGeneratedText = "";
 var sayLastVolume        = null;
 var cacheDir             = '';
-var isPlaying            = false;
 var webLink              = '';
 var list                 = [];
 
@@ -98,9 +97,18 @@ function copyFile(text, language, volume, source, dest, callback) {
 
 function getLength(fileName, callback) {
     // create a new parser from a node ReadStream
-    var stat = libs.fs.statSync(fileName);
-    var size = stat.size;
-    if (callback) callback(Math.ceil(size / 4096));
+    if (fs.existsSync(fileName)) {
+        try {
+            var stat = libs.fs.statSync(fileName);
+            var size = stat.size;
+            if (callback) callback(Math.ceil(size / 4096));
+        } catch (e) {
+            adapter.log.warn('Cannot read length of file ' + filename);
+            if (callback) callback(0);
+        }
+    } else {
+        if (callback) callback(0);
+    }
 }
 
 function splitText(text, max) {
@@ -470,26 +478,20 @@ function sayItSystem(text, language, volume, duration) {
     if (p == 'linux') {
         //linux
         adapter.setState('tts.playing', true);
-        isPlaying = true;
-        ls = libs.child_process.exec('mpg321 ' + file, function (error, stdout, stderr) {
+         ls = libs.child_process.exec('mpg321 ' + file, function (error, stdout, stderr) {
             adapter.setState('tts.playing', false);
-            isPlaying = false;
         });
     } else if (p.match(/^win/)) {
         //windows
         adapter.setState('tts.playing', true);
-        isPlaying = true;
         ls = libs.child_process.exec (__dirname + '/cmdmp3/cmdmp3.exe ' + file, function (error, stdout, stderr) {
             adapter.setState('tts.playing', false);
-            isPlaying = false;
         });
     } else if (p == 'darwin') {
         //mac osx
         adapter.setState('tts.playing', true);
-        isPlaying = true;
         ls = libs.child_process.exec('/usr/bin/afplay ' + file, function (error, stdout, stderr) {
             adapter.setState('tts.playing', false);
-            isPlaying = false;
         });
     }
 
@@ -518,10 +520,8 @@ function sayItWindows(text, language, volume, duration) {
     if (p.match(/^win/)) {
         //windows
         adapter.setState('tts.playing', true);
-        isPlaying = true;
         ls = libs.child_process.exec(__dirname + '/Say/SayStatic.exe ' + text, function (error, stdout, stderr) {
             adapter.setState('tts.playing', false);
-            isPlaying = false;
         });
     } else {
         adapter.log.error ('sayItWindows: only windows OS is supported for Windows default mode');
@@ -636,7 +636,6 @@ function sayIt(text, language, volume, process) {
                 sayitOptions[adapter.config.type].func(text, language, volume, duration);
             });
         }
-
     }
 }
 
