@@ -31,6 +31,7 @@ var sayLastVolume        = null;
 var cacheDir             = '';
 var webLink              = '';
 var list                 = [];
+var ivona                = null;
 
 var sayitOptions = {
     "browser": {name: "Browser",           mp3Required: true,  checkLength: true,  func: sayItBrowser, server: true,  libs: ['fs', 'crypto', 'http']},
@@ -42,13 +43,63 @@ var sayitOptions = {
 };
 
 var sayitEngines = {
-    "en":     {name: "Google - English",         engine: "google"},
-    "de":     {name: "Google - Deutsch",         engine: "google"},
-    "ru":     {name: "Google - Русский",         engine: "google"},
-    "it":     {name: "Google - Italiano",        engine: "google"},
-    "es":     {name: "Google - Espaniol",        engine: "google"},
-    "fr":     {name: "Google - Français",        engine: "google"},
-    "ru_YA":  {name: "Yandex - Русский",         engine: "yandex"}
+    "en":       {name: "Google - English",         engine: "google"},
+    "de":       {name: "Google - Deutsch",         engine: "google"},
+    "ru":       {name: "Google - Русский",         engine: "google"},
+    "it":       {name: "Google - Italiano",        engine: "google"},
+    "es":       {name: "Google - Espaniol",        engine: "google"},
+    "fr":       {name: "Google - Français",        engine: "google"},
+    "ru_YA":    {name: "Yandex - Русский",         engine: "yandex"},
+    "ru-RU_AZ_Female":          {"gender":"Female", engine: "ivona", params: ['accessKey', 'secretKey'], "language":"ru-RU",      "ename":"Tatyana",    "name":"Ivona - Русский - Татьяна"},
+    "de-DE_AZ_Female":          {"gender":"Female", engine: "ivona", params: ['accessKey', 'secretKey'], "language":"de-DE",      "ename":"Marlene",    "name":"Ivona - Deutsch - Marlene"},
+    "de-DE_AZ_Male":            {"gender":"Male",   engine: "ivona", params: ['accessKey', 'secretKey'], "language":"de-DE",      "ename":"Hans",       "name":"Ivona - Deutsch - Hans"},
+    "en-US_AZ_Female":          {"gender":"Female", engine: "ivona", params: ['accessKey', 'secretKey'], "language":"en-US",      "ename":"Salli",      "name":"Ivona - en-US - Female - Salli"},
+    "en-US_AZ_Male":            {"gender":"Male",   engine: "ivona", params: ['accessKey', 'secretKey'], "language":"en-US",      "ename":"Joey",       "name":"Ivona - en-US - Male - Joey"},
+    "da-DK_AZ_Female":          {"gender":"Female", engine: "ivona", params: ['accessKey', 'secretKey'], "language":"da-DK",      "ename":"Naja",       "name":"Ivona - da-DK - Female - Naja"},
+    "da-DK_AZ_Male":            {"gender":"Male",   engine: "ivona", params: ['accessKey', 'secretKey'], "language":"da-DK",      "ename":"Mads",       "name":"Ivona - da-DK - Male - Mads"},
+    "en-AU_AZ_Female":          {"gender":"Female", engine: "ivona", params: ['accessKey', 'secretKey'], "language":"en-AU",      "ename":"Nicole",     "name":"Ivona - en-AU - Female - Nicole"},
+    "en-AU_AZ_Male":            {"gender":"Male",   engine: "ivona", params: ['accessKey', 'secretKey'], "language":"en-AU",      "ename":"Russell",    "name":"Ivona - en-AU - Male - Russell"},
+    "en-GB_AZ_Female_Amy":      {"gender":"Female", engine: "ivona", params: ['accessKey', 'secretKey'], "language":"en-GB",      "ename":"Amy",        "name":"Ivona - en-GB - Female - Amy"},
+    "en-GB_AZ_Male":            {"gender":"Male",   engine: "ivona", params: ['accessKey', 'secretKey'], "language":"en-GB",      "ename":"Brian",      "name":"Ivona - en-GB - Male - Brian"},
+    "en-GB_AZ_Female_Emma":     {"gender":"Female", engine: "ivona", params: ['accessKey', 'secretKey'], "language":"en-GB",      "ename":"Emma",       "name":"Ivona - en-GB - Female - Emma"},
+    "en-GB-WLS_AZ_Female":      {"gender":"Female", engine: "ivona", params: ['accessKey', 'secretKey'], "language":"en-GB-WLS",  "ename":"Gwyneth",    "name":"Ivona - en-GB-WLS - Female - Gwyneth"},
+    "en-GB-WLS_AZ_Male":        {"gender":"Male",   engine: "ivona", params: ['accessKey', 'secretKey'], "language":"en-GB-WLS",  "ename":"Geraint",    "name":"Ivona - en-GB-WLS - Male - Geraint"},
+    "cy-GB_AZ_Female":          {"gender":"Female", engine: "ivona", params: ['accessKey', 'secretKey'], "language":"cy-GB",      "ename":"Gwyneth",    "name":"Ivona - cy-GB - Female - Gwyneth"},
+    "cy-GB_AZ_Male":            {"gender":"Male",   engine: "ivona", params: ['accessKey', 'secretKey'], "language":"cy-GB",      "ename":"Geraint",    "name":"Ivona - cy-GB - Male - Geraint"},
+    "en-IN_AZ_Female":          {"gender":"Female", engine: "ivona", params: ['accessKey', 'secretKey'], "language":"en-IN",      "ename":"Raveena",    "name":"Ivona - en-IN - Female - Raveena"},
+    "en-US_AZ_Male_Chipmunk":   {"gender":"Male",   engine: "ivona", params: ['accessKey', 'secretKey'], "language":"en-US",      "ename":"Chipmunk",   "name":"Ivona - en-US - Male - Chipmunk"},
+    "en-US_AZ_Male_Eric":       {"gender":"Male",   engine: "ivona", params: ['accessKey', 'secretKey'], "language":"en-US",      "ename":"Eric",       "name":"Ivona - en-US - Male - Eric"},
+    "en-US_AZ_Female_Ivy":      {"gender":"Female", engine: "ivona", params: ['accessKey', 'secretKey'], "language":"en-US",      "ename":"Ivy",        "name":"Ivona - en-US - Female - Ivy"},
+    "en-US_AZ_Female_Jennifer": {"gender":"Female", engine: "ivona", params: ['accessKey', 'secretKey'], "language":"en-US",      "ename":"Jennifer",   "name":"Ivona - en-US - Female - Jennifer"},
+    "en-US_AZ_Male_Justin":     {"gender":"Male",   engine: "ivona", params: ['accessKey', 'secretKey'], "language":"en-US",      "ename":"Justin",     "name":"Ivona - en-US - Male - Justin"},
+    "en-US_AZ_Female_Kendra":   {"gender":"Female", engine: "ivona", params: ['accessKey', 'secretKey'], "language":"en-US",      "ename":"Kendra",     "name":"Ivona - en-US - Female - Kendra"},
+    "en-US_AZ_Female_Kimberly": {"gender":"Female", engine: "ivona", params: ['accessKey', 'secretKey'], "language":"en-US",      "ename":"Kimberly",   "name":"Ivona - en-US - Female - Kimberly"},
+    "es-ES_AZ_Female":          {"gender":"Female", engine: "ivona", params: ['accessKey', 'secretKey'], "language":"es-ES",      "ename":"Conchita",   "name":"Ivona - es-ES - Female - Conchita"},
+    "es-ES_AZ_Male":            {"gender":"Male",   engine: "ivona", params: ['accessKey', 'secretKey'], "language":"es-ES",      "ename":"Enrique",    "name":"Ivona - es-ES - Male - Enrique"},
+    "es-US_AZ_Female":          {"gender":"Female", engine: "ivona", params: ['accessKey', 'secretKey'], "language":"es-US",      "ename":"Penelope",   "name":"Ivona - es-US - Female - Penelope"},
+    "es-US_AZ_Male":            {"gender":"Male",   engine: "ivona", params: ['accessKey', 'secretKey'], "language":"es-US",      "ename":"Miguel",     "name":"Ivona - es-US - Male - Miguel"},
+    "fr-CA_AZ_Female":          {"gender":"Female", engine: "ivona", params: ['accessKey', 'secretKey'], "language":"fr-CA",      "ename":"Chantal",    "name":"Ivona - fr-CA - Female - Chantal"},
+    "fr-FR_AZ_Female":          {"gender":"Female", engine: "ivona", params: ['accessKey', 'secretKey'], "language":"fr-FR",      "ename":"Celine",     "name":"Ivona - fr-FR - Female - Celine"},
+    "fr-FR_AZ_Male":            {"gender":"Male",   engine: "ivona", params: ['accessKey', 'secretKey'], "language":"fr-FR",      "ename":"Mathieu",    "name":"Ivona - fr-FR - Male - Mathieu"},
+    "is-IS_AZ_Female":          {"gender":"Female", engine: "ivona", params: ['accessKey', 'secretKey'], "language":"is-IS",      "ename":"Dora",       "name":"Ivona - is-IS - Female - Dora"},
+    "is-IS_AZ_Male":            {"gender":"Male",   engine: "ivona", params: ['accessKey', 'secretKey'], "language":"is-IS",      "ename":"Karl",       "name":"Ivona - is-IS - Male - Karl"},
+    "it-IT_AZ_Female":          {"gender":"Female", engine: "ivona", params: ['accessKey', 'secretKey'], "language":"it-IT",      "ename":"Carla",      "name":"Ivona - it-IT - Female - Carla"},
+    "it-IT_AZ_Male":            {"gender":"Male",   engine: "ivona", params: ['accessKey', 'secretKey'], "language":"it-IT",      "ename":"Giorgio",    "name":"Ivona - it-IT - Male - Giorgio"},
+    "nb-NO_AZ_Female":          {"gender":"Female", engine: "ivona", params: ['accessKey', 'secretKey'], "language":"nb-NO",      "ename":"Liv",        "name":"Ivona - nb-NO - Female - Liv"},
+    "nl-NL_AZ_Female":          {"gender":"Female", engine: "ivona", params: ['accessKey', 'secretKey'], "language":"nl-NL",      "ename":"Lotte",      "name":"Ivona - nl-NL - Female - Lotte"},
+    "nl-NL_AZ_Male":            {"gender":"Male",   engine: "ivona", params: ['accessKey', 'secretKey'], "language":"nl-NL",      "ename":"Ruben",      "name":"Ivona - nl-NL - Male - Ruben"},
+    "pl-PL_AZ_Female_Agnieszka":{"gender":"Female", engine: "ivona", params: ['accessKey', 'secretKey'], "language":"pl-PL",      "ename":"Agnieszka",  "name":"Ivona - pl-PL - Female - Agnieszka"},
+    "pl-PL_AZ_Male_Jacek":      {"gender":"Male",   engine: "ivona", params: ['accessKey', 'secretKey'], "language":"pl-PL",      "ename":"Jacek",      "name":"Ivona - pl-PL - Male - Jacek"},
+    "pl-PL_AZ_Female_Ewa":      {"gender":"Female", engine: "ivona", params: ['accessKey', 'secretKey'], "language":"pl-PL",      "ename":"Ewa",        "name":"Ivona - pl-PL - Female - Ewa"},
+    "pl-PL_AZ_Male_Jan":        {"gender":"Male",   engine: "ivona", params: ['accessKey', 'secretKey'], "language":"pl-PL",      "ename":"Jan",        "name":"Ivona - pl-PL - Male - Jan"},
+    "pl-PL_AZ_Female":          {"gender":"Female", engine: "ivona", params: ['accessKey', 'secretKey'], "language":"pl-PL",      "ename":"Maja",       "name":"Ivona - pl-PL - Female - Maja"},
+    "pt-BR_AZ_Female":          {"gender":"Female", engine: "ivona", params: ['accessKey', 'secretKey'], "language":"pt-BR",      "ename":"Vitoria",    "name":"Ivona - pt-BR - Female - Vitoria"},
+    "pt-BR_AZ_Male":            {"gender":"Male",   engine: "ivona", params: ['accessKey', 'secretKey'], "language":"pt-BR",      "ename":"Ricardo",    "name":"Ivona - pt-BR - Male - Ricardo"},
+    "pt-PT_AZ_Male":            {"gender":"Male",   engine: "ivona", params: ['accessKey', 'secretKey'], "language":"pt-PT",      "ename":"Cristiano",  "name":"Ivona - pt-PT - Male - Cristiano"},
+    "pt-PT_AZ_Female":          {"gender":"Female", engine: "ivona", params: ['accessKey', 'secretKey'], "language":"pt-PT",      "ename":"Ines",       "name":"Ivona - pt-PT - Female - Ines"},
+    "ro-RO_AZ_Female":          {"gender":"Female", engine: "ivona", params: ['accessKey', 'secretKey'], "language":"ro-RO",      "ename":"Carmen",     "name":"Ivona - ro-RO - Female - Carmen"},
+    "sv-SE_AZ_Female":          {"gender":"Female", engine: "ivona", params: ['accessKey', 'secretKey'], "language":"sv-SE",      "ename":"Astrid",     "name":"Ivona - sv-SE - Female - Astrid"},
+    "tr-TR_AZ_Female":          {"gender":"Female", engine: "ivona", params: ['accessKey', 'secretKey'], "language":"tr-TR",      "ename":"Filiz",      "name":"Ivona - tr-TR - Female - Filiz"}
 };
 
 function mkpathSync(rootpath, dirpath) {
@@ -294,12 +345,39 @@ function sayItGetSpeechYandex(text, language, volume, callback) {
                 if (err) {
                     adapter.log.error('File error:' + err);
                 } else {
-                    console.log('File saved.');
                     if (callback) callback(text, language, volume);
                 }
             });
         });
     });
+}
+
+function sayItGetSpeechAmazon(text, language, volume, callback) {
+    if (!libs.Ivona) libs.Ivona = require('ivona-node');
+
+    if (!ivona) ivona = new libs.Ivona({
+        accessKey: adapter.config.accessKey,
+        secretKey: adapter.config.secretKey
+    });
+
+    if (!libs.fs) libs.fs = require('fs');
+
+    try {
+        ivona.createVoice(text, {
+            body: {
+                voice: {
+                    name:     sayitEngines[language].ename,
+                    language: sayitEngines[language].language,
+                    gender:   sayitEngines[language].gender
+                }
+            }
+        }).pipe(libs.fs.createWriteStream(__dirname + '/say.mp3')).on('finish', function () {
+            if (callback) callback(text, language, volume);
+        });
+    } catch (e) {
+        adapter.log.error(e.toString());
+        if (callback) callback(text, language, volume);
+    }
 }
 
 function sayItGetSpeech(text, language, volume, callback) {
@@ -315,6 +393,10 @@ function sayItGetSpeech(text, language, volume, callback) {
 
             case 'acapela':
                 sayItGetSpeechAcapela(text, language, volume, callback);
+                break;
+
+            case 'ivona':
+                sayItGetSpeechAmazon(text, language, volume, callback);
                 break;
 
             default:

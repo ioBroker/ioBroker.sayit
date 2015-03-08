@@ -22,6 +22,8 @@ To use Yandex voices you must request the API key here: [https://tech.yandex.ru/
 
 Actual Yandex supports only russian.
 
+To use Amazon(Ivona) voices you need to get access key and secret key [here](http://www.ivona.com/us/for-business/speech-cloud/).
+
 Usage:
 SayIt adapter cannot be used alone. It must be controlled from javascript adapter or from "vis" with specific widget.
 After creation of adapter instance will can find following objects:
@@ -42,10 +44,63 @@ Following values for engines are possible:
 - es:   Google - Espaniol
 - fr:   Google - Français
 - ru_YA:Yandex - Русский
+- ru-RU_AZ_Female: 	Ivona - Русский - Татьяна
+- de-DE_AZ_Female: 	Ivona - Deutsch - Marlene
+- de-DE_AZ_Male: 		Ivona - Deutsch - Hans
+- en-US_AZ_Female: 	Ivona - en-US - Female - Salli
+- en-US_AZ_Male: 		Ivona - en-US - Male - Joey
+- da-DK_AZ_Female: 	Ivona - da-DK - Female - Naja
+- da-DK_AZ_Male: 		Ivona - da-DK - Male - Mads
+- en-AU_AZ_Female: 	Ivona - en-AU - Female - Nicole
+- en-AU_AZ_Male: 		Ivona - en-AU - Male - Russell
+- en-GB_AZ_Female_Amy: Ivona - en-GB - Female - Amy
+- en-GB_AZ_Male: Ivona - en-GB - Male - Brian
+- en-GB_AZ_Female_Emma: Ivona - en-GB - Female - Emma
+- en-GB-WLS_AZ_Female: Ivona - en-GB-WLS - Female - Gwyneth
+- en-GB-WLS_AZ_Male: Ivona - en-GB-WLS - Male - Geraint
+- cy-GB_AZ_Female: Ivona - cy-GB - Female - Gwyneth
+- cy-GB_AZ_Male: Ivona - cy-GB - Male - Geraint
+- en-IN_AZ_Female: Ivona - en-IN - Female - Raveena
+- en-US_AZ_Male_Chipmunk: Ivona - en-US - Male - Chipmunk
+- en-US_AZ_Male_Eric: Ivona - en-US - Male - Eric
+- en-US_AZ_Female_Ivy: Ivona - en-US - Female - Ivy
+- en-US_AZ_Female_Jennifer: Ivona - en-US - Female - Jennifer
+- en-US_AZ_Male_Justin: Ivona - en-US - Male - Justin
+- en-US_AZ_Female_Kendra: Ivona - en-US - Female - Kendra
+- en-US_AZ_Female_Kimberly: Ivona - en-US - Female - Kimberly
+- es-ES_AZ_Female: Ivona - es-ES - Female - Conchita
+- es-ES_AZ_Male: Ivona - es-ES - Male - Enrique
+- es-US_AZ_Female: Ivona - es-US - Female - Penelope
+- es-US_AZ_Male: Ivona - es-US - Male - Miguel
+- fr-CA_AZ_Female: Ivona - fr-CA - Female - Chantal
+- fr-FR_AZ_Female: Ivona - fr-FR - Female - Celine
+- fr-FR_AZ_Male: Ivona - fr-FR - Male - Mathieu
+- is-IS_AZ_Female: Ivona - is-IS - Female - Dora
+- is-IS_AZ_Male: Ivona - is-IS - Male - Karl
+- it-IT_AZ_Female: Ivona - it-IT - Female - Carla
+- it-IT_AZ_Male: Ivona - it-IT - Male - Giorgio
+- nb-NO_AZ_Female: Ivona - nb-NO - Female - Liv
+- nl-NL_AZ_Female: Ivona - nl-NL - Female - Lotte
+- nl-NL_AZ_Male: Ivona - nl-NL - Male - Ruben
+- pl-PL_AZ_Female_Agnieszka:Ivona - pl-PL - Female - Agnieszka
+- pl-PL_AZ_Male_Jacek: Ivona - pl-PL - Male - Jacek
+- pl-PL_AZ_Female_Ewa: Ivona - pl-PL - Female - Ewa
+- pl-PL_AZ_Male_Jan: Ivona - pl-PL - Male - Jan
+- pl-PL_AZ_Female: Ivona - pl-PL - Female - Maja
+- pt-BR_AZ_Female: Ivona - pt-BR - Female - Vitoria
+- pt-BR_AZ_Male: Ivona - pt-BR - Male - Ricardo
+- pt-PT_AZ_Male: Ivona - pt-PT - Male - Cristiano
+- pt-PT_AZ_Female: Ivona - pt-PT - Female - Ines
+- ro-RO_AZ_Female: Ivona - ro-RO - Female - Carmen
+- sv-SE_AZ_Female: Ivona - sv-SE - Female - Astrid
+- tr-TR_AZ_Female: Ivona - tr-TR - Female - Filiz
 
 **Note:** "N" is depends on index of the adapter instance.
 
 ## Changelog
+### 0.3.0 (2015-03-08)
+* (bluefox) add ivona/Amazon voices
+
 ### 0.2.2 (2015-03-08)
 * (bluefox) fix error by buffering of non-generated texts.
 
