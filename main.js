@@ -97,7 +97,7 @@ function copyFile(text, language, volume, source, dest, callback) {
 
 function getLength(fileName, callback) {
     // create a new parser from a node ReadStream
-    if (fs.existsSync(fileName)) {
+    if (libs.fs.existsSync(fileName)) {
         try {
             var stat = libs.fs.statSync(fileName);
             var size = stat.size;

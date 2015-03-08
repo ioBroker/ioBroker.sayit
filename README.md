@@ -46,6 +46,9 @@ Following values for engines are possible:
 **Note:** "N" is depends on index of the adapter instance.
 
 ## Changelog
+### 0.2.2 (2015-03-08)
+* (bluefox) fix error by buffering of non-generated texts.
+
 ### 0.2.1 (2015-03-07)
 * (bluefox) fix error by buffering of non-generated texts.
 
