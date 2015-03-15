@@ -413,9 +413,21 @@ function sayItGetSpeech(text, language, volume, callback) {
 function sayItBrowser(text, language, volume, duration) {
     var fileData;
     if (sayItIsPlayFile(text)) {
-        fileData = libs.fs.readFileSync(text);
+        try {
+            fileData = libs.fs.readFileSync(text);
+        } catch (e) {
+            adapter.log.error('Cannot play file "' + text + '": ' + e.toString());
+            sayFinished(0);
+            return;
+        }
     } else {
-        fileData = libs.fs.readFileSync(__dirname + '/say.mp3');
+        try {
+            fileData = libs.fs.readFileSync(__dirname + '/say.mp3');
+        } catch (e) {
+            adapter.log.error('Cannot play file "' + __dirname + '/say.mp3' + '": ' + e.toString());
+            sayFinished(0);
+            return;
+        }
     }
     adapter.setBinaryState(adapter.namespace + '.tts.mp3', fileData);
     adapter.setForeignState('vis.0.control.instance', adapter.config.instance);
@@ -427,7 +439,13 @@ function sayItBrowser(text, language, volume, duration) {
 function sayItSonos(text, language, volume, duration) {
     var fileData;
     if (sayItIsPlayFile(text)) {
-        fileData = libs.fs.readFileSync(text);
+        try {
+            fileData = libs.fs.readFileSync(text);
+        } catch (e) {
+            adapter.log.error('Cannot play file "' + text + '": ' + e.toString());
+            sayFinished(0);
+            return;
+        }
     } else {
         fileData = libs.fs.readFileSync(__dirname + '/say.mp3');
     }
@@ -657,7 +675,7 @@ function sayIt(text, language, volume, process) {
 
         // Workaround for double text
         if (list.length > 1 && list[list.length - 1].text == text && time - list[list.length - 1].time < 500) {
-            adapter.warn('Same text in less than a second.. Strange. Ignore it.');
+            adapter.log.warn('Same text in less than a second.. Strange. Ignore it.');
             return;
         }
 

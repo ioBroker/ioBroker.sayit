@@ -98,6 +98,9 @@ Following values for engines are possible:
 **Note:** "N" is depends on index of the adapter instance.
 
 ## Changelog
+### 0.3.1 (2015-03-15)
+* (bluefox) fix small error with log
+
 ### 0.3.0 (2015-03-08)
 * (bluefox) add ivona/Amazon voices
 
