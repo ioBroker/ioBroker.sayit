@@ -4,12 +4,22 @@ ioBroker sayit adapter
 SayIt Adapter can convert text to speech and play it on some device.
 Actuall following outputs are supported:
 
-- *Browser* - the text will be played by browser with opened DashUI page. It is almost by every desktop browser supported and by few mobily Browsers.
+- *Browser* - the text will be played by browser with opened iobroker.vis page. It is supported almost by every desktop browser and by few mobily Browsers.
+
+
 - *[Home24- MediaPlayer](http://www.home-24.net/index.php?app=media)* - the text will be sent and played to the Android device with Home24 - MediaPlayer installed. For this will be used build in Android text to speech engine. The port cannot be changed and set to 50000.
+
+
 - *Home24 - MediaPlayer and [FTP Server](https://play.google.com/store/apps/details?id=lutey.FTPServer)* - the text will be sent and played on the Android device with Home24 - MediaPlayer installed. For this will be used the Google text to speech engine. Generated mp3 file will be copied over FTP to android device and played with Home24 - MediaPlayer.
     Both apps have to have same home directories. (E.g. root directory of \"sd card\").
+
+
 - *System* - the text will be played by OS, where the ioBroker adapter runs. Following OS are supported: Windows, linux, Mac OSx.
+
+
 - *Windows engine* - the text will be played by windows, where the sayIt adapter runs. For this will be used windows text to speech engine, that should be preconfigured by user. You can check [here](http://windows.microsoft.com/en-us/windows/setting-speech-options#1TC=windows-7) how to setup it.
+
+
 - *Sonos* - play text on sonos device.
 
 To enable the text to speech on RaspberryPI or linux system call one time following command ```sudo apt-get -y install mpg321``` to install mpg321.
@@ -98,6 +108,9 @@ Following values for engines are possible:
 **Note:** "N" is depends on index of the adapter instance.
 
 ## Changelog
+### 0.3.2 (2015-03-16)
+* (bluefox) clear cache if engine changed
+
 ### 0.3.1 (2015-03-15)
 * (bluefox) fix small error with log
 

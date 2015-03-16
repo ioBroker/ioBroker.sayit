@@ -25,7 +25,6 @@ adapter.on('ready', function () {
     main();
 });
 
-var sayIndex             = 0;
 var sayLastGeneratedText = "";
 var sayLastVolume        = null;
 var cacheDir             = '';
@@ -216,67 +215,41 @@ function sayItGetSpeechGoogle(text, language, volume, callback) {
 
     language = language || adapter.config.engine;
 
-    if (!cacheDir) {
-        cacheDir = __dirname + '/' + adapter.config.cacheDir;
-        if (!libs.fs.existsSync(cacheDir)) {
-            try {
-                mkpathSync(__dirname + '/', adapter.config.cacheDir);
-            } catch (e) {
-                adapter.log.error('Cannot create "' + cacheDir + '": ' + e.message);
-            }
-        }
-    }
+    var options = {
+        host: 'translate.google.com',
+        //port: 80,
+        path: '/translate_tts?ie=utf-8&q=' + encodeURI(text) + '&tl=' + language
+    };
 
-    var md5filename = cacheDir + libs.crypto.createHash('md5').update(language + ';' + text).digest('hex') + '.mp3';
-
-    if (libs.fs.existsSync(md5filename)) {
-        getLength(__dirname + '/say.mp3', function (seconds) {
-            copyFile(text, language, volume, md5filename, __dirname + '/say.mp3', function () {
-                getLength(__dirname + '/say.mp3', function (seconds) {
-                    if (callback) callback(text, language, volume, seconds);
-                });
-            });
-        });
-    } else {
-        adapter.log.debug('cache file "' + md5filename + '" does not exist, fetching new file ...');
-        var options = {
-            host: 'translate.google.com',
-            //port: 80,
-            path: '/translate_tts?ie=utf-8&q=' + encodeURI(text) + '&tl=' + language
+    if (language == "ru") {
+        options.headers = {
+            "User-Agent":      "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:25.0) Gecko/20100101 Firefox/25.0",
+            "Accept":          "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            "Accept-Language": "ru-RU,ru;q=0.8,en-US;q=0.5,en;q=0.3",
+            "Accept-Encoding": "gzip, deflate"
         };
+    }
 
-        if (language == "ru") {
-            options.headers = {
-                "User-Agent":      "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:25.0) Gecko/20100101 Firefox/25.0",
-                "Accept":          "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-                "Accept-Language": "ru-RU,ru;q=0.8,en-US;q=0.5,en;q=0.3",
-                "Accept-Encoding": "gzip, deflate"
-            };
-        }
+    libs.http.get(options, function (res) {
+        var sounddata = '';
+        res.setEncoding('binary');
 
-        libs.http.get(options, function (res) {
-            var sounddata = '';
-            res.setEncoding('binary');
+        res.on('data', function (chunk) {
+            sounddata += chunk;
+        });
 
-            res.on('data', function (chunk) {
-                sounddata += chunk;
-            });
-
-            res.on('end', function () {
-                libs.fs.writeFile(__dirname + '/say.mp3', sounddata, 'binary', function (err) {
-                    if (err) {
-                        adapter.log.error ('File error: ' + err);
-                    } else {
-                        if (adapter.config.cache) copyFile(text, language, volume, __dirname + '/say.mp3', md5filename);
-
-                        getLength(__dirname + '/say.mp3', function (seconds) {
-                            if (callback) callback(text, language, volume, seconds);
-                        });
-                    }
-                });
+        res.on('end', function () {
+            libs.fs.writeFile(__dirname + '/say.mp3', sounddata, 'binary', function (err) {
+                if (err) {
+                    adapter.log.error ('File error: ' + err);
+                } else {
+                    getLength(__dirname + '/say.mp3', function (seconds) {
+                        if (callback) callback(text, language, volume, seconds);
+                    });
+                }
             });
         });
-    }
+    });
 }
 
 function sayItGetSpeechAcapela(text, language, volume, callback) {
@@ -380,23 +353,59 @@ function sayItGetSpeechAmazon(text, language, volume, callback) {
     }
 }
 
+function cacheFile(text, language, volume, seconds, callback) {
+    if (adapter.config.cache) {
+        var md5filename = cacheDir + libs.crypto.createHash('md5').update(language + ';' + text).digest('hex') + '.mp3';
+
+        var stat = libs.fs.statSync(__dirname + '/say.mp3');
+        if (stat.size < 100) {
+            adapter.log.warn('Received file is too short: ' + libs.fs.readFileSync(__dirname + '/say.mp3').toString());
+        } else {
+            copyFile(text, language, volume, __dirname + '/say.mp3', md5filename);
+        }
+    }
+    callback(text, language, volume, seconds);
+}
+
 function sayItGetSpeech(text, language, volume, callback) {
+    if (adapter.config.cache) {
+        var md5filename = cacheDir + libs.crypto.createHash('md5').update(language + ';' + text).digest('hex') + '.mp3';
+        if (libs.fs.existsSync(md5filename)) {
+            getLength(__dirname + '/say.mp3', function (seconds) {
+                copyFile(text, language, volume, md5filename, __dirname + '/say.mp3', function () {
+                    getLength(__dirname + '/say.mp3', function (seconds) {
+                        if (callback) callback(text, language, volume, seconds);
+                    });
+                });
+            });
+            return;
+        }
+    }
+
     if (sayitEngines[language] && sayitEngines[language].engine) {
         switch (sayitEngines[language].engine) {
             case 'google':
-                sayItGetSpeechGoogle(text, language, volume, callback);
+                sayItGetSpeechGoogle(text, language, volume, function (_text, _language, _volume, seconds) {
+                    cacheFile(_text, _language, _volume, seconds, callback);
+                });
                 break;
 
             case 'yandex':
-                sayItGetSpeechYandex(text, language, volume, callback);
+                sayItGetSpeechYandex(text, language, volume, function (_text, _language, _volume, seconds) {
+                    cacheFile(_text, _language, _volume, seconds, callback);
+                });
                 break;
 
             case 'acapela':
-                sayItGetSpeechAcapela(text, language, volume, callback);
+                sayItGetSpeechAcapela(text, language, volume, function (_text, _language, _volume, seconds) {
+                    cacheFile(_text, _language, _volume, seconds, callback);
+                });
                 break;
 
             case 'ivona':
-                sayItGetSpeechAmazon(text, language, volume, callback);
+                sayItGetSpeechAmazon(text, language, volume, function (_text, _language, _volume, seconds) {
+                    cacheFile(_text, _language, _volume, seconds, callback);
+                });
                 break;
 
             default:
@@ -406,7 +415,9 @@ function sayItGetSpeech(text, language, volume, callback) {
 
         }
     } else {
-        sayItGetSpeechGoogle(text, language, volume, callback);
+        sayItGetSpeechGoogle(text, language, volume, function (_text, _language, _volume, seconds) {
+            cacheFile(_text, _language, _volume, seconds, callback);
+        });
     }
 }
 
@@ -470,7 +481,7 @@ function sayItMP24(text, language, volume, duration) {
         var opts = {
             host: adapter.config.server,
             port: 50000,
-            path: '/tts=' + encodeURI(text),
+            path: '/tts=' + encodeURI(text)
         };
         libs.http.get(opts, function (res) {
             var body = '';
@@ -515,8 +526,9 @@ function sayItMP24ftp(text, language, volume, duration) {
                     var opts = {
                         host: adapter.config.server,
                         port: 50000,
-                        path: '/track=say.mp3',
+                        path: '/track=say.mp3'
                     };
+
                     libs.http.get(opts, function (res) {
                         var body = '';
                         res.on('data', function (chunk) {
@@ -740,6 +752,36 @@ function sayIt(text, language, volume, process) {
 }
 
 function main() {
+    libs.fs = require('fs');
+    // If chache enabled
+    if (adapter.config.cache) {
+        cacheDir = __dirname + '/' + adapter.config.cacheDir;
+        // Create cache dir if does not exist
+        if (!libs.fs.existsSync(cacheDir)) {
+            try {
+                mkpathSync(__dirname + '/', adapter.config.cacheDir);
+            } catch (e) {
+                adapter.log.error('Cannot create "' + cacheDir + '": ' + e.message);
+            }
+        } else {
+            var engine = '';
+            // Read the old engine
+            if (libs.fs.existsSync(cacheDir + '/engine.txt')) {
+                engine = libs.fs.readFileSync(cacheDir + '/engine.txt');
+            }
+            // If engine changed
+            if (engine != adapter.config.engine) {
+                // Delete all files in this directory
+                var files = libs.fs.readdirSync(cacheDir);
+                for (var i = 0; i < files.length; i++) {
+                    if (files[i] == 'engine.txt') continue;
+                    libs.fs.unlinkSync(cacheDir + '/' + files[i]);
+                }
+                libs.fs.writeFileSync(cacheDir + '/engine.txt', adapter.config.engine);
+            }
+        }
+    }
+
     // Load libs
     for (var i = 0; i < sayitOptions[adapter.config.type].libs.length; i++) {
         libs[sayitOptions[adapter.config.type].libs[i]] = require(sayitOptions[adapter.config.type].libs[i]);

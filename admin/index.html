@@ -32,7 +32,8 @@
         "Emotion:":         {"en": "Emotion:",          "de": "Emotion:",       "ru": "Емоциональный окрас:"},
         "Drunk:":           {"en": "Drunk:",            "de": "Betrunken:",     "ru": "Пьяный голос:"},
         "Ill:":             {"en": "Ill:",              "de": "Krank:",         "ru": "Больной голос:"},
-        "Robot:":           {"en": "Robot:",            "de": "Roboter:",       "ru": "Голос робота:"}
+        "Robot:":           {"en": "Robot:",            "de": "Roboter:",       "ru": "Голос робота:"},
+        "API Key is not set!": {"en": "API Key is not set!", "de": "API Key ist leer!", "ru": "API Key отсутствует!"}
     };
 
     var sayitOptions = {
@@ -116,6 +117,9 @@
 
         $('.engine').hide();
         var engine = $('#engine').val();
+
+        if (!sayitEngines[engine]) return;
+
         for (var i = 0; i < sayitEngines[engine].params.length; i++) {
             $('#tr_' + sayitEngines[engine].params[i]).show();
             if (sayitEngines[engine][sayitEngines[engine].params[i]]) {
@@ -259,7 +263,7 @@
 
         if (!settings.engine) {
             settings.engine = systemLang;
-            $('#language').val(systemLang).trigger('change');
+            $('#engine').val(systemLang).trigger('change');
         }
         if (!settings.instance) {
             settings.instance = 'FFFFFFFF';
@@ -287,6 +291,19 @@
                 obj[$this.attr('id')] = $this.val();
             }
         });
+
+        if (obj.engine && sayitEngines[obj.engine].engine == 'yandex') {
+            if (!obj.key) {
+                showMessage(_('API Key is not set!'));
+                return;
+            }
+        } else
+        if (obj.engine && sayitEngines[obj.engine].engine == 'ivona') {
+            if (!obj.accessKey || !obj.secretKey) {
+                showMessage(_('API Key is not set!'));
+                return;
+            }
+        }
 
         callback(obj);
     }
