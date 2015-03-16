@@ -153,7 +153,7 @@ function getLength(fileName, callback) {
             var size = stat.size;
             if (callback) callback(Math.ceil(size / 4096));
         } catch (e) {
-            adapter.log.warn('Cannot read length of file ' + filename);
+            adapter.log.warn('Cannot read length of file ' + fileName);
             if (callback) callback(0);
         }
     } else {
@@ -783,8 +783,8 @@ function main() {
     }
 
     // Load libs
-    for (var i = 0; i < sayitOptions[adapter.config.type].libs.length; i++) {
-        libs[sayitOptions[adapter.config.type].libs[i]] = require(sayitOptions[adapter.config.type].libs[i]);
+    for (var j = 0; j < sayitOptions[adapter.config.type].libs.length; j++) {
+        libs[sayitOptions[adapter.config.type].libs[j]] = require(sayitOptions[adapter.config.type].libs[j]);
     }
     adapter.getState('tts.text', function (err, state) {
         if (err || !state) {
