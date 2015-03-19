@@ -274,6 +274,20 @@
         fillWebServices('#web', settings.web, settings.type, settings.webServer);
 
         showHideSettings();
+
+        // Read names of files for gong
+        socket.emit('readDir', 'sayit.' + instance, 'tts.userfiles', function (err, dir) {
+            var text = '<option value="">' + _('none') + '</option>';
+            if (dir) {
+                for (var i = 0; i < dir.length; i++) {
+                    if (dir[i].isDir) continue;
+                    text += '<option value="' + dir[i].file + '">' + dir[i].file + '</option>';
+                }
+            }
+            $('#announce').html(text).val(settings.announce);
+        });
+
+
         $('#voice').val(settings.voice);
         onChange(false);
     }
@@ -316,9 +330,8 @@
 
     <table>
         <tr><td class="translate">Language:</td><td><select class="value" id="engine"></select></td></tr>
-
-        <tr><td class="translate">Type:</td><td><select class="value" id="type">
-        </select></td></tr>
+        <tr><td class="translate">Type:</td><td><select class="value" id="type"></select></td></tr>
+        <tr><td class="translate">Announce:</td><td><select class="value" id="announce"></select></td></tr>
 
         <tr id="tr_cache"     class="variable"><td class="translate">Cache:</td>   <td><input class="value" id="cache"   type="checkbox" ></td></tr>
         <tr id="tr_server"    class="variable"><td class="translate">Server:</td>  <td><input class="value" id="server"  type="text" /></td></tr>

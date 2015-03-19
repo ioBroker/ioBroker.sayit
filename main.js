@@ -31,6 +31,7 @@ var cacheDir             = '';
 var webLink              = '';
 var list                 = [];
 var ivona                = null;
+var lastSay              = null;
 
 var sayitOptions = {
     "browser": {name: "Browser",           mp3Required: true,  checkLength: true,  func: sayItBrowser, server: true,  libs: ['fs', 'crypto', 'http']},
@@ -164,17 +165,25 @@ function getLength(fileName, callback) {
 function splitText(text, max) {
     if (!max) max = 70;
     if (text.length > max) {
-        var parts = text.split(' ');
+        var parts = text.split(/,|.|;|:/);
         var result = [];
-        var i = 0;
-        for (var w = 0; w < parts.length; w++) {
-            if (result[i] && ((result[i] || '') + ' ' + parts[w]).length > max) {
-                i++;
+        for (var p = 0; p < parts.length; p++) {
+            if (parts[p].length < max) {
+                result.push(parts[p]);
+                continue;
             }
-            if (!result[i]) {
-                result.push(parts[w]);
-            } else {
-                result[i] += ' ' + parts[w];
+
+            var _parts = parts[p].split(' ');
+            var i = 0;
+            for (var w = 0; w < _parts.length; w++) {
+                if (_parts[i] && ((result[i] || '') + ' ' + _parts[w]).length > max) {
+                    i++;
+                }
+                if (!result[i]) {
+                    result.push(_parts[w]);
+                } else {
+                    result[i] += ' ' + _parts[w];
+                }
             }
         }
         return result;
@@ -185,8 +194,10 @@ function splitText(text, max) {
 
 function sayFinished(duration) {
     duration = duration || 0;
-    console.log('Duration "' + list[0].text + ' ' + duration);
+    adapter.log.debug('Duration "' + list[0].text + ' ' + duration);
     setTimeout(function () {
+        // Remember when last text finished
+        lastSay = (new Date()).getTime();
         if (list.length) list.shift();
         if (list.length) {
             sayIt(list[0].text, list[0].language, list[0].volume, true);
@@ -693,15 +704,24 @@ function sayIt(text, language, volume, process) {
             adapter.log.warn('Same text in less than a second.. Strange. Ignore it.');
             return;
         }
-
-        list.push({text: text, language: language, volume: volume, time: time});
-        if (list.length > 1) return;
+        // If more time than 15 seconds
+        if (adapter.config.announce && !list.length && (!lastSay || (time - lastSay > 15000))) {
+            list.push({text: adapter.config.announce, language: language, volume: (volume || adapter.config.volume) / 2, time: time});
+            list.push({text: text, language: language, volume: (volume || adapter.config.volume), time: time});
+            text = adapter.config.announce;
+            volume = (volume || adapter.config.volume) / 2;
+        } else {
+            list.push({text: text, language: language, volume: (volume || adapter.config.volume), time: time});
+            if (list.length > 1) return;
+        }
     }
 
     if (!text.length) {
         sayFinished(0);
         return;
     }
+
+
     adapter.log.info('saying: ' + text);
 
     // Extract language from "en;Text to say"
@@ -753,9 +773,43 @@ function sayIt(text, language, volume, process) {
         }
     }
 }
+function uploadFile(file, callback) {
+    adapter.readFile(adapter.namespace, 'tts.userfiles/' + file, function (err, data) {
+        if (err || !data) {
+            adapter.writeFile(adapter.namespace, 'tts.userfiles/' + file, libs.fs.readFileSync(__dirname + '/mp3/' + file), function () {
+                if (callback) callback();
+            });
+        } else {
+            if (callback) callback();
+        }
+    });
+}
+function uploadFiles(callback) {
+    if (libs.fs.existsSync(__dirname + '/mp3')) {
+        var files = libs.fs.readdirSync(__dirname + '/mp3');
+        var count = 0;
+        for (var f = 0; f < files.length; f++) {
+            count++;
+            uploadFile(files[f], function () {
+                count--;
+                if (!count && callback) callback();
+            });
+        }
 
-function main() {
-    libs.fs = require('fs');
+        return;
+    }
+    if (callback) callback();
+}
+
+function start() {
+    if (adapter.config.announce) {
+        adapter.readFile(adapter.namespace, 'tts.userfiles/' + adapter.config.announce, function (err, data) {
+            if (data) {
+                libs.fs.writeFileSync(__dirname + '/' + adapter.config.announce, data);
+            }
+        });
+    }
+
     // If chache enabled
     if (adapter.config.cache) {
         cacheDir = __dirname + '/' + adapter.config.cacheDir;
@@ -849,5 +903,24 @@ function main() {
     }
 
     adapter.subscribeStates('*');
+
+}
+
+function main() {
+    libs.fs = require('fs');
+
+    if ((!process.argv || process.argv.indexOf('--force') == -1) && (!adapter.common || !adapter.common.enabled)) {
+        // Check if files exists in datastorage
+        uploadFiles(function () {
+            if (adapter.stop) {
+                adapter.stop();
+            } else {
+                process.exit();
+            }
+        });
+    } else {
+        // Check if files exists in datastorage
+        uploadFiles(start);
+    }
 }
 

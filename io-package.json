@@ -33,10 +33,20 @@
         "web":                      "",
         "webServer":                "",
         "cacheDir":                 "../../cache/",
-        "key":                      ""
+        "key":                      "",
+        "announce":                 ""
     },
     "instanceObjects": [
-        {
+      {
+        "_id":  "tts.userfiles",
+        "type": "meta",
+        "common": {
+          "name": "Gong files",
+          "role": "meta.user"
+        },
+        "native": {}
+      },
+      {
         "_id":  "tts",
         "type": "channel",
         "common": {
@@ -96,6 +106,18 @@
           "read":  true,
           "write": false,
           "desc":  "Can be accessed from web server under http://ip:8082/state/sayit.0.tts.mp3"
+        },
+        "native": {}
+      },
+      {
+        "_id":  "tts.announce-mp3",
+        "type": "state",
+        "common": {
+          "name":  "Binary mp3 file",
+          "type":  "object",
+          "read":  true,
+          "write": false,
+          "desc":  "Can be accessed from web server under http://ip:8082/state/sayit.0.tts.announce-mp3"
         },
         "native": {}
       }
