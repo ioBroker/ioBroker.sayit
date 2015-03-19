@@ -591,18 +591,21 @@ function sayItSystem(text, language, volume, duration) {
         //linux
         adapter.setState('tts.playing', true);
          ls = libs.child_process.exec('mpg321 ' + file, function (error, stdout, stderr) {
+            if (error) adapter.log.error('Cannot play:' + error); 
             adapter.setState('tts.playing', false);
         });
     } else if (p.match(/^win/)) {
         //windows
         adapter.setState('tts.playing', true);
-        ls = libs.child_process.exec (__dirname + '/cmdmp3/cmdmp3.exe ' + file, function (error, stdout, stderr) {
-            adapter.setState('tts.playing', false);
+        ls = libs.child_process.exec ('cmdmp3.exe "' + file + '"', {cwd: __dirname + '/cmdmp3/'}, function (error, stdout, stderr) {
+            if (error) adapter.log.error('Cannot play:' + error); 
+			adapter.setState('tts.playing', false);
         });
     } else if (p == 'darwin') {
         //mac osx
         adapter.setState('tts.playing', true);
         ls = libs.child_process.exec('/usr/bin/afplay ' + file, function (error, stdout, stderr) {
+            if (error) adapter.log.error('Cannot play:' + error); 
             adapter.setState('tts.playing', false);
         });
     }
