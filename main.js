@@ -821,11 +821,14 @@ function uploadFiles(callback) {
 function start() {
     if (adapter.config.announce) {
         adapter.config.annoTimeout = adapter.config.annoTimeout || 15;
-        adapter.readFile(adapter.namespace, 'tts.userfiles/' + adapter.config.announce, function (err, data) {
-            if (data) {
-                libs.fs.writeFileSync(__dirname + '/' + adapter.config.announce, data);
-            }
-        });
+        if (!libs.fs.existsSync(__dirname + '/' + adapter.config.announce)) {
+            adapter.readFile(adapter.namespace, 'tts.userfiles/' + adapter.config.announce, function (err, data) {
+                if (data) {
+                    libs.fs.writeFileSync(__dirname + '/' + adapter.config.announce, data);
+                }
+            });
+        }
+        adapter.config.announce = __dirname + '/' + adapter.config.announce;
     }
 
     // If chache enabled
