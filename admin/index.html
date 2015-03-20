@@ -8,7 +8,20 @@
 <link rel="stylesheet" type="text/css" href="../../css/adapter.css"/>
 <script type="text/javascript" src="../../js/translate.js"></script>
 <script type="text/javascript" src="../../js/adapter-settings.js"></script>
-
+<style>
+    #drop_zone{
+        border: 2px dashed #bbb;
+        -moz-border-radius: 5px;
+        -webkit-border-radius: 5px;
+        border-radius: 5px;
+        padding: 25px;
+        text-align: center;
+        font: 20pt bold 'Vollkorn';
+        color: #bbb;
+        width: 90%;
+        height: 60px;
+    }
+</style>
 <script type="text/javascript">
     systemDictionary = {
         "sayIt adapter settings": {
@@ -33,6 +46,12 @@
         "Drunk:":           {"en": "Drunk:",            "de": "Betrunken:",     "ru": "Пьяный голос:"},
         "Ill:":             {"en": "Ill:",              "de": "Krank:",         "ru": "Больной голос:"},
         "Robot:":           {"en": "Robot:",            "de": "Roboter:",       "ru": "Голос робота:"},
+        "Announce:":        {"en": "Announce:",         "de": "Ankündigung:",   "ru": "Извещение:"},
+        "Announce timeout (sec):": {
+            "en": "Announce timeout (sec):",
+            "de": "Ankündigungstimeout (Sek):",
+            "ru": "Таймаут извещения (сек):"
+        },
         "API Key is not set!": {"en": "API Key is not set!", "de": "API Key ist leer!", "ru": "API Key отсутствует!"}
     };
 
@@ -223,6 +242,84 @@
         });
     }
 
+    function uploadFile(file, callback) {
+        var reader = new FileReader();
+
+        // Closure to capture the file information.
+        reader.onload = function(e) {
+            socket.emit('writeFile', 'sayit.' + instance, 'tts.userfiles/' + file.name, e.target.result, function () {
+                if (callback) callback(file.name);
+            });
+        };
+
+        // Read in the image file as a data URL.
+        reader.readAsArrayBuffer(file);
+    }
+
+    function handleFileSelect(evt) {
+        var files = evt.target.files; // FileList object
+        $('#drop_indcator').hide();
+
+        // files is a FileList of File objects. List some properties.
+        var count = 0;
+        for (var i = 0, f; f = files[i]; i++) {
+            if (f.size > 1024 * 1024) {
+                showMessage(_('File %s is too big. Maximum 1MB', escape(f.name)));
+                $('#files').val('');
+                return;
+            }
+            if (f.name == 'say.mp3') {
+                showMessage(_('Name say.mp3 is reserved'));
+                $('#files').val('');
+                return;
+            }
+            count++;
+            uploadFile(f, function (name) {
+                count--;
+                if (!count) {
+                    // Read names of files for gong
+                    socket.emit('readDir', 'sayit.' + instance, 'tts.userfiles', function (err, dir) {
+                        var text = '<option value="">' + _('none') + '</option>';
+                        if (dir) {
+                            for (var i = 0; i < dir.length; i++) {
+                                if (dir[i].isDir) continue;
+                                text += '<option value="' + dir[i].file + '">' + dir[i].file + '</option>';
+                            }
+                        }
+                        $('#announce').html(text).val(name).trigger('change');
+                        $('#files').val('');
+                    });
+                }
+            });
+
+        }
+    }
+
+    function handleFileSelectDrop(evt) {
+        $('#drop_indcator').hide();
+        evt.stopPropagation();
+        evt.preventDefault();
+
+        var files = evt.dataTransfer.files; // FileList object.
+
+        // files is a FileList of File objects. List some properties.
+        var output = [];
+        for (var i = 0, f; f = files[i]; i++) {
+            if (f.size > 1024 * 1024) {
+                showMessage(_('File %s is too big. Maximum 1MB', escape(f.name)));
+                return;
+            }
+            console.log(escape(f.name));
+        }
+    }
+
+    function handleDragOver(evt) {
+        evt.stopPropagation();
+        evt.preventDefault();
+        evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
+        $('#drop_indcator').show();
+    }
+
     // the function loadSettings has to exist ...
     function load(settings, onChange) {
         if (!settings) return;
@@ -252,6 +349,14 @@
                 if (key == 'type' || key == 'engine') {
                     showHideSettings();
                     if ($(this).val() == 'sonos') checkWeb('#web');
+                }
+
+                if (key == 'announce') {
+                    if ($(this).val()) {
+                        $('#play').button('enable');
+                    } else {
+                        $('#play').button('disable');
+                    }
                 }
 
                 if (key == 'web') checkWeb('#web');
@@ -289,6 +394,51 @@
 
 
         $('#voice').val(settings.voice);
+        var w = $('#engine').width();
+        $('#announce').css({width: w});
+        $('#type').css({width: w});
+
+        $('#play').button({icons: {primary: 'ui-icon-play'}, text: false}).css({width: 22, height: 22}).click(function () {
+            socket.emit('readFile', 'sayit.' + instance, 'tts.userfiles/' + $('#announce').val(), function (err, data) {
+                if (typeof AudioContext != 'undefined') {
+                    context = new AudioContext();
+                    context.decodeAudioData(data, function(buffer) {
+                        //console.log(buffer);
+                        var source = context.createBufferSource(); // creates a sound source
+                        source.buffer = buffer;                    // tell the source which sound to play
+                        source.connect(context.destination);       // connect the source to the context's destination (the speakers)
+                        source.start(0);
+                    }, function(err) {
+                        console.log(err);
+                    });
+                }
+            });
+        });
+        document.getElementById('files').addEventListener('change', handleFileSelect, false);
+
+        if ($('#announce').val()) $('#play').button('disable');
+        if (typeof AudioContext == 'undefined') $('#play').hide();
+
+        var dropZone = document.getElementById('drop_zone');
+        if (dropZone) {
+            dropZone.addEventListener('dragover', handleDragOver,   false);
+            dropZone.addEventListener('drop',     handleFileSelect, false);
+            /*dropZone.addEventListener('dragend',  function () {
+             $(this).css({background: 'white'});
+             console.log('dragend');
+             return false;
+             }, false);
+             dropZone.addEventListener('dragstart', function () {
+             console.log('dragstart');
+             }, false);
+             dropZone.addEventListener('dragleave',  function () {
+             $(this).css({background: 'white'});
+             }, false);
+             dropZone.addEventListener('dragenter', function () {
+             $(this).css({background: 'gray'});
+             }, false);*/
+        }
+
         onChange(false);
     }
 
@@ -324,32 +474,38 @@
 </script>
 
 <!-- you have to put your config page in a div with id adapter-container -->
-<div id="adapter-container">
+<div id="adapter-container" ondragover="return false" drop="return false">
 
     <table><tr><td><img src="sayit.png"></td><td><h3 class="translate">sayIt adapter settings</h3></td></tr></table>
 
-    <table>
-        <tr><td class="translate">Language:</td><td><select class="value" id="engine"></select></td></tr>
-        <tr><td class="translate">Type:</td><td><select class="value" id="type"></select></td></tr>
-        <tr><td class="translate">Announce:</td><td><select class="value" id="announce"></select></td></tr>
+    <div>
+        <table>
+            <tr><td class="translate">Language:</td><td><select class="value" id="engine"></select></td></tr>
+            <tr><td class="translate">Type:</td><td><select class="value" id="type"></select></td></tr>
+            <tr><td class="translate">Announce:</td><td><select class="value" id="announce"></select>&nbsp;<button id="play"></button></td></tr>
+            <tr><td></td><td><input type="file" accept=".mp3,audio/*" id="files" name="files[]" multiple /></td></tr>
+            <tr><td class="translate">Announce timeout (sec):</td><td><input class="value" id="annoTimeout" type="text" /></td></tr>
+            <tr>&nbsp;</td><td>&nbsp;</td></tr>
 
-        <tr id="tr_cache"     class="variable"><td class="translate">Cache:</td>   <td><input class="value" id="cache"   type="checkbox" ></td></tr>
-        <tr id="tr_server"    class="variable"><td class="translate">Server:</td>  <td><input class="value" id="server"  type="text" /></td></tr>
-        <tr id="tr_port"      class="variable"><td class="translate">Port:</td>    <td><input class="value" id="port"    type="text"size="5"  maxlength="5"/></td></tr>
-        <tr id="tr_user"      class="variable"><td class="translate">User:</td>    <td><input class="value" id="user"    type="text" /></td></tr>
-        <tr id="tr_pass"      class="variable"><td class="translate">Password:</td><td><input class="value" id="pass"    type="text" /></td></tr>
-        <tr id="tr_instance"  class="variable"><td class="translate">Browser instance:</td><td><input class="value" id="instance" type="text" /></td></tr>
-        <tr id="tr_device"    class="variable"><td class="translate">Device:</td><td><select class="value" id="device"><option value="" class="translate">All</option></select></td></tr>
-        <tr id="tr_web"       class="variable"><td class="translate">Web instance:</td><td><select class="value" id="web"></select></td></tr>
-        <tr id="tr_webServer" class="variable"><td class="translate">Web server IP:</td><td><select class="value" id="webServer"></select></td></tr>
-        <tr id="tr_voice"     class="engine"  ><td class="translate">Voice:</td><td><select class="value" id="voice"></select></td></tr>
-        <tr id="tr_key"       class="engine"  ><td class="translate">API Key:</td><td><input class="value" id="key" type="text"/></td></tr>
-        <tr id="tr_emotion"   class="engine"  ><td class="translate">Emotion:</td><td><select class="value" id="emotion"></select></td></tr>
-        <tr id="tr_drunk"     class="engine"  ><td class="translate">Drunk:</td><td><input type="checkbox" class="value" id="drunk"/></td></tr>
-        <tr id="tr_ill"       class="engine"  ><td class="translate">Ill:</td><td><input type="checkbox" class="value" id="ill"/></td></tr>
-        <tr id="tr_robot"     class="engine"  ><td class="translate">Robot:</td><td><input type="checkbox" class="value" id="robot"/></td></tr>
-        <tr id="tr_accessKey" class="engine"  ><td class="translate">Access Key:</td><td><input class="value" id="accessKey" type="text"/></td></tr>
-        <tr id="tr_secretKey" class="engine"  ><td class="translate">Secret Key:</td><td><input class="value" id="secretKey" type="text"/></td></tr>
-    </table>
+            <tr id="tr_cache"     class="variable"><td class="translate">Cache:</td>   <td><input class="value" id="cache"   type="checkbox" ></td></tr>
+            <tr id="tr_server"    class="variable"><td class="translate">Server:</td>  <td><input class="value" id="server"  type="text" /></td></tr>
+            <tr id="tr_port"      class="variable"><td class="translate">Port:</td>    <td><input class="value" id="port"    type="text"size="5"  maxlength="5"/></td></tr>
+            <tr id="tr_user"      class="variable"><td class="translate">User:</td>    <td><input class="value" id="user"    type="text" /></td></tr>
+            <tr id="tr_pass"      class="variable"><td class="translate">Password:</td><td><input class="value" id="pass"    type="text" /></td></tr>
+            <tr id="tr_instance"  class="variable"><td class="translate">Browser instance:</td><td><input class="value" id="instance" type="text" /></td></tr>
+            <tr id="tr_device"    class="variable"><td class="translate">Device:</td><td><select class="value" id="device"><option value="" class="translate">All</option></select></td></tr>
+            <tr id="tr_web"       class="variable"><td class="translate">Web instance:</td><td><select class="value" id="web"></select></td></tr>
+            <tr id="tr_webServer" class="variable"><td class="translate">Web server IP:</td><td><select class="value" id="webServer"></select></td></tr>
+            <tr id="tr_voice"     class="engine"  ><td class="translate">Voice:</td><td><select class="value" id="voice"></select></td></tr>
+            <tr id="tr_key"       class="engine"  ><td class="translate">API Key:</td><td><input class="value" id="key" type="text"/></td></tr>
+            <tr id="tr_emotion"   class="engine"  ><td class="translate">Emotion:</td><td><select class="value" id="emotion"></select></td></tr>
+            <tr id="tr_drunk"     class="engine"  ><td class="translate">Drunk:</td><td><input type="checkbox" class="value" id="drunk"/></td></tr>
+            <tr id="tr_ill"       class="engine"  ><td class="translate">Ill:</td><td><input type="checkbox" class="value" id="ill"/></td></tr>
+            <tr id="tr_robot"     class="engine"  ><td class="translate">Robot:</td><td><input type="checkbox" class="value" id="robot"/></td></tr>
+            <tr id="tr_accessKey" class="engine"  ><td class="translate">Access Key:</td><td><input class="value" id="accessKey" type="text"/></td></tr>
+            <tr id="tr_secretKey" class="engine"  ><td class="translate">Secret Key:</td><td><input class="value" id="secretKey" type="text"/></td></tr>
+        </table>
+    </div>
+    <div id="drop_zone" style="display: none">Dateien hier ablegen</div>
 </div>
 </html>

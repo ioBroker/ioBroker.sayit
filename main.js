@@ -382,12 +382,8 @@ function sayItGetSpeech(text, language, volume, callback) {
     if (adapter.config.cache) {
         var md5filename = cacheDir + libs.crypto.createHash('md5').update(language + ';' + text).digest('hex') + '.mp3';
         if (libs.fs.existsSync(md5filename)) {
-            getLength(__dirname + '/say.mp3', function (seconds) {
-                copyFile(text, language, volume, md5filename, __dirname + '/say.mp3', function () {
-                    getLength(__dirname + '/say.mp3', function (seconds) {
-                        if (callback) callback(text, language, volume, seconds);
-                    });
-                });
+            getLength(md5filename, function (seconds) {
+                if (callback) callback(md5filename, language, volume, seconds);
             });
             return;
         }
@@ -586,7 +582,13 @@ function sayItIsPlayFile(text) {
 
 // If text is gong.mp3 or bong.wav
 function sayItGetFileName(text) {
-    if (sayItIsPlayFile(text)) return __dirname + '/' + text;
+    if (sayItIsPlayFile(text)) {
+        if (libs.fs.existsSync(text)) {
+            return text;
+        } else {
+            return __dirname + '/' + text;
+        }
+    }
 
     return __dirname + '/say.mp3';
 }
@@ -705,7 +707,7 @@ function sayIt(text, language, volume, process) {
             return;
         }
         // If more time than 15 seconds
-        if (adapter.config.announce && !list.length && (!lastSay || (time - lastSay > 15000))) {
+        if (adapter.config.announce && !list.length && (!lastSay || (time - lastSay > adapter.config.annoTimeout * 1000))) {
             list.push({text: adapter.config.announce, language: language, volume: (volume || adapter.config.volume) / 2, time: time});
             list.push({text: text, language: language, volume: (volume || adapter.config.volume), time: time});
             text = adapter.config.announce;
@@ -767,12 +769,26 @@ function sayIt(text, language, volume, process) {
                 sayitOptions[adapter.config.type].func(text, language, volume, duration);
             });
         } else {
-            getLength(__dirname + '/say.mp3', function (duration) {
-                sayitOptions[adapter.config.type].func(text, language, volume, duration);
-            });
+            if (adapter.config.cache) {
+                var md5filename = cacheDir + libs.crypto.createHash('md5').update(language + ';' + text).digest('hex') + '.mp3';
+                if (libs.fs.existsSync(md5filename)) {
+                    getLength(md5filename, function (duration) {
+                        sayitOptions[adapter.config.type].func(md5filename, language, volume, duration);
+                    });
+                    return;
+                } else {
+                    sayLastGeneratedText = '[' + language + ']' + text;
+                    sayItGetSpeech(text, language, volume, sayitOptions[adapter.config.type].func);
+                }
+            } else {
+                getLength(__dirname + '/say.mp3', function (duration) {
+                    sayitOptions[adapter.config.type].func(text, language, volume, duration);
+                });
+            }
         }
     }
 }
+
 function uploadFile(file, callback) {
     adapter.readFile(adapter.namespace, 'tts.userfiles/' + file, function (err, data) {
         if (err || !data) {
@@ -784,6 +800,7 @@ function uploadFile(file, callback) {
         }
     });
 }
+
 function uploadFiles(callback) {
     if (libs.fs.existsSync(__dirname + '/mp3')) {
         var files = libs.fs.readdirSync(__dirname + '/mp3');
@@ -803,6 +820,7 @@ function uploadFiles(callback) {
 
 function start() {
     if (adapter.config.announce) {
+        adapter.config.annoTimeout = adapter.config.annoTimeout || 15;
         adapter.readFile(adapter.namespace, 'tts.userfiles/' + adapter.config.announce, function (err, data) {
             if (data) {
                 libs.fs.writeFileSync(__dirname + '/' + adapter.config.announce, data);
@@ -812,7 +830,21 @@ function start() {
 
     // If chache enabled
     if (adapter.config.cache) {
+        if (adapter.config.cacheDir && (adapter.config.cacheDir[0] == '/' || adapter.config.cacheDir[0] == '\\')) adapter.config.cacheDir = adapter.config.cacheDir.substring(1);
         cacheDir = __dirname + '/' + adapter.config.cacheDir;
+        if (cacheDir) cacheDir = cacheDir.replace(/\\/g, '/');
+
+        var parts = cacheDir.split('/');
+        var i = 0;
+        while (i < parts.length) {
+            if (parts[i] == '..') {
+                parts.splice(i - 1, 2);
+                i--;
+            } else {
+                i++;
+            }
+        }
+        cacheDir = parts.join('/');
         // Create cache dir if does not exist
         if (!libs.fs.existsSync(cacheDir)) {
             try {
