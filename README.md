@@ -108,6 +108,9 @@ Following values for engines are possible:
 **Note:** "N" is depends on index of the adapter instance.
 
 ## Changelog
+### 0.3.3 (2015-03-20)
+* (bluefox) enable announcement
+
 ### 0.3.2 (2015-03-16)
 * (bluefox) clear cache if engine changed
 
