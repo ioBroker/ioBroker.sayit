@@ -16,7 +16,7 @@
         border-radius: 5px;
         padding: 25px;
         text-align: center;
-        font: 20pt bold 'Vollkorn';
+        font: 20pt bold 'Arial';
         color: #bbb;
         width: 90%;
         height: 60px;
@@ -52,6 +52,7 @@
             "de": "Ankündigungstimeout (Sek):",
             "ru": "Таймаут извещения (сек):"
         },
+        "Announce length (sec):": {"en": "Announce length (sec):", "de": "Ankündigunglänge (Sek):", "ru": "Длительность извещения (сек):"},
         "API Key is not set!": {"en": "API Key is not set!", "de": "API Key ist leer!", "ru": "API Key отсутствует!"}
     };
 
@@ -354,6 +355,17 @@
                 if (key == 'announce') {
                     if ($(this).val()) {
                         $('#play').button('enable');
+                        socket.emit('readFile', 'sayit.' + instance, 'tts.userfiles/' + $('#announce').val(), function (err, data) {
+                            if (typeof AudioContext != 'undefined') {
+                                context = new AudioContext();
+                                context.decodeAudioData(data, function(buffer) {
+                                    $('#annoDuration').val(Math.ceil(buffer.duration));
+                                }, function(err) {
+                                    console.log(err);
+                                });
+                            }
+                        });
+
                     } else {
                         $('#play').button('disable');
                     }
@@ -485,9 +497,10 @@
             <tr><td class="translate">Announce:</td><td><select class="value" id="announce"></select>&nbsp;<button id="play"></button></td></tr>
             <tr><td></td><td><input type="file" accept=".mp3,audio/*" id="files" name="files[]" multiple /></td></tr>
             <tr><td class="translate">Announce timeout (sec):</td><td><input class="value" id="annoTimeout" type="text" /></td></tr>
+            <tr><td class="translate">Announce length (sec):</td><td><input class="value" id="annoDuration" type="text" size="2" /></td></tr>
             <tr>&nbsp;</td><td>&nbsp;</td></tr>
 
-            <tr id="tr_cache"     class="variable"><td class="translate">Cache:</td>   <td><input class="value" id="cache"   type="checkbox" ></td></tr>
+            <tr id="tr_cache"     class="variable"><td class="translate">Cache:</td>   <td><input class="value" id="cache"   type="checkbox" /></td></tr>
             <tr id="tr_server"    class="variable"><td class="translate">Server:</td>  <td><input class="value" id="server"  type="text" /></td></tr>
             <tr id="tr_port"      class="variable"><td class="translate">Port:</td>    <td><input class="value" id="port"    type="text"size="5"  maxlength="5"/></td></tr>
             <tr id="tr_user"      class="variable"><td class="translate">User:</td>    <td><input class="value" id="user"    type="text" /></td></tr>

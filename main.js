@@ -148,6 +148,11 @@ function copyFile(text, language, volume, source, dest, callback) {
 
 function getLength(fileName, callback) {
     // create a new parser from a node ReadStream
+    if (fileName == adapter.config.announce && adapter.config.annoDuration) {
+        if (callback) callback(adapter.config.annoDuration - 1);
+        return;
+    }
+
     if (libs.fs.existsSync(fileName)) {
         try {
             var stat = libs.fs.statSync(fileName);
@@ -598,7 +603,7 @@ function sayItSystem(text, language, volume, duration) {
     var ls = null;
     var file = sayItGetFileName(text);
 
-    if (volume !== null && volume !== undefined) sayItSystemVolume(volume);
+    sayItSystemVolume(volume);
 
     if (p == 'linux') {
         //linux
@@ -664,6 +669,8 @@ function sayItWindows(text, language, volume, duration) {
 }
 
 function sayItSystemVolume(level) {
+    if ((!level && level !== 0) || level === 'null') return;
+
     level = parseInt(level);
     if (level < 0)   level = 0;
     if (level > 100) level = 100;
@@ -820,15 +827,23 @@ function uploadFiles(callback) {
 
 function start() {
     if (adapter.config.announce) {
-        adapter.config.annoTimeout = adapter.config.annoTimeout || 15;
+        adapter.config.annoDuration = parseInt(adapter.config.annoDuration) || 0;
+        adapter.config.annoTimeout  = parseInt(adapter.config.annoTimeout) || 15;
         if (!libs.fs.existsSync(__dirname + '/' + adapter.config.announce)) {
             adapter.readFile(adapter.namespace, 'tts.userfiles/' + adapter.config.announce, function (err, data) {
                 if (data) {
-                    libs.fs.writeFileSync(__dirname + '/' + adapter.config.announce, data);
+                    try {
+                        libs.fs.writeFileSync(__dirname + '/' + adapter.config.announce, data);
+                        adapter.config.announce = __dirname + '/' + adapter.config.announce;
+                    } catch (e) {
+                        adapter.log.error('Cannot write file: ' + e.toString());
+                        adapter.config.announce = '';
+                    }
                 }
             });
+        } else {
+            adapter.config.announce = __dirname + '/' + adapter.config.announce;
         }
-        adapter.config.announce = __dirname + '/' + adapter.config.announce;
     }
 
     // If chache enabled
