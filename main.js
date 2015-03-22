@@ -810,6 +810,7 @@ function uploadFile(file, callback) {
 
 function uploadFiles(callback) {
     if (libs.fs.existsSync(__dirname + '/mp3')) {
+        adapter.log.info('Upload announce mp3 files');
         var files = libs.fs.readdirSync(__dirname + '/mp3');
         var count = 0;
         for (var f = 0; f < files.length; f++) {
