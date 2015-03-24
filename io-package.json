@@ -1,7 +1,7 @@
 {
     "common": {
         "name":                     "sayit",
-        "version": "0.3.5",
+        "version": "0.3.6",
         "title":                    "Text to speech Adapter",
         "desc":                     {
 			"en": "Text to speech in a cloud or local. Rus on windows, linux and OSX. It can play mp3/wav too.",
@@ -18,7 +18,8 @@
         "loglevel":                 "info",
         "icon":                     "sayit.png",
         "keywords":                 ["TTS", "voice", "speech"],
-        "extIcon":                  "https://raw.githubusercontent.com/ioBroker/ioBroker.sayit/master/admin/sayit.png"
+        "extIcon":                  "https://raw.githubusercontent.com/ioBroker/ioBroker.sayit/master/admin/sayit.png",
+		"type":                     "media"
     },
     "native": {
         "type":                     "system",

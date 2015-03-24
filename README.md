@@ -108,6 +108,10 @@ Following values for engines are possible:
 **Note:** "N" is depends on index of the adapter instance.
 
 ## Changelog
+
+### 0.3.6 (2015-03-24)
+* (bluefox) fix error with volume by sonos
+
 ### 0.3.5 (2015-03-22)
 * (bluefox) fix error in announcement
 

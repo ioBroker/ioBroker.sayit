@@ -349,7 +349,13 @@
 
                 if (key == 'type' || key == 'engine') {
                     showHideSettings();
-                    if ($(this).val() == 'sonos') checkWeb('#web');
+                    if ($('#type').val() == 'sonos') {
+                        checkWeb('#web');
+                        $('#announce').val('').trigger('change');
+                        $('.announce').hide();
+                    } else {
+                        $('.announce').show();
+                    }
                 }
 
                 if (key == 'announce') {
@@ -391,7 +397,12 @@
         fillWebServices('#web', settings.web, settings.type, settings.webServer);
 
         showHideSettings();
-
+        if (settings.type == 'sonos') {
+            $('.announce').hide();
+            if (settings.announce) {
+                $('#announce').val('').trigger('change');
+            }
+        }
         // Read names of files for gong
         socket.emit('readDir', 'sayit.' + instance, 'tts.userfiles', function (err, dir) {
             var text = '<option value="">' + _('none') + '</option>';
@@ -494,10 +505,10 @@
         <table>
             <tr><td class="translate">Language:</td><td><select class="value" id="engine"></select></td></tr>
             <tr><td class="translate">Type:</td><td><select class="value" id="type"></select></td></tr>
-            <tr><td class="translate">Announce:</td><td><select class="value" id="announce"></select>&nbsp;<button id="play"></button></td></tr>
-            <tr><td></td><td><input type="file" accept=".mp3,audio/*" id="files" name="files[]" multiple /></td></tr>
-            <tr><td class="translate">Announce timeout (sec):</td><td><input class="value" id="annoTimeout" type="text" /></td></tr>
-            <tr><td class="translate">Announce length (sec):</td><td><input class="value" id="annoDuration" type="text" size="2" /></td></tr>
+            <tr class="announce"><td class="translate">Announce:</td><td><select class="value" id="announce"></select>&nbsp;<button id="play"></button></td></tr>
+            <tr class="announce"><td></td><td><input type="file" accept=".mp3,audio/*" id="files" name="files[]" multiple /></td></tr>
+            <tr class="announce"><td class="translate">Announce timeout (sec):</td><td><input class="value" id="annoTimeout" type="text" /></td></tr>
+            <tr class="announce"><td class="translate">Announce length (sec):</td><td><input class="value" id="annoDuration" type="text" size="2" /></td></tr>
             <tr>&nbsp;</td><td>&nbsp;</td></tr>
 
             <tr id="tr_cache"     class="variable"><td class="translate">Cache:</td>   <td><input class="value" id="cache"   type="checkbox" /></td></tr>

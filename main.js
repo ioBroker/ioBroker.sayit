@@ -477,10 +477,12 @@ function sayItSonos(text, language, volume, duration) {
 
     adapter.setBinaryState(adapter.namespace + '.tts.mp3', fileData);
 
+    if (volume === 'null') volume = 0;
+
     if (adapter.config.device && webLink) {
-        adapter.setForeignState(adapter.config.device + '.tts', volume + ';' + webLink + '/state/' + adapter.namespace + '.tts.mp3');
+        adapter.setForeignState(adapter.config.device + '.tts', (volume ? (volume + ';') : '') + webLink + '/state/' + adapter.namespace + '.tts.mp3');
     } else if (webLink) {
-        adapter.sendTo('sonos', 'send', volume + ';' + webLink + '/state/' + adapter.namespace + '.tts.mp3');
+        adapter.sendTo('sonos', 'send', (volume ? (volume + ';') : '') + webLink + '/state/' + adapter.namespace + '.tts.mp3');
     } else {
         adapter.log.warn('Web server is unavailable!');
     }
