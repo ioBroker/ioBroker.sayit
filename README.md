@@ -24,7 +24,7 @@ Actuall following outputs are supported:
 
 To enable the text to speech on RaspberryPI or linux system call one time following command ```sudo apt-get -y install mpg321``` to install mpg321.
 
-The mp3/wav files can be played to by wrinting its name into the object. (e.g. "/vis.0/main/img/door-bell.mp3")
+The mp3/wav files can be played to by writing its name into the object. (e.g. "/vis.0/main/img/door-bell.mp3")
 
 The file must be first loaded.
 
