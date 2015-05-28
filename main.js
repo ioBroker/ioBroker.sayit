@@ -638,8 +638,8 @@ function sayItSystem(text, language, volume, duration) {
     if (text == adapter.config.announce) {
         sayFinished(duration);
     } else {
-        sayFinished(duration + 2);
-    }
+    	sayFinished(duration + 2)
+	}
 }
 
 function sayItWindows(text, language, volume, duration) {
@@ -711,35 +711,8 @@ function sayItSystemVolume(level) {
 }
 
 function sayIt(text, language, volume, process) {
-    if (!process) {
-        var time = (new Date()).getTime();
 
-        // Workaround for double text
-        if (list.length > 1 && list[list.length - 1].text == text && time - list[list.length - 1].time < 500) {
-            adapter.log.warn('Same text in less than a second.. Strange. Ignore it.');
-            return;
-        }
-        // If more time than 15 seconds
-        if (adapter.config.announce && !list.length && (!lastSay || (time - lastSay > adapter.config.annoTimeout * 1000))) {
-            list.push({text: adapter.config.announce, language: language, volume: (volume || adapter.config.volume) / 2, time: time});
-            list.push({text: text, language: language, volume: (volume || adapter.config.volume), time: time});
-            text = adapter.config.announce;
-            volume = (volume || adapter.config.volume) / 2;
-        } else {
-            list.push({text: text, language: language, volume: (volume || adapter.config.volume), time: time});
-            if (list.length > 1) return;
-        }
-    }
-
-    if (!text.length) {
-        sayFinished(0);
-        return;
-    }
-
-
-    adapter.log.info('saying: ' + text);
-
-    // Extract language from "en;Text to say"
+    // Extract language from "en;volume;Text to say"
     if (text.indexOf(';') != -1) {
         var arr = text.split(';', 3);
         // If language;text or volume;text
@@ -764,6 +737,76 @@ function sayIt(text, language, volume, process) {
             text = arr[2];
         }
     }
+
+    // if no text => do not process
+    if (!text.length) {
+        sayFinished(0);
+        return;
+    }
+
+    // Check: may be it is file from DB filesystem, like /vis.0/main/img/door-bell.mp3
+    if (text[0] == '/') {
+        var cached = false;
+        var md5filename;
+        if (adapter.config.cache) {
+            md5filename = cacheDir + libs.crypto.createHash('md5').update(text).digest('hex') + '.mp3';
+
+            if (libs.fs.existsSync(md5filename)) {
+                cached = true;
+                text = md5filename;
+            }
+        }
+        if (!cached) {
+            var parts = text.split('/');
+            var adap = parts[0];
+            parts.splice(0, 1);
+            var path = parts.join('/');
+
+            adapter.readFile(adap, path, function (err, data) {
+                if (data) {
+                    try {
+                        // Cache the file
+                        if (md5filename) libs.fs.writeFileSync(md5filename, data);
+                        libs.fs.writeFileSync(__dirname + '/say.mp3', data);
+                        sayIt(__dirname + '/say.mp3', language, volume, process);
+                    } catch (e) {
+                        adapter.log.error('Cannot write file "' + __dirname + '/say.mp3": ' + e.toString());
+                        sayFinished(0);
+                        return;
+                    }
+                } else {
+                    adapter.log.warn('File "' + text + '" not found');
+                    sayFinished(0);
+                    return;
+                }
+            });
+            return;
+        }
+    }
+
+    if (!process) {
+        var time = (new Date()).getTime();
+
+        // Workaround for double text
+        if (list.length > 1 && (list[list.length - 1].text == text) && (time - list[list.length - 1].time < 500)) {
+            adapter.log.warn('Same text in less than half a second.. Strange. Ignore it.');
+            return;
+        }
+        // If more time than 15 seconds
+        if (adapter.config.announce && !list.length && (!lastSay || (time - lastSay > adapter.config.annoTimeout * 1000))) {
+            // place as first the announce mp3
+            list.push({text: adapter.config.announce, language: language, volume: (volume || adapter.config.volume) / 2, time: time});
+            // and then text
+            list.push({text: text, language: language, volume: (volume || adapter.config.volume), time: time});
+            text = adapter.config.announce;
+            volume = (volume || adapter.config.volume) / 2;
+        } else {
+            list.push({text: text, language: language, volume: (volume || adapter.config.volume), time: time});
+            if (list.length > 1) return;
+        }
+    }
+
+    adapter.log.info('saying: ' + text);
 
     var isGenerate = false;
     if (!language) language = adapter.config.engine;

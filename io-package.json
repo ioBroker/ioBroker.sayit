@@ -1,7 +1,7 @@
 {
     "common": {
         "name":                     "sayit",
-        "version": "0.3.6",
+        "version": "0.3.7",
         "title":                    "Text to speech Adapter",
         "desc":                     {
 			"en": "Text to speech in a cloud or local. Rus on windows, linux and OSX. It can play mp3/wav too.",

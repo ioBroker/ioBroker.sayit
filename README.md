@@ -109,6 +109,10 @@ Following values for engines are possible:
 
 ## Changelog
 
+### 0.3.7 (2015-05-28)
+* (bluefox) fix volume for announce
+* (bluefox) support of play files from internal filesystem, like "/sayit.0/tts.userfiles/myGong.mp3"
+
 ### 0.3.6 (2015-03-24)
 * (bluefox) fix error with volume by sonos
 
