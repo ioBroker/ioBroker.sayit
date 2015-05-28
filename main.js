@@ -635,7 +635,11 @@ function sayItSystem(text, language, volume, duration) {
             throw new Error('sayIt.play: there was an error while playing the mp3 file:' + e);
         });
     }
-    sayFinished(duration + 2);
+    if (text == adapter.config.announce) {
+        sayFinished(duration);
+    } else {
+        sayFinished(duration + 2);
+    }
 }
 
 function sayItWindows(text, language, volume, duration) {
