@@ -23,6 +23,7 @@
     },
     "native": {
         "type":                     "system",
+        "command":                  "",
 		"cache":                    true,
         "engine":                   "",
         "sonos":                    "",
@@ -37,7 +38,8 @@
         "key":                      "",
         "announce":                 "",
         "annoTimeout":              15,
-        "annoDuration":             0
+        "annoDuration":             0,
+        "annoVolume":               "70"
     },
     "instanceObjects": [
       {

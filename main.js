@@ -607,27 +607,46 @@ function sayItSystem(text, language, volume, duration) {
 
     sayItSystemVolume(volume);
 
-    if (p == 'linux') {
-        //linux
+    if (adapter.config.command) {
+        //custom command
         adapter.setState('tts.playing', true);
-         ls = libs.child_process.exec('mpg321 ' + file, function (error, stdout, stderr) {
-            if (error) adapter.log.error('Cannot play:' + error); 
+        var cmd;
+        if (adapter.config.command.indexOf('%s') != -1) {
+            cmd = adapter.config.command.replace('%s', file);
+        } else {
+            if (p.match(/^win/)) {
+                cmd = adapter.config.command + ' "' + file + '"';
+            } else {
+                cmd = adapter.config.command + ' ' + file;
+            }
+        }
+        ls = libs.child_process.exec(cmd, function (error, stdout, stderr) {
+            if (error) adapter.log.error('Cannot play:' + error);
             adapter.setState('tts.playing', false);
         });
-    } else if (p.match(/^win/)) {
-        //windows
-        adapter.setState('tts.playing', true);
-        ls = libs.child_process.exec ('cmdmp3.exe "' + file + '"', {cwd: __dirname + '/cmdmp3/'}, function (error, stdout, stderr) {
-            if (error) adapter.log.error('Cannot play:' + error); 
-			adapter.setState('tts.playing', false);
-        });
-    } else if (p == 'darwin') {
-        //mac osx
-        adapter.setState('tts.playing', true);
-        ls = libs.child_process.exec('/usr/bin/afplay ' + file, function (error, stdout, stderr) {
-            if (error) adapter.log.error('Cannot play:' + error); 
-            adapter.setState('tts.playing', false);
-        });
+    } else {
+        if (p == 'linux') {
+            //linux
+            adapter.setState('tts.playing', true);
+            ls = libs.child_process.exec('mpg321 ' + file, function (error, stdout, stderr) {
+                if (error) adapter.log.error('Cannot play:' + error);
+                adapter.setState('tts.playing', false);
+            });
+        } else if (p.match(/^win/)) {
+            //windows
+            adapter.setState('tts.playing', true);
+            ls = libs.child_process.exec('cmdmp3.exe "' + file + '"', {cwd: __dirname + '/cmdmp3/'}, function (error, stdout, stderr) {
+                if (error) adapter.log.error('Cannot play:' + error);
+                adapter.setState('tts.playing', false);
+            });
+        } else if (p == 'darwin') {
+            //mac osx
+            adapter.setState('tts.playing', true);
+            ls = libs.child_process.exec('/usr/bin/afplay ' + file, function (error, stdout, stderr) {
+                if (error) adapter.log.error('Cannot play:' + error);
+                adapter.setState('tts.playing', false);
+            });
+        }
     }
 
     if (ls) {
@@ -638,7 +657,7 @@ function sayItSystem(text, language, volume, duration) {
     if (text == adapter.config.announce) {
         sayFinished(duration);
     } else {
-    	sayFinished(duration + 2)
+        sayFinished(duration + 2);
 	}
 }
 
@@ -711,6 +730,7 @@ function sayItSystemVolume(level) {
 }
 
 function sayIt(text, language, volume, process) {
+    var md5filename;
 
     // Extract language from "en;volume;Text to say"
     if (text.indexOf(';') != -1) {
@@ -747,7 +767,6 @@ function sayIt(text, language, volume, process) {
     // Check: may be it is file from DB filesystem, like /vis.0/main/img/door-bell.mp3
     if (text[0] == '/') {
         var cached = false;
-        var md5filename;
         if (adapter.config.cache) {
             md5filename = cacheDir + libs.crypto.createHash('md5').update(text).digest('hex') + '.mp3';
 
@@ -799,7 +818,7 @@ function sayIt(text, language, volume, process) {
             // and then text
             list.push({text: text, language: language, volume: (volume || adapter.config.volume), time: time});
             text = adapter.config.announce;
-            volume = (volume || adapter.config.volume) / 2;
+            volume = Math.round((volume || adapter.config.volume) / 100 * adapter.config.annoVolume);
         } else {
             list.push({text: text, language: language, volume: (volume || adapter.config.volume), time: time});
             if (list.length > 1) return;
@@ -826,7 +845,7 @@ function sayIt(text, language, volume, process) {
             });
         } else {
             if (adapter.config.cache) {
-                var md5filename = cacheDir + libs.crypto.createHash('md5').update(language + ';' + text).digest('hex') + '.mp3';
+                md5filename = cacheDir + libs.crypto.createHash('md5').update(language + ';' + text).digest('hex') + '.mp3';
                 if (libs.fs.existsSync(md5filename)) {
                     getLength(md5filename, function (duration) {
                         sayitOptions[adapter.config.type].func(md5filename, language, volume, duration);
@@ -878,7 +897,9 @@ function uploadFiles(callback) {
 function start() {
     if (adapter.config.announce) {
         adapter.config.annoDuration = parseInt(adapter.config.annoDuration) || 0;
-        adapter.config.annoTimeout  = parseInt(adapter.config.annoTimeout) || 15;
+        adapter.config.annoTimeout  = parseInt(adapter.config.annoTimeout)  || 15;
+        adapter.config.annoVolume   = parseInt(adapter.config.annoVolume)   || 70; // percent from actual volume
+
         if (!libs.fs.existsSync(__dirname + '/' + adapter.config.announce)) {
             adapter.readFile(adapter.namespace, 'tts.userfiles/' + adapter.config.announce, function (err, data) {
                 if (data) {
@@ -930,9 +951,9 @@ function start() {
             if (engine != adapter.config.engine) {
                 // Delete all files in this directory
                 var files = libs.fs.readdirSync(cacheDir);
-                for (var i = 0; i < files.length; i++) {
-                    if (files[i] == 'engine.txt') continue;
-                    libs.fs.unlinkSync(cacheDir + '/' + files[i]);
+                for (var f = 0; f < files.length; f++) {
+                    if (files[f] == 'engine.txt') continue;
+                    libs.fs.unlinkSync(cacheDir + '/' + files[f]);
                 }
                 libs.fs.writeFileSync(cacheDir + '/engine.txt', adapter.config.engine);
             }

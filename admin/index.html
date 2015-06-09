@@ -53,7 +53,9 @@
             "ru": "Таймаут извещения (сек):"
         },
         "Announce length (sec):": {"en": "Announce length (sec):", "de": "Ankündigunglänge (Sek):", "ru": "Длительность извещения (сек):"},
-        "API Key is not set!": {"en": "API Key is not set!", "de": "API Key ist leer!", "ru": "API Key отсутствует!"}
+        "API Key is not set!": {"en": "API Key is not set!", "de": "API Key ist leer!", "ru": "API Key отсутствует!"},
+        "System command:":  {"en": "System command:",   "de": "Systemkommando:", "ru": "Системный вызов:"},
+        "Announce volume (%):": {"en": "Announce volume(%):", "de": "Ankündigungslautstärke(%):", "ru": "Громкость извещения(%):"}
     };
 
     var sayitOptions = {
@@ -162,7 +164,6 @@
                     $('#' + param).html('');
                 }
             }
-
         }
     }
 
@@ -353,9 +354,14 @@
                         checkWeb('#web');
                         $('#announce').val('').trigger('change');
                         $('.announce').hide();
+                        $('.system').hide();
+                    } if ($('#type').val() == 'system') {
+                        $('.system').show();
                     } else {
                         $('.announce').show();
+                        $('.system').hide();
                     }
+
                 }
 
                 if (key == 'announce') {
@@ -505,10 +511,12 @@
         <table>
             <tr><td class="translate">Language:</td><td><select class="value" id="engine"></select></td></tr>
             <tr><td class="translate">Type:</td><td><select class="value" id="type"></select></td></tr>
+            <tr class="system"><td class="translate">System command:</td><td><input class="value" id="command"/></td></tr>
             <tr class="announce"><td class="translate">Announce:</td><td><select class="value" id="announce"></select>&nbsp;<button id="play"></button></td></tr>
             <tr class="announce"><td></td><td><input type="file" accept=".mp3,audio/*" id="files" name="files[]" multiple /></td></tr>
-            <tr class="announce"><td class="translate">Announce timeout (sec):</td><td><input class="value" id="annoTimeout" type="text" /></td></tr>
+            <tr class="announce"><td class="translate">Announce timeout (sec):</td><td><input class="value" id="annoTimeout" type="text" size="8" /></td></tr>
             <tr class="announce"><td class="translate">Announce length (sec):</td><td><input class="value" id="annoDuration" type="text" size="2" /></td></tr>
+            <tr class="announce"><td class="translate">Announce volume (%):</td><td><input class="value" id="annoVolume" type="text" size="3" /></td></tr>
             <tr>&nbsp;</td><td>&nbsp;</td></tr>
 
             <tr id="tr_cache"     class="variable"><td class="translate">Cache:</td>   <td><input class="value" id="cache"   type="checkbox" /></td></tr>

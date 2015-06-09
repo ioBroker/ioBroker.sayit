@@ -45,6 +45,12 @@ State **tts.text** supports extended syntax, so the langugage/engine and volume 
 E.g. if adapter has engine "Google-english", it is possible with frase ```de:Sag es``` to force to use Google-Deustch speech engine.
 
 With ```ru;75;Погода хорошая``` we can force to use russian language and volume 75%.
+
+You can specify the volume of announcement in percent from current or given volume (not from maximal). E.g. if command is ```de;75;Gutes Wetter```and "announce volume" is 50%, the announce will be played with volume 38% from 100% possible.
+
+The system command to play the mp3 file can be specified too. If you leave it blank, the default settings will be used: windows - cmdmp3.exe, OSX - /usr/bin/afplay, linux - mpg321. 
+
+
 Following values for engines are possible:
 
 - en:   Google - English
@@ -108,6 +114,10 @@ Following values for engines are possible:
 **Note:** "N" is depends on index of the adapter instance.
 
 ## Changelog
+
+### 0.3.8 (2015-06-09)
+* (bluefox) make the volume for announce configurable 
+* (bluefox) make the command for "system" configurable
 
 ### 0.3.7 (2015-05-28)
 * (bluefox) fix volume for announce
