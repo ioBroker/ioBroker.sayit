@@ -4,7 +4,7 @@
         "version": "0.3.8",
         "title":                    "Text to speech Adapter",
         "desc":                     {
-			"en": "Text to speech in a cloud or local. Rus on windows, linux and OSX. It can play mp3/wav too.",
+			"en": "Text to speech in a cloud or local. Runs on windows, linux and OSX. It can play mp3/wav too.",
 			"de": "Text to speech in Cloud oder lokal für windows, linux und OSX. Mp3 und Wav können auch abgespielt werden.",
 			"ru": "Синтезатор речи локально или в облаке работает под windows, linux и OSX. Mp3 и Wav можно тоже проигрывать."
 		},
