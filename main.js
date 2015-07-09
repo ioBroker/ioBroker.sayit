@@ -199,7 +199,7 @@ function splitText(text, max) {
 
 function sayFinished(duration) {
     duration = duration || 0;
-    adapter.log.debug('Duration "' + list[0].text + ' ' + duration);
+    adapter.log.debug('Duration "' + list[0].text + '": ' + duration);
     setTimeout(function () {
         // Remember when last text finished
         lastSay = (new Date()).getTime();
@@ -844,7 +844,9 @@ function sayIt(text, language, volume, process) {
                 sayitOptions[adapter.config.type].func(text, language, volume, duration);
             });
         } else {
-            if (adapter.config.cache) {
+            if (!isGenerate) {
+                sayitOptions[adapter.config.type].func(text, language, volume, 0);
+            } else if (adapter.config.cache) {
                 md5filename = cacheDir + libs.crypto.createHash('md5').update(language + ';' + text).digest('hex') + '.mp3';
                 if (libs.fs.existsSync(md5filename)) {
                     getLength(md5filename, function (duration) {

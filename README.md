@@ -115,6 +115,9 @@ Following values for engines are possible:
 
 ## Changelog
 
+### 0.3.9 (2015-07-09)
+* (bluefox) fix error by mediaplayer24 
+
 ### 0.3.8 (2015-06-09)
 * (bluefox) make the volume for announce configurable 
 * (bluefox) make the command for "system" configurable

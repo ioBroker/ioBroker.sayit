@@ -165,6 +165,19 @@
                 }
             }
         }
+        if (type != 'system') {
+            $('.system').hide();
+        }  else {
+            $('.system').show();
+        }
+
+        if (!$('#announce').val()) {
+            $('.announce').hide();
+            $('#play').button('disable');
+        } else {
+            $('.announce').show();
+            $('#play').button('enable');
+        }
     }
 
     function fillSonosDevices(elem, current) {
@@ -326,6 +339,23 @@
     function load(settings, onChange) {
         if (!settings) return;
 
+        $('#play').button({icons: {primary: 'ui-icon-play'}, text: false}).css({width: 22, height: 22}).click(function () {
+            socket.emit('readFile', 'sayit.' + instance, 'tts.userfiles/' + $('#announce').val(), function (err, data) {
+                if (typeof AudioContext != 'undefined') {
+                    context = new AudioContext();
+                    context.decodeAudioData(data, function(buffer) {
+                        //console.log(buffer);
+                        var source = context.createBufferSource(); // creates a sound source
+                        source.buffer = buffer;                    // tell the source which sound to play
+                        source.connect(context.destination);       // connect the source to the context's destination (the speakers)
+                        source.start(0);
+                    }, function(err) {
+                        console.log(err);
+                    });
+                }
+            });
+        });
+
         var $t = $('#type');
         for (name in sayitOptions) {
             $t.append('<option value="' + name + '">' + sayitOptions[name].name + '</option>');
@@ -350,23 +380,19 @@
 
                 if (key == 'type' || key == 'engine') {
                     showHideSettings();
+
                     if ($('#type').val() == 'sonos') {
                         checkWeb('#web');
                         $('#announce').val('').trigger('change');
-                        $('.announce').hide();
-                        $('.system').hide();
-                    } if ($('#type').val() == 'system') {
-                        $('.system').show();
+                        showHideSettings();
                     } else {
-                        $('.announce').show();
-                        $('.system').hide();
+                        showHideSettings();
                     }
-
                 }
 
                 if (key == 'announce') {
+                    showHideSettings();
                     if ($(this).val()) {
-                        $('#play').button('enable');
                         socket.emit('readFile', 'sayit.' + instance, 'tts.userfiles/' + $('#announce').val(), function (err, data) {
                             if (typeof AudioContext != 'undefined') {
                                 context = new AudioContext();
@@ -377,9 +403,6 @@
                                 });
                             }
                         });
-
-                    } else {
-                        $('#play').button('disable');
                     }
                 }
 
@@ -402,7 +425,6 @@
         fillSonosDevices('#device', settings.device);
         fillWebServices('#web', settings.web, settings.type, settings.webServer);
 
-        showHideSettings();
         if (settings.type == 'sonos') {
             $('.announce').hide();
             if (settings.announce) {
@@ -419,6 +441,7 @@
                 }
             }
             $('#announce').html(text).val(settings.announce);
+            showHideSettings();
         });
 
 
@@ -427,25 +450,11 @@
         $('#announce').css({width: w});
         $('#type').css({width: w});
 
-        $('#play').button({icons: {primary: 'ui-icon-play'}, text: false}).css({width: 22, height: 22}).click(function () {
-            socket.emit('readFile', 'sayit.' + instance, 'tts.userfiles/' + $('#announce').val(), function (err, data) {
-                if (typeof AudioContext != 'undefined') {
-                    context = new AudioContext();
-                    context.decodeAudioData(data, function(buffer) {
-                        //console.log(buffer);
-                        var source = context.createBufferSource(); // creates a sound source
-                        source.buffer = buffer;                    // tell the source which sound to play
-                        source.connect(context.destination);       // connect the source to the context's destination (the speakers)
-                        source.start(0);
-                    }, function(err) {
-                        console.log(err);
-                    });
-                }
-            });
-        });
-        document.getElementById('files').addEventListener('change', handleFileSelect, false);
 
-        if ($('#announce').val()) $('#play').button('disable');
+        document.getElementById('files').addEventListener('change', handleFileSelect, false);
+        showHideSettings();
+
+        if (!$('#announce').val()) $('#play').button('disable');
         if (typeof AudioContext == 'undefined') $('#play').hide();
 
         var dropZone = document.getElementById('drop_zone');
@@ -509,11 +518,11 @@
 
     <div>
         <table>
-            <tr><td class="translate">Language:</td><td><select class="value" id="engine"></select></td></tr>
+            <tr><td class="translate" style="width: 150px">Language:</td><td><select class="value" id="engine"></select></td></tr>
             <tr><td class="translate">Type:</td><td><select class="value" id="type"></select></td></tr>
             <tr class="system"><td class="translate">System command:</td><td><input class="value" id="command"/></td></tr>
-            <tr class="announce"><td class="translate">Announce:</td><td><select class="value" id="announce"></select>&nbsp;<button id="play"></button></td></tr>
-            <tr class="announce"><td></td><td><input type="file" accept=".mp3,audio/*" id="files" name="files[]" multiple /></td></tr>
+            <tr class="announceValue"><td class="translate">Announce:</td><td><select class="value" id="announce"></select>&nbsp;<button id="play"></button></td></tr>
+            <tr class="announceValue"><td></td><td><input type="file" accept=".mp3,audio/*" id="files" name="files[]" multiple /></td></tr>
             <tr class="announce"><td class="translate">Announce timeout (sec):</td><td><input class="value" id="annoTimeout" type="text" size="8" /></td></tr>
             <tr class="announce"><td class="translate">Announce length (sec):</td><td><input class="value" id="annoDuration" type="text" size="2" /></td></tr>
             <tr class="announce"><td class="translate">Announce volume (%):</td><td><input class="value" id="annoVolume" type="text" size="3" /></td></tr>
