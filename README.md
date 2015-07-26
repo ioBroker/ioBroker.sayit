@@ -61,6 +61,7 @@ Following values for engines are possible:
 - fr:   Google - Français
 - ru_YA:Yandex - Русский
 - ru-RU_AZ_Female: 	Ivona - Русский - Татьяна
+- ru-RU_AZ_Male: 	Ivona - Русский - Максим
 - de-DE_AZ_Female: 	Ivona - Deutsch - Marlene
 - de-DE_AZ_Male: 		Ivona - Deutsch - Hans
 - en-US_AZ_Female: 	Ivona - en-US - Female - Salli
@@ -114,6 +115,10 @@ Following values for engines are possible:
 **Note:** "N" is depends on index of the adapter instance.
 
 ## Changelog
+
+### 0.3.10 (2015-07-26)
+* (bluefox) add new voice Russian-Maxim
+* (bluefox) fix error with mp24ftp
 
 ### 0.3.9 (2015-07-09)
 * (bluefox) fix error by mediaplayer24 

@@ -51,6 +51,7 @@ var sayitEngines = {
     "fr":       {name: "Google - Français",        engine: "google"},
     "ru_YA":    {name: "Yandex - Русский",         engine: "yandex"},
     "ru-RU_AZ_Female":          {"gender":"Female", engine: "ivona", params: ['accessKey', 'secretKey'], "language":"ru-RU",      "ename":"Tatyana",    "name":"Ivona - Русский - Татьяна"},
+    "ru-RU_AZ_Male":            {"gender":"Male",   engine: "ivona", params: ['accessKey', 'secretKey'], "language":"ru-RU",      "ename":"Maxim",      "name":"Ivona - Русский - Максим"},
     "de-DE_AZ_Female":          {"gender":"Female", engine: "ivona", params: ['accessKey', 'secretKey'], "language":"de-DE",      "ename":"Marlene",    "name":"Ivona - Deutsch - Marlene"},
     "de-DE_AZ_Male":            {"gender":"Male",   engine: "ivona", params: ['accessKey', 'secretKey'], "language":"de-DE",      "ename":"Hans",       "name":"Ivona - Deutsch - Hans"},
     "en-US_AZ_Female":          {"gender":"Female", engine: "ivona", params: ['accessKey', 'secretKey'], "language":"en-US",      "ename":"Salli",      "name":"Ivona - en-US - Female - Salli"},
@@ -535,7 +536,7 @@ function sayItMP24ftp(text, language, volume, duration) {
 
         try {
             // Copy file to FTP server
-            ftp.put(file, __dirname + '/say.mp3', function (hadError) {
+            ftp.put(file, 'say.mp3', function (hadError) {
                 if (!hadError) {
                     var opts = {
                         host: adapter.config.server,
