@@ -116,6 +116,9 @@ Following values for engines are possible:
 
 ## Changelog
 
+### 0.3.11 (2015-08-03)
+* (bluefox) change google requests from http to https
+
 ### 0.3.10 (2015-07-26)
 * (bluefox) add new voice Russian-Maxim
 * (bluefox) fix error with mp24ftp

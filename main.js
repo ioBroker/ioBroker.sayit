@@ -232,22 +232,29 @@ function sayItGetSpeechGoogle(text, language, volume, callback) {
 
     language = language || adapter.config.engine;
 
+    // https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&q=%D0%BE%D1%82%D0%B2%D0%B5%D1%82%D0%B8%D1%82%D1%8C%207&tl=ru&total=1&idx=0&textlen=10
     var options = {
         host: 'translate.google.com',
-        //port: 80,
-        path: '/translate_tts?ie=utf-8&q=' + encodeURI(text) + '&tl=' + language
+        //port: 443,
+        path: '/translate_tts?ie=UTF-8&client=tw-ob&q=' + encodeURI(text) + '&tl=' + language + '&total=1&idx=0&textlen=' + text.length //
     };
 
     if (language == "ru") {
         options.headers = {
-            "User-Agent":      "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:25.0) Gecko/20100101 Firefox/25.0",
-            "Accept":          "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-            "Accept-Language": "ru-RU,ru;q=0.8,en-US;q=0.5,en;q=0.3",
-            "Accept-Encoding": "gzip, deflate"
+            "Accept-Encoding":"identity;q=1, *;q=0",
+            "Range":"bytes=0-",
+            "Referer":"https://www.google.de/",
+            "User-Agent":"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.125 Safari/537.36",
+            //"User-Agent":      "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:25.0) Gecko/20100101 Firefox/25.0",
+            //"Accept":          "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            //"Accept-Language": "ru-RU,ru;q=0.8,en-US;q=0.5,en;q=0.3",
+            //"Accept-Encoding": "gzip, deflate"//
         };
     }
 
-    libs.http.get(options, function (res) {
+    if (!libs.https) libs.https = require('https');
+
+    libs.https.get(options, function (res) {
         var sounddata = '';
         res.setEncoding('binary');
 
@@ -256,6 +263,12 @@ function sayItGetSpeechGoogle(text, language, volume, callback) {
         });
 
         res.on('end', function () {
+            if (sounddata.toString().indexOf('302 Moved') != -1) {
+                adapter.log.error ('http://' + options.host + options.path);
+                adapter.log.error ('Cannot get file: ' + sounddata);
+                return;
+            }
+
             libs.fs.writeFile(__dirname + '/say.mp3', sounddata, 'binary', function (err) {
                 if (err) {
                     adapter.log.error ('File error: ' + err);
