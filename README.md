@@ -50,6 +50,7 @@ You can specify the volume of announcement in percent from current or given volu
 
 The system command to play the mp3 file can be specified too. If you leave it blank, the default settings will be used: windows - cmdmp3.exe, OSX - /usr/bin/afplay, linux - mpg321. 
 
+**Note:** The default announce selection will be possible only after start of the instance.
 
 Following values for engines are possible:
 

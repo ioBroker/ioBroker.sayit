@@ -17,6 +17,7 @@
         "readme":                   "https://github.com/ioBroker/ioBroker.sayit/blob/master/README.md",
         "loglevel":                 "info",
         "icon":                     "sayit.png",
+        "enabled":                  true,
         "keywords":                 ["TTS", "voice", "speech"],
         "extIcon":                  "https://raw.githubusercontent.com/ioBroker/ioBroker.sayit/master/admin/sayit.png",
 		"type":                     "media"
@@ -88,6 +89,19 @@
           "desc":  "This text will be converted to speech"
         },
         "native": {}
+      },
+      {
+            "_id":  "tts.cachetext",
+            "type": "state",
+            "common": {
+                "role":  "media.tts.cachetext",
+                "name":  "Text to cache",
+                "type":  "string",
+                "read":  true,
+                "write": true,
+                "desc":  "This text will be cached on disk to play it later"
+            },
+            "native": {}
       },
       {
         "_id":  "tts.playing",

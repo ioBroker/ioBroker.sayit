@@ -16,7 +16,26 @@ adapter.on('stateChange', function (id, state) {
                 sayLastVolume = state.val;
             }
         } else if (id == adapter.namespace + '.tts.text') {
+            if (typeof state.val !== 'string') {
+                if (state.val === null || state.val === undefined || state.val === '') {
+                    adapter.log.warn('Cannot cache empty text');
+                    return;
+                }
+                state.val = state.val.toString();
+            }
+
             sayIt(state.val);
+        } else if (id == adapter.namespace + '.tts.cachetext') {
+
+            if (typeof state.val !== 'string') {
+                if (state.val === null || state.val === undefined || state.val === '') {
+                    adapter.log.warn('Cannot cache empty text');
+                    return;
+                }
+                state.val = state.val.toString();
+            }
+
+            cacheIt(state.val);
         }
     }
 });
@@ -254,8 +273,8 @@ function sayItGetSpeechGoogle(text, language, volume, callback) {
 
     if (!libs.https) libs.https = require('https');
 
+    var sounddata = '';
     libs.https.get(options, function (res) {
-        var sounddata = '';
         res.setEncoding('binary');
 
         res.on('data', function (chunk) {
@@ -263,15 +282,23 @@ function sayItGetSpeechGoogle(text, language, volume, callback) {
         });
 
         res.on('end', function () {
+            if (sounddata.length < 100) {
+                adapter.log.error('Cannot get file: received file is too short');
+                if (callback) callback('$$$ERROR$$$' + text, language, volume, 0);
+                return;
+            }
+
             if (sounddata.toString().indexOf('302 Moved') != -1) {
                 adapter.log.error ('http://' + options.host + options.path);
                 adapter.log.error ('Cannot get file: ' + sounddata);
+                if (callback) callback('$$$ERROR$$$' + text, language, volume, 0);
                 return;
             }
 
             libs.fs.writeFile(__dirname + '/say.mp3', sounddata, 'binary', function (err) {
                 if (err) {
                     adapter.log.error ('File error: ' + err);
+                    if (callback) callback('$$$ERROR$$$' + text, language, volume, 0);
                 } else {
                     getLength(__dirname + '/say.mp3', function (seconds) {
                         if (callback) callback(text, language, volume, seconds);
@@ -279,6 +306,9 @@ function sayItGetSpeechGoogle(text, language, volume, callback) {
                 }
             });
         });
+    }).on('error', function (err) {
+        sounddata = '';
+        adapter.log.error('Cannot get file:' + err);
     });
 }
 
@@ -291,8 +321,8 @@ function sayItGetSpeechAcapela(text, language, volume, callback) {
 
     if (!libs.https) libs.https = require('https');
 
+    var sounddata = '';
     libs.https.get(options, function (res) {
-        var sounddata = '';
         res.setEncoding('binary');
 
         res.on('data', function (chunk) {
@@ -300,15 +330,25 @@ function sayItGetSpeechAcapela(text, language, volume, callback) {
         });
 
         res.on('end', function () {
+            if (sounddata.length < 100) {
+                adapter.log.error('Cannot get file: received file is too short');
+                if (callback) callback('$$$ERROR$$$' + text, language, volume);
+                return;
+            }
+
             libs.fs.writeFile(__dirname + '/say.mp3', sounddata, 'binary', function (err) {
                 if (err) {
                     adapter.log.error('File error:' + err);
+                    if (callback) callback('$$$ERROR$$$' + text, language, volume);
                 } else {
                     console.log('File saved.');
                     if (callback) callback(text, language, volume);
                 }
             });
         });
+    }).on('error', function (err) {
+        sounddata = '';
+        adapter.log.error('Cannot get file:' + err);
     });
 }
 
@@ -335,8 +375,8 @@ function sayItGetSpeechYandex(text, language, volume, callback) {
     if (adapter.config.ill   === 'true' || adapter.config.ill   === true) options.path += '&ill=true';
     if (adapter.config.robot === 'true' || adapter.config.robot === true) options.path += '&robot=true';
 
+    var sounddata = '';
     libs.https.get(options, function (res) {
-        var sounddata = '';
         res.setEncoding('binary');
 
         res.on('data', function (chunk) {
@@ -344,14 +384,24 @@ function sayItGetSpeechYandex(text, language, volume, callback) {
         });
 
         res.on('end', function () {
+            if (sounddata.length < 100) {
+                adapter.log.error('Cannot get file: received file is too short');
+                if (callback) callback('$$$ERROR$$$' + text, language, volume, 0);
+                return;
+            }
+
             libs.fs.writeFile(__dirname + '/say.mp3', sounddata, 'binary', function (err) {
                 if (err) {
                     adapter.log.error('File error:' + err);
+                    if (callback) callback('$$$ERROR$$$' + text, language, volume, 0);
                 } else {
                     if (callback) callback(text, language, volume);
                 }
             });
         });
+    }).on('error', function (err) {
+        sounddata = '';
+        adapter.log.error('Cannot get file:' + err);
     });
 }
 
@@ -379,21 +429,24 @@ function sayItGetSpeechAmazon(text, language, volume, callback) {
         });
     } catch (e) {
         adapter.log.error(e.toString());
-        if (callback) callback(text, language, volume);
+        if (callback) callback('$$$ERROR$$$' + text, language, volume);
     }
 }
 
 function cacheFile(text, language, volume, seconds, callback) {
-    if (adapter.config.cache) {
-        var md5filename = cacheDir + libs.crypto.createHash('md5').update(language + ';' + text).digest('hex') + '.mp3';
+    if (text.substring(0, 11) !== '$$$ERROR$$$') {
+        if (adapter.config.cache) {
+            var md5filename = cacheDir + libs.crypto.createHash('md5').update(language + ';' + text).digest('hex') + '.mp3';
 
-        var stat = libs.fs.statSync(__dirname + '/say.mp3');
-        if (stat.size < 100) {
-            adapter.log.warn('Received file is too short: ' + libs.fs.readFileSync(__dirname + '/say.mp3').toString());
-        } else {
-            copyFile(text, language, volume, __dirname + '/say.mp3', md5filename);
+            var stat = libs.fs.statSync(__dirname + '/say.mp3');
+            if (stat.size < 100) {
+                adapter.log.warn('Received file is too short: ' + libs.fs.readFileSync(__dirname + '/say.mp3').toString());
+            } else {
+                copyFile(text, language, volume, __dirname + '/say.mp3', md5filename);
+            }
         }
     }
+
     callback(text, language, volume, seconds);
 }
 
@@ -448,6 +501,11 @@ function sayItGetSpeech(text, language, volume, callback) {
 }
 
 function sayItBrowser(text, language, volume, duration) {
+    if (text.substring(0, 11) === '$$$ERROR$$$') {
+        sayFinished(0);
+        return;
+    }
+
     var fileData;
     if (sayItIsPlayFile(text)) {
         try {
@@ -474,6 +532,11 @@ function sayItBrowser(text, language, volume, duration) {
 }
 
 function sayItSonos(text, language, volume, duration) {
+    if (text.substring(0, 11) === '$$$ERROR$$$') {
+        sayFinished(0);
+        return;
+    }
+
     var fileData;
     if (sayItIsPlayFile(text)) {
         try {
@@ -504,6 +567,11 @@ function sayItSonos(text, language, volume, duration) {
 }
 
 function sayItMP24(text, language, volume, duration) {
+    if (text.substring(0, 11) === '$$$ERROR$$$') {
+        sayFinished(0);
+        return;
+    }
+
     if (adapter.config.server && !sayItIsPlayFile(text)) {
         adapter.log.debug('Request MediaPlayer24 "http://' + adapter.config.server + ':50000/tts=' + encodeURI(text) + '"');
         var opts = {
@@ -535,6 +603,11 @@ function sayItMP24(text, language, volume, duration) {
 }
 
 function sayItMP24ftp(text, language, volume, duration) {
+    if (text.substring(0, 11) === '$$$ERROR$$$') {
+        sayFinished(0);
+        return;
+    }
+
     // Copy mp3 file to android device to play it later with MediaPlayer
     if (adapter.config.port && adapter.config.server) {
 
@@ -615,6 +688,11 @@ function sayItGetFileName(text) {
 }
 
 function sayItSystem(text, language, volume, duration) {
+    if (text.substring(0, 11) === '$$$ERROR$$$') {
+        sayFinished(0);
+        return;
+    }
+
     var p = libs.os.platform();
     var ls = null;
     var file = sayItGetFileName(text);
@@ -676,6 +754,11 @@ function sayItSystem(text, language, volume, duration) {
 }
 
 function sayItWindows(text, language, volume, duration) {
+    if (text.substring(0, 11) === '$$$ERROR$$$') {
+        sayFinished(0);
+        return;
+    }
+
     // If mp3 file
     if (sayItIsPlayFile(text)) {
         sayItSystem(text, language, volume);
@@ -741,6 +824,101 @@ function sayItSystemVolume(level) {
             throw new Error('sayIt.play: there was an error while playing the mp3 file:' + e);
         });
     }
+}
+var cacheRunning = false;
+var cacheFiles   = [];
+
+function cacheIt(text, language) {
+    // process queue
+    if (text === true) {
+        if (!cacheFiles.length) {
+            cacheRunning = false;
+            return;
+        }
+        // get next queued text
+        var toCache = cacheFiles.shift();
+
+        text     = toCache.text;
+        language = toCache.language;
+    } else {
+        // new text to cache
+        if (!adapter.config.cache) {
+            adapter.log.warn('Cache is not enabled. Unable to cache: ' + text);
+            return;
+        }
+
+        // Extract language from "en;volume;Text to say"
+        if (text.indexOf(';') != -1) {
+            var arr = text.split(';', 3);
+            // If language;text or volume;text
+            if (arr.length == 2) {
+                // If number
+                if (parseInt(arr[0]) != arr[0]) {
+                    language = arr[0];
+                }
+                text = arr[1];
+            } else if (arr.length == 3) {
+                // If language;volume;text or volume;language;text
+                // If number
+                if (parseInt(arr[0]) == arr[0]) {
+                    language = arr[1];
+                } else {
+                    language = arr[0];
+                }
+                text = arr[2];
+            }
+        }
+        // if no text => do not process
+        if (!text.length) {
+            return;
+        }
+
+        // Check: may be it is file from DB filesystem, like /vis.0/main/img/door-bell.mp3
+        if (text[0] == '/') {
+            adapter.log.warn('mp3 file must not be cached: ' + text);
+            return;
+        }
+
+        var isGenerate = false;
+        if (!language) language = adapter.config.engine;
+
+        // find out if say.mp3 must be generated
+        if (!sayItIsPlayFile(text)) isGenerate = sayitOptions[adapter.config.type].mp3Required;
+
+        if (!isGenerate) {
+            if (sayItIsPlayFile(text)) {
+                adapter.log.warn('mp3 file must not be cached: ' + text);
+            } else {
+                adapter.log.warn('Cache does not required for this engine: ' + adapter.config.engine);
+            }
+            return;
+        }
+
+        var md5filename = cacheDir + libs.crypto.createHash('md5').update(language + ';' + text).digest('hex') + '.mp3';
+
+        if (libs.fs.existsSync(md5filename)) {
+            adapter.log.debug('Text is yet cached: ' + text);
+            return;
+        }
+
+        if (cacheRunning) {
+            cacheFiles.push({text: text, language: language});
+            return;
+        }
+    }
+
+    cacheRunning = true;
+
+    sayItGetSpeech(text, language, false, function (md5filename, _language, volume, seconds) {
+        if (md5filename.substring(0, 11) === '$$$ERROR$$$') {
+            adapter.log.error('Cannot cache text: "' + text.substring(11));
+        } else {
+            adapter.log.debug('Text is cached: "' + text + '" under ' + md5filename);
+        }
+        setTimeout(function () {
+            cacheIt(true);
+        }, 2000);
+    });
 }
 
 function sayIt(text, language, volume, process) {
@@ -896,12 +1074,11 @@ function uploadFiles(callback) {
     if (libs.fs.existsSync(__dirname + '/mp3')) {
         adapter.log.info('Upload announce mp3 files');
         var files = libs.fs.readdirSync(__dirname + '/mp3');
-        var count = 0;
+
+        var count = files.length;
         for (var f = 0; f < files.length; f++) {
-            count++;
             uploadFile(files[f], function () {
-                count--;
-                if (!count && callback) callback();
+                if (!--count && callback) callback();
             });
         }
 
