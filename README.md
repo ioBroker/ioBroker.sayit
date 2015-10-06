@@ -2,7 +2,7 @@
 ioBroker sayit adapter
 =================
 SayIt Adapter can convert text to speech and play it on some device.
-Actuall following outputs are supported:
+Actual following outputs are supported:
 
 - *Browser* - the text will be played by browser with opened iobroker.vis page. It is supported almost by every desktop browser and by few mobily Browsers.
 
@@ -37,12 +37,14 @@ To use Amazon(Ivona) voices you need to get access key and secret key [here](htt
 Usage:
 SayIt adapter cannot be used alone. It must be controlled from javascript adapter or from "vis" with specific widget.
 After creation of adapter instance will can find following objects:
-- sayit.N.tts.text: Frase to be spoken.
-- sayit.N.tts.volume: volume which will be used by playing of the frase.
+- sayit.N.tts.text: Phrase to be spoken.
+- sayit.N.tts.volume: volume which will be used by playing of the phrase.
 - sayit.N.tts.playing: true if text is now playing and false if not. Supported only for "windows" and "system" play mode.
+- sayit.N.tts.cachetext: Phrase to be cached and then it can be used without internet. 
+   E.g. you can enter here manually "No internet" and if ping to google.com is negative, write  "No internet" to "tts.text" and it will pronounced. Of course cache must be enabled.
 
 State **tts.text** supports extended syntax, so the langugage/engine and volume can be defined together with text. It is used to enable multi-language text2speech engines.
-E.g. if adapter has engine "Google-english", it is possible with frase ```de:Sag es``` to force to use Google-Deustch speech engine.
+E.g. if adapter has engine "Google-english", it is possible with phrase ```de:Sag es``` to force to use Google-Deustch speech engine.
 
 With ```ru;75;Погода хорошая``` we can force to use russian language and volume 75%.
 
