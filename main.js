@@ -219,7 +219,9 @@ function splitText(text, max) {
 
 function sayFinished(duration) {
     duration = duration || 0;
-    adapter.log.debug('Duration "' + list[0].text + '": ' + duration);
+    if (list.length) {
+        adapter.log.debug('Duration "' + list[0].text + '": ' + duration);
+    }
     setTimeout(function () {
         // Remember when last text finished
         lastSay = (new Date()).getTime();
