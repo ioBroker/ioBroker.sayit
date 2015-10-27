@@ -119,6 +119,9 @@ Following values for engines are possible:
 
 ## Changelog
 
+### 0.3.13 (2015-10-27)
+* (bluefox) fix error with sayItSystem
+
 ### 0.3.12 (2015-10-06)
 * (bluefox) fix error if received mp3 file is too short
 * (bluefox) try to implement cache datapoint (you can use sayit.0.tts.cachetext to create cache for phrases and use sayit without internet)

@@ -694,6 +694,7 @@ function sayItSystem(text, language, volume, duration) {
         sayFinished(0);
         return;
     }
+    if (!libs.os) libs.os = require('os');
 
     var p = libs.os.platform();
     var ls = null;
@@ -767,6 +768,8 @@ function sayItWindows(text, language, volume, duration) {
         return;
     }
 
+    if (!libs.os) libs.os = require('os');
+
     // Call windows own text 2 speech
     var p    = libs.os.platform();
     var ls   = null;
@@ -800,6 +803,7 @@ function sayItSystemVolume(level) {
     if (level > 100) level = 100;
 
     if (level === sayLastVolume) return;
+    if (!libs.os) libs.os = require('os');
 
     adapter.setState('tts.volume', level, true);
 
