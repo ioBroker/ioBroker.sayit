@@ -119,6 +119,9 @@ Following values for engines are possible:
 
 ## Changelog
 
+### 0.3.14 (2015-11-01)
+* (bluefox) fix error with sayItWindows
+
 ### 0.3.13 (2015-10-27)
 * (bluefox) fix error with sayItSystem
 
