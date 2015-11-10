@@ -119,6 +119,9 @@ Following values for engines are possible:
 
 ## Changelog
 
+### 0.3.15 (2015-11-10)
+* (bluefox) fill default settings by first start
+
 ### 0.3.14 (2015-11-01)
 * (bluefox) fix error with sayItWindows
 
