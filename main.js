@@ -549,7 +549,13 @@ function sayItSonos(text, language, volume, duration) {
             return;
         }
     } else {
-        fileData = libs.fs.readFileSync(__dirname + '/say.mp3');
+        try {
+            fileData = libs.fs.readFileSync(__dirname + '/say.mp3');
+        } catch (e) {
+            adapter.log.error('Cannot play file "' + __dirname + '/say.mp3": ' + e.toString());
+            sayFinished(0);
+            return;
+        }
     }
 
     volume = volume || sayLastVolume;
@@ -1067,9 +1073,14 @@ function sayIt(text, language, volume, process) {
 function uploadFile(file, callback) {
     adapter.readFile(adapter.namespace, 'tts.userfiles/' + file, function (err, data) {
         if (err || !data) {
-            adapter.writeFile(adapter.namespace, 'tts.userfiles/' + file, libs.fs.readFileSync(__dirname + '/mp3/' + file), function () {
+            try {
+                adapter.writeFile(adapter.namespace, 'tts.userfiles/' + file, libs.fs.readFileSync(__dirname + '/mp3/' + file), function () {
+                    if (callback) callback();
+                });
+            } catch (e) {
+                adapter.log.error('Cannot read file "' + __dirname + '/mp3/' + file + '": ' + e.toString());
                 if (callback) callback();
-            });
+            }
         } else {
             if (callback) callback();
         }
@@ -1144,7 +1155,11 @@ function start() {
             var engine = '';
             // Read the old engine
             if (libs.fs.existsSync(cacheDir + '/engine.txt')) {
-                engine = libs.fs.readFileSync(cacheDir + '/engine.txt');
+                try {
+                    engine = libs.fs.readFileSync(cacheDir + '/engine.txt');
+                } catch (e) {
+                    adapter.log.error('Cannot read file "' + cacheDir + '/engine.txt: ' + e.toString());
+                }
             }
             // If engine changed
             if (engine != adapter.config.engine) {
@@ -1154,7 +1169,11 @@ function start() {
                     if (files[f] == 'engine.txt') continue;
                     libs.fs.unlinkSync(cacheDir + '/' + files[f]);
                 }
-                libs.fs.writeFileSync(cacheDir + '/engine.txt', adapter.config.engine);
+                try {
+                    libs.fs.writeFileSync(cacheDir + '/engine.txt', adapter.config.engine);
+                } catch (e) {
+                    adapter.log.error('Cannot write file "' + cacheDir + '/engine.txt: ' + e.toString());
+                }
             }
         }
     }
