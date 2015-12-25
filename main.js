@@ -565,8 +565,10 @@ function sayItSonos(text, language, volume, duration) {
     if (volume === 'null') volume = 0;
 
     if (adapter.config.device && webLink) {
+        adapter.log.info('Set "' + adapter.config.device + '.tts: ' + (volume ? (volume + ';') : '') + webLink + '/state/' + adapter.namespace + '.tts.mp3');
         adapter.setForeignState(adapter.config.device + '.tts', (volume ? (volume + ';') : '') + webLink + '/state/' + adapter.namespace + '.tts.mp3');
     } else if (webLink) {
+        adapter.log.info('Send to sonos ' + (volume ? (volume + ';') : '') + webLink + '/state/' + adapter.namespace + '.tts.mp3');
         adapter.sendTo('sonos', 'send', (volume ? (volume + ';') : '') + webLink + '/state/' + adapter.namespace + '.tts.mp3');
     } else {
         adapter.log.warn('Web server is unavailable!');
@@ -998,9 +1000,18 @@ function sayIt(text, language, volume, process) {
                         return;
                     }
                 } else {
-                    adapter.log.warn('File "' + text + '" not found');
-                    sayFinished(0);
-                    return;
+                    // may be file from real FS
+                    if (libs.fs.existsSync(text)) {
+                        data = libs.fs.readFileSync(text);
+                        // Cache the file
+                        if (md5filename) libs.fs.writeFileSync(md5filename, data);
+                        libs.fs.writeFileSync(__dirname + '/say.mp3', data);
+                        sayIt(__dirname + '/say.mp3', language, volume, process);
+                    } else {
+                        adapter.log.warn('File "' + text + '" not found');
+                        sayFinished(0);
+                        return;
+                    }
                 }
             });
             return;

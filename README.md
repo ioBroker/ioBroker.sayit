@@ -119,6 +119,9 @@ Following values for engines are possible:
 
 ## Changelog
 
+### 0.3.16 (2015-12-26)
+* (bluefox) enable play of mp3 files from disk
+
 ### 0.3.15 (2015-11-10)
 * (bluefox) fill default settings by first start
 
