@@ -59,12 +59,13 @@
     };
 
     var sayitOptions = {
-        "browser": {name: "Browser",           params: ['cache', 'instance']},
-        "system" : {name: "System",            params: ['cache']},
-        "windows": {name: "Windows default",   params: []},
-        "sonos":   {name: "Sonos",             params: ['device', 'web']},
-        "mp24ftp": {name: "MediaPlayer24+FTP", params: ['cache', 'server', 'port', 'user', 'pass']},
-        "mp24"   : {name: "MediaPlayer24",     params: ['server']}
+        "browser"   : {name: "Browser",           params: ['cache', 'instance']},
+        "system"    : {name: "System",            params: ['cache']},
+        "windows"   : {name: "Windows default",   params: []},
+        "sonos"     : {name: "Sonos",             params: ['device', 'web', 'webServer']},
+        "chromecast": {name: "Chromecast",        params: ['cDevice', 'web', 'webServer']},
+        "mp24ftp"   : {name: "MediaPlayer24+FTP", params: ['cache', 'server', 'port', 'user', 'pass']},
+        "mp24"      : {name: "MediaPlayer24",     params: ['server']}
     };
 
     var sayitEngines = {
@@ -192,6 +193,17 @@
         });
     }
 
+    function fillChromecastDevices(elem, current) {
+        socket.emit('getObjectView', 'system', 'device', {startkey: 'chromecast.', endkey: 'chromecast.\u9999'}, function (err, res) {
+            if (!err && res) {
+                for (var i = 0; i < res.rows.length; i++) {
+                    $(elem).append('<option value="' + res.rows[i].id + '">' + res.rows[i].id + '</option>');
+                }
+            }
+            $(elem).val(current);
+        });
+    }
+
     function checkWeb(elem, current) {
         var web = $('#web').val();
         for (var i = 0; i < webServers.length; i++) {
@@ -252,7 +264,8 @@
                 }
             }
             $(elem).val(current);
-            if (type == 'sonos') {
+            if ((type == 'sonos') ||
+                (type == 'chromecast')) {
                 checkWeb('#web', webServer);
             }
         });
@@ -382,7 +395,8 @@
                 if (key == 'type' || key == 'engine') {
                     showHideSettings();
 
-                    if ($('#type').val() == 'sonos') {
+                    if (($('#type').val() == 'sonos') ||
+                        ($('#type').val() == 'chromecast')) {
                         checkWeb('#web');
                         $('#announce').val('').trigger('change');
                         showHideSettings();
@@ -425,9 +439,11 @@
         }
 
         fillSonosDevices('#device', settings.device);
+        fillChromecastDevices('#cDevice', settings.cDevice);
         fillWebServices('#web', settings.web, settings.type, settings.webServer);
 
-        if (settings.type == 'sonos') {
+        if ((settings.type == 'sonos') ||
+            (settings.type == 'chromecast')){
             $('.announce').hide();
             if (settings.announce) {
                 $('#announce').val('').trigger('change');
@@ -535,6 +551,7 @@
             <tr id="tr_pass"      class="variable"><td class="translate">Password:</td><td><input class="value" id="pass"    type="text" /></td></tr>
             <tr id="tr_instance"  class="variable"><td class="translate">Browser instance:</td><td><input class="value" id="instance" type="text" /></td></tr>
             <tr id="tr_device"    class="variable"><td class="translate">Device:</td><td><select class="value" id="device"><option value="" class="translate">All</option></select></td></tr>
+            <tr id="tr_cDevice"   class="variable"><td class="translate">Device:</td><td><select class="value" id="cDevice"><option value="" class="translate">All</option></select></td></tr>
             <tr id="tr_web"       class="variable"><td class="translate">Web instance:</td><td><select class="value" id="web"></select></td></tr>
             <tr id="tr_webServer" class="variable"><td class="translate">Web server IP:</td><td><select class="value" id="webServer"></select></td></tr>
             <tr id="tr_voice"     class="engine"  ><td class="translate">Voice:</td><td><select class="value" id="voice"></select></td></tr>

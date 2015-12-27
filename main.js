@@ -53,12 +53,13 @@ var ivona                = null;
 var lastSay              = null;
 
 var sayitOptions = {
-    "browser": {name: "Browser",           mp3Required: true,  checkLength: true,  func: sayItBrowser, server: true,  libs: ['fs', 'crypto', 'http']},
-    "mp24ftp": {name: "MediaPlayer24+FTP", mp3Required: true,  checkLength: true,  func: sayItMP24ftp, server: false, libs: ['fs', 'crypto', 'http', 'jsftp']},
-    "mp24":    {name: "MediaPlayer24",     mp3Required: false, checkLength: true,  func: sayItMP24,    server: false, libs: ['fs', 'crypto', 'http']},
-    "system":  {name: "System",            mp3Required: true,  checkLength: false, func: sayItSystem,  server: false, libs: ['fs', 'crypto', 'http', 'child_process', 'os']},
-    "windows": {name: "Windows default",   mp3Required: false, checkLength: true,  func: sayItWindows, server: false, libs: ['fs', 'child_process']},
-    "sonos":   {name: "Sonos",             mp3Required: true,  checkLength: true,  func: sayItSonos,   server: true,  libs: ['fs', 'crypto', 'http']}
+    "browser":    {name: "Browser",           mp3Required: true,  checkLength: true,  func: sayItBrowser,    server: true,  libs: ['fs', 'crypto', 'http']},
+    "mp24ftp":    {name: "MediaPlayer24+FTP", mp3Required: true,  checkLength: true,  func: sayItMP24ftp,    server: false, libs: ['fs', 'crypto', 'http', 'jsftp']},
+    "mp24":       {name: "MediaPlayer24",     mp3Required: false, checkLength: true,  func: sayItMP24,       server: false, libs: ['fs', 'crypto', 'http']},
+    "system":     {name: "System",            mp3Required: true,  checkLength: false, func: sayItSystem,     server: false, libs: ['fs', 'crypto', 'http', 'child_process', 'os']},
+    "windows":    {name: "Windows default",   mp3Required: false, checkLength: true,  func: sayItWindows,    server: false, libs: ['fs', 'child_process']},
+    "sonos":      {name: "Sonos",             mp3Required: true,  checkLength: true,  func: sayItSonos,      server: true,  libs: ['fs', 'crypto', 'http']},
+    "chromecast": {name: "Chromecast",        mp3Required: true,  checkLength: true,  func: sayItChromecast, server: true,  libs: ['fs', 'crypto', 'http']}
 };
 
 var sayitEngines = {
@@ -570,6 +571,57 @@ function sayItSonos(text, language, volume, duration) {
     } else if (webLink) {
         adapter.log.info('Send to sonos ' + (volume ? (volume + ';') : '') + webLink + '/state/' + adapter.namespace + '.tts.mp3');
         adapter.sendTo('sonos', 'send', (volume ? (volume + ';') : '') + webLink + '/state/' + adapter.namespace + '.tts.mp3');
+    } else {
+        adapter.log.warn('Web server is unavailable!');
+    }
+    sayFinished(duration);
+}
+
+function sayItChromecast(text, language, volume, duration) {
+    if (text.substring(0, 11) === '$$$ERROR$$$') {
+        sayFinished(0);
+        return;
+    }
+
+    var fileData;
+    if (sayItIsPlayFile(text)) {
+        try {
+            fileData = libs.fs.readFileSync(text);
+        } catch (e) {
+            adapter.log.error('Cannot play file "' + text + '": ' + e.toString());
+            sayFinished(0);
+            return;
+        }
+    } else {
+        try {
+            fileData = libs.fs.readFileSync(__dirname + '/say.mp3');
+        } catch (e) {
+            adapter.log.error('Cannot play file "' + __dirname + '/say.mp3": ' + e.toString());
+            sayFinished(0);
+            return;
+        }
+    }
+
+    volume = volume || sayLastVolume;
+
+    adapter.setBinaryState(adapter.namespace + '.tts.mp3', fileData);
+
+    if (volume === 'null') volume = 0;
+
+    if (adapter.config.cDevice && webLink) {
+        if (volume) {
+            adapter.log.info('Set "' + adapter.config.cDevice + '.status.volume: ' + volume);
+            adapter.setForeignState(adapter.config.cDevice + '.status.volume', volume);
+        }
+        adapter.log.info('Set "' + adapter.config.cDevice + '.player.url2play: ' + webLink + '/state/' + adapter.namespace + '.tts.mp3');
+        adapter.setForeignState(adapter.config.cDevice + '.player.url2play', webLink + '/state/' + adapter.namespace + '.tts.mp3');
+    } else if (webLink) {
+        if (volume) {
+            adapter.log.info('Send to Chromecast (volume): ' + volume);
+            adapter.sendTo('chromecast', 'volume', volume);
+        };
+        adapter.log.info('Send to Chromecast (url2play): ' + webLink + '/state/' + adapter.namespace + '.tts.mp3');
+        adapter.sendTo('chromecast', 'url2play', webLink + '/state/' + adapter.namespace + '.tts.mp3');
     } else {
         adapter.log.warn('Web server is unavailable!');
     }
@@ -1225,12 +1277,13 @@ function start() {
         });
     }
 
-    if (adapter.config.type == 'sonos') {
+    if ((adapter.config.type == 'sonos') ||
+        (adapter.config.type == 'chromecast')){
         adapter.getForeignObject('system.adapter.' + adapter.config.web, function (err, obj) {
             if (!err && obj && obj.native) {
                 webLink = 'http';
                 if (obj.native.auth) {
-                    adapter.log.error('Cannot use server "' + adapter.config.web + '" with authentication for sonos. Select other or create another one.');
+                    adapter.log.error('Cannot use server "' + adapter.config.web + '" with authentication for sonos/chromecast. Select other or create another one.');
                 } else {
                     if (obj.native.secure) webLink += 's';
                     webLink += '://';
