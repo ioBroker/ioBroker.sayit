@@ -22,6 +22,8 @@ Actual following outputs are supported:
 
 - *Sonos* - play text on sonos device. Be sure the Web Adapter is enabled. It is required to enable SONOS to read the generated mp3 files.
 
+- *Chromecast* - play text on Chromecast device.
+
 To enable the text to speech on RaspberryPI or linux system call one time following command ```sudo apt-get -y install mpg321``` to install mpg321.
 
 The mp3/wav files can be played to by writing its name into the object. (e.g. "/vis.0/main/img/door-bell.mp3")
@@ -118,6 +120,9 @@ Following values for engines are possible:
 **Note:** "N" is depends on index of the adapter instance.
 
 ## Changelog
+
+### 0.3.16 (2015-12-26)
+* (Vegetto) Support for Chromecast devices
 
 ### 0.3.16 (2015-12-26)
 * (bluefox) enable play of mp3 files from disk
