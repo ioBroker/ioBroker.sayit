@@ -1,6 +1,12 @@
 ![Logo](admin/sayit.png)
 ioBroker sayit adapter
 =================
+[![NPM version](http://img.shields.io/npm/v/iobroker.sayit.svg)](https://www.npmjs.com/package/iobroker.sayit)
+[![Downloads](https://img.shields.io/npm/dm/iobroker.sayit.svg)](https://www.npmjs.com/package/iobroker.sayit)
+
+[![NPM](https://nodei.co/npm/iobroker.sayit.png?downloads=true)](https://nodei.co/npm/iobroker.sayit/)
+
+
 SayIt Adapter can convert text to speech and play it on some device.
 Actual following outputs are supported:
 
@@ -120,6 +126,9 @@ Following values for engines are possible:
 **Note:** "N" is depends on index of the adapter instance.
 
 ## Changelog
+
+### 1.0.0 (2016-05-14)
+* (bluefox) Make the type of mp3 as file
 
 ### 0.3.16 (2015-12-26)
 * (Vegetto) Support for Chromecast devices

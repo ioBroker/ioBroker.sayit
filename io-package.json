@@ -1,7 +1,7 @@
 {
     "common": {
         "name":                     "sayit",
-        "version": "0.3.17",
+        "version": "1.0.0",
         "title":                    "Text to speech Adapter",
         "desc":                     {
 			"en": "Text to speech in a cloud or local. Runs on windows, linux and OSX. It can play mp3/wav too.",
@@ -121,7 +121,7 @@
         "type": "state",
         "common": {
           "name":  "Binary mp3 file",
-          "type":  "object",
+          "type":  "file",
           "read":  true,
           "write": false,
           "desc":  "Can be accessed from web server under http://ip:8082/state/sayit.0.tts.mp3"

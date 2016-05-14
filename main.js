@@ -263,10 +263,10 @@ function sayItGetSpeechGoogle(text, language, volume, callback) {
 
     if (language == "ru") {
         options.headers = {
-            "Accept-Encoding":"identity;q=1, *;q=0",
-            "Range":"bytes=0-",
-            "Referer":"https://www.google.de/",
-            "User-Agent":"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.125 Safari/537.36",
+            'Accept-Encoding':  'identity;q=1, *;q=0',
+            Range:              'bytes=0-',
+            Referer:            'https://www.google.de/',
+            'User-Agent':       'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.125 Safari/537.36'
             //"User-Agent":      "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:25.0) Gecko/20100101 Firefox/25.0",
             //"Accept":          "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
             //"Accept-Language": "ru-RU,ru;q=0.8,en-US;q=0.5,en;q=0.3",
@@ -619,7 +619,7 @@ function sayItChromecast(text, language, volume, duration) {
         if (volume) {
             adapter.log.info('Send to Chromecast (volume): ' + volume);
             adapter.sendTo('chromecast', 'volume', volume);
-        };
+        }
         adapter.log.info('Send to Chromecast (url2play): ' + webLink + '/state/' + adapter.namespace + '.tts.mp3');
         adapter.sendTo('chromecast', 'url2play', webLink + '/state/' + adapter.namespace + '.tts.mp3');
     } else {
@@ -1049,7 +1049,6 @@ function sayIt(text, language, volume, process) {
                     } catch (e) {
                         adapter.log.error('Cannot write file "' + __dirname + '/say.mp3": ' + e.toString());
                         sayFinished(0);
-                        return;
                     }
                 } else {
                     // may be file from real FS
@@ -1062,7 +1061,6 @@ function sayIt(text, language, volume, process) {
                     } else {
                         adapter.log.warn('File "' + text + '" not found');
                         sayFinished(0);
-                        return;
                     }
                 }
             });
@@ -1119,7 +1117,6 @@ function sayIt(text, language, volume, process) {
                     getLength(md5filename, function (duration) {
                         sayitOptions[adapter.config.type].func(md5filename, language, volume, duration);
                     });
-                    return;
                 } else {
                     sayLastGeneratedText = '[' + language + ']' + text;
                     sayItGetSpeech(text, language, volume, sayitOptions[adapter.config.type].func);

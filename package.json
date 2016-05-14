@@ -1,6 +1,6 @@
 {
   "name": "iobroker.sayit",
-  "version": "0.3.17",
+  "version": "1.0.0",
   "description": "Text to speech interface for ioBroker.",
   "author": {
     "name": "bluefox",
@@ -18,7 +18,7 @@
     "url": "https://github.com/ioBroker/ioBroker.sayit"
   },
   "dependencies": {
-    "jsftp": "^1.5.2",
+    "jsftp": "^1.5.3",
     "ivona-node": "~0.2.0"
   },
   "devDependencies": {
@@ -26,11 +26,7 @@
     "grunt-replace": "^0.9.3",
     "grunt-contrib-jshint": "^0.11.2",
     "grunt-jscs": "^2.0.0",
-    "grunt-http": "^1.6.0",
-    "grunt-contrib-clean": "^0.6.0",
-    "grunt-contrib-compress": "^0.13.0",
-    "grunt-contrib-copy": "^0.8.0",
-    "grunt-exec": "^0.4.6"
+    "grunt-http": "^1.6.0"
   },
   "bugs": {
     "url": "https://github.com/ioBroker/ioBroker.sayit/issues"
