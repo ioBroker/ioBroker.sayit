@@ -127,6 +127,9 @@ Following values for engines are possible:
 
 ## Changelog
 
+### 1.0.1 (2016-10-12)
+* (bluefox) support of blockly
+
 ### 1.0.0 (2016-05-14)
 * (bluefox) Make the type of mp3 as file
 

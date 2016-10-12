@@ -1,7 +1,14 @@
 {
     "common": {
         "name":                     "sayit",
-        "version": "1.0.0",
+        "version": "1.0.1",
+        "news": {
+          "1.0.1": {
+            "en": "support of blockly",
+            "de": "Blockly-Unterstützung",
+            "ru": "Поддержка blockly"
+          }
+        },
         "title":                    "Text to speech Adapter",
         "desc":                     {
 			"en": "Text to speech in a cloud or local. Runs on windows, linux and OSX. It can play mp3/wav too.",
@@ -9,7 +16,7 @@
 			"ru": "Синтезатор речи локально или в облаке работает под windows, linux и OSX. Mp3 и Wav можно тоже проигрывать."
 		},
         "authors": [
-            "bluefox <bluefox@ccu.io>"
+            "bluefox <dogafox@gmail.com>"
         ],
         "license":                  "MIT",
         "platform":                 "Javascript/Node.js",
@@ -20,7 +27,8 @@
         "enabled":                  true,
         "keywords":                 ["TTS", "voice", "speech"],
         "extIcon":                  "https://raw.githubusercontent.com/ioBroker/ioBroker.sayit/master/admin/sayit.png",
-		"type":                     "media"
+		"type":                     "media",
+        "blockly":                  true
     },
     "native": {
         "type":                     "system",
