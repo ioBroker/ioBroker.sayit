@@ -11,6 +11,14 @@ Blockly.Words['sayit_volume']        = {'en': 'volume (optional)',           'de
 Blockly.Words['sayit_tooltip']       = {'en': 'Text to speech',              'de': 'Text zu Sprache',                    'ru': 'Произнести сообщение'};
 Blockly.Words['sayit_help']          = {'en': 'https://github.com/ioBroker/ioBroker.sayit/blob/master/README.md', 'de': 'http://www.iobroker.net/?page_id=178&lang=de', 'ru': 'http://www.iobroker.net/?page_id=4262&lang=ru'};
 
+Blockly.Words['sayit_log']           = {'en': 'log level',                   'de': 'Loglevel',                           'ru': 'Протокол'};
+Blockly.Words['sayit_log_none']      = {'en': 'none',                        'de': 'keins',                              'ru': 'нет'};
+Blockly.Words['sayit_log_info']      = {'en': 'info',                        'de': 'info',                               'ru': 'инфо'};
+Blockly.Words['sayit_log_debug']     = {'en': 'debug',                       'de': 'debug',                              'ru': 'debug'};
+Blockly.Words['sayit_log_warn']      = {'en': 'warning',                     'de': 'warning',                            'ru': 'warning'};
+Blockly.Words['sayit_log_error']     = {'en': 'error',                       'de': 'error',                              'ru': 'ошибка'};
+
+
 // Blockly.Sendto is global variable and defined in javascript/admin/google-blockly/own/blocks_sendto.js
 
 Blockly.Sendto.blocks['sayit'] =
@@ -58,13 +66,13 @@ Blockly.Blocks['sayit'] = {
             .appendField(Blockly.Words['sayit_message'][systemLang]);
 
         this.appendDummyInput('LOG')
-            .appendField(Blockly.Words['telegram_log'][systemLang])
+            .appendField(Blockly.Words['sayit_log'][systemLang])
             .appendField(new Blockly.FieldDropdown([
-                [Blockly.Words['telegram_log_none'][systemLang],  ''],
-                [Blockly.Words['telegram_log_info'][systemLang],  'log'],
-                [Blockly.Words['telegram_log_debug'][systemLang], 'debug'],
-                [Blockly.Words['telegram_log_warn'][systemLang],  'warn'],
-                [Blockly.Words['telegram_log_error'][systemLang], 'error']
+                [Blockly.Words['sayit_log_none'][systemLang],  ''],
+                [Blockly.Words['sayit_log_info'][systemLang],  'log'],
+                [Blockly.Words['sayit_log_debug'][systemLang], 'debug'],
+                [Blockly.Words['sayit_log_warn'][systemLang],  'warn'],
+                [Blockly.Words['sayit_log_error'][systemLang], 'error']
             ]), 'LOG');
 
         this.setInputsInline(false);
