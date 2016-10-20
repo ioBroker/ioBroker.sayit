@@ -55,7 +55,11 @@
         "Announce length (sec):": {"en": "Announce length (sec):", "de": "Ankündigunglänge (Sek):", "ru": "Длительность извещения (сек):"},
         "API Key is not set!": {"en": "API Key is not set!", "de": "API Key ist leer!", "ru": "API Key отсутствует!"},
         "System command:":  {"en": "System command:",   "de": "Systemkommando:", "ru": "Системный вызов:"},
-        "Announce volume (%):": {"en": "Announce volume(%):", "de": "Ankündigungslautstärke(%):", "ru": "Громкость извещения(%):"}
+        "Announce volume (%):": {"en": "Announce volume(%):", "de": "Ankündigungslautstärke(%):", "ru": "Громкость извещения(%):"},
+        "Linux player:":    {"en": "Linux player:",     "de": "Linux-Player:", "ru": "Linux плейер:"},
+        "Ignore for non linux OS": {"en": "Ignore for non linux OS", "de": "Ignorieren für nicht linux OS", "ru": "Игнорировать для не linux OS"},
+        "Access Key:":      {"en": "Access Key:", "de": "Access Key:", "ru": "Access Key:"},
+        "Secret Key:":      {"en": "Secret Key:", "de": "Secret Key:", "ru": "Secret Key:"}
     };
 
     var sayitOptions = {
@@ -353,6 +357,8 @@
     function load(settings, onChange) {
         if (!settings) return;
 
+        if (!settings.player) settings.player = 'mpg321';
+
         $('#play').button({icons: {primary: 'ui-icon-play'}, text: false}).css({width: 22, height: 22}).click(function () {
             socket.emit('readFile', 'sayit.' + instance, 'tts.userfiles/' + $('#announce').val(), function (err, data) {
                 if (typeof AudioContext != 'undefined') {
@@ -536,6 +542,13 @@
         <table>
             <tr><td class="translate" style="width: 150px">Language:</td><td><select class="value" id="engine"></select></td></tr>
             <tr><td class="translate">Type:</td><td><select class="value" id="type"></select></td></tr>
+            <tr class="system"><td><label for="player" class="translate">Linux player:</label></td><td>
+                <select class="value" id="player" >
+                    <option value="mpg321">mpg321</option>
+                    <option value="omxplayer">omxplayer</option>
+                </select><span class="translate" style="padding-left: 10px; font-size: 10px">Ignore for non linux OS</span>
+            </td>
+            </tr>
             <tr class="system"><td class="translate">System command:</td><td><input class="value" id="command"/></td></tr>
             <tr class="announceValue"><td class="translate">Announce:</td><td><select class="value" id="announce"></select>&nbsp;<button id="play"></button></td></tr>
             <tr class="announceValue"><td></td><td><input type="file" accept=".mp3,audio/*" id="files" name="files[]" multiple /></td></tr>

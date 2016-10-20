@@ -3,6 +3,11 @@
         "name":                     "sayit",
         "version": "1.0.1",
         "news": {
+          "1.1.0": {
+            "en": "Add omxplayer option",
+            "de": "Unterstützung fon omxplayer",
+            "ru": "Поддержка omxplayer"
+          },
           "1.0.1": {
             "en": "support of blockly",
             "de": "Blockly-Unterstützung",
@@ -33,6 +38,7 @@
     "native": {
         "type":                     "system",
         "command":                  "",
+        "player":                   "",
 		"cache":                    true,
         "engine":                   "",
         "sonos":                    "",

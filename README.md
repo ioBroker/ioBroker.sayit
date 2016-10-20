@@ -42,7 +42,22 @@ Actual Yandex supports only russian.
 
 To use Amazon(Ivona) voices you need to get access key and secret key [here](http://www.ivona.com/us/for-business/speech-cloud/).
 
-Usage:
+### System command
+If you have some program, that can play audio files locally or somewhere else, you can write this command here. E.g.
+
+```myCustomPlayer --option```
+
+If **System** output is selected, the sayit adapter will execute following command on local system: 
+
+```myCustomPlayer --option /opt/iobroker/node_modules/iobroker.sayit/say.mp3```
+
+If file name must stay somewhere in the middle you can use *%s* to specify where the file name must be placed:
+
+```myCustomPlayer --option "%s" > /dev/null```
+
+sayIt will make ```myCustomPlayer --option "/opt/iobroker/node_modules/iobroker.sayit/say.mp3" > /dev/null``` from it.
+
+## Usage
 SayIt adapter cannot be used alone. It must be controlled from javascript adapter or from "vis" with specific widget.
 After creation of adapter instance will can find following objects:
 - sayit.N.tts.text: Phrase to be spoken.
@@ -58,7 +73,9 @@ With ```ru;75;Погода хорошая``` we can force to use russian languag
 
 You can specify the volume of announcement in percent from current or given volume (not from maximal). E.g. if command is ```de;75;Gutes Wetter```and "announce volume" is 50%, the announce will be played with volume 38% from 100% possible.
 
-The system command to play the mp3 file can be specified too. If you leave it blank, the default settings will be used: windows - cmdmp3.exe, OSX - /usr/bin/afplay, linux - mpg321. 
+The system command to play the mp3 file can be specified too. If you leave it blank, the default settings will be used: windows - cmdmp3.exe, OSX - /usr/bin/afplay, linux - mpg321 or omxplayer (recommended). 
+
+To install omxplayer write ```sudo apt-get install omxplayer``` or write ```sudo apt-get install mpg321``` to install mpg321.
 
 **Note:** The default announce selection will be possible only after start of the instance.
 
@@ -123,9 +140,10 @@ Following values for engines are possible:
 - sv-SE_AZ_Female: Ivona - sv-SE - Female - Astrid
 - tr-TR_AZ_Female: Ivona - tr-TR - Female - Filiz
 
-**Note:** "N" is depends on index of the adapter instance.
-
 ## Changelog
+
+### 1.1.0 (2016-10-20)
+* (bluefox) Add omxplayer option
 
 ### 1.0.1 (2016-10-12)
 * (bluefox) support of blockly
@@ -205,22 +223,6 @@ Following values for engines are possible:
 
 ### 0.0.1 (2015-02-06)
 * (bluefox) initial commit
-
-## Install
-
-```node iobroker.js add sayit```
-
-## Usage
-There are 4 variables:
-
-- *tts.volume*  - to set the volume on the end device
-- *tts.text*    - write here text, that must be spoken
-- *tts.playing* - plaing indicator (only for "windows" or "system")
-- *tts.mp3*     - binary mp3 file to read it through web server.
-                  If selected "browser" or "sonos" the file will be made accessable over http://ip:8082/state/sayit.0.tts.mp3
-
-Object tts.text can be written as ```de;70;Sage es``` or ```ru;Скажи пять```, where first part is always language and
-the second part is volume, but it can be omitted. If nothing set the default settings will be used and volume from *tts.volume*.
 
 ## License
 

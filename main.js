@@ -1,6 +1,6 @@
 /* jshint -W097 */// jshint strict:false
 /*jslint node: true */
-"use strict";
+'use strict';
 
 var utils     = require(__dirname + '/lib/utils'); // Get common adapter utils
 var libs      = {};
@@ -9,13 +9,13 @@ var adapter = utils.adapter('sayit');
 
 adapter.on('stateChange', function (id, state) {
     if (state && !state.ack) {
-        if (id == adapter.namespace + '.tts.volume') {
-            if (adapter.config.type == 'system') {
+        if (id === adapter.namespace + '.tts.volume') {
+            if (adapter.config.type === 'system') {
                 sayItSystemVolume(state.val);
             } else {
                 sayLastVolume = state.val;
             }
-        } else if (id == adapter.namespace + '.tts.text') {
+        } else if (id === adapter.namespace + '.tts.text') {
             if (typeof state.val !== 'string') {
                 if (state.val === null || state.val === undefined || state.val === '') {
                     adapter.log.warn('Cannot cache empty text');
@@ -25,7 +25,7 @@ adapter.on('stateChange', function (id, state) {
             }
 
             sayIt(state.val);
-        } else if (id == adapter.namespace + '.tts.cachetext') {
+        } else if (id === adapter.namespace + '.tts.cachetext') {
 
             if (typeof state.val !== 'string') {
                 if (state.val === null || state.val === undefined || state.val === '') {
@@ -44,7 +44,7 @@ adapter.on('ready', function () {
     main();
 });
 
-var sayLastGeneratedText = "";
+var sayLastGeneratedText = '';
 var sayLastVolume        = null;
 var cacheDir             = '';
 var webLink              = '';
@@ -132,7 +132,7 @@ function mkpathSync(rootpath, dirpath) {
     for (var i = 0; i < dirpath.length; i++) {
         rootpath += dirpath[i] + '/';
         if (!libs.fs.existsSync(rootpath)) {
-            if (dirpath[i] != '..') {
+            if (dirpath[i] !== '..') {
                 libs.fs.mkdirSync(rootpath);
             } else {
                 throw 'Cannot create ' + rootpath + dirpath.join('/');
@@ -146,19 +146,19 @@ function copyFile(text, language, volume, source, dest, callback) {
         var input  = libs.fs.createReadStream(source);               // Input stream
         var output = libs.fs.createWriteStream(dest);                // Output stream
 
-        input.on("data",  function (d) {
+        input.on('data',  function (d) {
             output.write(d);
         });
 
         // Copy in to out
-        input.on("error", function (err) {
+        input.on('error', function (err) {
             throw err;
         });
 
         // Raise errors
-        input.on("end",   function () {                               // When input ends
+        input.on('end',   function () {                               // When input ends
             output.end();                                            // close output
-            adapter.log.info("Copied file '" + source + "' to '" + dest + "'");
+            adapter.log.info('Copied file "' + source + '" to "' + dest + '"');
             if (callback) callback(text, language, volume);          // And notify callback
         });
     } catch (e) {
@@ -169,7 +169,7 @@ function copyFile(text, language, volume, source, dest, callback) {
 
 function getLength(fileName, callback) {
     // create a new parser from a node ReadStream
-    if (fileName == adapter.config.announce && adapter.config.annoDuration) {
+    if (fileName === adapter.config.announce && adapter.config.annoDuration) {
         if (callback) callback(adapter.config.annoDuration - 1);
         return;
     }
@@ -234,7 +234,7 @@ function sayFinished(duration) {
 }
 
 function sayItGetSpeechGoogle(text, language, volume, callback) {
-    if (typeof volume == 'function') {
+    if (typeof volume === 'function') {
         callback = volume;
         volume = undefined;
     }
@@ -261,7 +261,7 @@ function sayItGetSpeechGoogle(text, language, volume, callback) {
         path: '/translate_tts?ie=UTF-8&client=tw-ob&q=' + encodeURI(text) + '&tl=' + language + '&total=1&idx=0&textlen=' + text.length //
     };
 
-    if (language == "ru") {
+    if (language === 'ru') {
         options.headers = {
             'Accept-Encoding':  'identity;q=1, *;q=0',
             Range:              'bytes=0-',
@@ -291,7 +291,7 @@ function sayItGetSpeechGoogle(text, language, volume, callback) {
                 return;
             }
 
-            if (sounddata.toString().indexOf('302 Moved') != -1) {
+            if (sounddata.toString().indexOf('302 Moved') !== -1) {
                 adapter.log.error ('http://' + options.host + options.path);
                 adapter.log.error ('Cannot get file: ' + sounddata);
                 if (callback) callback('$$$ERROR$$$' + text, language, volume, 0);
@@ -356,7 +356,7 @@ function sayItGetSpeechAcapela(text, language, volume, callback) {
 }
 
 function sayItGetSpeechYandex(text, language, volume, callback) {
-    if (language == 'ru' || language == 'ru_YA') {
+    if (language === 'ru' || language === 'ru_YA') {
         language = 'ru-RU';
     }
 
@@ -373,7 +373,7 @@ function sayItGetSpeechYandex(text, language, volume, callback) {
               '&text=' + encodeURI(text.trim())
     };
 
-    if (adapter.config.emotion && adapter.config.emotion != 'none') options.path += '&emotion=' + adapter.config.emotion;
+    if (adapter.config.emotion && adapter.config.emotion !== 'none') options.path += '&emotion=' + adapter.config.emotion;
     if (adapter.config.drunk === 'true' || adapter.config.drunk === true) options.path += '&drunk=true';
     if (adapter.config.ill   === 'true' || adapter.config.ill   === true) options.path += '&ill=true';
     if (adapter.config.robot === 'true' || adapter.config.robot === true) options.path += '&robot=true';
@@ -654,7 +654,7 @@ function sayItMP24(text, language, volume, duration) {
                 adapter.log.error('Cannot say text on MediaPlayer24 "' + adapter.config.server + '":' + e.message);
             });
         }).on('error', function (e) {
-            if (e.message == 'Parse Error') {
+            if (e.message === 'Parse Error') {
                 adapter.log.debug('Played successfully');
             } else {
                 adapter.log.error('Cannot say text on MediaPlayer24 "' + adapter.config.server + '":' + e.message);
@@ -678,8 +678,8 @@ function sayItMP24ftp(text, language, volume, duration) {
         var ftp = new libs.jsftp({
             host: adapter.config.server,
             port: parseInt(adapter.config.port, 10), // defaults to 21
-            user: adapter.config.user || "anonymous", // defaults to "anonymous"
-            pass: adapter.config.pass || "anonymous"  // defaults to "anonymous"
+            user: adapter.config.user || 'anonymous', // defaults to 'anonymous'
+            pass: adapter.config.pass || 'anonymous'  // defaults to 'anonymous'
         });
 
         try {
@@ -705,7 +705,7 @@ function sayItMP24ftp(text, language, volume, duration) {
                             adapter.log.error('Cannot say text on MediaPlayer24 "' + adapter.config.server + '":' + e.message);
                         });
                     }).on('error', function (e) {
-                        if (e.message == 'Parse Error') {
+                        if (e.message === 'Parse Error') {
                             adapter.log.debug('Played successfully');
                         } else {
                             adapter.log.error('Cannot say text on MediaPlayer24 "' + adapter.config.server + '":' + e.message);
@@ -729,7 +729,7 @@ function sayItMP24ftp(text, language, volume, duration) {
 function sayItIsPlayFile(text) {
     if (text.length > 4) {
         var ext = text.substring(text.length - 4).toLowerCase();
-        if (ext == ".mp3" || ext == ".wav") {
+        if (ext === '.mp3' || ext === '.wav') {
             return true;
         }
     }
@@ -759,14 +759,14 @@ function sayItSystem(text, language, volume, duration) {
     var p = libs.os.platform();
     var ls = null;
     var file = sayItGetFileName(text);
+    var cmd;
 
     sayItSystemVolume(volume);
 
     if (adapter.config.command) {
         //custom command
         adapter.setState('tts.playing', true);
-        var cmd;
-        if (adapter.config.command.indexOf('%s') != -1) {
+        if (adapter.config.command.indexOf('%s') !== -1) {
             cmd = adapter.config.command.replace('%s', file);
         } else {
             if (p.match(/^win/)) {
@@ -780,10 +780,16 @@ function sayItSystem(text, language, volume, duration) {
             adapter.setState('tts.playing', false);
         });
     } else {
-        if (p == 'linux') {
+        if (p === 'linux') {
             //linux
             adapter.setState('tts.playing', true);
-            ls = libs.child_process.exec('mpg321 ' + file, function (error, stdout, stderr) {
+
+            if (adapter.config.player === 'omxplayer') {
+                cmd = 'omxplayer -o local ' + file;
+            } else {
+                cmd = 'mpg321 ' + file;
+            }
+            ls = libs.child_process.exec(cmd, function (error, stdout, stderr) {
                 if (error) adapter.log.error('Cannot play:' + error);
                 adapter.setState('tts.playing', false);
             });
@@ -794,7 +800,7 @@ function sayItSystem(text, language, volume, duration) {
                 if (error) adapter.log.error('Cannot play:' + error);
                 adapter.setState('tts.playing', false);
             });
-        } else if (p == 'darwin') {
+        } else if (p === 'darwin') {
             //mac osx
             adapter.setState('tts.playing', true);
             ls = libs.child_process.exec('/usr/bin/afplay ' + file, function (error, stdout, stderr) {
@@ -809,7 +815,7 @@ function sayItSystem(text, language, volume, duration) {
             throw new Error('sayIt.play: there was an error while playing the mp3 file:' + e);
         });
     }
-    if (text == adapter.config.announce) {
+    if (text === adapter.config.announce) {
         sayFinished(duration);
     } else {
         sayFinished(duration + 2);
@@ -872,15 +878,15 @@ function sayItSystemVolume(level) {
     var p  = libs.os.platform();
     var ls = null;
 
-    if (p == 'linux') {
+    if (p === 'linux') {
         //linux
-        ls = libs.child_process.spawn('amixer', ["cset", "numid=1", "--", level + "%"]);
+        ls = libs.child_process.spawn('amixer', ['cset', 'numid=1', '--', level + '%']);
     } else if (p.match(/^win/)) {
         //windows
         // windows volume is from 0 to 65535
         level = Math.round((65535 * level) / 100); // because this level is from 0 to 100
-        ls = libs.child_process.spawn (__dirname + '/nircmd/nircmdc.exe', ["setsysvolume", level]);
-    } else if (p == 'darwin') {
+        ls = libs.child_process.spawn (__dirname + '/nircmd/nircmdc.exe', ['setsysvolume', level]);
+    } else if (p === 'darwin') {
         //mac osx
         ls = libs.child_process.spawn('sudo', ['osascript', '-e', '"set Volume ' + Math.round(level / 10) + '"']);
     }
@@ -914,16 +920,16 @@ function cacheIt(text, language) {
         }
 
         // Extract language from "en;volume;Text to say"
-        if (text.indexOf(';') != -1) {
+        if (text.indexOf(';') !== -1) {
             var arr = text.split(';', 3);
             // If language;text or volume;text
-            if (arr.length == 2) {
+            if (arr.length === 2) {
                 // If number
                 if (parseInt(arr[0]) != arr[0]) {
                     language = arr[0];
                 }
                 text = arr[1];
-            } else if (arr.length == 3) {
+            } else if (arr.length === 3) {
                 // If language;volume;text or volume;language;text
                 // If number
                 if (parseInt(arr[0]) == arr[0]) {
@@ -940,7 +946,7 @@ function cacheIt(text, language) {
         }
 
         // Check: may be it is file from DB filesystem, like /vis.0/main/img/door-bell.mp3
-        if (text[0] == '/') {
+        if (text[0] === '/') {
             adapter.log.warn('mp3 file must not be cached: ' + text);
             return;
         }
@@ -991,10 +997,10 @@ function sayIt(text, language, volume, process) {
     var md5filename;
 
     // Extract language from "en;volume;Text to say"
-    if (text.indexOf(';') != -1) {
+    if (text.indexOf(';') !== -1) {
         var arr = text.split(';', 3);
         // If language;text or volume;text
-        if (arr.length == 2) {
+        if (arr.length === 2) {
             // If number
             if (parseInt(arr[0]) == arr[0]) {
                 volume = arr[0];
@@ -1002,7 +1008,7 @@ function sayIt(text, language, volume, process) {
                 language = arr[0];
             }
             text = arr[1];
-        } else if (arr.length == 3) {
+        } else if (arr.length === 3) {
             // If language;volume;text or volume;language;text
             // If number
             if (parseInt(arr[0]) == arr[0]) {
@@ -1023,7 +1029,7 @@ function sayIt(text, language, volume, process) {
     }
 
     // Check: may be it is file from DB filesystem, like /vis.0/main/img/door-bell.mp3
-    if (text[0] == '/') {
+    if (text[0] === '/') {
         var cached = false;
         if (adapter.config.cache) {
             md5filename = cacheDir + libs.crypto.createHash('md5').update(text).digest('hex') + '.mp3';
@@ -1072,7 +1078,7 @@ function sayIt(text, language, volume, process) {
         var time = (new Date()).getTime();
 
         // Workaround for double text
-        if (list.length > 1 && (list[list.length - 1].text == text) && (time - list[list.length - 1].time < 500)) {
+        if (list.length > 1 && (list[list.length - 1].text === text) && (time - list[list.length - 1].time < 500)) {
             adapter.log.warn('Same text in less than half a second.. Strange. Ignore it.');
             return;
         }
@@ -1100,7 +1106,7 @@ function sayIt(text, language, volume, process) {
     if (!sayItIsPlayFile(text)) isGenerate = sayitOptions[adapter.config.type].mp3Required;
 
     // If text first must be generated
-    if (isGenerate && sayLastGeneratedText != '[' + language + ']' + text) {
+    if (isGenerate && sayLastGeneratedText !== '[' + language + ']' + text) {
         sayLastGeneratedText = '[' + language + ']' + text;
         sayItGetSpeech(text, language, volume, sayitOptions[adapter.config.type].func);
     } else {
@@ -1189,14 +1195,14 @@ function start() {
 
     // If chache enabled
     if (adapter.config.cache) {
-        if (adapter.config.cacheDir && (adapter.config.cacheDir[0] == '/' || adapter.config.cacheDir[0] == '\\')) adapter.config.cacheDir = adapter.config.cacheDir.substring(1);
+        if (adapter.config.cacheDir && (adapter.config.cacheDir[0] === '/' || adapter.config.cacheDir[0] === '\\')) adapter.config.cacheDir = adapter.config.cacheDir.substring(1);
         cacheDir = __dirname + '/' + adapter.config.cacheDir;
         if (cacheDir) cacheDir = cacheDir.replace(/\\/g, '/');
 
         var parts = cacheDir.split('/');
         var i = 0;
         while (i < parts.length) {
-            if (parts[i] == '..') {
+            if (parts[i] === '..') {
                 parts.splice(i - 1, 2);
                 i--;
             } else {
@@ -1222,11 +1228,11 @@ function start() {
                 }
             }
             // If engine changed
-            if (engine != adapter.config.engine) {
+            if (engine !== adapter.config.engine) {
                 // Delete all files in this directory
                 var files = libs.fs.readdirSync(cacheDir);
                 for (var f = 0; f < files.length; f++) {
-                    if (files[f] == 'engine.txt') continue;
+                    if (files[f] === 'engine.txt') continue;
                     libs.fs.unlinkSync(cacheDir + '/' + files[f]);
                 }
                 try {
@@ -1251,9 +1257,9 @@ function start() {
     adapter.getState('tts.volume', function (err, state) {
         if (err || !state) {
             adapter.setState('tts.volume', 70, true);
-            if (adapter.config.type != 'system') sayLastVolume = 70;
+            if (adapter.config.type !== 'system') sayLastVolume = 70;
         } else {
-            if (adapter.config.type != 'system') sayLastVolume = state.val;
+            if (adapter.config.type !== 'system') sayLastVolume = state.val;
         }
     });
 
@@ -1263,7 +1269,7 @@ function start() {
         }
     });
 
-    if (adapter.config.type == 'system') {
+    if (adapter.config.type === 'system') {
         // Read volume
         adapter.getState('tts.volume', function (err, state) {
             if (!err && state) {
@@ -1274,8 +1280,8 @@ function start() {
         });
     }
 
-    if ((adapter.config.type == 'sonos') ||
-        (adapter.config.type == 'chromecast')){
+    if ((adapter.config.type === 'sonos') ||
+        (adapter.config.type === 'chromecast')){
         adapter.getForeignObject('system.adapter.' + adapter.config.web, function (err, obj) {
             if (!err && obj && obj.native) {
                 webLink = 'http';
@@ -1284,10 +1290,10 @@ function start() {
                 } else {
                     if (obj.native.secure) webLink += 's';
                     webLink += '://';
-                    if (obj.native.bind == 'localhost' || obj.native.bind == '127.0.0.1') {
+                    if (obj.native.bind === 'localhost' || obj.native.bind === '127.0.0.1') {
                         adapter.log.error('Selected web server "' + adapter.config.web + '" is only on local device available. Select other or create another one.');
                     } else {
-                        if (obj.native.bind == '0.0.0.0') {
+                        if (obj.native.bind === '0.0.0.0') {
                             webLink += adapter.config.webServer;
                         } else {
                             webLink += obj.native.bind;
@@ -1309,7 +1315,7 @@ function start() {
 function main() {
     libs.fs = require('fs');
 
-    if ((!process.argv || process.argv.indexOf('--force') == -1) && (!adapter.common || !adapter.common.enabled)) {
+    if ((!process.argv || process.argv.indexOf('--force') === -1) && (!adapter.common || !adapter.common.enabled)) {
         // Check if files exists in datastorage
         uploadFiles(function () {
             if (adapter.stop) {
