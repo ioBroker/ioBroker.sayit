@@ -142,7 +142,7 @@ Following values for engines are possible:
 
 ## Changelog
 
-### 1.1.0 (2016-10-20)
+### 1.1.2 (2016-10-20)
 * (bluefox) Add omxplayer option
 
 ### 1.0.1 (2016-10-12)

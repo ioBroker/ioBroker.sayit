@@ -1,10 +1,10 @@
 {
   "name": "iobroker.sayit",
-  "version": "1.1.0",
+  "version": "1.1.2",
   "description": "Text to speech interface for ioBroker.",
   "author": {
     "name": "bluefox",
-    "email": "bluefox@ccu.io"
+    "email": "dogafox@gmail.com"
   },
   "homepage": "https://github.com/ioBroker/ioBroker.sayit",
   "keywords": [
