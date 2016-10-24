@@ -1227,7 +1227,7 @@ function start() {
             // Read the old engine
             if (libs.fs.existsSync(cacheDir + '/engine.txt')) {
                 try {
-                    engine = libs.fs.readFileSync(cacheDir + '/engine.txt');
+                    engine = libs.fs.readFileSync(cacheDir + '/engine.txt').toString();
                 } catch (e) {
                     adapter.log.error('Cannot read file "' + cacheDir + '/engine.txt: ' + e.toString());
                 }
@@ -1238,7 +1238,7 @@ function start() {
                 var files = libs.fs.readdirSync(cacheDir);
                 for (var f = 0; f < files.length; f++) {
                     if (files[f] === 'engine.txt') continue;
-                    if (fs.existsSync(cacheDir + '/' + files[f])) {
+                    if (libs.fs.existsSync(cacheDir + '/' + files[f])) {
                         libs.fs.unlinkSync(cacheDir + '/' + files[f]);
                     }
                 }
