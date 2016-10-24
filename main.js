@@ -1193,11 +1193,16 @@ function start() {
         }
     }
 
-    // If chache enabled
+    // If cache enabled
     if (adapter.config.cache) {
         if (adapter.config.cacheDir && (adapter.config.cacheDir[0] === '/' || adapter.config.cacheDir[0] === '\\')) adapter.config.cacheDir = adapter.config.cacheDir.substring(1);
         cacheDir = __dirname + '/' + adapter.config.cacheDir;
-        if (cacheDir) cacheDir = cacheDir.replace(/\\/g, '/');
+        if (cacheDir) {
+            cacheDir = cacheDir.replace(/\\/g, '/');
+            if (cacheDir[cacheDir.length - 1] === '/') cacheDir = cacheDir.substring(0, cacheDir.length - 1);
+        } else {
+            cacheDir = '';
+        }
 
         var parts = cacheDir.split('/');
         var i = 0;
@@ -1233,7 +1238,9 @@ function start() {
                 var files = libs.fs.readdirSync(cacheDir);
                 for (var f = 0; f < files.length; f++) {
                     if (files[f] === 'engine.txt') continue;
-                    libs.fs.unlinkSync(cacheDir + '/' + files[f]);
+                    if (fs.existsSync(cacheDir + '/' + files[f])) {
+                        libs.fs.unlinkSync(cacheDir + '/' + files[f]);
+                    }
                 }
                 try {
                     libs.fs.writeFileSync(cacheDir + '/engine.txt', adapter.config.engine);
@@ -1248,6 +1255,7 @@ function start() {
     for (var j = 0; j < sayitOptions[adapter.config.type].libs.length; j++) {
         libs[sayitOptions[adapter.config.type].libs[j]] = require(sayitOptions[adapter.config.type].libs[j]);
     }
+
     adapter.getState('tts.text', function (err, state) {
         if (err || !state) {
             adapter.setState('tts.text', '', true);
