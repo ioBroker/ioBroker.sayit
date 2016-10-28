@@ -142,6 +142,9 @@ Following values for engines are possible:
 
 ## Changelog
 
+### 1.2.0 (2016-10-28)
+* (bluefox) Finish sayit
+
 ### 1.1.3 (2016-10-24)
 * (bluefox) Fix changing of engine
 

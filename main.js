@@ -5,7 +5,12 @@
 var utils     = require(__dirname + '/lib/utils'); // Get common adapter utils
 var libs      = {};
 
-var adapter = utils.adapter('sayit');
+var adapter = utils.adapter({
+    name: 'sayit',
+    unload: stop
+});
+
+process.on('SIGINT', stop);
 
 adapter.on('stateChange', function (id, state) {
     if (state && !state.ack) {
@@ -43,6 +48,18 @@ adapter.on('stateChange', function (id, state) {
 adapter.on('ready', function () {
     main();
 });
+
+adapter.on('stopInstance', function () {
+    stop();
+});
+
+function stop(callback) {
+    setTimeout(function () {
+        process.stop()
+    }, 1000);
+
+    if (callback) callback();
+}
 
 var sayLastGeneratedText = '';
 var sayLastVolume        = null;
@@ -1238,7 +1255,7 @@ function start() {
                 var files = libs.fs.readdirSync(cacheDir);
                 for (var f = 0; f < files.length; f++) {
                     if (files[f] === 'engine.txt') continue;
-                    if (libs.fs.existsSync(cacheDir + '/' + files[f])) {
+                    if (libs.fs.existsSync(cacheDir + '/' + files[f]) && libs.fs.lstatSync(cacheDir + '/' + files[f]).isDirectory()) {
                         libs.fs.unlinkSync(cacheDir + '/' + files[f]);
                     }
                 }
