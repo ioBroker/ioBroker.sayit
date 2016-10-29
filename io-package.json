@@ -40,6 +40,7 @@
         "loglevel":                 "info",
         "messagebox":               true,
         "supportStopInstance":      true,
+        "stopBeforeUpdate":         true,
         "icon":                     "sayit.png",
         "enabled":                  true,
         "keywords":                 ["TTS", "voice", "speech"],
