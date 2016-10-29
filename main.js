@@ -2,11 +2,11 @@
 /*jslint node: true */
 'use strict';
 
-var utils     = require(__dirname + '/lib/utils'); // Get common adapter utils
-var libs      = {};
+var utils   = require(__dirname + '/lib/utils'); // Get common adapter utils
+var libs    = {};
 
 var adapter = utils.adapter({
-    name: 'sayit',
+    name:   'sayit',
     unload: stop
 });
 
@@ -49,16 +49,34 @@ adapter.on('ready', function () {
     main();
 });
 
-adapter.on('stopInstance', function () {
-    stop();
+adapter.on('message', function (obj) {
+    if (obj) processMessage(obj);
+    processMessages();
 });
 
+function processMessage(obj) {
+    if (obj && obj.command === 'stopInstance') {
+        stop(function () {
+            if (obj.callback) {
+                adapter.sendTo(obj.from, obj.command, null, obj.callback);
+            }
+        });
+    }
+}
+
+function processMessages() {
+    adapter.getMessage(function (err, obj) {
+        if (obj) setTimeout(processMessages, 0);
+    });
+}
+
 function stop(callback) {
+    adapter.log.info('stopping...');
     setTimeout(function () {
-        process.stop()
+        process.exit()
     }, 1000);
 
-    if (callback) callback();
+    if (typeof callback === 'function') callback();
 }
 
 var sayLastGeneratedText = '';
