@@ -4,6 +4,7 @@
 
 var utils   = require(__dirname + '/lib/utils'); // Get common adapter utils
 var libs    = {};
+var path    = require('path');
 
 var adapter = utils.adapter({
     name:   'sayit',
@@ -71,7 +72,9 @@ function processMessages() {
 }
 
 function stop(callback) {
-    adapter.log.info('stopping...');
+    if (adapter && adapter.log) {
+        adapter.log.info('stopping...');
+    }
     setTimeout(function () {
         process.exit()
     }, 1000);
@@ -474,7 +477,7 @@ function sayItGetSpeechAmazon(text, language, volume, callback) {
 function cacheFile(text, language, volume, seconds, callback) {
     if (text.substring(0, 11) !== '$$$ERROR$$$') {
         if (adapter.config.cache) {
-            var md5filename = cacheDir + libs.crypto.createHash('md5').update(language + ';' + text).digest('hex') + '.mp3';
+            var md5filename = path.join(cacheDir, libs.crypto.createHash('md5').update(language + ';' + text).digest('hex') + '.mp3');
 
             var stat = libs.fs.statSync(__dirname + '/say.mp3');
             if (stat.size < 100) {
@@ -490,7 +493,7 @@ function cacheFile(text, language, volume, seconds, callback) {
 
 function sayItGetSpeech(text, language, volume, callback) {
     if (adapter.config.cache) {
-        var md5filename = cacheDir + libs.crypto.createHash('md5').update(language + ';' + text).digest('hex') + '.mp3';
+        var md5filename = path.join(cacheDir, libs.crypto.createHash('md5').update(language + ';' + text).digest('hex') + '.mp3');
         if (libs.fs.existsSync(md5filename)) {
             getLength(md5filename, function (seconds) {
                 if (callback) callback(md5filename, language, volume, seconds);
@@ -1001,7 +1004,7 @@ function cacheIt(text, language) {
             return;
         }
 
-        var md5filename = cacheDir + libs.crypto.createHash('md5').update(language + ';' + text).digest('hex') + '.mp3';
+        var md5filename = path.join(cacheDir, libs.crypto.createHash('md5').update(language + ';' + text).digest('hex') + '.mp3');
 
         if (libs.fs.existsSync(md5filename)) {
             adapter.log.debug('Text is yet cached: ' + text);
@@ -1067,7 +1070,7 @@ function sayIt(text, language, volume, process) {
     if (text[0] === '/') {
         var cached = false;
         if (adapter.config.cache) {
-            md5filename = cacheDir + libs.crypto.createHash('md5').update(text).digest('hex') + '.mp3';
+            md5filename = path.join(cacheDir, libs.crypto.createHash('md5').update(text).digest('hex') + '.mp3');
 
             if (libs.fs.existsSync(md5filename)) {
                 cached = true;
@@ -1078,9 +1081,9 @@ function sayIt(text, language, volume, process) {
             var parts = text.split('/');
             var adap = parts[0];
             parts.splice(0, 1);
-            var path = parts.join('/');
+            var _path = parts.join('/');
 
-            adapter.readFile(adap, path, function (err, data) {
+            adapter.readFile(adap, _path, function (err, data) {
                 if (data) {
                     try {
                         // Cache the file
@@ -1153,7 +1156,7 @@ function sayIt(text, language, volume, process) {
             if (!isGenerate) {
                 sayitOptions[adapter.config.type].func(text, language, volume, 0);
             } else if (adapter.config.cache) {
-                md5filename = cacheDir + libs.crypto.createHash('md5').update(language + ';' + text).digest('hex') + '.mp3';
+                md5filename = path.join(cacheDir, libs.crypto.createHash('md5').update(language + ';' + text).digest('hex') + '.mp3');
                 if (libs.fs.existsSync(md5filename)) {
                     getLength(md5filename, function (duration) {
                         sayitOptions[adapter.config.type].func(md5filename, language, volume, duration);
@@ -1175,7 +1178,7 @@ function uploadFile(file, callback) {
     adapter.readFile(adapter.namespace, 'tts.userfiles/' + file, function (err, data) {
         if (err || !data) {
             try {
-                adapter.writeFile(adapter.namespace, 'tts.userfiles/' + file, libs.fs.readFileSync(__dirname + '/mp3/' + file), function () {
+                adapter.writeFile(adapter.namespace, 'tts.userfiles/' + file, libs.fs.readFileSync(path.join(__dirname + '/mp3/', file)), function () {
                     if (callback) callback();
                 });
             } catch (e) {
@@ -1211,12 +1214,12 @@ function start() {
         adapter.config.annoTimeout  = parseInt(adapter.config.annoTimeout)  || 15;
         adapter.config.annoVolume   = parseInt(adapter.config.annoVolume)   || 70; // percent from actual volume
 
-        if (!libs.fs.existsSync(__dirname + '/' + adapter.config.announce)) {
+        if (!libs.fs.existsSync(path.join(__dirname, adapter.config.announce))) {
             adapter.readFile(adapter.namespace, 'tts.userfiles/' + adapter.config.announce, function (err, data) {
                 if (data) {
                     try {
-                        libs.fs.writeFileSync(__dirname + '/' + adapter.config.announce, data);
-                        adapter.config.announce = __dirname + '/' + adapter.config.announce;
+                        libs.fs.writeFileSync(path.join(__dirname, adapter.config.announce), data);
+                        adapter.config.announce = path.join(__dirname, adapter.config.announce);
                     } catch (e) {
                         adapter.log.error('Cannot write file: ' + e.toString());
                         adapter.config.announce = '';
@@ -1231,7 +1234,7 @@ function start() {
     // If cache enabled
     if (adapter.config.cache) {
         if (adapter.config.cacheDir && (adapter.config.cacheDir[0] === '/' || adapter.config.cacheDir[0] === '\\')) adapter.config.cacheDir = adapter.config.cacheDir.substring(1);
-        cacheDir = __dirname + '/' + adapter.config.cacheDir;
+        cacheDir = path.join(__dirname, adapter.config.cacheDir);
         if (cacheDir) {
             cacheDir = cacheDir.replace(/\\/g, '/');
             if (cacheDir[cacheDir.length - 1] === '/') cacheDir = cacheDir.substring(0, cacheDir.length - 1);
@@ -1260,11 +1263,11 @@ function start() {
         } else {
             var engine = '';
             // Read the old engine
-            if (libs.fs.existsSync(cacheDir + '/engine.txt')) {
+            if (libs.fs.existsSync(path.join(cacheDir, 'engine.txt'))) {
                 try {
-                    engine = libs.fs.readFileSync(cacheDir + '/engine.txt').toString();
+                    engine = libs.fs.readFileSync(path.join(cacheDir, 'engine.txt')).toString();
                 } catch (e) {
-                    adapter.log.error('Cannot read file "' + cacheDir + '/engine.txt: ' + e.toString());
+                    adapter.log.error('Cannot read file "' + path.join(cacheDir, 'engine.txt') + ': ' + e.toString());
                 }
             }
             // If engine changed
@@ -1273,14 +1276,14 @@ function start() {
                 var files = libs.fs.readdirSync(cacheDir);
                 for (var f = 0; f < files.length; f++) {
                     if (files[f] === 'engine.txt') continue;
-                    if (libs.fs.existsSync(cacheDir + '/' + files[f]) && libs.fs.lstatSync(cacheDir + '/' + files[f]).isDirectory()) {
-                        libs.fs.unlinkSync(cacheDir + '/' + files[f]);
+                    if (libs.fs.existsSync(path.join(cacheDir, files[f])) && libs.fs.lstatSync(path.join(cacheDir, files[f])).isDirectory()) {
+                        libs.fs.unlinkSync(path.join(cacheDir, files[f]));
                     }
                 }
                 try {
-                    libs.fs.writeFileSync(cacheDir + '/engine.txt', adapter.config.engine);
+                    libs.fs.writeFileSync(path.join(cacheDir, 'engine.txt'), adapter.config.engine);
                 } catch (e) {
-                    adapter.log.error('Cannot write file "' + cacheDir + '/engine.txt: ' + e.toString());
+                    adapter.log.error('Cannot write file "' + path.join(cacheDir, 'engine.txt') + ': ' + e.toString());
                 }
             }
         }
