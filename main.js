@@ -922,6 +922,7 @@ function sayItSystemVolume(level) {
             ls = libs.child_process.spawn('amixer', ['cset', 'numid=1', '--', level + '%']);
         } catch (err) {
             adapter.log.error('amixer is not available, so you may hear no audio. Install manually!');
+            ls = null;
         }
     } else if (p.match(/^win/)) {
         //windows
