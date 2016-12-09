@@ -918,7 +918,12 @@ function sayItSystemVolume(level) {
 
     if (p === 'linux') {
         //linux
-        ls = libs.child_process.spawn('amixer', ['cset', 'numid=1', '--', level + '%']);
+        try {
+            ls = libs.child_process.spawn('amixer', ['cset', 'numid=1', '--', level + '%']);
+        } catch (err) {
+            adapter.log.error('amixer is not available, so you may hear no audio. Install manually!');
+            ls = null;
+        }
     } else if (p.match(/^win/)) {
         //windows
         // windows volume is from 0 to 65535
@@ -931,7 +936,7 @@ function sayItSystemVolume(level) {
 
     if (ls) {
         ls.on('error', function (e) {
-            throw new Error('sayIt.play: there was an error while playing the mp3 file:' + e);
+            adapter.log.error('sayIt.play: there was an error while playing the mp3 file:' + e);
         });
     }
 }
@@ -1375,4 +1380,3 @@ function main() {
         uploadFiles(start);
     }
 }
-
