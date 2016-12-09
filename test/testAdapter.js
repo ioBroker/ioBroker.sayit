@@ -84,7 +84,7 @@ describe('Test ' + adapterShortName + ' adapter', function() {
             config.common.enabled  = true;
             config.common.loglevel = 'debug';
 
-            //config.native.dbtype   = 'sqlite';
+            config.native.announce   = 'gong.mp3';
 
             setup.setAdapterConfig(config.common, config.native);
 
