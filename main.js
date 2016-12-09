@@ -936,7 +936,7 @@ function sayItSystemVolume(level) {
 
     if (ls) {
         ls.on('error', function (e) {
-            throw new Error('sayIt.play: there was an error while playing the mp3 file:' + e);
+            adapter.log.error('sayIt.play: there was an error while playing the mp3 file:' + e);
         });
     }
 }
