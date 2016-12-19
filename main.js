@@ -97,7 +97,8 @@ var sayitOptions = {
     "system":     {name: "System",            mp3Required: true,  checkLength: false, func: sayItSystem,     server: false, libs: ['fs', 'crypto', 'http', 'child_process', 'os']},
     "windows":    {name: "Windows default",   mp3Required: false, checkLength: true,  func: sayItWindows,    server: false, libs: ['fs', 'child_process']},
     "sonos":      {name: "Sonos",             mp3Required: true,  checkLength: true,  func: sayItSonos,      server: true,  libs: ['fs', 'crypto', 'http']},
-    "chromecast": {name: "Chromecast",        mp3Required: true,  checkLength: true,  func: sayItChromecast, server: true,  libs: ['fs', 'crypto', 'http']}
+    "chromecast": {name: "Chromecast",        mp3Required: true,  checkLength: true,  func: sayItChromecast, server: true,  libs: ['fs', 'crypto', 'http']},
+	"mpd":		  {name: "MPD",        		  mp3Required: true,  checkLength: true,  func: sayItmpd, 		 server: true,  libs: ['fs', 'crypto', 'http']}
 };
 
 var sayitEngines = {
@@ -120,7 +121,7 @@ var sayitEngines = {
     "en-AU_AZ_Male":            {"gender":"Male",   engine: "ivona", params: ['accessKey', 'secretKey'], "language":"en-AU",      "ename":"Russell",    "name":"Ivona - en-AU - Male - Russell"},
     "en-GB_AZ_Female_Amy":      {"gender":"Female", engine: "ivona", params: ['accessKey', 'secretKey'], "language":"en-GB",      "ename":"Amy",        "name":"Ivona - en-GB - Female - Amy"},
     "en-GB_AZ_Male":            {"gender":"Male",   engine: "ivona", params: ['accessKey', 'secretKey'], "language":"en-GB",      "ename":"Brian",      "name":"Ivona - en-GB - Male - Brian"},
-    "en-GB_AZ_Female_Emma":     {"gender":"Female", engine: "ivona", params: ['accessKey', 'secretKey'], "language":"en-GB",      "ename":"Emma",       "name":"Ivona - en-GB - Female - Emma"},
+    "en-GB_AZ_Female_Emma":     {"gender":"Female", engine: "ivona", params: ['accessKey', 'secretKey'], "language":"en-GB",      "ename":"Emma",       "name":"Ivona - en-GB - Female - Emma"},	
     "en-GB-WLS_AZ_Female":      {"gender":"Female", engine: "ivona", params: ['accessKey', 'secretKey'], "language":"en-GB-WLS",  "ename":"Gwyneth",    "name":"Ivona - en-GB-WLS - Female - Gwyneth"},
     "en-GB-WLS_AZ_Male":        {"gender":"Male",   engine: "ivona", params: ['accessKey', 'secretKey'], "language":"en-GB-WLS",  "ename":"Geraint",    "name":"Ivona - en-GB-WLS - Male - Geraint"},
     "cy-GB_AZ_Female":          {"gender":"Female", engine: "ivona", params: ['accessKey', 'secretKey'], "language":"cy-GB",      "ename":"Gwyneth",    "name":"Ivona - cy-GB - Female - Gwyneth"},
@@ -609,6 +610,54 @@ function sayItSonos(text, language, volume, duration) {
     } else if (webLink) {
         adapter.log.info('Send to sonos ' + (volume ? (volume + ';') : '') + webLink + '/state/' + adapter.namespace + '.tts.mp3');
         adapter.sendTo('sonos', 'send', (volume ? (volume + ';') : '') + webLink + '/state/' + adapter.namespace + '.tts.mp3');
+    } else {
+        adapter.log.warn('Web server is unavailable!');
+    }
+    sayFinished(duration);
+}
+
+function sayItmpd(text, language, volume, duration) {
+    if (text.substring(0, 11) === '$$$ERROR$$$') {
+        sayFinished(0);
+        return;
+    }
+
+    var fileData;
+    if (sayItIsPlayFile(text)) {
+        try {
+            fileData = libs.fs.readFileSync(text);
+        } catch (e) {
+            adapter.log.error('Cannot play file "' + text + '": ' + e.toString());
+            sayFinished(0);
+            return;
+        }
+    } else {
+        try {
+            fileData = libs.fs.readFileSync(__dirname + '/say.mp3');
+        } catch (e) {
+            adapter.log.error('Cannot play file "' + __dirname + '/say.mp3": ' + e.toString());
+            sayFinished(0);
+            return;
+        }
+    }
+
+    volume = volume || sayLastVolume;
+    adapter.setBinaryState(adapter.namespace + '.tts.mp3', fileData);
+    if (volume === 'null') volume = 0;
+    if (adapter.config.mpd_device && webLink) {
+        if (volume) {
+            adapter.log.info('Set "' + adapter.config.mpd + '.status.volume: ' + volume);
+            adapter.setForeignState(adapter.config.mpd + '.status.volume', volume);
+        }
+        adapter.log.info('Set "' + adapter.config.mpd_device + '.say: ' + webLink + '/state/' + adapter.namespace + '.tts.mp3');
+        adapter.setForeignState(adapter.config.mpd_device + '.say', webLink + '/state/' + adapter.namespace + '.tts.mp3');
+    } else if (webLink) {
+        if (volume) {
+            adapter.log.info('Send to MPD (volume): ' + volume);
+            adapter.sendTo('mpd', 'volume', volume);
+        }
+        adapter.log.info('Send to MPD (	say): ' + webLink + '/state/' + adapter.namespace + '.tts.mp3');
+        adapter.sendTo('mpd', '.say', webLink + '/state/' + adapter.namespace + '.tts.mp3');
     } else {
         adapter.log.warn('Web server is unavailable!');
     }
@@ -1332,7 +1381,8 @@ function start() {
     }
 
     if ((adapter.config.type === 'sonos') ||
-        (adapter.config.type === 'chromecast')){
+        (adapter.config.type === 'chromecast') ||
+        (adapter.config.type === 'mpd')){
         adapter.getForeignObject('system.adapter.' + adapter.config.web, function (err, obj) {
             if (!err && obj && obj.native) {
                 webLink = 'http';
