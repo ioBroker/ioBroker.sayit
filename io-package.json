@@ -1,8 +1,13 @@
 {
     "common": {
         "name":                     "sayit",
-        "version": "1.2.1",
+        "version": "1.3.0",
         "news": {
+		  "1.3.0": {
+			"en": "add mpd",
+            "de": "MPD Option hinzugefügt",
+            "ru": "Добавлен MPD"
+          },
           "1.2.1": {
             "en": "Fix cache",
             "de": "Korrigiere cache",
