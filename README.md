@@ -30,6 +30,8 @@ Actual following outputs are supported:
 
 - *Chromecast* - play text on Chromecast device.
 
+- *MPD* - play text on Music Player Daemon. Use a web adapter only **http**, dont work https.
+
 To enable the text to speech on RaspberryPI or linux system call one time following command ```sudo apt-get -y install mpg321``` to install mpg321.
 
 The mp3/wav files can be played to by writing its name into the object. (e.g. "/vis.0/main/img/door-bell.mp3")
