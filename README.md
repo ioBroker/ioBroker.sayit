@@ -30,7 +30,7 @@ Actual following outputs are supported:
 
 - *Chromecast* - play text on Chromecast device.
 
-- *MPD* - play text on Music Player Daemon. Use a web adapter only **http**, dont work https.
+- *MPD* - play text on Music Player Daemon. Use only **http** for web adapter, don't use https.
 
 To enable the text to speech on RaspberryPI or linux system call one time following command ```sudo apt-get -y install mpg321``` to install mpg321.
 
@@ -49,7 +49,7 @@ If you have some program, that can play audio files locally or somewhere else, y
 
 ```myCustomPlayer --option```
 
-If **System** output is selected, the sayit adapter will execute following command on local system: 
+If **System** output is selected, the sayit adapter will execute following command on local system:
 
 ```myCustomPlayer --option /opt/iobroker/node_modules/iobroker.sayit/say.mp3```
 
@@ -65,7 +65,7 @@ After creation of adapter instance will can find following objects:
 - sayit.N.tts.text: Phrase to be spoken.
 - sayit.N.tts.volume: volume which will be used by playing of the phrase.
 - sayit.N.tts.playing: true if text is now playing and false if not. Supported only for "windows" and "system" play mode.
-- sayit.N.tts.cachetext: Phrase to be cached and then it can be used without internet. 
+- sayit.N.tts.cachetext: Phrase to be cached and then it can be used without internet.
    E.g. you can enter here manually "No internet" and if ping to google.com is negative, write  "No internet" to "tts.text" and it will pronounced. Of course cache must be enabled.
 
 State **tts.text** supports extended syntax, so the langugage/engine and volume can be defined together with text. It is used to enable multi-language text2speech engines.
@@ -75,7 +75,7 @@ With ```ru;75;Погода хорошая``` we can force to use russian languag
 
 You can specify the volume of announcement in percent from current or given volume (not from maximal). E.g. if command is ```de;75;Gutes Wetter```and "announce volume" is 50%, the announce will be played with volume 38% from 100% possible.
 
-The system command to play the mp3 file can be specified too. If you leave it blank, the default settings will be used: windows - cmdmp3.exe, OSX - /usr/bin/afplay, linux - mpg321 or omxplayer (recommended). 
+The system command to play the mp3 file can be specified too. If you leave it blank, the default settings will be used: windows - cmdmp3.exe, OSX - /usr/bin/afplay, linux - mpg321 or omxplayer (recommended).
 
 To install omxplayer write ```sudo apt-get install omxplayer``` or write ```sudo apt-get install mpg321``` to install mpg321.
 
@@ -192,10 +192,10 @@ Following values for engines are possible:
 * (bluefox) fix error with mp24ftp
 
 ### 0.3.9 (2015-07-09)
-* (bluefox) fix error by mediaplayer24 
+* (bluefox) fix error by mediaplayer24
 
 ### 0.3.8 (2015-06-09)
-* (bluefox) make the volume for announce configurable 
+* (bluefox) make the volume for announce configurable
 * (bluefox) make the command for "system" configurable
 
 ### 0.3.7 (2015-05-28)
