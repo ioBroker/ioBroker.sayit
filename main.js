@@ -640,24 +640,16 @@ function sayItmpd(text, language, volume, duration) {
             return;
         }
     }
-
     volume = volume || sayLastVolume;
     adapter.setBinaryState(adapter.namespace + '.tts.mp3', fileData);
     if (volume === 'null') volume = 0;
+	
     if (adapter.config.mpd_device && webLink) {
-        if (volume) {
-            adapter.log.info('Set "' + adapter.config.mpd + '.status.volume: ' + volume);
-            adapter.setForeignState(adapter.config.mpd + '.status.volume', volume);
-        }
-        adapter.log.info('Set "' + adapter.config.mpd_device + '.say: ' + webLink + '/state/' + adapter.namespace + '.tts.mp3');
-        adapter.setForeignState(adapter.config.mpd_device + '.say', webLink + '/state/' + adapter.namespace + '.tts.mp3');
+	adapter.log.info('Set "' + adapter.config.mpd_device + '.say: ' + (volume ? (volume + ';') : '') + webLink + '/state/' + adapter.namespace + '.tts.mp3');
+	adapter.setForeignState(adapter.config.mpd_device + '.say', (volume ? (volume + ';') : '') + webLink + '/state/' + adapter.namespace + '.tts.mp3');
     } else if (webLink) {
-        if (volume) {
-            adapter.log.info('Send to MPD (volume): ' + volume);
-            adapter.sendTo('mpd', 'volume', volume);
-        }
-        adapter.log.info('Send to MPD (	say): ' + webLink + '/state/' + adapter.namespace + '.tts.mp3');
-        adapter.sendTo('mpd', '.say', webLink + '/state/' + adapter.namespace + '.tts.mp3');
+	adapter.log.info('Send to MPD ' + (volume ? (volume + ';') : '') + webLink + '/state/' + adapter.namespace + '.tts.mp3');
+        adapter.sendTo('mpd', '.say', (volume ? (volume + ';') : '') + webLink + '/state/' + adapter.namespace + '.tts.mp3');    
     } else {
         adapter.log.warn('Web server is unavailable!');
     }
