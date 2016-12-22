@@ -960,7 +960,7 @@ function sayItSystemVolume(level) {
     if (p === 'linux') {
         //linux
         try {
-            ls = libs.child_process.spawn('amixer', ['cset', 'numid=1', '--', level + '%']);
+            ls = libs.child_process.spawn('amixer', ['cset', 'name="Master Playback Volume"', '--', level + '%']);
         } catch (err) {
             adapter.log.error('amixer is not available, so you may hear no audio. Install manually!');
             ls = null;
