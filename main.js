@@ -642,6 +642,7 @@ function sayItmpd(text, language, volume, duration) {
     }
     volume = volume || sayLastVolume;
     adapter.setBinaryState(adapter.namespace + '.tts.mp3', fileData);
+	
     if (volume === 'null') volume = 0;
 	
     if (adapter.config.mpd_device && webLink) {
@@ -649,7 +650,7 @@ function sayItmpd(text, language, volume, duration) {
 	adapter.setForeignState(adapter.config.mpd_device + '.say', (volume ? (volume + ';') : '') + webLink + '/state/' + adapter.namespace + '.tts.mp3');
     } else if (webLink) {
 	adapter.log.info('Send to MPD ' + (volume ? (volume + ';') : '') + webLink + '/state/' + adapter.namespace + '.tts.mp3');
-        adapter.sendTo('mpd', '.say', (volume ? (volume + ';') : '') + webLink + '/state/' + adapter.namespace + '.tts.mp3');    
+        adapter.sendTo('mpd', 'say', (volume ? (volume + ';') : '') + webLink + '/state/' + adapter.namespace + '.tts.mp3');    
     } else {
         adapter.log.warn('Web server is unavailable!');
     }
