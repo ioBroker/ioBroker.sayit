@@ -144,8 +144,12 @@ Following values for engines are possible:
 
 ## Changelog
 
+### 1.3.1 (2016-12-27)
+* (bluefox) small fix of config dialog
+* (AirKing555) Fix Volume change
+
 ### 1.3.0 (2016-12-20)
-* (bluefox) add mpd
+* (instalator) add mpd
 
 ### 1.2.1 (2016-10-31)
 * (bluefox) Fix cache

@@ -447,7 +447,6 @@
                 $(this).trigger('change');
             });
         });
-        onChange(false);
 
         if (!settings.engine) {
             settings.engine = systemLang;
@@ -516,6 +515,8 @@
              $(this).css({background: 'gray'});
              }, false);*/
         }
+
+        onChange(false);
     }
 
     // ... and the function save has to exist.
