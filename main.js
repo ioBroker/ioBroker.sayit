@@ -98,7 +98,7 @@ var sayitOptions = {
     "windows":    {name: "Windows default",   mp3Required: false, checkLength: true,  func: sayItWindows,    server: false, libs: ['fs', 'child_process']},
     "sonos":      {name: "Sonos",             mp3Required: true,  checkLength: true,  func: sayItSonos,      server: true,  libs: ['fs', 'crypto', 'http']},
     "chromecast": {name: "Chromecast",        mp3Required: true,  checkLength: true,  func: sayItChromecast, server: true,  libs: ['fs', 'crypto', 'http']},
-	"mpd":		  {name: "MPD",        		  mp3Required: true,  checkLength: true,  func: sayItmpd, 		 server: true,  libs: ['fs', 'crypto', 'http']}
+    "mpd":        {name: "MPD",               mp3Required: true,  checkLength: true,  func: sayItmpd,        server: true,  libs: ['fs', 'crypto', 'http']}
 };
 
 var sayitEngines = {
@@ -688,20 +688,21 @@ function sayItChromecast(text, language, volume, duration) {
 
     if (volume === 'null') volume = 0;
 
+    //Create announcement JSON
+    var announcement = {
+	url: webLink + '/state/' + adapter.namespace + '.tts.mp3'
+    }
+    if (volume) {
+      announcement.volume = volume;
+    }
+    var announcementJSON = JSON.stringify(announcement);
+
     if (adapter.config.cDevice && webLink) {
-        if (volume) {
-            adapter.log.info('Set "' + adapter.config.cDevice + '.status.volume: ' + volume);
-            adapter.setForeignState(adapter.config.cDevice + '.status.volume', volume);
-        }
-        adapter.log.info('Set "' + adapter.config.cDevice + '.player.url2play: ' + webLink + '/state/' + adapter.namespace + '.tts.mp3');
-        adapter.setForeignState(adapter.config.cDevice + '.player.url2play', webLink + '/state/' + adapter.namespace + '.tts.mp3');
+        adapter.log.info('Set "' + adapter.config.cDevice + '.player.announcement: ' + announcementJSON);
+        adapter.setForeignState(adapter.config.cDevice + '.player.announcement', announcementJSON);
     } else if (webLink) {
-        if (volume) {
-            adapter.log.info('Send to Chromecast (volume): ' + volume);
-            adapter.sendTo('chromecast', 'volume', volume);
-        }
-        adapter.log.info('Send to Chromecast (url2play): ' + webLink + '/state/' + adapter.namespace + '.tts.mp3');
-        adapter.sendTo('chromecast', 'url2play', webLink + '/state/' + adapter.namespace + '.tts.mp3');
+        adapter.log.info('Send to Chromecast (announcement): ' + announcementJSON);
+        adapter.sendTo('chromecast', 'announcement', announcementJSON);
     } else {
         adapter.log.warn('Web server is unavailable!');
     }
