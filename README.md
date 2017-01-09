@@ -144,6 +144,9 @@ Following values for engines are possible:
 
 ## Changelog
 
+### 1.3.2 (2017-01-10)
+* (angelnu) changes for new chromecast tts
+
 ### 1.3.1 (2016-12-27)
 * (bluefox) small fix of config dialog
 * (AirKing555) Fix Volume change
