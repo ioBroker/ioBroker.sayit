@@ -489,7 +489,7 @@ function sayItGetSpeechPicoTTS(text, language, volume, callback) {
     try{
         var cmd = 'pico2wave -l '+ language + ' -w ' + __dirname + '/say.wav "' + text + '"';
         var ls = exec(cmd, function (error, stdout, stderr) {
-            var ls = exec('lame say.wav say.mp3', function (error, stdout, stderr){
+            var ls = exec('lame ' +  __dirname + '/say.wav ' + __dirname + '/say.mp3', function (error, stdout, stderr){
                 if (callback) callback(text, language, volume);
                 if (error) adapter.log.error('Cannot creat "say.mp3":' + error);
             });
