@@ -482,12 +482,13 @@ function sayItGetSpeechAmazon(text, language, volume, callback) {
 }
 
 function sayItGetSpeechPicoTTS(text, language, volume, callback) {
-    if (!libs.fs) libs.fs = require('fs');
-    if (!libs.os) libs.os = require('os');
+    var fs = require('fs');
+    var exec = require('child_process').exec;
+
 
     try{
         var cmd = 'pico2wave -l '+ language + ' -w ' + __dirname + '/say.wav' + text + '&& lame say.wav say.mp3';
-        var ls = libs.child_process.exec(cmd, function (error, stdout, stderr) {
+        var ls = exec(cmd, function (error, stdout, stderr) {
             if (callback) callback(text, language, volume);
             if (error) adapter.log.error('Cannot creat "say.mp3":' + error);
         });
