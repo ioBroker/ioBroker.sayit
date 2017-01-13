@@ -40,9 +40,24 @@ Blockly.Sendto.blocks['sayit'] =
 
 Blockly.Blocks['sayit'] = {
     init: function() {
+        var options = [];
+        if (typeof main !== 'undefined' && main.instances) {
+            for (var i = 0; i < main.instances.length; i++) {
+                var m = main.instances[i].match(/^system.adapter.sayit.(\d+)$/);
+                if (m) {
+                    var n = parseInt(m[1], 10);
+                    options.push(['sayit.' + n, '.' + n]);
+                }
+            }
+        } else {
+            for (var n = 0; n <= 4; n++) {
+                options.push(['sayit.' + n, '.' + n]);
+            }
+        }
+
         this.appendDummyInput('INSTANCE')
             .appendField(Blockly.Words['sayit'][systemLang])
-            .appendField(new Blockly.FieldDropdown([['sayit.0', '.0'], ['sayit.1', '.1'], ['sayit.2', '.2'], ['sayit.3', '.3'], ['sayit.4', '.4']]), 'INSTANCE');
+            .appendField(new Blockly.FieldDropdown(options), 'INSTANCE');
 
         var languages;
         if (systemLang === 'en') {

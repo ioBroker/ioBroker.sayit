@@ -144,6 +144,9 @@ Following values for engines are possible:
 
 ## Changelog
 
+### 1.3.3 (2017-01-13)
+* (bluefox) show only installed instances in blockly
+
 ### 1.3.2 (2017-01-10)
 * (angelnu) changes for new chromecast tts
 
