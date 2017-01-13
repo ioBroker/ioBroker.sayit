@@ -483,6 +483,7 @@ function sayItGetSpeechAmazon(text, language, volume, callback) {
 
 function sayItGetSpeechPicoTTS(text, language, volume, callback) {
     if (!libs.fs) libs.fs = require('fs');
+    if (!libs.os) libs.os = require('os');
 
     try{
         var cmd = 'pico2wave -l '+ language + ' -w ' + __dirname + '/say.wav' + text + '&& lame say.wav say.mp3';
