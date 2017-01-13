@@ -109,6 +109,12 @@ var sayitEngines = {
     "es":       {name: "Google - Espaniol",        engine: "google"},
     "fr":       {name: "Google - Français",        engine: "google"},
     "ru_YA":    {name: "Yandex - Русский",         engine: "yandex"},
+    "en-US":    {name: "PicoTTS - Englisch US",     engine: "PicoTTS"},
+    "en-GB":    {name: "PicoTTS - Englisch GB",     engine: "PicoTTS"},
+    "de-DE":    {name: "PicoTTS - Deutsch",         engine: "PicoTTS"},
+    "it-IT":    {name: "PicoTTS - Italiano",        engine: "PicoTTS"},
+    "es-ES":    {name: "PicoTTS - Espaniol",        engine: "PicoTTS"},
+    "fr-FR":    {name: "PicoTTS - Français",        engine: "PicoTTS"},
     "ru-RU_AZ_Female":          {"gender":"Female", engine: "ivona", params: ['accessKey', 'secretKey'], "language":"ru-RU",      "ename":"Tatyana",    "name":"Ivona - Русский - Татьяна"},
     "ru-RU_AZ_Male":            {"gender":"Male",   engine: "ivona", params: ['accessKey', 'secretKey'], "language":"ru-RU",      "ename":"Maxim",      "name":"Ivona - Русский - Максим"},
     "de-DE_AZ_Female":          {"gender":"Female", engine: "ivona", params: ['accessKey', 'secretKey'], "language":"de-DE",      "ename":"Marlene",    "name":"Ivona - Deutsch - Marlene"},
@@ -475,6 +481,21 @@ function sayItGetSpeechAmazon(text, language, volume, callback) {
     }
 }
 
+function sayItGetSpeechPicoTTS(text, language, volume, callback) {
+    if (!libs.fs) libs.fs = require('fs');
+
+    try{
+        var cmd = 'pico2wave -l '+ language + ' -w ' + __dirname + '/say.wav' + text + '&& lame say.wav say.mp3';
+        var ls = libs.child_process.exec(cmd, function (error, stdout, stderr) {
+            if (callback) callback(text, language, volume);
+            if (error) adapter.log.error('Cannot creat "say.mp3":' + error);
+        });
+    }catch(e){
+        adapter.log.error(e.toString());
+        if (callback) callback('$$$ERROR$$$' + text, language, volume);
+    }
+}
+
 function cacheFile(text, language, volume, seconds, callback) {
     if (text.substring(0, 11) !== '$$$ERROR$$$') {
         if (adapter.config.cache) {
@@ -525,6 +546,12 @@ function sayItGetSpeech(text, language, volume, callback) {
 
             case 'ivona':
                 sayItGetSpeechAmazon(text, language, volume, function (_text, _language, _volume, seconds) {
+                    cacheFile(_text, _language, _volume, seconds, callback);
+                });
+                break;
+
+            case 'PicoTTS':
+                sayItGetSpeechPicoTTS(text, language, volume, function (_text, _language, _volume, seconds) {
                     cacheFile(_text, _language, _volume, seconds, callback);
                 });
                 break;
