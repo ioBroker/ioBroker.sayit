@@ -38,12 +38,19 @@ The mp3/wav files can be played to by writing its name into the object. (e.g. "/
 
 The file must be first loaded.
 
-To use Yandex voices you must request the API key here: [https://tech.yandex.ru/speechkit/cloud/doc/dg/concepts/About-docpage/](https://tech.yandex.ru/speechkit/cloud/doc/dg/concepts/About-docpage/).
-
-Actual Yandex supports only russian.
-
-To use Amazon(Ivona) voices you need to get access key and secret key [here](http://www.ivona.com/us/for-business/speech-cloud/).
-
+### TTS engines
+online: 
+    - Google: English, German, Russian, Italian, Spanish, French
+    - Yandex: Russian
+        To use Yandex voices you must request the API key here: [https://tech.yandex.ru/speechkit/cloud/doc/dg/concepts/About-docpage/](https://tech.yandex.ru/speechkit/cloud/doc/dg/concepts/About-docpage/).  
+    - Ivona: English, German, Russian, Italian, Spanish, French, Dansk, Welsh, Icelandic, Dutch, Polish, Portuguese, Romanian, Swedish, Turkish
+        To use Amazon(Ivona) voices you need to get access key and secret key [here](http://www.ivona.com/us/for-business/speech-cloud/).
+    
+offline:
+    - PicoTTS (linux only): English, German, Italian, Spanish, French
+        For PicoTTS it is necessary to install the following packages: libttspico-utils and lame. 
+        Installation command: 'sudo apt-get install libttspico-utils lame'
+        
 ### System command
 If you have some program, that can play audio files locally or somewhere else, you can write this command here. E.g.
 
