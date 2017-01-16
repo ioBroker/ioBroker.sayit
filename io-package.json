@@ -1,8 +1,13 @@
 {
     "common": {
         "name":                     "sayit",
-        "version": "1.3.3",
+        "version": "1.4.0",
         "news": {
+          "1.4.0": {
+            "en": "fix install problem\nadd PicoTTS as source",
+            "de": "Korrigiere Installationsprozess\nPicoTTS hinzugefügt",
+            "ru": "Исправлена установка\nДобавлен PicoTTS движок"
+          },
           "1.3.3": {
             "en": "show only installed instances in blockly",
             "de": "Zeige nur installierten Instanzen im Blockly",

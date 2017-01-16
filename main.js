@@ -1452,7 +1452,8 @@ function start() {
 function main() {
     libs.fs = require('fs');
 
-    if ((!process.argv || process.argv.indexOf('--force') === -1) && (!adapter.common || !adapter.common.enabled)) {
+    if ((process.argv && process.argv.indexOf('--install') !== -1) ||
+        ((!process.argv || process.argv.indexOf('--force') === -1) && (!adapter.common || !adapter.common.enabled))) {
         adapter.log.info('Install process. Upload files and stop.');
         // Check if files exists in datastorage
         uploadFiles(function () {
