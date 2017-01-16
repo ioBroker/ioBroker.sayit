@@ -486,20 +486,23 @@ function sayItGetSpeechAmazon(text, language, volume, callback) {
 }
 
 function sayItGetSpeechPicoTTS(text, language, volume, callback) {
-    var fs = require('fs');
-    var exec = require('child_process').exec;
+    if (!libs.fs)   libs.fs   = require('fs');
+    if (!libs.exec) libs.exec = require('child_process').exec;
 
-
-    try{
+    try {
         var cmd = 'pico2wave -l '+ language + ' -w ' + __dirname + '/say.wav "' + text + '"';
-        var ls = exec(cmd, function (error, stdout, stderr) {
-            var ls = exec('lame ' +  __dirname + '/say.wav ' + __dirname + '/say.mp3', function (error, stdout, stderr){
+        libs.exec(cmd, function (error, stdout, stderr) {
+            if (error) {
+                adapter.log.error('Cannot create (pico2wave) "say.wav": ' + error);
                 if (callback) callback(text, language, volume);
-                if (error) adapter.log.error('Cannot creat "say.mp3":' + error);
-            });
-            if (error) adapter.log.error('Cannot creat "say.wav":' + error);
+            } else {
+                libs.exec('lame ' +  __dirname + '/say.wav ' + __dirname + '/say.mp3', function (error, stdout, stderr) {
+                    if (error) adapter.log.error('Cannot create (lame) "say.mp3": ' + error);
+                    if (callback) callback(text, language, volume);
+                });
+            }
         });
-    }catch(e){
+    } catch (e) {
         adapter.log.error(e.toString());
         if (callback) callback('$$$ERROR$$$' + text, language, volume);
     }
