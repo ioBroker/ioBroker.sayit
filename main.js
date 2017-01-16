@@ -1280,6 +1280,7 @@ function uploadFile(file, callback) {
 
 function _uploadFiles(files, callback) {
     if (!files || !files.length) {
+        adapter.log.info('All files uploaded');
         if (callback) callback();
         return;
     }
@@ -1452,6 +1453,7 @@ function main() {
     libs.fs = require('fs');
 
     if ((!process.argv || process.argv.indexOf('--force') === -1) && (!adapter.common || !adapter.common.enabled)) {
+        adapter.log.info('Install process. Upload files and stop.');
         // Check if files exists in datastorage
         uploadFiles(function () {
             if (adapter.stop) {
