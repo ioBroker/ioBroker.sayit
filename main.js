@@ -72,14 +72,18 @@ function processMessages() {
 }
 
 function stop(callback) {
-    if (adapter && adapter.log) {
-        adapter.log.info('stopping...');
-    }
-    setTimeout(function () {
-        process.exit()
-    }, 1000);
+    try {
+        if (adapter && adapter.log && adapter.log.info) {
+            adapter.log.info('stopping...');
+        }
+        setTimeout(function () {
+            process.exit();
+        }, 1000);
 
-    if (typeof callback === 'function') callback();
+        if (typeof callback === 'function') callback();
+    } catch (e) {
+        process.exit();
+    }
 }
 
 var sayLastGeneratedText = '';
@@ -1271,21 +1275,23 @@ function uploadFile(file, callback) {
     });
 }
 
+function _uploadFiles(files, callback) {
+    if (!files || !files.length) {
+        if (callback) callback();
+        return;
+    }
+
+    uploadFile(files.pop(), function () {
+        setTimeout(_uploadFiles, 0, files, callback);
+    });
+}
 function uploadFiles(callback) {
     if (libs.fs.existsSync(__dirname + '/mp3')) {
         adapter.log.info('Upload announce mp3 files');
-        var files = libs.fs.readdirSync(__dirname + '/mp3');
-
-        var count = files.length;
-        for (var f = 0; f < files.length; f++) {
-            uploadFile(files[f], function () {
-                if (!--count && callback) callback();
-            });
-        }
-
-        return;
+        _uploadFiles(libs.fs.readdirSync(__dirname + '/mp3'), callback);
+    } else if (callback) {
+        callback();
     }
-    if (callback) callback();
 }
 
 function start() {
