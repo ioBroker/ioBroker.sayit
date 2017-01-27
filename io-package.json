@@ -1,8 +1,13 @@
 {
     "common": {
         "name":                     "sayit",
-        "version": "1.4.0",
+        "version": "1.4.1",
         "news": {
+          "1.4.1": {
+            "en": "Add AWS Polly as source",
+            "de": "AWS Polly hinzugefügt",
+            "ru": "Добавить AWS Polly в качестве источника"
+          },
           "1.4.0": {
             "en": "fix install problem\nadd PicoTTS as source",
             "de": "Korrigiere Installationsprozess\nPicoTTS hinzugefügt",
