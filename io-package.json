@@ -1,12 +1,12 @@
 {
     "common": {
         "name":                     "sayit",
-        "version": "1.4.1",
+        "version": "1.5.0",
         "news": {
-          "1.4.1": {
-            "en": "Add AWS Polly as source",
-            "de": "AWS Polly hinzugefügt",
-            "ru": "Добавить AWS Polly в качестве источника"
+          "1.5.0": {
+            "en": "Add AWS Polly and cloud as source",
+            "de": "AWS Polly und Cloud hinzugefügt",
+            "ru": "Добавлено AWS Polly и Cloud в качестве источника"
           },
           "1.4.0": {
             "en": "fix install problem\nadd PicoTTS as source",
@@ -102,7 +102,8 @@
         "announce":                 "",
         "annoTimeout":              15,
         "annoDuration":             0,
-        "annoVolume":               "70"
+        "annoVolume":               "70",
+        "cloud":                    ""
     },
     "instanceObjects": [
       {
