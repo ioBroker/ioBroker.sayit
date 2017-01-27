@@ -45,6 +45,8 @@ online:
   To use Yandex voices you must request the API key here: [https://tech.yandex.ru/speechkit/cloud/doc/dg/concepts/About-docpage/](https://tech.yandex.ru/speechkit/cloud/doc/dg/concepts/About-docpage/).  
 - Ivona: English, German, Russian, Italian, Spanish, French, Dansk, Welsh, Icelandic, Dutch, Polish, Portuguese, Romanian, Swedish, Turkish  
         To use Amazon(Ivona) voices you need to get access key and secret key [here](http://www.ivona.com/us/for-business/speech-cloud/).
+- Cloud: 
+        To use Cloud voices you need configured cloud adapter. (It can be disabled, but must be configured). This service use AWS Polly and it can be used directly.
 - Amazon Web Services Polly: 
         To use AWS Polly voices you need to create access key and secret key [here](https://console.aws.amazon.com/iam/home). The Amazon documentation can you find [here](http://docs.aws.amazon.com/general/latest/gr/managing-aws-access-keys.html).
     
@@ -52,6 +54,11 @@ offline:
 - PicoTTS (linux only): English, German, Italian, Spanish, French  
         For PicoTTS it is necessary to install the following packages: libttspico-utils and lame.  
         Installation command: 'sudo apt-get install libttspico-utils lame'
+        
+### Cloud
+This service use Amazon Polly service via ioBroker cloud.
+
+Everything what required is running cloud adapter. The instance should be selected in the configuration.
         
 ### System command
 If you have some program, that can play audio files locally or somewhere else, you can write this command here. E.g.
