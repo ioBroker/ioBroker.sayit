@@ -458,7 +458,7 @@ function sayItGetSpeechPolly(text, language, volume, callback) {
                         }
                     });
                 } else {
-                    adapter.log.error('Answer in invalid format');
+                    adapter.log.error('Answer in invalid format: ' + (data ? data.toString() : 'null'));
                     if (callback) callback('$$$ERROR$$$' + text, language, volume, 0);
                 }
             }
@@ -531,7 +531,7 @@ function sayItGetSpeechCloud(text, language, volume, callback) {
                         }
                     });
                 } else {
-                    adapter.log.error('Answer in invalid format');
+                    adapter.log.error('Answer in invalid format: ' + (data ? data.toString() : 'null'));
                     if (callback) callback('$$$ERROR$$$' + text, language, volume, 0);
                 }
             });
