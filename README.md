@@ -55,11 +55,14 @@ offline:
         For PicoTTS it is necessary to install the following packages: libttspico-utils and lame.  
         Installation command: 'sudo apt-get install libttspico-utils lame'
         
-### Cloud
-This service use Amazon Polly service via ioBroker cloud.
+### Cloud and Amazon Web Services Polly text formatting
+You can format your text with (Speech Synthesis Markup Language)[http://docs.aws.amazon.com/polly/latest/dg/ssml.html].
 
-Everything what required is running cloud adapter. The instance should be selected in the configuration.
-        
+Most useful features:
+- ```<break time="3s"/>````- make a pause for x seconds (max 10 seconds).
+- ```<emphasis> big </emphasis>``` - make an emphasis on some word.
+- ```<prosody volume="+6dB" rate="90%">I am speaking this</prosody>``` - control speed and volume parameters.
+
 ### System command
 If you have some program, that can play audio files locally or somewhere else, you can write this command here. E.g.
 
