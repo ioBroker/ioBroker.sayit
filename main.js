@@ -504,14 +504,17 @@ function sayItGetSpeechCloud(text, language, volume, callback) {
             }
         };
         // Set up the request
-        var postReq = libs.https.request(postOptions, function(res) {
-            var data = null;
+        var postReq = libs.https.request(postOptions, function (res) {
+            adapter.log.debug('Status code: ' + res.statusCode);
+            if (res.statusCode === 200) {
+                res.setEncoding('binary');
+            } else {
+                res.setEncoding('utf8');
+            }
+            var data = [];
             res.on('data', function (chunk) {
-                if (!data) {
-                    data = chunk
-                } else {
-                    data += chunk;
-                }
+                if (typeof chunk === 'string') chunk = new Buffer(chunk, 'binary');
+                data.push(chunk);
             });
 
             res.on('error', function (error) {
@@ -519,7 +522,8 @@ function sayItGetSpeechCloud(text, language, volume, callback) {
             });
 
             res.on('end', function () {
-                if (data instanceof Buffer) {
+                data = Buffer.concat(data);
+                if (data instanceof Buffer && data.length > 500) {
                     libs.fs.writeFile(__dirname + '/say.mp3', data, 'binary', function (err) {
                         if (err) {
                             adapter.log.error('File error: ' + err);
@@ -531,7 +535,7 @@ function sayItGetSpeechCloud(text, language, volume, callback) {
                         }
                     });
                 } else {
-                    adapter.log.error('Answer in invalid format: ' + (data ? data.toString() : 'null'));
+                    adapter.log.error('Answer in invalid format: ' + (data ? data.toString().substring(0, 100) : 'null'));
                     if (callback) callback('$$$ERROR$$$' + text, language, volume, 0);
                 }
             });
