@@ -426,7 +426,7 @@ function sayItGetSpeechAmazon(text, language, volume, callback) {
 
 function sayItGetSpeechPolly(text, language, volume, callback) {
     if (!libs.aws) libs.aws = require('aws-sdk');
-    if (!libs.fs)   libs.fs   = require('fs');
+    if (!libs.fs)  libs.fs   = require('fs');
 
     try {
         polly = polly || new libs.aws.Polly({
@@ -434,10 +434,15 @@ function sayItGetSpeechPolly(text, language, volume, callback) {
             secretAccessKey: adapter.config.secretKey,
             region:          adapter.config.region
         });
-
+        var type = 'text';
+        if (text.match(/<[-+\w\s'"=]+>/)) {
+            if (!text.match(/^<speak>/)) text = '<speak>' + text + '</speak>';
+            type = 'ssml';
+        }
         var params = {
             Text:         text,
             OutputFormat: 'mp3',
+            TextType:     type,
             VoiceId:      sayitEngines[language].ename
         };
 
@@ -488,11 +493,19 @@ function sayItGetSpeechCloud(text, language, volume, callback) {
     }
 
     try {
+        var type = 'text';
+        if (text.match(/<[-+\w\s'"=]+>/)) {
+            if (!text.match(/^<speak>/)) text = '<speak>' + text + '</speak>';
+            type = 'ssml';
+        }
         var postData = JSON.stringify({
-            Text:    text,
-            appkey:  appkey,
-            VoiceId: sayitEngines[language].ename
+            Text:     text,
+            appkey:   appkey,
+            TextType: type,
+            VoiceId:  sayitEngines[language].ename
         });
+        adapter.log.debug(postData);
+
         var postOptions = {
             host: 'iobroker.net',
             port: 443,
