@@ -59,9 +59,12 @@ offline:
 You can format your text with (Speech Synthesis Markup Language)[http://docs.aws.amazon.com/polly/latest/dg/ssml.html].
 
 Most useful features:
-- ```<break time="3s"/>````- make a pause for x seconds (max 10 seconds).
+- ```<break time="3s"/>```- make a pause for x seconds (max 10 seconds).
 - ```<emphasis> big </emphasis>``` - make an emphasis on some word.
 - ```<prosody volume="+6dB" rate="90%">I am speaking this</prosody>``` - control speed and volume parameters.
+- ```<say-as interpret-as="digits">12345</say-as>``` - say every digit separately.
+
+More [info](https://developer.amazon.com/public/solutions/alexa/alexa-skills-kit/docs/speech-synthesis-markup-language-ssml-reference).
 
 ### System command
 If you have some program, that can play audio files locally or somewhere else, you can write this command here. E.g.
