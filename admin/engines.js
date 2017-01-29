@@ -172,16 +172,15 @@ var sayitEngines = {
 };
 
 var sayitOptions = {
-    "browser":    {name: "Browser",           params: ['cache', 'instance'],                       mp3Required: true,  checkLength: true, server: true,  libs: ['fs', 'crypto', 'http']},
-    "mp24ftp":    {name: "MediaPlayer24+FTP", params: ['cache', 'server', 'port', 'user', 'pass'], mp3Required: true,  checkLength: true, server: false, libs: ['fs', 'crypto', 'http', 'jsftp']},
-    "mp24":       {name: "MediaPlayer24",     params: ['server'],                                  mp3Required: false, checkLength: true, server: false, libs: ['fs', 'crypto', 'http']},
-    "system":     {name: "System",            params: ['cache'],                                   mp3Required: true,  checkLength: false,server: false, libs: ['fs', 'crypto', 'http', 'child_process', 'os']},
-    "windows":    {name: "Windows default",   params: [],                                          mp3Required: false, checkLength: true, server: false, libs: ['fs', 'child_process']},
-    "sonos":      {name: "Sonos",             params: ['device', 'web', 'webServer'],              mp3Required: true,  checkLength: true, server: true,  libs: ['fs', 'crypto', 'http']},
-    "chromecast": {name: "Chromecast",        params: ['cDevice', 'web', 'webServer'],             mp3Required: true,  checkLength: true, server: true,  libs: ['fs', 'crypto', 'http']},
-    "mpd":        {name: "MPD",               params: ['mpd_device','web', 'webServer'],           mp3Required: true,  checkLength: true, server: true,  libs: ['fs', 'crypto', 'http']}
+    "browser":    {name: "Browser",           params: ['engine', 'cache', 'instance'],                       mp3Required: true,  checkLength: true,  func: (typeof sayItBrowser    !== 'undefined') ? sayItBrowser    : null, server: true,  libs: ['fs', 'crypto', 'http']},
+    "mp24ftp":    {name: "MediaPlayer24+FTP", params: ['engine', 'cache', 'server', 'port', 'user', 'pass'], mp3Required: true,  checkLength: true,  func: (typeof sayItMP24ftp    !== 'undefined') ? sayItMP24ftp    : null, server: false, libs: ['fs', 'crypto', 'http', 'jsftp']},
+    "mp24":       {name: "MediaPlayer24",     params: ['server'],                                            mp3Required: false, checkLength: true,  func: (typeof sayItMP24       !== 'undefined') ? sayItMP24       : null, server: false, libs: ['fs', 'crypto', 'http']},
+    "system":     {name: "System",            params: ['engine', 'cache'],                                   mp3Required: true,  checkLength: false, func: (typeof sayItSystem     !== 'undefined') ? sayItSystem     : null, server: false, libs: ['fs', 'crypto', 'http', 'child_process', 'os']},
+    "windows":    {name: "Windows default",   params: [],                                                    mp3Required: false, checkLength: true,  func: (typeof sayItWindows    !== 'undefined') ? sayItWindows    : null, server: false, libs: ['fs', 'child_process']},
+    "sonos":      {name: "Sonos",             params: ['engine', 'cache', 'device', 'web', 'webServer'],     mp3Required: true,  checkLength: true,  func: (typeof sayItSonos      !== 'undefined') ? sayItSonos      : null, server: true,  libs: ['fs', 'crypto', 'http']},
+    "chromecast": {name: "Chromecast",        params: ['engine', 'cache', 'cDevice', 'web', 'webServer'],    mp3Required: true,  checkLength: true,  func: (typeof sayItChromecast !== 'undefined') ? sayItChromecast : null, server: true,  libs: ['fs', 'crypto', 'http']},
+    "mpd":        {name: "MPD",               params: ['engine', 'cache', 'mpd_device','web', 'webServer'],  mp3Required: true,  checkLength: true,  func: (typeof sayItMpd        !== 'undefined') ? sayItMpd        : null, server: true,  libs: ['fs', 'crypto', 'http']}
 };
-
 
 if (typeof module !== 'undefined' && module.parent) {
     module.exports.sayitEngines = sayitEngines;
