@@ -504,7 +504,6 @@ function sayItGetSpeechCloud(text, language, volume, callback) {
             TextType: type,
             VoiceId:  sayitEngines[language].ename
         });
-        adapter.log.debug(postData);
 
         var postOptions = {
             host: 'iobroker.net',
@@ -615,6 +614,8 @@ function sayItGetSpeech(text, language, volume, callback) {
     }
 
     if (sayitEngines[language] && sayitEngines[language].engine) {
+        if (!sayitEngines[language].ssml) text = text.replace(/<\/?[-+\w\s'"=]+>/g, ''); // remove SSML
+
         switch (sayitEngines[language].engine) {
             case 'google':
                 sayItGetSpeechGoogle(text, language, volume, function (_text, _language, _volume, seconds) {
