@@ -1,3 +1,5 @@
+// DONT Forget to update sayitEngines in blockly.js (If you change this table)
+
 var sayitEngines = {
     "en":       {name: "Google - English",         engine: "google",  params: []},
     "de":       {name: "Google - Deutsch",         engine: "google",  params: []},

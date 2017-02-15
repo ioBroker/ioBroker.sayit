@@ -165,6 +165,9 @@ Following values for engines are possible:
 - tr-TR_AZ_Female: Ivona - tr-TR - Female - Filiz
 
 ## Changelog
+### 1.5.1 (2017-02-15)
+* (bluefox) Fix blockly language
+
 ### 1.5.0 (2017-01-27)
 * (DarkChaos) Add AWS Polly as source
 * (bluefox) Add cloud as source
