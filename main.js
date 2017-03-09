@@ -1275,7 +1275,12 @@ function sayIt(text, language, volume, process) {
                 } else {
                     // may be file from real FS
                     if (libs.fs.existsSync(text)) {
-                        data = libs.fs.readFileSync(text);
+                        try {
+                            data = libs.fs.readFileSync(text);
+                        } catch (e) {
+                            adapter.log.error('Cannot read file "' + text + '": ' + e.toString());
+                            sayFinished(0);
+                        }
                         // Cache the file
                         if (md5filename) libs.fs.writeFileSync(md5filename, data);
                         libs.fs.writeFileSync(__dirname + '/say.mp3', data);
@@ -1353,6 +1358,20 @@ function sayIt(text, language, volume, process) {
 }
 
 function uploadFile(file, callback) {
+    try {
+        var stat = libs.fs.statSync(path.join(__dirname + '/mp3/', file));
+        if (!stat.isFile()) {
+            // ignore not a file
+            if (callback) callback();
+            return;
+        }
+    } catch (e) {
+        // ignore not a file
+        if (callback) callback();
+        return;
+    }
+
+
     adapter.readFile(adapter.namespace, 'tts.userfiles/' + file, function (err, data) {
         if (err || !data) {
             try {

@@ -8,6 +8,8 @@ ioBroker sayit adapter
 
 
 SayIt Adapter can convert text to speech and play it on some device.
+
+## Configuration
 Actual following outputs are supported:
 
 - *Browser* - the text will be played by browser with opened iobroker.vis page. It is supported almost by every desktop browser and by few mobily Browsers.
@@ -165,6 +167,9 @@ Following values for engines are possible:
 - tr-TR_AZ_Female: Ivona - tr-TR - Female - Filiz
 
 ## Changelog
+### 1.5.2 (2017-03-09)
+* (bluefox) Catch error if some directory in mp3 folder
+
 ### 1.5.1 (2017-02-15)
 * (bluefox) Fix blockly language
 

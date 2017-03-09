@@ -9,6 +9,7 @@
 <script type="text/javascript" src="engines.js"></script>
 <script type="text/javascript" src="../../js/translate.js"></script>
 <script type="text/javascript" src="../../js/adapter-settings.js"></script>
+<script type="text/javascript" src="words.js"></script>
 <style>
     #drop_zone{
         border: 2px dashed #bbb;
@@ -26,45 +27,6 @@
     }
 </style>
 <script type="text/javascript">
-    systemDictionary = {
-        "sayIt adapter settings": {
-            "de": "sayIt Einstellungen",
-            "ru": "sayIt Настройки"
-        },
-        "Language:":        {"en": "Language:",         "de": "Sprache:",       "ru": "Язык:"},
-        "Type:":            {"en": "Output in:",        "de": "Ausgabe durch:", "ru": "Вывод звука:"},
-        "Cache:":           {"en": "Cache received audio files:",            "de": "Cache benutzen:",         "ru": "Кэшировать полученные аудио-файлы:"},
-        "Server:":          {"en": "Server:",           "de": "Server:",        "ru": "Сервер:"},
-        "Port:":            {"en": "Port:",             "de": "Port:",          "ru": "Порт:"},
-        "User:":            {"en": "User:",             "de": "Anwender:",      "ru": "Пользователь:"},
-        "Password:":        {"en": "Password:",         "de": "Kennwort:",      "ru": "Пароль:"},
-        "Browser instance:": {"en": "Browser instance:", "de": "Browser-Instanz:", "ru": "ID броузера:"},
-        "Device:":          {"en": "Device:",           "de": "Gerät:",         "ru": "Устройство:"},
-        "Web server IP:":   {"en": "Web server IP:",    "de": "Web server IP:", "ru": "IP Веб сервера:"},
-        "All":              {"en": "All",               "de": "Alle",           "ru": "Все"},
-        "Web instance:":    {"en": "Web instance:",     "de": "Web instance:",  "ru": "Web instance:"},
-        "Voice:":           {"en": "Voice:",            "de": "Stimme:",        "ru": "Голос:"},
-        "API Key:":         {"en": "API Key:",          "de": "API Key:",       "ru": "API Key:"},
-        "Emotion:":         {"en": "Emotion:",          "de": "Emotion:",       "ru": "Емоциональный окрас:"},
-        "Drunk:":           {"en": "Drunk:",            "de": "Betrunken:",     "ru": "Пьяный голос:"},
-        "Ill:":             {"en": "Ill:",              "de": "Krank:",         "ru": "Больной голос:"},
-        "Robot:":           {"en": "Robot:",            "de": "Roboter:",       "ru": "Голос робота:"},
-        "Announce:":        {"en": "Announce:",         "de": "Ankündigung:",   "ru": "Извещение:"},
-        "Announce timeout (sec):": {
-            "en": "Announce timeout (sec):",
-            "de": "Ankündigungstimeout (Sek):",
-            "ru": "Таймаут извещения (сек):"
-        },
-        "Announce length (sec):": {"en": "Announce length (sec):", "de": "Ankündigunglänge (Sek):", "ru": "Длительность извещения (сек):"},
-        "API Key is not set!": {"en": "API Key is not set!", "de": "API Key ist leer!", "ru": "API Key отсутствует!"},
-        "System command:":  {"en": "System command:",   "de": "Systemkommando:", "ru": "Системный вызов:"},
-        "Announce volume (%):": {"en": "Announce volume(%):", "de": "Ankündigungslautstärke(%):", "ru": "Громкость извещения(%):"},
-        "Linux player:":    {"en": "Linux player:",     "de": "Linux-Player:", "ru": "Linux плейер:"},
-        "Ignore for non linux OS": {"en": "Ignore for non linux OS", "de": "Ignorieren für nicht linux OS", "ru": "Игнорировать для не linux OS"},
-        "Access Key:":      {"en": "Access Key:", "de": "Access Key:", "ru": "Access Key:"},
-        "Secret Key:":      {"en": "Secret Key:", "de": "Secret Key:", "ru": "Secret Key:"}
-    };
-
     var webServers = null;
 
     function showHideSettings() {
@@ -102,7 +64,7 @@
                 }
             }
         }
-        if (type != 'system') {
+        if (type !== 'system') {
             $('.system').hide();
         }  else {
             $('.system').show();
@@ -154,15 +116,15 @@
     function checkWeb(elem, current) {
         var web = $('#web').val();
         for (var i = 0; i < webServers.length; i++) {
-            if (webServers[i].id == 'system.adapter.' + web) {
+            if (webServers[i].id === 'system.adapter.' + web) {
                 if (webServers[i].value.native.auth) {
                     showMessage(_('Cannot use web server with authentication'), null, 'info');
                 }
-                if (webServers[i].value.native.bind == 'localhost' || webServers[i].value.native.bind == '127.0.0.1' || webServers[i].value.native.bind == '::1') {
+                if (webServers[i].value.native.bind === 'localhost' || webServers[i].value.native.bind === '127.0.0.1' || webServers[i].value.native.bind === '::1') {
                     showMessage(_('Cannot use web server only on localhost'), null, 'info');
                 }
 
-                if (webServers[i].value.native.bind == '0.0.0.0') {
+                if (webServers[i].value.native.bind === '0.0.0.0') {
                     $('#tr_webServer').show();
                     $('#webServer').html('');
                     // read all ipv4 addresses of host
@@ -170,7 +132,7 @@
                         if (!err && obj && obj.native) {
                             for (var iface in obj.native.hardware.networkInterfaces) {
                                 for (var i = 0; i < obj.native.hardware.networkInterfaces[iface].length; i++) {
-                                    if (obj.native.hardware.networkInterfaces[iface][i].family == "IPv4" && !obj.native.hardware.networkInterfaces[iface][i].internal) {
+                                    if (obj.native.hardware.networkInterfaces[iface][i].family === 'IPv4' && !obj.native.hardware.networkInterfaces[iface][i].internal) {
                                         $('#webServer').append('<option value="' + obj.native.hardware.networkInterfaces[iface][i].address + '">[IPv4] ' + obj.native.hardware.networkInterfaces[iface][i].address + ' - ' + iface + '</option>');
                                     }
                                 }
@@ -179,13 +141,13 @@
 
                         if (current)  $('#webServer').val(current);
                     });
-                } else if (webServers[i].value.native.bind == '::') {
+                } else if (webServers[i].value.native.bind === '::') {
                     // read all ipv6 addresses of host
                     socket.emit('getObject', 'system.host.' + webServers[i].value.common.host, function (err, obj) {
                         if (!err && obj && obj.native) {
                             for (var iface in obj.native.hardware.networkInterfaces) {
                                 for (var i = 0; i < obj.native.hardware.networkInterfaces[iface].length; i++) {
-                                    if (obj.native.hardware.networkInterfaces[iface][i].family == "IPv6" && !obj.native.hardware.networkInterfaces[iface][i].internal) {
+                                    if (obj.native.hardware.networkInterfaces[iface][i].family === 'IPv6' && !obj.native.hardware.networkInterfaces[iface][i].internal) {
                                         $('#webServer').append('<option value="' + obj.native.hardware.networkInterfaces[iface][i].address + '">[IPv6] ' + obj.native.hardware.networkInterfaces[iface][i].address + ' - ' + iface + '</option>');
                                     }
                                 }
@@ -211,8 +173,8 @@
                 }
             }
             $(elem).val(current);
-            if ((type == 'sonos') ||
-                (type == 'chromecast')) {
+            if ((type === 'sonos') ||
+                (type === 'chromecast')) {
                 checkWeb('#web', webServer);
             }
         });
@@ -244,7 +206,7 @@
                 $('#files').val('');
                 return;
             }
-            if (f.name == 'say.mp3') {
+            if (f.name === 'say.mp3') {
                 showMessage(_('Name say.mp3 is reserved'));
                 $('#files').val('');
                 return;
@@ -304,7 +266,7 @@
 
         $('#play').button({icons: {primary: 'ui-icon-play'}, text: false}).css({width: 22, height: 22}).click(function () {
             socket.emit('readFile', 'sayit.' + instance, 'tts.userfiles/' + $('#announce').val(), function (err, data) {
-                if (typeof AudioContext != 'undefined') {
+                if (typeof AudioContext !== 'undefined') {
                     context = new AudioContext();
                     context.decodeAudioData(data, function(buffer) {
                         //console.log(buffer);
@@ -329,7 +291,7 @@
             $e.append('<option value="' + name + '">' + sayitEngines[name].name + '</option>');
         }
         for (var key in settings) {
-            if ($('#' + key + '.value').attr('type') == 'checkbox') {
+            if ($('#' + key + '.value').attr('type') === 'checkbox') {
                 $('#' + key + '.value').prop('checked', settings[key]);
             } else {
                 $('#' + key + '.value').val(settings[key]);
@@ -339,14 +301,14 @@
             $(this).change(function() {
                 var key = $(this).attr('id');
 
-                if (key == 'auth' && $('#auth').prop('checked')) $('#secure').prop('checked', true);
+                if (key === 'auth' && $('#auth').prop('checked')) $('#secure').prop('checked', true);
 
-                if (key == 'type' || key == 'engine') {
+                if (key === 'type' || key === 'engine') {
                     showHideSettings();
 
-                    if (($('#type').val() == 'sonos') ||
-                        ($('#type').val() == 'chromecast') ||
-                        ($('#type').val() == 'mpd')) {
+                    if (($('#type').val() === 'sonos') ||
+                        ($('#type').val() === 'chromecast') ||
+                        ($('#type').val() === 'mpd')) {
                         checkWeb('#web');
                         $('#announce').val('').trigger('change');
                         showHideSettings();
@@ -355,11 +317,11 @@
                     }
                 }
 
-                if (key == 'announce') {
+                if (key === 'announce') {
                     showHideSettings();
                     if ($(this).val()) {
                         socket.emit('readFile', 'sayit.' + instance, 'tts.userfiles/' + $('#announce').val(), function (err, data) {
-                            if (typeof AudioContext != 'undefined') {
+                            if (typeof AudioContext !== 'undefined') {
                                 context = new AudioContext();
                                 context.decodeAudioData(data, function(buffer) {
                                     $('#annoDuration').val(Math.ceil(buffer.duration));
@@ -371,7 +333,7 @@
                     }
                 }
 
-                if (key == 'web') checkWeb('#web');
+                if (key === 'web') checkWeb('#web');
                 onChange();
             }).keyup(function() {
                 $(this).trigger('change');
@@ -434,7 +396,7 @@
         showHideSettings();
 
         if (!$('#announce').val()) $('#play').button('disable');
-        if (typeof AudioContext == 'undefined') $('#play').hide();
+        if (typeof AudioContext === 'undefined') $('#play').hide();
 
         var dropZone = document.getElementById('drop_zone');
         if (dropZone) {
@@ -466,26 +428,26 @@
         var obj = {};
         $('.value').each(function () {
             var $this = $(this);
-            if ($this.attr('type') == 'checkbox') {
+            if ($this.attr('type') === 'checkbox') {
                 obj[$this.attr('id')] = $this.prop('checked');
             } else {
                 obj[$this.attr('id')] = $this.val();
             }
         });
 
-        if (obj.engine && sayitEngines[obj.engine].engine == 'yandex') {
+        if (obj.engine && sayitEngines[obj.engine].engine === 'yandex') {
             if (!obj.key) {
                 showMessage(_('API Key is not set!'));
                 return;
             }
         } else
-        if (obj.engine && sayitEngines[obj.engine].engine == 'ivona') {
+        if (obj.engine && sayitEngines[obj.engine].engine === 'ivona') {
             if (!obj.accessKey || !obj.secretKey) {
                 showMessage(_('API Key is not set!'));
                 return;
             }
         } else
-        if (obj.engine && sayitEngines[obj.engine].engine == 'polly') {
+        if (obj.engine && sayitEngines[obj.engine].engine === 'polly') {
             if (!obj.accessKey || !obj.secretKey) {
                 showMessage(_('API Key is not set!'));
                 return;
@@ -501,52 +463,52 @@
 </script>
 
 <!-- you have to put your config page in a div with id adapter-container -->
-<div id="adapter-container" ondragover="return false" drop="return false">
+<div id="adapter-container" ondragover="return false" ondrop="return false">
 
     <table><tr><td><img src="sayit.png"></td><td><h3 class="translate">sayIt adapter settings</h3></td></tr></table>
 
     <div>
         <table>
-            <tr><td class="translate">Type:</td><td><select class="value" id="type"></select></td></tr>
-            <tr id="tr_engine"      class="variable"><td class="translate" style="width: 150px">Language:</td><td><select class="value" id="engine"></select></td></tr>
-            <tr class="system"><td><label for="player" class="translate">Linux player:</label></td><td>
+            <tr><td><label class="translate" for="type">Type:</label></td><td class="admin-icon" data-link="configuration"></td><td><select class="value" id="type"></select></td></tr>
+            <tr id="tr_engine" class="variable"><td style="width: 150px"><label class="translate" for="engine">Language:</label></td><td class="admin-icon" data-link="tts-engines"></td><td><select class="value" id="engine"></select></td></tr>
+            <tr class="system"><td><label for="player" class="translate">Linux player:</label></td><td class="admin-icon"></td><td>
                 <select class="value" id="player" >
                     <option value="mpg321">mpg321</option>
                     <option value="omxplayer">omxplayer</option>
                 </select><span class="translate" style="padding-left: 10px; font-size: 10px">Ignore for non linux OS</span>
             </td>
             </tr>
-            <tr class="system"><td class="translate">System command:</td><td><input class="value" id="command"/></td></tr>
-            <tr class="announceValue"><td class="translate">Announce:</td><td><select class="value" id="announce"></select>&nbsp;<button id="play"></button></td></tr>
-            <tr class="announceValue"><td></td><td><input type="file" accept=".mp3,audio/*" id="files" name="files[]" multiple /></td></tr>
-            <tr class="announce"><td class="translate">Announce timeout (sec):</td><td><input class="value" id="annoTimeout" type="text" size="8" /></td></tr>
-            <tr class="announce"><td class="translate">Announce length (sec):</td><td><input class="value" id="annoDuration" type="text" size="2" /></td></tr>
-            <tr class="announce"><td class="translate">Announce volume (%):</td><td><input class="value" id="annoVolume" type="text" size="3" /></td></tr>
-            <tr><td>&nbsp;</td><td>&nbsp;</td></tr>
+            <tr class="system"><td><label class="translate" for="command">System command:</label></td><td class="admin-icon" data-link="system-command"></td><td><input class="value" id="command"/></td></tr>
+            <tr class="announceValue"><td><label class="translate" for="announce">Announce:</label></td><td class="admin-icon"></td><td><select class="value" id="announce"></select>&nbsp;<button id="play"></button></td></tr>
+            <tr class="announceValue"><td></td><td></td><td><input type="file" accept=".mp3,audio/*" id="files" name="files[]" multiple /></td></tr>
+            <tr class="announce"><td><label class="translate" for="annoTimeout">Announce timeout (sec):</label></td><td class="admin-icon"></td><td><input class="value" id="annoTimeout" type="text" size="8" /></td></tr>
+            <tr class="announce"><td><label class="translate" for="annoDuration">Announce length (sec):</label></td><td class="admin-icon"></td><td><input class="value" id="annoDuration" type="text" size="2" /></td></tr>
+            <tr class="announce"><td><label class="translate" for="annoVolume">Announce volume (%):</label></td><td class="admin-icon"></td><td><input class="value" id="annoVolume" type="text" size="3" /></td></tr>
+            <tr><td>&nbsp;</td><td></td><td>&nbsp;</td></tr>
 
-            <tr id="tr_cache"      class="variable"><td class="translate">Cache:</td>   <td><input class="value" id="cache"   type="checkbox" /></td></tr>
-            <tr id="tr_server"     class="variable"><td class="translate">Server:</td>  <td><input class="value" id="server"  type="text" /></td></tr>
-            <tr id="tr_port"       class="variable"><td class="translate">Port:</td>    <td><input class="value" id="port"    type="text"size="5"  maxlength="5"/></td></tr>
-            <tr id="tr_user"       class="variable"><td class="translate">User:</td>    <td><input class="value" id="user"    type="text" /></td></tr>
-            <tr id="tr_pass"       class="variable"><td class="translate">Password:</td><td><input class="value" id="pass"    type="text" /></td></tr>
-            <tr id="tr_instance"   class="variable"><td class="translate">Browser instance:</td><td><input class="value" id="instance" type="text" /></td></tr>
-            <tr id="tr_device"     class="variable"><td class="translate">Device:</td><td><select class="value" id="device"><option value="" class="translate">All</option></select></td></tr>
-            <tr id="tr_cDevice"    class="variable"><td class="translate">Device:</td><td><select class="value" id="cDevice"><option value="" class="translate">All</option></select></td></tr>
-            <tr id="tr_mpd_device" class="variable"><td class="translate">Device:</td><td><select class="value" id="mpd_device"><option value="" class="translate">All</option></select></td></tr>
-            <tr id="tr_web"        class="variable"><td class="translate">Web instance:</td><td><select class="value" id="web"></select></td></tr>
-            <tr id="tr_webServer"  class="variable"><td class="translate">Web server IP:</td><td><select class="value" id="webServer"></select></td></tr>
-            <tr id="tr_voice"      class="engine"  ><td class="translate">Voice:</td><td><select class="value" id="voice"></select></td></tr>
-            <tr id="tr_key"        class="engine"  ><td class="translate">API Key:</td><td><input class="value" id="key" type="text"/></td></tr>
-            <tr id="tr_emotion"    class="engine"  ><td class="translate">Emotion:</td><td><select class="value" id="emotion"></select></td></tr>
-            <tr id="tr_drunk"      class="engine"  ><td class="translate">Drunk:</td><td><input type="checkbox" class="value" id="drunk"/></td></tr>
-            <tr id="tr_ill"        class="engine"  ><td class="translate">Ill:</td><td><input type="checkbox" class="value" id="ill"/></td></tr>
-            <tr id="tr_robot"      class="engine"  ><td class="translate">Robot:</td><td><input type="checkbox" class="value" id="robot"/></td></tr>
-            <tr id="tr_accessKey"  class="engine"  ><td class="translate">Access Key:</td><td><input class="value" id="accessKey" type="text"/></td></tr>
-            <tr id="tr_secretKey"  class="engine"  ><td class="translate">Secret Key:</td><td><input class="value" id="secretKey" type="password"/></td></tr>
-            <tr id="tr_region"     class="engine"  ><td class="translate">AWS Region:</td><td><input class="value" id="region" type="text"/></td></tr>
-            <tr id="tr_cloud"      class="engine"  ><td class="translate">Cloud instance:</td><td><select class="value" id="cloud"><option value="" class="translate">Install first cloud adapter</option></select></td></tr>
+            <tr id="tr_cache"      class="variable"><td><label class="translate" for="cache">Cache:</label></td><td class="admin-icon"></td>   <td><input class="value" id="cache"   type="checkbox" /></td></tr>
+            <tr id="tr_server"     class="variable"><td><label class="translate" for="server">Server:</label></td><td class="admin-icon"></td>  <td><input class="value" id="server"  type="text" /></td></tr>
+            <tr id="tr_port"       class="variable"><td><label class="translate" for="port">Port:</label></td><td class="admin-icon"></td>    <td><input class="value" id="port"    type="text" size="5"  maxlength="5"/></td></tr>
+            <tr id="tr_user"       class="variable"><td><label class="translate" for="user">User:</label></td><td class="admin-icon"></td>    <td><input class="value" id="user"    type="text" /></td></tr>
+            <tr id="tr_pass"       class="variable"><td><label class="translate" for="pass">Password:</label></td><td class="admin-icon"></td><td><input class="value" id="pass"    type="text" /></td></tr>
+            <tr id="tr_instance"   class="variable"><td><label class="translate" for="instance">Browser instance:</label></td><td class="admin-icon"></td><td><input class="value" id="instance" type="text" /></td></tr>
+            <tr id="tr_device"     class="variable"><td><label class="translate" for="device">Device:</label></td><td class="admin-icon"></td><td><select class="value" id="device"><option value="" class="translate">All</option></select></td></tr>
+            <tr id="tr_cDevice"    class="variable"><td><label class="translate" for="cDevice">Device:</label></td><td class="admin-icon"></td><td><select class="value" id="cDevice"><option value="" class="translate">All</option></select></td></tr>
+            <tr id="tr_mpd_device" class="variable"><td><label class="translate" for="mpd_device">Device:</label></td><td class="admin-icon"></td><td><select class="value" id="mpd_device"><option value="" class="translate">All</option></select></td></tr>
+            <tr id="tr_web"        class="variable"><td><label class="translate" for="web">Web instance:</label></td><td class="admin-icon"></td><td><select class="value" id="web"></select></td></tr>
+            <tr id="tr_webServer"  class="variable"><td><label class="translate" for="webServer">Web server IP:</label></td><td class="admin-icon"></td><td><select class="value" id="webServer"></select></td></tr>
+            <tr id="tr_voice"      class="engine"  ><td><label class="translate" for="voice">Voice:</label></td><td class="admin-icon"></td><td><select class="value" id="voice"></select></td></tr>
+            <tr id="tr_key"        class="engine"  ><td><label class="translate" for="key">API Key:</label></td><td class="admin-icon"></td><td><input class="value" id="key" type="text"/></td></tr>
+            <tr id="tr_emotion"    class="engine"  ><td><label class="translate" for="emotion">Emotion:</label></td><td class="admin-icon"></td><td><select class="value" id="emotion"></select></td></tr>
+            <tr id="tr_drunk"      class="engine"  ><td><label class="translate" for="drunk">Drunk:</label></td><td class="admin-icon"></td><td><input type="checkbox" class="value" id="drunk"/></td></tr>
+            <tr id="tr_ill"        class="engine"  ><td><label class="translate" for="ill">Ill:</label></td><td class="admin-icon"></td><td><input type="checkbox" class="value" id="ill"/></td></tr>
+            <tr id="tr_robot"      class="engine"  ><td><label class="translate" for="robot">Robot:</label></td><td class="admin-icon"></td><td><input type="checkbox" class="value" id="robot"/></td></tr>
+            <tr id="tr_accessKey"  class="engine"  ><td><label class="translate" for="accessKey">Access Key:</label></td><td class="admin-icon"></td><td><input class="value" id="accessKey" type="text"/></td></tr>
+            <tr id="tr_secretKey"  class="engine"  ><td><label class="translate" for="secretKey">Secret Key:</label></td><td class="admin-icon"></td><td><input class="value" id="secretKey" type="password"/></td></tr>
+            <tr id="tr_region"     class="engine"  ><td><label class="translate" for="region">AWS Region:</label></td><td class="admin-icon"></td><td><input class="value" id="region" type="text"/></td></tr>
+            <tr id="tr_cloud"      class="engine"  ><td><label class="translate" for="cloud">Cloud instance:</label></td><td class="admin-icon"></td><td><select class="value" id="cloud"><option value="" class="translate">Install first cloud adapter</option></select></td></tr>
         </table>
     </div>
-    <div id="drop_zone" style="display: none">Dateien hier ablegen</div>
+    <div id="drop_zone" style="display: none" class="translate">place here</div>
 </div>
 </html>

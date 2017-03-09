@@ -1,8 +1,13 @@
 {
     "common": {
         "name":                     "sayit",
-        "version": "1.5.1",
+        "version": "1.5.2",
         "news": {
+          "1.5.2": {
+            "en": "Catch error if some directory in mp3 folder",
+            "de": "Fange ein Fehler, falls ein Verzeichnis in mp3",
+            "ru": "Обработка ошибки, если встречается папка вместо mp3"
+          },
           "1.5.1": {
             "en": "Fix blockly language",
             "de": "Korrigiere blockly-Sprache",
