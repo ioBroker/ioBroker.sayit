@@ -27,6 +27,46 @@
     }
 </style>
 <script type="text/javascript">
+    systemDictionary = {
+        "sayIt adapter settings": {
+            "de": "sayIt Einstellungen",
+            "ru": "sayIt Настройки"
+        },
+        "Language:":        {"en": "Language:",         "de": "Sprache:",       "ru": "Язык:"},
+        "Type:":            {"en": "Output in:",        "de": "Ausgabe durch:", "ru": "Вывод звука:"},
+        "Cache:":           {"en": "Cache received audio files:",            "de": "Cache benutzen:",         "ru": "Кэшировать полученные аудио-файлы:"},
+        "Cache-Expiry:":    {"en": "Cache Expiry (days):",            "de": "Cache Verfallszeit (Tage):",         "ru": "Cache Expiry (days):"},
+        "Server:":          {"en": "Server:",           "de": "Server:",        "ru": "Сервер:"},
+        "Port:":            {"en": "Port:",             "de": "Port:",          "ru": "Порт:"},
+        "User:":            {"en": "User:",             "de": "Anwender:",      "ru": "Пользователь:"},
+        "Password:":        {"en": "Password:",         "de": "Kennwort:",      "ru": "Пароль:"},
+        "Browser instance:": {"en": "Browser instance:", "de": "Browser-Instanz:", "ru": "ID броузера:"},
+        "Device:":          {"en": "Device:",           "de": "Gerät:",         "ru": "Устройство:"},
+        "Web server IP:":   {"en": "Web server IP:",    "de": "Web server IP:", "ru": "IP Веб сервера:"},
+        "All":              {"en": "All",               "de": "Alle",           "ru": "Все"},
+        "Web instance:":    {"en": "Web instance:",     "de": "Web instance:",  "ru": "Web instance:"},
+        "Voice:":           {"en": "Voice:",            "de": "Stimme:",        "ru": "Голос:"},
+        "API Key:":         {"en": "API Key:",          "de": "API Key:",       "ru": "API Key:"},
+        "Emotion:":         {"en": "Emotion:",          "de": "Emotion:",       "ru": "Емоциональный окрас:"},
+        "Drunk:":           {"en": "Drunk:",            "de": "Betrunken:",     "ru": "Пьяный голос:"},
+        "Ill:":             {"en": "Ill:",              "de": "Krank:",         "ru": "Больной голос:"},
+        "Robot:":           {"en": "Robot:",            "de": "Roboter:",       "ru": "Голос робота:"},
+        "Announce:":        {"en": "Announce:",         "de": "Ankündigung:",   "ru": "Извещение:"},
+        "Announce timeout (sec):": {
+            "en": "Announce timeout (sec):",
+            "de": "Ankündigungstimeout (Sek):",
+            "ru": "Таймаут извещения (сек):"
+        },
+        "Announce length (sec):": {"en": "Announce length (sec):", "de": "Ankündigunglänge (Sek):", "ru": "Длительность извещения (сек):"},
+        "API Key is not set!": {"en": "API Key is not set!", "de": "API Key ist leer!", "ru": "API Key отсутствует!"},
+        "System command:":  {"en": "System command:",   "de": "Systemkommando:", "ru": "Системный вызов:"},
+        "Announce volume (%):": {"en": "Announce volume(%):", "de": "Ankündigungslautstärke(%):", "ru": "Громкость извещения(%):"},
+        "Linux player:":    {"en": "Linux player:",     "de": "Linux-Player:", "ru": "Linux плейер:"},
+        "Ignore for non linux OS": {"en": "Ignore for non linux OS", "de": "Ignorieren für nicht linux OS", "ru": "Игнорировать для не linux OS"},
+        "Access Key:":      {"en": "Access Key:", "de": "Access Key:", "ru": "Access Key:"},
+        "Secret Key:":      {"en": "Secret Key:", "de": "Secret Key:", "ru": "Secret Key:"}
+    };
+
     var webServers = null;
 
     function showHideSettings() {
@@ -89,7 +129,7 @@
             $(elem).val(current);
         });
     }
-    
+
     function fillmpd_device(elem, current) {
         socket.emit('getObjectView', 'system', 'instance', {startkey: 'system.adapter.mpd.', endkey: 'system.adapter.mpd.\u9999'}, function (err, res) {
             if (!err && res) {
@@ -487,6 +527,7 @@
             <tr><td>&nbsp;</td><td></td><td>&nbsp;</td></tr>
 
             <tr id="tr_cache"      class="variable"><td><label class="translate" for="cache">Cache:</label></td><td class="admin-icon"></td>   <td><input class="value" id="cache"   type="checkbox" /></td></tr>
+            <tr id="tr_cacheExpiryDays"      class="variable"><td><label class="translate" for="tr_cacheExpiryDays">Cache-Expiry:</label></td><td class="admin-icon"></td>   <td><input class="value" id="cacheExpiryDays"   type="text" size="5" /></td></tr>
             <tr id="tr_server"     class="variable"><td><label class="translate" for="server">Server:</label></td><td class="admin-icon"></td>  <td><input class="value" id="server"  type="text" /></td></tr>
             <tr id="tr_port"       class="variable"><td><label class="translate" for="port">Port:</label></td><td class="admin-icon"></td>    <td><input class="value" id="port"    type="text" size="5"  maxlength="5"/></td></tr>
             <tr id="tr_user"       class="variable"><td><label class="translate" for="user">User:</label></td><td class="admin-icon"></td>    <td><input class="value" id="user"    type="text" /></td></tr>

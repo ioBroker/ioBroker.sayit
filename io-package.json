@@ -1,8 +1,13 @@
 {
     "common": {
         "name":                     "sayit",
-        "version": "1.5.2",
+        "version": "1.5.3",
         "news": {
+          "1.5.3": {
+            "en": "Add expiry option for caching (in days)",
+            "de": "Caching-Verfalls-Möglichkeit (in Tagen) hinzugefügt",
+            "ru": "Add expiry option for caching (in days)"
+          },
           "1.5.2": {
             "en": "Catch error if some directory in mp3 folder",
             "de": "Fange ein Fehler, falls ein Verzeichnis in mp3",
@@ -70,7 +75,7 @@
           }
         },
         "title":                    "Text to speech Adapter",
-        "desc":                     {
+        "desc": {
 			"en": "Text to speech in a cloud or local. Runs on windows, linux and OSX. It can play mp3/wav too.",
 			"de": "Text to speech in Cloud oder lokal für windows, linux und OSX. Mp3 und Wav können auch abgespielt werden.",
 			"ru": "Синтезатор речи локально или в облаке работает под windows, linux и OSX. Mp3 и Wav можно тоже проигрывать."

@@ -606,10 +606,21 @@ function sayItGetSpeech(text, language, volume, callback) {
     if (adapter.config.cache) {
         var md5filename = path.join(cacheDir, libs.crypto.createHash('md5').update(language + ';' + text).digest('hex') + '.mp3');
         if (libs.fs.existsSync(md5filename)) {
-            getLength(md5filename, function (seconds) {
-                if (callback) callback(md5filename, language, volume, seconds);
-            });
-            return;
+            var cacheFileValid = true;
+            if (adapter.config.cacheExpiryDays) {
+                var fileStat = libs.fs.statSync(md5filename);
+                if (fileStat.ctime && (new Date().getTime()-new Date(fileStat.ctime).getTime() > adapter.config.cacheExpiryDays*1000*60*60*24)) {
+                    cacheFileValid = false;
+                    adapter.log.info('Cached File expired, remove and re-generate');
+                    libs.fs.unlinkSync(md5filename);
+                }
+            }
+            if (cacheFileValid) {
+                getLength(md5filename, function (seconds) {
+                    if (callback) callback(md5filename, language, volume, seconds);
+                });
+                return;
+            }
         }
     }
 
@@ -772,15 +783,15 @@ function sayItMpd(text, language, volume, duration) {
     }
     volume = volume || sayLastVolume;
     adapter.setBinaryState(adapter.namespace + '.tts.mp3', fileData);
-	
+
     if (volume === 'null') volume = 0;
-	
+
     if (adapter.config.mpd_device && webLink) {
 	adapter.log.info('Set "' + adapter.config.mpd_device + '.say: ' + (volume ? (volume + ';') : '') + webLink + '/state/' + adapter.namespace + '.tts.mp3');
 	adapter.setForeignState(adapter.config.mpd_device + '.say', (volume ? (volume + ';') : '') + webLink + '/state/' + adapter.namespace + '.tts.mp3');
     } else if (webLink) {
 	adapter.log.info('Send to MPD ' + (volume ? (volume + ';') : '') + webLink + '/state/' + adapter.namespace + '.tts.mp3');
-        adapter.sendTo('mpd', 'say', (volume ? (volume + ';') : '') + webLink + '/state/' + adapter.namespace + '.tts.mp3');    
+        adapter.sendTo('mpd', 'say', (volume ? (volume + ';') : '') + webLink + '/state/' + adapter.namespace + '.tts.mp3');
     } else {
         adapter.log.warn('Web server is unavailable!');
     }
