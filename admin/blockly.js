@@ -7,7 +7,7 @@ goog.require('Blockly.JavaScript');
 // --- SayIt --------------------------------------------------
 Blockly.Words['sayit']               = {'en': 'say text',                    'de': 'aussprechen',                        'ru': 'произнести'};
 Blockly.Words['sayit_message']       = {'en': 'message',                     'de': 'Meldung',                            'ru': 'сообщение'};
-Blockly.Words['sayit_volume']        = {'en': 'volume (optional)',           'de': 'Lautstärke (optional)',              'ru': 'громкость (не обяз.)'};
+Blockly.Words['sayit_volume']        = {'en': 'volume',                      'de': 'Lautstärke',                         'ru': 'громкость'};
 Blockly.Words['sayit_tooltip']       = {'en': 'Text to speech',              'de': 'Text zu Sprache',                    'ru': 'Произнести сообщение'};
 Blockly.Words['sayit_help']          = {'en': 'https://github.com/ioBroker/ioBroker.sayit/blob/master/README.md', 'de': 'http://www.iobroker.net/?page_id=178&lang=de', 'ru': 'http://www.iobroker.net/?page_id=4262&lang=ru'};
 Blockly.Words['sayit_configured']    = {'en': 'configured',                  'de': 'standart',                           'ru': 'настроенный'};
