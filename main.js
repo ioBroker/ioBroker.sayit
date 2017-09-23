@@ -60,12 +60,37 @@ adapter.on('message', function (obj) {
 });
 
 function processMessage(obj) {
-    if (obj && obj.command === 'stopInstance') {
-        stop(function () {
-            if (obj.callback) {
-                adapter.sendTo(obj.from, obj.command, null, obj.callback);
+    if (obj) {
+        if (obj.command === 'stopInstance') {
+            stop(function () {
+                if (obj.callback) {
+                    adapter.sendTo(obj.from, obj.command, null, obj.callback);
+                }
+            });
+        } else if (obj.command === 'browseChromecast') {
+            try {
+                Client                = Client               || require('castv2-client').Client;
+                DefaultMediaReceiver  = DefaultMediaReceiver || require('castv2-client').DefaultMediaReceiver;
+                var mdns              = require('mdns');
+
+                var browser = mdns.createBrowser(mdns.tcp('googlecast'));
+
+                var result = [];
+                browser.on('serviceUp', function (service) {
+                    result.push({name: service.name, ip: service.addresses[0]});
+                });
+                setTimeout(function () {
+                    browser.stop();
+                    if (obj.callback) adapter.sendTo(obj.from, obj.command, result, obj.callback);
+                }, 2000);
+
+                browser.start();
+            } catch (e) {
+                adapter.log.error(e);
+                if (obj.callback) adapter.sendTo(obj.from, obj.command, null, obj.callback);
             }
-        });
+
+        }
     }
 }
 
@@ -100,15 +125,22 @@ var lastSay              = null;
 var polly                = null;
 var appkey               = null;
 
+// Google home
+var Client;
+var DefaultMediaReceiver;
+var googleTTS;
+var systemLanguage;
+
 var sayitFuncs = {
-    browser:    {func: sayItBrowser   },
-    mp24ftp:    {func: sayItMP24ftp   },
-    mp24:       {func: sayItMP24      },
-    system:     {func: sayItSystem    },
-    windows:    {func: sayItWindows   },
-    sonos:      {func: sayItSonos     },
-    chromecast: {func: sayItChromecast},
-    mpd:        {func: sayItMpd       }
+    browser:    {func: sayItBrowser    },
+    mp24ftp:    {func: sayItMP24ftp    },
+    mp24:       {func: sayItMP24       },
+    system:     {func: sayItSystem     },
+    windows:    {func: sayItWindows    },
+    sonos:      {func: sayItSonos      },
+    chromecast: {func: sayItChromecast },
+    mpd:        {func: sayItMpd        },
+    googleHome: {func: sayItGoogleHome }
 };
 
 function mkpathSync(rootpath, dirpath) {
@@ -831,10 +863,10 @@ function sayItChromecast(text, language, volume, duration) {
 
     //Create announcement JSON
     var announcement = {
-	url: webLink + '/state/' + adapter.namespace + '.tts.mp3'
+        url: webLink + '/state/' + adapter.namespace + '.tts.mp3'
     };
     if (volume) {
-      announcement.volume = volume;
+        announcement.volume = volume;
     }
     var announcementJSON = JSON.stringify(announcement);
 
@@ -849,6 +881,57 @@ function sayItChromecast(text, language, volume, duration) {
     }
     sayFinished(duration);
 }
+
+function getSpeechUrl(text, host, language, callback) {
+    googleTTS(text, language, 1).then(function (url) {
+        onDeviceUp(host, url, function (res){
+            callback(res);
+        });
+    }).catch(function (err) {
+        adapter.log.error(err.stack);
+    });
+}
+function onDeviceUp(host, url, callback) {
+    var client = new Client();
+    client.connect(host, function() {
+        client.launch(DefaultMediaReceiver, function (err, player) {
+            var media = {
+                contentId:   url,
+                contentType: 'audio/mp3',
+                streamType:  'BUFFERED' // or LIVE
+            };
+            player.load(media, {autoplay: true}, function (err, status) {
+                if (err) {
+                    adapter.log.error(err);
+                }
+                client.close();
+                callback('TTS to GoogleHome');
+            });
+        });
+    });
+
+    client.on('error', function(err) {
+        adapter.log.error('Error: %s', err.message);
+        client.close();
+        callback('error');
+    });
+}
+
+function sayItGoogleHome(text, language, volume, duration) {
+    if (text.substring(0, 11) === '$$$ERROR$$$') {
+        sayFinished(0);
+        return;
+    }
+    Client               = Client               || require('castv2-client').Client;
+    DefaultMediaReceiver = DefaultMediaReceiver || require('castv2-client').DefaultMediaReceiver;
+    googleTTS            = googleTTS            || require('google-tts-api');
+    
+    getSpeechUrl(text, adapter.config.googleHome, language, function (res) {
+        adapter.log.debug('Pronounce result: ' + JSON.stringify(res));
+        sayFinished(0);
+    });
+}
+
 
 function sayItMP24(text, language, volume, duration) {
     if (text.substring(0, 11) === '$$$ERROR$$$') {
@@ -1229,7 +1312,7 @@ function sayIt(text, language, volume, process) {
         // If language;text or volume;text
         if (arr.length === 2) {
             // If number
-            if (parseInt(arr[0]) == arr[0]) {
+            if (parseInt(arr[0]).toString() === arr[0].toString()) {
                 volume = arr[0];
             } else {
                 language = arr[0];
@@ -1238,7 +1321,7 @@ function sayIt(text, language, volume, process) {
         } else if (arr.length === 3) {
             // If language;volume;text or volume;language;text
             // If number
-            if (parseInt(arr[0]) == arr[0]) {
+            if (parseInt(arr[0]).toString() === arr[0].toString()) {
                 volume   = arr[0];
                 language = arr[1];
             } else {
@@ -1331,7 +1414,12 @@ function sayIt(text, language, volume, process) {
     adapter.log.info('saying: ' + text);
 
     var isGenerate = false;
-    if (!language) language = adapter.config.engine;
+    if (!language) {
+        language = adapter.config.engine;
+        if (adapter.config.type === 'googleHome') {
+            language = systemLanguage;
+        }
+    }
     if (!volume && adapter.config.volume)   volume = adapter.config.volume;
 
     // find out if say.mp3 must be generated
@@ -1572,6 +1660,13 @@ function start() {
 
 function main() {
     libs.fs = require('fs');
+
+    if (adapter.config.type === 'googleHome') {
+        adapter.getForeignObject('system.config', function (err, obj) {
+            systemLanguage = obj.common.language;
+        })
+    }
+
 
     if ((process.argv && process.argv.indexOf('--install') !== -1) ||
         ((!process.argv || process.argv.indexOf('--force') === -1) && (!adapter.common || !adapter.common.enabled))) {

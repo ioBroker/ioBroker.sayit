@@ -31,6 +31,11 @@
     "type": "git",
     "url": "https://github.com/ioBroker/ioBroker.sayit"
   },
+  "optionalDependencies": {
+    "google-tts-api": "^0.0.2",
+    "castv2-client": "^1.2.0",
+    "mdns": "^2.3.3"
+  },
   "dependencies": {
     "jsftp": "^1.5.5",
     "ivona-node": "~0.2.0",

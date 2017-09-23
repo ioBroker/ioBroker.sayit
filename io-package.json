@@ -106,6 +106,7 @@
         "engine":                   "",
         "sonos":                    "",
         "server":                   "",
+        "googleHome":               "",
         "port":                     0,
         "user":                     "",
         "pass":                     "",

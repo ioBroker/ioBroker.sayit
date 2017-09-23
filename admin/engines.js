@@ -181,7 +181,8 @@ var sayitOptions = {
     "windows":    {name: "Windows default",   params: [],                                                    mp3Required: false, checkLength: true,  func: (typeof sayItWindows    !== 'undefined') ? sayItWindows    : null, server: false, libs: ['fs', 'child_process']},
     "sonos":      {name: "Sonos",             params: ['engine', 'cache', 'device', 'web', 'webServer'],     mp3Required: true,  checkLength: true,  func: (typeof sayItSonos      !== 'undefined') ? sayItSonos      : null, server: true,  libs: ['fs', 'crypto', 'http']},
     "chromecast": {name: "Chromecast",        params: ['engine', 'cache', 'cDevice', 'web', 'webServer'],    mp3Required: true,  checkLength: true,  func: (typeof sayItChromecast !== 'undefined') ? sayItChromecast : null, server: true,  libs: ['fs', 'crypto', 'http']},
-    "mpd":        {name: "MPD",               params: ['engine', 'cache', 'mpd_device','web', 'webServer'],  mp3Required: true,  checkLength: true,  func: (typeof sayItMpd        !== 'undefined') ? sayItMpd        : null, server: true,  libs: ['fs', 'crypto', 'http']}
+    "mpd":        {name: "MPD",               params: ['engine', 'cache', 'mpd_device','web', 'webServer'],  mp3Required: true,  checkLength: true,  func: (typeof sayItMpd        !== 'undefined') ? sayItMpd        : null, server: true,  libs: ['fs', 'crypto', 'http']},
+    "googleHome": {name: "Google Home",       params: ['googleHome'],                                        mp3Required: false, checkLength: false, func: (typeof sayItGoogleHome !== 'undefined') ? sayItGoogleHome : null, server: true,  libs: ['castv2-client', 'google-tts-api']}
 };
 
 if (typeof module !== 'undefined' && module.parent) {

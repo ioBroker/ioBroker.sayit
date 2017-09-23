@@ -32,14 +32,31 @@
     function showHideSettings() {
         $('.variable').hide();
         var type = $('#type').val();
-        for (var i = 0; i < sayitOptions[type].params.length; i++) {
-            $('#tr_' + sayitOptions[type].params[i]).show();
+        for (var j = 0; j < sayitOptions[type].params.length; j++) {
+            $('#tr_' + sayitOptions[type].params[j]).show();
+        }
+
+        if (type === 'googleHome') {
+            $('.announceValue').hide();
+            $('.announce').hide();
+            $('.system').hide();
+            getIsAdapterAlive(function (isAlive) {
+                if (isAlive || common.enabled) {
+                    $('#search').button('enable');
+                    fillGoogleHome();
+                } else {
+                    $('#search').button('disable');
+                }
+            });
+        } else {
+            $('.announceValue').show();
+            $('.announce').show();
         }
 
         $('.engine').hide();
         var engine = $('#engine').val();
 
-        if (!sayitEngines[engine]) return;
+        if (!sayitEngines[engine] || sayitOptions[type].params.indexOf('engine') === -1) return;
 
         for (var i = 0; i < sayitEngines[engine].params.length; i++) {
             $('#tr_' + sayitEngines[engine].params[i]).show();
@@ -47,20 +64,21 @@
                 var arr = sayitEngines[engine][sayitEngines[engine].params[i]];
                 var param = sayitEngines[engine].params[i];
 
+                var $val = $('#' + param);
                 if (arr.length) {
-                    var val = $('#' + param).val();
+                    var val = $val.val();
                     var text = '';
-                    for (var j = 0; j < arr.length; j++) {
-                        text += '<option value="' + arr[j] + '">' + arr[j] + '</option>';
+                    for (var p = 0; p < arr.length; p++) {
+                        text += '<option value="' + arr[p] + '">' + arr[p] + '</option>';
                     }
-                    $('#' + param).html(text);
+                    $val.html(text);
                     if (val) {
-                        $('#' + param).val(val);
+                        $val.val(val);
                     } else {
-                        $('#' + param).val(arr[0]);
+                        $val.val(arr[0]);
                     }
                 } else {
-                    $('#' + param).html('');
+                    $val.html('');
                 }
             }
         }
@@ -90,7 +108,7 @@
         });
     }
 
-    function fillmpd_device(elem, current) {
+    function fillMpdDevice(elem, current) {
         socket.emit('getObjectView', 'system', 'instance', {startkey: 'system.adapter.mpd.', endkey: 'system.adapter.mpd.\u9999'}, function (err, res) {
             if (!err && res) {
                 for (var i = 0; i < res.rows.length; i++) {
@@ -110,6 +128,21 @@
                 }
             }
             $(elem).val(current);
+        });
+    }
+
+    function fillGoogleHome(current) {
+        sendTo(null, 'browseChromecast', null, function (list) {
+            var text = '<option value="">' + _('select') + '</option>';
+            if (list) {
+                for (var i = 0; i < list.length; i++) {
+                    text += '<option value="' + list[i].ip + '">' + list[i].name + '[' + list[i].ip + ']</option>';
+                }
+                $('#googleHome').html(text).val(current);
+            } else {
+                $('#googleHome').replaceWith('<input id="googleHome" class="value" value="' + (current || '') + '"></input');
+            }
+
         });
     }
 
@@ -262,6 +295,8 @@
     function load(settings, onChange) {
         if (!settings) return;
 
+        if (settings.googleHome === undefined) settings.googleHome = '';
+
         if (!settings.player) settings.player = 'mpg321';
 
         $('#play').button({icons: {primary: 'ui-icon-play'}, text: false}).css({width: 22, height: 22}).click(function () {
@@ -286,58 +321,86 @@
             $t.append('<option value="' + name + '">' + sayitOptions[name].name + '</option>');
         }
 
+        $('#search').button().click(function () {
+            fillGoogleHome(settings.googleHome);
+        });
+
+        getIsAdapterAlive(function (isAlive) {
+            if (isAlive || common.enabled) {
+                $('#search').button('enable');
+                if (settings.type === 'googleHome') {
+                    fillGoogleHome(settings.googleHome);
+                }
+            } else {
+                $('#googleHome').replaceWith('<input id="googleHome" class="value" value="' + (settings.googleHome || '') + '"></input');
+
+                $('#googleHome').change(function () {
+                        onChange();
+                    }).keyup(function () {
+                        $(this).trigger('change');
+                    });
+                $('#search').button('disable');
+            }
+        });
+
         var $e = $('#engine');
         for (var name in sayitEngines) {
             $e.append('<option value="' + name + '">' + sayitEngines[name].name + '</option>');
         }
         for (var key in settings) {
-            if ($('#' + key + '.value').attr('type') === 'checkbox') {
-                $('#' + key + '.value').prop('checked', settings[key]);
-            } else {
-                $('#' + key + '.value').val(settings[key]);
+            if (settings.hasOwnProperty(key)) {
+                var $val = $('#' + key + '.value');
+                if ($val.attr('type') === 'checkbox') {
+                    $val.prop('checked', settings[key]);
+                } else {
+                    $val.val(settings[key]);
+                }
             }
         }
-        $('.value').each(function () {
-            $(this).change(function() {
-                var key = $(this).attr('id');
 
-                if (key === 'auth' && $('#auth').prop('checked')) $('#secure').prop('checked', true);
+        $('.value').change(function () {
+            var key = $(this).attr('id');
 
-                if (key === 'type' || key === 'engine') {
-                    showHideSettings();
-
-                    if (($('#type').val() === 'sonos') ||
-                        ($('#type').val() === 'chromecast') ||
-                        ($('#type').val() === 'mpd')) {
-                        checkWeb('#web');
-                        $('#announce').val('').trigger('change');
-                        showHideSettings();
-                    } else {
-                        showHideSettings();
-                    }
+            if (key === 'auth') {
+                if ($('#auth').prop('checked')) {
+                    $('#secure').prop('checked', true);
                 }
-
-                if (key === 'announce') {
+            } else
+            if (key === 'type' || key === 'engine') {
+                showHideSettings();
+                var type = $('#type').val();
+                if ((type === 'sonos') ||
+                    (type === 'chromecast') ||
+                    (type === 'mpd')) {
+                    checkWeb('#web');
+                    $('#announce').val('').trigger('change');
                     showHideSettings();
-                    if ($(this).val()) {
-                        socket.emit('readFile', 'sayit.' + instance, 'tts.userfiles/' + $('#announce').val(), function (err, data) {
-                            if (typeof AudioContext !== 'undefined') {
-                                context = new AudioContext();
-                                context.decodeAudioData(data, function(buffer) {
-                                    $('#annoDuration').val(Math.ceil(buffer.duration));
-                                }, function(err) {
-                                    console.log(err);
-                                });
-                            }
-                        });
-                    }
+                } else {
+                    showHideSettings();
                 }
+            } else
+            if (key === 'announce') {
+                showHideSettings();
+                if ($(this).val()) {
+                    socket.emit('readFile', 'sayit.' + instance, 'tts.userfiles/' + $('#announce').val(), function (err, data) {
+                        if (typeof AudioContext !== 'undefined') {
+                            context = new AudioContext();
+                            context.decodeAudioData(data, function (buffer) {
+                                $('#annoDuration').val(Math.ceil(buffer.duration));
+                            }, function (err) {
+                                console.log(err);
+                            });
+                        }
+                    });
+                }
+            }
 
-                if (key === 'web') checkWeb('#web');
-                onChange();
-            }).keyup(function() {
-                $(this).trigger('change');
-            });
+            if (key === 'web') {
+                checkWeb('#web');
+            }
+            onChange();
+        }).keyup(function() {
+            $(this).trigger('change');
         });
 
         if (!settings.engine) {
@@ -352,7 +415,7 @@
         fillSonosDevices('#device', settings.device);
         fillChromecastDevices('#cDevice', settings.cDevice);
         fillWebServices('#web', settings.web, settings.type, settings.webServer);
-        fillmpd_device('#mpd_device', settings.mpd_device);
+        fillMpdDevice('#mpd_device', settings.mpd_device);
 
         if ((settings.type === 'sonos') ||
             (settings.type === 'chromecast') ||
@@ -458,6 +521,10 @@
             }
         }
 
+        if (obj.type === 'googleHome') {
+            obj.cache = false;
+        }
+
         callback(obj);
     }
 </script>
@@ -495,6 +562,7 @@
             <tr id="tr_instance"   class="variable"><td><label class="translate" for="instance">Browser instance:</label></td><td class="admin-icon"></td><td><input class="value" id="instance" type="text" /></td></tr>
             <tr id="tr_device"     class="variable"><td><label class="translate" for="device">Device:</label></td><td class="admin-icon"></td><td><select class="value" id="device"><option value="" class="translate">All</option></select></td></tr>
             <tr id="tr_cDevice"    class="variable"><td><label class="translate" for="cDevice">Device:</label></td><td class="admin-icon"></td><td><select class="value" id="cDevice"><option value="" class="translate">All</option></select></td></tr>
+            <tr id="tr_googleHome" class="variable"><td><label class="translate" for="googleHome">Device:</label></td><td class="admin-icon"></td><td><select class="value" id="googleHome"><option value="" class="translate">none</option></select><button style="font-size: 10px;margin-left: 10px;" id="search" class="translate">Browse</button></td></tr>
             <tr id="tr_mpd_device" class="variable"><td><label class="translate" for="mpd_device">Device:</label></td><td class="admin-icon"></td><td><select class="value" id="mpd_device"><option value="" class="translate">All</option></select></td></tr>
             <tr id="tr_web"        class="variable"><td><label class="translate" for="web">Web instance:</label></td><td class="admin-icon"></td><td><select class="value" id="web"></select></td></tr>
             <tr id="tr_webServer"  class="variable"><td><label class="translate" for="webServer">Web server IP:</label></td><td class="admin-icon"></td><td><select class="value" id="webServer"></select></td></tr>
