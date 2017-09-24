@@ -1,14 +1,15 @@
-/* jshint -W097 */// jshint strict:false
+/* jshint -W097 */
+/* jshint strict: false */
 /*jslint node: true */
 'use strict';
 
-var utils   = require(__dirname + '/lib/utils'); // Get common adapter utils
-var libs    = {};
-var path    = require('path');
-var engines = require(__dirname + '/admin/engines.js');
-
-var sayitEngines = engines.sayitEngines;
-var sayitOptions = engines.sayitOptions;
+var path          = require('path');
+var utils         = require(__dirname + '/lib/utils'); // Get common adapter utils
+var engines       = require(__dirname + '/admin/engines.js');
+var Text2Speech   = require(__dirname + '/lib/text2speech');
+var Speech2Device = require(__dirname + '/lib/speech2device');
+var sayitOptions  = engines.sayitOptions;
+var libs          = {};
 
 var adapter = utils.adapter({
     name:   'sayit',
@@ -21,9 +22,9 @@ adapter.on('stateChange', function (id, state) {
     if (state && !state.ack) {
         if (id === adapter.namespace + '.tts.volume') {
             if (adapter.config.type === 'system') {
-                sayItSystemVolume(state.val);
+                speech2device.sayItSystemVolume(state.val);
             } else {
-                sayLastVolume = state.val;
+                options.sayLastVolume = state.val;
             }
         } else if (id === adapter.namespace + '.tts.text') {
             if (typeof state.val !== 'string') {
@@ -69,9 +70,7 @@ function processMessage(obj) {
             });
         } else if (obj.command === 'browseChromecast') {
             try {
-                Client                = Client               || require('castv2-client').Client;
-                DefaultMediaReceiver  = DefaultMediaReceiver || require('castv2-client').DefaultMediaReceiver;
-                var mdns              = require('mdns');
+                var mdns = require('mdns');
 
                 var browser = mdns.createBrowser(mdns.tcp('googlecast'));
 
@@ -81,7 +80,10 @@ function processMessage(obj) {
                 });
                 setTimeout(function () {
                     browser.stop();
-                    if (obj.callback) adapter.sendTo(obj.from, obj.command, result, obj.callback);
+                    browser = null;
+                    if (obj.callback) {
+                        adapter.sendTo(obj.from, obj.command, result, obj.callback);
+                    }
                 }, 2000);
 
                 browser.start();
@@ -89,7 +91,6 @@ function processMessage(obj) {
                 adapter.log.error(e);
                 if (obj.callback) adapter.sendTo(obj.from, obj.command, null, obj.callback);
             }
-
         }
     }
 }
@@ -115,35 +116,21 @@ function stop(callback) {
     }
 }
 
-var sayLastGeneratedText = '';
-var sayLastVolume        = null;
-var cacheDir             = '';
-var webLink              = '';
-var list                 = [];
-var ivona                = null;
-var lastSay              = null;
-var polly                = null;
-var appkey               = null;
-
-// Google home
-var Client;
-var DefaultMediaReceiver;
-var googleTTS;
-var systemLanguage;
-
-var sayitFuncs = {
-    browser:    {func: sayItBrowser    },
-    mp24ftp:    {func: sayItMP24ftp    },
-    mp24:       {func: sayItMP24       },
-    system:     {func: sayItSystem     },
-    windows:    {func: sayItWindows    },
-    sonos:      {func: sayItSonos      },
-    chromecast: {func: sayItChromecast },
-    mpd:        {func: sayItMpd        },
-    googleHome: {func: sayItGoogleHome }
+var options = {
+    sayLastVolume: null,
+    webLink:       ''
 };
+var sayLastGeneratedText = '';
+var cacheDir             = '';
+var list                 = [];
+var lastSay              = null;
+var text2speech          = new Text2Speech(adapter, libs, sayIt, sayFinished);
+var speech2device        = new Speech2Device(adapter, libs, options, sayItIsPlayFile, sayFinished);
+var MP3FILE              = __dirname + '/say.mp3';
+var ERROR                = '$$$ERROR$$$';
 
 function mkpathSync(rootpath, dirpath) {
+    libs.fs = libs.fs || require('fs');
     // Remove filename
     dirpath = dirpath.split('/');
     dirpath.pop();
@@ -158,83 +145,6 @@ function mkpathSync(rootpath, dirpath) {
                 throw 'Cannot create ' + rootpath + dirpath.join('/');
             }
         }
-    }
-}
-
-function copyFile(text, language, volume, source, dest, callback) {
-    try {
-        var input  = libs.fs.createReadStream(source);               // Input stream
-        var output = libs.fs.createWriteStream(dest);                // Output stream
-
-        input.on('data',  function (d) {
-            output.write(d);
-        });
-
-        // Copy in to out
-        input.on('error', function (err) {
-            throw err;
-        });
-
-        // Raise errors
-        input.on('end',   function () {                               // When input ends
-            output.end();                                            // close output
-            adapter.log.info('Copied file "' + source + '" to "' + dest + '"');
-            if (callback) callback(text, language, volume);          // And notify callback
-        });
-    } catch (e) {
-        adapter.log.error('Cannot copy file "' + source + '" to "' + dest + '": ' + e);
-        if (callback) callback('', '', volume);              // And notify callback
-    }
-}
-
-function getLength(fileName, callback) {
-    // create a new parser from a node ReadStream
-    if (fileName === adapter.config.announce && adapter.config.annoDuration) {
-        if (callback) callback(adapter.config.annoDuration - 1);
-        return;
-    }
-
-    if (libs.fs.existsSync(fileName)) {
-        try {
-            var stat = libs.fs.statSync(fileName);
-            var size = stat.size;
-            if (callback) callback(Math.ceil(size / 4096));
-        } catch (e) {
-            adapter.log.warn('Cannot read length of file ' + fileName);
-            if (callback) callback(0);
-        }
-    } else {
-        if (callback) callback(0);
-    }
-}
-
-function splitText(text, max) {
-    if (!max) max = 70;
-    if (text.length > max) {
-        var parts = text.split(/,|.|;|:/);
-        var result = [];
-        for (var p = 0; p < parts.length; p++) {
-            if (parts[p].length < max) {
-                result.push(parts[p]);
-                continue;
-            }
-
-            var _parts = parts[p].split(' ');
-            var i = 0;
-            for (var w = 0; w < _parts.length; w++) {
-                if (_parts[i] && ((result[i] || '') + ' ' + _parts[w]).length > max) {
-                    i++;
-                }
-                if (!result[i]) {
-                    result.push(_parts[w]);
-                } else {
-                    result[i] += ' ' + _parts[w];
-                }
-            }
-        }
-        return result;
-    } else {
-        return [text];
     }
 }
 
@@ -253,784 +163,6 @@ function sayFinished(duration) {
     }, duration * 1000);
 }
 
-function sayItGetSpeechGoogle(text, language, volume, callback) {
-    if (typeof volume === 'function') {
-        callback = volume;
-        volume = undefined;
-    }
-
-    if (text.length === 0) {
-        if (callback) callback('', language, volume, 0);
-        return;
-    }
-
-    if (text.length > 70) {
-        var parts = splitText(text);
-        for (var t = 1; t < parts.length; t++) {
-            sayIt(parts[t], language, volume);
-        }
-        text = parts[0];
-    }
-
-    language = language || adapter.config.engine;
-
-    // https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&q=%D0%BE%D1%82%D0%B2%D0%B5%D1%82%D0%B8%D1%82%D1%8C%207&tl=ru&total=1&idx=0&textlen=10
-    var options = {
-        host: 'translate.google.com',
-        //port: 443,
-        path: '/translate_tts?ie=UTF-8&client=tw-ob&q=' + encodeURI(text) + '&tl=' + language + '&total=1&idx=0&textlen=' + text.length //
-    };
-
-    if (language === 'ru') {
-        options.headers = {
-            'Accept-Encoding':  'identity;q=1, *;q=0',
-            Range:              'bytes=0-',
-            Referer:            'https://www.google.de/',
-            'User-Agent':       'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.125 Safari/537.36'
-            //"User-Agent":      "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:25.0) Gecko/20100101 Firefox/25.0",
-            //"Accept":          "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-            //"Accept-Language": "ru-RU,ru;q=0.8,en-US;q=0.5,en;q=0.3",
-            //"Accept-Encoding": "gzip, deflate"//
-        };
-    }
-
-    if (!libs.https) libs.https = require('https');
-
-    var sounddata = '';
-    libs.https.get(options, function (res) {
-        res.setEncoding('binary');
-
-        res.on('data', function (chunk) {
-            sounddata += chunk;
-        });
-
-        res.on('end', function () {
-            if (sounddata.length < 100) {
-                adapter.log.error('Cannot get file: received file is too short');
-                if (callback) callback('$$$ERROR$$$' + text, language, volume, 0);
-                return;
-            }
-
-            if (sounddata.toString().indexOf('302 Moved') !== -1) {
-                adapter.log.error ('http://' + options.host + options.path);
-                adapter.log.error ('Cannot get file: ' + sounddata);
-                if (callback) callback('$$$ERROR$$$' + text, language, volume, 0);
-                return;
-            }
-
-            libs.fs.writeFile(__dirname + '/say.mp3', sounddata, 'binary', function (err) {
-                if (err) {
-                    adapter.log.error ('File error: ' + err);
-                    if (callback) callback('$$$ERROR$$$' + text, language, volume, 0);
-                } else {
-                    getLength(__dirname + '/say.mp3', function (seconds) {
-                        if (callback) callback(text, language, volume, seconds);
-                    });
-                }
-            });
-        });
-    }).on('error', function (err) {
-        sounddata = '';
-        adapter.log.error('Cannot get file:' + err);
-    });
-}
-
-function sayItGetSpeechAcapela(text, language, volume, callback) {
-    var options = {
-        host: 'vaassl3.acapela-group.com',
-        path: '/Services/Synthesizer?prot_vers=2&req_voice=' + language + '22k&cl_env=FLASH_AS_3.0&req_text=%5Cvct%3D100%5C+%5Cspd%3D180%5C+' +
-              encodeURI(text) + '&req_asw_type=STREAM&cl_vers=1-30&req_err_as_id3=yes&cl_login=ACAPELA_BOX&cl_app=PROD&cl_pwd=0g7znor2aa'
-    };
-
-    if (!libs.https) libs.https = require('https');
-
-    var sounddata = '';
-    libs.https.get(options, function (res) {
-        res.setEncoding('binary');
-
-        res.on('data', function (chunk) {
-            sounddata += chunk;
-        });
-
-        res.on('end', function () {
-            if (sounddata.length < 100) {
-                adapter.log.error('Cannot get file: received file is too short');
-                if (callback) callback('$$$ERROR$$$' + text, language, volume);
-                return;
-            }
-
-            libs.fs.writeFile(__dirname + '/say.mp3', sounddata, 'binary', function (err) {
-                if (err) {
-                    adapter.log.error('File error:' + err);
-                    if (callback) callback('$$$ERROR$$$' + text, language, volume);
-                } else {
-                    console.log('File saved.');
-                    if (callback) callback(text, language, volume);
-                }
-            });
-        });
-    }).on('error', function (err) {
-        sounddata = '';
-        adapter.log.error('Cannot get file:' + err);
-    });
-}
-
-function sayItGetSpeechYandex(text, language, volume, callback) {
-    if (language === 'ru' || language === 'ru_YA') {
-        language = 'ru-RU';
-    }
-
-    if (!libs.https) libs.https = require('https');
-
-    /*emotion: good, neutral, evil, mixed
-    drunk:   true, false
-    ill:     true, false
-    robot:   true, false
-    */
-    var options = {
-        host: 'tts.voicetech.yandex.net',
-        path: '/generate?lang=' + language + '&format=mp3&speaker=' + adapter.config.voice + '&key=' + adapter.config.key +
-              '&text=' + encodeURI(text.trim())
-    };
-
-    if (adapter.config.emotion && adapter.config.emotion !== 'none') options.path += '&emotion=' + adapter.config.emotion;
-    if (adapter.config.drunk === 'true' || adapter.config.drunk === true) options.path += '&drunk=true';
-    if (adapter.config.ill   === 'true' || adapter.config.ill   === true) options.path += '&ill=true';
-    if (adapter.config.robot === 'true' || adapter.config.robot === true) options.path += '&robot=true';
-
-    var sounddata = '';
-    libs.https.get(options, function (res) {
-        res.setEncoding('binary');
-
-        res.on('data', function (chunk) {
-            sounddata += chunk;
-        });
-
-        res.on('end', function () {
-            if (sounddata.length < 100) {
-                adapter.log.error('Cannot get file: received file is too short');
-                if (callback) callback('$$$ERROR$$$' + text, language, volume, 0);
-                return;
-            }
-
-            libs.fs.writeFile(__dirname + '/say.mp3', sounddata, 'binary', function (err) {
-                if (err) {
-                    adapter.log.error('File error:' + err);
-                    if (callback) callback('$$$ERROR$$$' + text, language, volume, 0);
-                } else {
-                    if (callback) callback(text, language, volume);
-                }
-            });
-        });
-    }).on('error', function (err) {
-        sounddata = '';
-        adapter.log.error('Cannot get file:' + err);
-    });
-}
-
-function sayItGetSpeechAmazon(text, language, volume, callback) {
-    if (!libs.Ivona) libs.Ivona = require('ivona-node');
-
-    if (!ivona) ivona = new libs.Ivona({
-        accessKey: adapter.config.accessKey,
-        secretKey: adapter.config.secretKey
-    });
-
-    if (!libs.fs) libs.fs = require('fs');
-
-    try {
-        ivona.createVoice(text, {
-            body: {
-                voice: {
-                    name:     sayitEngines[language].ename,
-                    language: sayitEngines[language].language,
-                    gender:   sayitEngines[language].gender
-                }
-            }
-        }).pipe(libs.fs.createWriteStream(__dirname + '/say.mp3')).on('finish', function () {
-            if (callback) callback(text, language, volume);
-        });
-    } catch (e) {
-        adapter.log.error(e.toString());
-        if (callback) callback('$$$ERROR$$$' + text, language, volume);
-    }
-}
-
-function sayItGetSpeechPolly(text, language, volume, callback) {
-    if (!libs.aws) libs.aws = require('aws-sdk');
-    if (!libs.fs)  libs.fs   = require('fs');
-
-    try {
-        polly = polly || new libs.aws.Polly({
-            accessKeyId:     adapter.config.accessKey,
-            secretAccessKey: adapter.config.secretKey,
-            region:          adapter.config.region
-        });
-        var type = 'text';
-        if (text.match(/<[-+\w\s'"=]+>/)) {
-            if (!text.match(/^<speak>/)) text = '<speak>' + text + '</speak>';
-            type = 'ssml';
-        }
-        var params = {
-            Text:         text,
-            OutputFormat: 'mp3',
-            TextType:     type,
-            VoiceId:      sayitEngines[language].ename
-        };
-
-        polly.synthesizeSpeech(params, function (err, data) {
-            if (err) {
-                adapter.log.error('Cannot get answer: ' + JSON.stringify(err));
-                if (callback) callback('$$$ERROR$$$' + text, language, volume, 0);
-            } else if (data) {
-                if (data.AudioStream instanceof Buffer) {
-                    libs.fs.writeFile(__dirname + '/say.mp3', data.AudioStream, 'binary', function (err) {
-                        if (err) {
-                            adapter.log.error ('File error: ' + err);
-                            if (callback) callback('$$$ERROR$$$' + text, language, volume, 0);
-                        } else {
-                            getLength(__dirname + '/say.mp3', function (seconds) {
-                                if (callback) callback(text, language, volume, seconds);
-                            });
-                        }
-                    });
-                } else {
-                    adapter.log.error('Answer in invalid format: ' + (data ? data.toString() : 'null'));
-                    if (callback) callback('$$$ERROR$$$' + text, language, volume, 0);
-                }
-            }
-        });
-    } catch (e) {
-        adapter.log.error(e.toString());
-        if (callback) callback('$$$ERROR$$$' + text, language, volume);
-    }
-}
-
-function sayItGetSpeechCloud(text, language, volume, callback) {
-    if (!libs.https) libs.https = require('https');
-    if (!libs.fs)    libs.fs    = require('fs');
-
-    if (!appkey) {
-        adapter.getForeignObject('system.adapter.' + adapter.config.cloud, function (err, obj) {
-            appkey = obj && obj.native && obj.native.apikey ? obj.native.apikey : 'error';
-            sayItGetSpeechCloud(text, language, volume, callback);
-        });
-        return;
-    }
-
-    if (appkey === 'error') {
-        adapter.log.error('No app key found in "' + adapter.config.cloud + '".');
-        if (callback) callback('$$$ERROR$$$' + text, language, volume, 0);
-        return;
-    }
-
-    try {
-        var type = 'text';
-        if (text.match(/<[-+\w\s'"=]+>/)) {
-            if (!text.match(/^<speak>/)) text = '<speak>' + text + '</speak>';
-            type = 'ssml';
-        }
-        var postData = JSON.stringify({
-            Text:     text,
-            appkey:   appkey,
-            TextType: type,
-            VoiceId:  sayitEngines[language].ename
-        });
-
-        var postOptions = {
-            host: 'iobroker.net',
-            port: 443,
-            path: '/polly/',
-            method: 'POST',
-            headers: {
-                'Content-Type':   'application/x-www-form-urlencoded',
-                'Content-Length': Buffer.byteLength(postData)
-            }
-        };
-        // Set up the request
-        var postReq = libs.https.request(postOptions, function (res) {
-            adapter.log.debug('Status code: ' + res.statusCode);
-            if (res.statusCode === 200) {
-                res.setEncoding('binary');
-            } else {
-                res.setEncoding('utf8');
-            }
-            var data = [];
-            res.on('data', function (chunk) {
-                if (typeof chunk === 'string') chunk = new Buffer(chunk, 'binary');
-                data.push(chunk);
-            });
-
-            res.on('error', function (error) {
-                adapter.log.error('Cannot read: ' + error);
-            });
-
-            res.on('end', function () {
-                data = Buffer.concat(data);
-                if (data instanceof Buffer && data.length > 500) {
-                    libs.fs.writeFile(__dirname + '/say.mp3', data, 'binary', function (err) {
-                        if (err) {
-                            adapter.log.error('File error: ' + err);
-                            if (callback) callback('$$$ERROR$$$' + text, language, volume, 0);
-                        } else {
-                            getLength(__dirname + '/say.mp3', function (seconds) {
-                                if (callback) callback(text, language, volume, seconds);
-                            });
-                        }
-                    });
-                } else {
-                    adapter.log.error('Answer in invalid format: ' + (data ? data.toString().substring(0, 100) : 'null'));
-                    if (callback) callback('$$$ERROR$$$' + text, language, volume, 0);
-                }
-            });
-        });
-
-        // post the data
-        postReq.write(postData);
-        postReq.end();
-    } catch (e) {
-        adapter.log.error(e.toString());
-        if (callback) callback('$$$ERROR$$$' + text, language, volume);
-    }
-}
-
-function sayItGetSpeechPicoTTS(text, language, volume, callback) {
-    if (!libs.fs)   libs.fs   = require('fs');
-    if (!libs.exec) libs.exec = require('child_process').exec;
-
-    try {
-        var cmd = 'pico2wave -l ' + language + ' -w ' + __dirname + '/say.wav "' + text + '"';
-        libs.exec(cmd, function (error, stdout, stderr) {
-            if (error) {
-                adapter.log.error('Cannot create (pico2wave) "say.wav": ' + error);
-                if (callback) callback(text, language, volume);
-            } else {
-                libs.exec('lame ' +  __dirname + '/say.wav ' + __dirname + '/say.mp3', function (error, stdout, stderr) {
-                    if (error) adapter.log.error('Cannot create (lame) "say.mp3": ' + error);
-                    if (callback) callback(text, language, volume);
-                });
-            }
-        });
-    } catch (e) {
-        adapter.log.error(e.toString());
-        if (callback) callback('$$$ERROR$$$' + text, language, volume);
-    }
-}
-
-function cacheFile(text, language, volume, seconds, callback) {
-    if (text.substring(0, 11) !== '$$$ERROR$$$') {
-        if (adapter.config.cache) {
-            var md5filename = path.join(cacheDir, libs.crypto.createHash('md5').update(language + ';' + text).digest('hex') + '.mp3');
-
-            var stat = libs.fs.statSync(__dirname + '/say.mp3');
-            if (stat.size < 100) {
-                adapter.log.warn('Received file is too short: ' + libs.fs.readFileSync(__dirname + '/say.mp3').toString());
-            } else {
-                copyFile(text, language, volume, __dirname + '/say.mp3', md5filename);
-            }
-        }
-    }
-
-    callback(text, language, volume, seconds);
-}
-
-function sayItGetSpeech(text, language, volume, callback) {
-    if (adapter.config.cache) {
-        var md5filename = path.join(cacheDir, libs.crypto.createHash('md5').update(language + ';' + text).digest('hex') + '.mp3');
-        if (libs.fs.existsSync(md5filename)) {
-            var cacheFileValid = true;
-            if (adapter.config.cacheExpiryDays) {
-                var fileStat = libs.fs.statSync(md5filename);
-                if (fileStat.ctime && (new Date().getTime()-new Date(fileStat.ctime).getTime() > adapter.config.cacheExpiryDays*1000*60*60*24)) {
-                    cacheFileValid = false;
-                    adapter.log.info('Cached File expired, remove and re-generate');
-                    libs.fs.unlinkSync(md5filename);
-                }
-            }
-            if (cacheFileValid) {
-                getLength(md5filename, function (seconds) {
-                    if (callback) callback(md5filename, language, volume, seconds);
-                });
-                return;
-            }
-        }
-    }
-
-    if (sayitEngines[language] && sayitEngines[language].engine) {
-        if (!sayitEngines[language].ssml) text = text.replace(/<\/?[-+\w\s'"=]+>/g, ''); // remove SSML
-
-        switch (sayitEngines[language].engine) {
-            case 'google':
-                sayItGetSpeechGoogle(text, language, volume, function (_text, _language, _volume, seconds) {
-                    cacheFile(_text, _language, _volume, seconds, callback);
-                });
-                break;
-
-            case 'yandex':
-                sayItGetSpeechYandex(text, language, volume, function (_text, _language, _volume, seconds) {
-                    cacheFile(_text, _language, _volume, seconds, callback);
-                });
-                break;
-
-            case 'acapela':
-                sayItGetSpeechAcapela(text, language, volume, function (_text, _language, _volume, seconds) {
-                    cacheFile(_text, _language, _volume, seconds, callback);
-                });
-                break;
-
-            case 'ivona':
-                sayItGetSpeechAmazon(text, language, volume, function (_text, _language, _volume, seconds) {
-                    cacheFile(_text, _language, _volume, seconds, callback);
-                });
-                break;
-
-            case 'polly':
-                sayItGetSpeechPolly(text, language, volume, function (_text, _language, _volume, seconds) {
-                    cacheFile(_text, _language, _volume, seconds, callback);
-                });
-                break;
-
-            case 'cloud':
-                sayItGetSpeechCloud(text, language, volume, function (_text, _language, _volume, seconds) {
-                    cacheFile(_text, _language, _volume, seconds, callback);
-                });
-                break;
-
-            case 'PicoTTS':
-                sayItGetSpeechPicoTTS(text, language, volume, function (_text, _language, _volume, seconds) {
-                    cacheFile(_text, _language, _volume, seconds, callback);
-                });
-                break;
-
-            default:
-                adapter.log.warn('Engine ' + sayitEngines[language].engine + ' not yet supported.');
-                sayFinished();
-                break;
-
-        }
-    } else {
-        sayItGetSpeechGoogle(text, language, volume, function (_text, _language, _volume, seconds) {
-            cacheFile(_text, _language, _volume, seconds, callback);
-        });
-    }
-}
-
-function sayItBrowser(text, language, volume, duration) {
-    if (text.substring(0, 11) === '$$$ERROR$$$') {
-        sayFinished(0);
-        return;
-    }
-
-    var fileData;
-    if (sayItIsPlayFile(text)) {
-        try {
-            fileData = libs.fs.readFileSync(text);
-        } catch (e) {
-            adapter.log.error('Cannot play file "' + text + '": ' + e.toString());
-            sayFinished(0);
-            return;
-        }
-    } else {
-        try {
-            fileData = libs.fs.readFileSync(__dirname + '/say.mp3');
-        } catch (e) {
-            adapter.log.error('Cannot play file "' + __dirname + '/say.mp3' + '": ' + e.toString());
-            sayFinished(0);
-            return;
-        }
-    }
-    adapter.setBinaryState(adapter.namespace + '.tts.mp3', fileData);
-    adapter.setForeignState('vis.0.control.instance', adapter.config.instance);
-    adapter.setForeignState('vis.0.control.data',     '/state/' + adapter.namespace + '.tts.mp3');
-    adapter.setForeignState('vis.0.control.command',  'playSound');
-    sayFinished(duration);
-}
-
-function sayItSonos(text, language, volume, duration) {
-    if (text.substring(0, 11) === '$$$ERROR$$$') {
-        sayFinished(0);
-        return;
-    }
-
-    var fileData;
-    if (sayItIsPlayFile(text)) {
-        try {
-            fileData = libs.fs.readFileSync(text);
-        } catch (e) {
-            adapter.log.error('Cannot play file "' + text + '": ' + e.toString());
-            sayFinished(0);
-            return;
-        }
-    } else {
-        try {
-            fileData = libs.fs.readFileSync(__dirname + '/say.mp3');
-        } catch (e) {
-            adapter.log.error('Cannot play file "' + __dirname + '/say.mp3": ' + e.toString());
-            sayFinished(0);
-            return;
-        }
-    }
-
-    volume = volume || sayLastVolume;
-
-    adapter.setBinaryState(adapter.namespace + '.tts.mp3', fileData);
-
-    if (volume === 'null') volume = 0;
-
-    if (adapter.config.device && webLink) {
-        adapter.log.info('Set "' + adapter.config.device + '.tts: ' + (volume ? (volume + ';') : '') + webLink + '/state/' + adapter.namespace + '.tts.mp3');
-        adapter.setForeignState(adapter.config.device + '.tts', (volume ? (volume + ';') : '') + webLink + '/state/' + adapter.namespace + '.tts.mp3');
-    } else if (webLink) {
-        adapter.log.info('Send to sonos ' + (volume ? (volume + ';') : '') + webLink + '/state/' + adapter.namespace + '.tts.mp3');
-        adapter.sendTo('sonos', 'send', (volume ? (volume + ';') : '') + webLink + '/state/' + adapter.namespace + '.tts.mp3');
-    } else {
-        adapter.log.warn('Web server is unavailable!');
-    }
-    sayFinished(duration);
-}
-
-function sayItMpd(text, language, volume, duration) {
-    if (text.substring(0, 11) === '$$$ERROR$$$') {
-        sayFinished(0);
-        return;
-    }
-
-    var fileData;
-    if (sayItIsPlayFile(text)) {
-        try {
-            fileData = libs.fs.readFileSync(text);
-        } catch (e) {
-            adapter.log.error('Cannot play file "' + text + '": ' + e.toString());
-            sayFinished(0);
-            return;
-        }
-    } else {
-        try {
-            fileData = libs.fs.readFileSync(__dirname + '/say.mp3');
-        } catch (e) {
-            adapter.log.error('Cannot play file "' + __dirname + '/say.mp3": ' + e.toString());
-            sayFinished(0);
-            return;
-        }
-    }
-    volume = volume || sayLastVolume;
-    adapter.setBinaryState(adapter.namespace + '.tts.mp3', fileData);
-
-    if (volume === 'null') volume = 0;
-
-    if (adapter.config.mpd_device && webLink) {
-	adapter.log.info('Set "' + adapter.config.mpd_device + '.say: ' + (volume ? (volume + ';') : '') + webLink + '/state/' + adapter.namespace + '.tts.mp3');
-	adapter.setForeignState(adapter.config.mpd_device + '.say', (volume ? (volume + ';') : '') + webLink + '/state/' + adapter.namespace + '.tts.mp3');
-    } else if (webLink) {
-	adapter.log.info('Send to MPD ' + (volume ? (volume + ';') : '') + webLink + '/state/' + adapter.namespace + '.tts.mp3');
-        adapter.sendTo('mpd', 'say', (volume ? (volume + ';') : '') + webLink + '/state/' + adapter.namespace + '.tts.mp3');
-    } else {
-        adapter.log.warn('Web server is unavailable!');
-    }
-    sayFinished(duration);
-}
-
-function sayItChromecast(text, language, volume, duration) {
-    if (text.substring(0, 11) === '$$$ERROR$$$') {
-        sayFinished(0);
-        return;
-    }
-
-    var fileData;
-    if (sayItIsPlayFile(text)) {
-        try {
-            fileData = libs.fs.readFileSync(text);
-        } catch (e) {
-            adapter.log.error('Cannot play file "' + text + '": ' + e.toString());
-            sayFinished(0);
-            return;
-        }
-    } else {
-        try {
-            fileData = libs.fs.readFileSync(__dirname + '/say.mp3');
-        } catch (e) {
-            adapter.log.error('Cannot play file "' + __dirname + '/say.mp3": ' + e.toString());
-            sayFinished(0);
-            return;
-        }
-    }
-
-    volume = volume || sayLastVolume;
-
-    adapter.setBinaryState(adapter.namespace + '.tts.mp3', fileData);
-
-    if (volume === 'null') volume = 0;
-
-    //Create announcement JSON
-    var announcement = {
-        url: webLink + '/state/' + adapter.namespace + '.tts.mp3'
-    };
-    if (volume) {
-        announcement.volume = volume;
-    }
-    var announcementJSON = JSON.stringify(announcement);
-
-    if (adapter.config.cDevice && webLink) {
-        adapter.log.info('Set "' + adapter.config.cDevice + '.player.announcement: ' + announcementJSON);
-        adapter.setForeignState(adapter.config.cDevice + '.player.announcement', announcementJSON);
-    } else if (webLink) {
-        adapter.log.info('Send to Chromecast (announcement): ' + announcementJSON);
-        adapter.sendTo('chromecast', 'announcement', announcementJSON);
-    } else {
-        adapter.log.warn('Web server is unavailable!');
-    }
-    sayFinished(duration);
-}
-
-function getSpeechUrl(text, host, language, callback) {
-    googleTTS(text, language, 1).then(function (url) {
-        onDeviceUp(host, url, function (res){
-            callback(res);
-        });
-    }).catch(function (err) {
-        adapter.log.error(err.stack);
-    });
-}
-function onDeviceUp(host, url, callback) {
-    var client = new Client();
-    client.connect(host, function() {
-        client.launch(DefaultMediaReceiver, function (err, player) {
-            var media = {
-                contentId:   url,
-                contentType: 'audio/mp3',
-                streamType:  'BUFFERED' // or LIVE
-            };
-            player.load(media, {autoplay: true}, function (err, status) {
-                if (err) {
-                    adapter.log.error(err);
-                }
-                client.close();
-                callback('TTS to GoogleHome');
-            });
-        });
-    });
-
-    client.on('error', function(err) {
-        adapter.log.error('Error: %s', err.message);
-        client.close();
-        callback('error');
-    });
-}
-
-function sayItGoogleHome(text, language, volume, duration) {
-    if (text.substring(0, 11) === '$$$ERROR$$$') {
-        sayFinished(0);
-        return;
-    }
-    Client               = Client               || require('castv2-client').Client;
-    DefaultMediaReceiver = DefaultMediaReceiver || require('castv2-client').DefaultMediaReceiver;
-    googleTTS            = googleTTS            || require('google-tts-api');
-    
-    getSpeechUrl(text, adapter.config.googleHome, language, function (res) {
-        adapter.log.debug('Pronounce result: ' + JSON.stringify(res));
-        sayFinished(0);
-    });
-}
-
-
-function sayItMP24(text, language, volume, duration) {
-    if (text.substring(0, 11) === '$$$ERROR$$$') {
-        sayFinished(0);
-        return;
-    }
-
-    if (adapter.config.server && !sayItIsPlayFile(text)) {
-        adapter.log.debug('Request MediaPlayer24 "http://' + adapter.config.server + ':50000/tts=' + encodeURI(text) + '"');
-        var opts = {
-            host: adapter.config.server,
-            port: 50000,
-            path: '/tts=' + encodeURI(text)
-        };
-        libs.http.get(opts, function (res) {
-            var body = '';
-            res.on('data', function (chunk) {
-                body += chunk;
-            });
-            res.on('end', function () {
-                // all data has been downloaded
-                adapter.log.debug('Response from MediaPlayer24 "' + adapter.config.server + '": ' + body);
-            });
-            res.on('error', function (e) {
-                adapter.log.error('Cannot say text on MediaPlayer24 "' + adapter.config.server + '":' + e.message);
-            });
-        }).on('error', function (e) {
-            if (e.message === 'Parse Error') {
-                adapter.log.debug('Played successfully');
-            } else {
-                adapter.log.error('Cannot say text on MediaPlayer24 "' + adapter.config.server + '":' + e.message);
-            }
-        });
-    }
-    sayFinished(duration + 2);
-}
-
-function sayItMP24ftp(text, language, volume, duration) {
-    if (text.substring(0, 11) === '$$$ERROR$$$') {
-        sayFinished(0);
-        return;
-    }
-
-    // Copy mp3 file to android device to play it later with MediaPlayer
-    if (adapter.config.port && adapter.config.server) {
-
-        var file = sayItGetFileName(text);
-
-        var ftp = new libs.jsftp({
-            host: adapter.config.server,
-            port: parseInt(adapter.config.port, 10), // defaults to 21
-            user: adapter.config.user || 'anonymous', // defaults to 'anonymous'
-            pass: adapter.config.pass || 'anonymous'  // defaults to 'anonymous'
-        });
-
-        try {
-            // Copy file to FTP server
-            ftp.put(file, 'say.mp3', function (hadError) {
-                if (!hadError) {
-                    var opts = {
-                        host: adapter.config.server,
-                        port: 50000,
-                        path: '/track=say.mp3'
-                    };
-
-                    libs.http.get(opts, function (res) {
-                        var body = '';
-                        res.on('data', function (chunk) {
-                            body += chunk;
-                        });
-                        res.on('end', function () {
-                            // all data has been downloaded
-                            adapter.log.debug('Response from MediaPlayer24 "' + adapter.config.server + '": ' + body);
-                        });
-                        res.on('error', function (e) {
-                            adapter.log.error('Cannot say text on MediaPlayer24 "' + adapter.config.server + '":' + e.message);
-                        });
-                    }).on('error', function (e) {
-                        if (e.message === 'Parse Error') {
-                            adapter.log.debug('Played successfully');
-                        } else {
-                            adapter.log.error('Cannot say text on MediaPlayer24 "' + adapter.config.server + '":' + e.message);
-                        }
-                    });
-                } else {
-                    adapter.log.error ('FTP error:' + hadError);
-                }
-                ftp.raw.quit(function (err, data) {
-                    if (err) adapter.log.error(err);
-                    ftp.destroy();
-                });
-            });
-        } catch (e) {
-            adapter.log.error('Cannot upload file to ' + adapter.config.server + ':' + adapter.config.port);
-        }
-    }
-    sayFinished(duration + 2);
-}
-
 function sayItIsPlayFile(text) {
     if (text.length > 4) {
         var ext = text.substring(text.length - 4).toLowerCase();
@@ -1041,172 +173,6 @@ function sayItIsPlayFile(text) {
     return false;
 }
 
-// If text is gong.mp3 or bong.wav
-function sayItGetFileName(text) {
-    if (sayItIsPlayFile(text)) {
-        if (libs.fs.existsSync(text)) {
-            return text;
-        } else {
-            return __dirname + '/' + text;
-        }
-    }
-
-    return __dirname + '/say.mp3';
-}
-
-function sayItSystem(text, language, volume, duration) {
-    if (text.substring(0, 11) === '$$$ERROR$$$') {
-        sayFinished(0);
-        return;
-    }
-    if (!libs.os) libs.os = require('os');
-
-    var p = libs.os.platform();
-    var ls = null;
-    var file = sayItGetFileName(text);
-    var cmd;
-
-    sayItSystemVolume(volume);
-
-    if (adapter.config.command) {
-        //custom command
-        adapter.setState('tts.playing', true);
-        if (adapter.config.command.indexOf('%s') !== -1) {
-            cmd = adapter.config.command.replace('%s', file);
-        } else {
-            if (p.match(/^win/)) {
-                cmd = adapter.config.command + ' "' + file + '"';
-            } else {
-                cmd = adapter.config.command + ' ' + file;
-            }
-        }
-        ls = libs.child_process.exec(cmd, function (error, stdout, stderr) {
-            if (error) adapter.log.error('Cannot play:' + error);
-            adapter.setState('tts.playing', false);
-        });
-    } else {
-        if (p === 'linux') {
-            //linux
-            adapter.setState('tts.playing', true);
-
-            if (adapter.config.player === 'omxplayer') {
-                cmd = 'omxplayer -o local ' + file;
-            } else {
-                cmd = 'mpg321 ' + file;
-            }
-            ls = libs.child_process.exec(cmd, function (error, stdout, stderr) {
-                if (error) adapter.log.error('Cannot play:' + error);
-                adapter.setState('tts.playing', false);
-            });
-        } else if (p.match(/^win/)) {
-            //windows
-            adapter.setState('tts.playing', true);
-            ls = libs.child_process.exec('cmdmp3.exe "' + file + '"', {cwd: __dirname + '/cmdmp3/'}, function (error, stdout, stderr) {
-                if (error) adapter.log.error('Cannot play:' + error);
-                adapter.setState('tts.playing', false);
-            });
-        } else if (p === 'darwin') {
-            //mac osx
-            adapter.setState('tts.playing', true);
-            ls = libs.child_process.exec('/usr/bin/afplay ' + file, function (error, stdout, stderr) {
-                if (error) adapter.log.error('Cannot play:' + error);
-                adapter.setState('tts.playing', false);
-            });
-        }
-    }
-
-    if (ls) {
-        ls.on('error', function (e) {
-            throw new Error('sayIt.play: there was an error while playing the mp3 file:' + e);
-        });
-    }
-    if (text === adapter.config.announce) {
-        sayFinished(duration);
-    } else {
-        sayFinished(duration + 2);
-	}
-}
-
-function sayItWindows(text, language, volume, duration) {
-    if (text.substring(0, 11) === '$$$ERROR$$$') {
-        sayFinished(0);
-        return;
-    }
-
-    // If mp3 file
-    if (sayItIsPlayFile(text)) {
-        sayItSystem(text, language, volume);
-        return;
-    }
-
-    if (!libs.os) libs.os = require('os');
-
-    // Call windows own text 2 speech
-    var p    = libs.os.platform();
-    var ls   = null;
-    var file = sayItGetFileName(text);
-
-    if (volume || volume === 0) sayItSystemVolume(volume);
-
-    if (p.match(/^win/)) {
-        //windows
-        adapter.setState('tts.playing', true);
-        ls = libs.child_process.exec(__dirname + '/Say/SayStatic.exe ' + text, function (error, stdout, stderr) {
-            adapter.setState('tts.playing', false);
-        });
-    } else {
-        adapter.log.error ('sayItWindows: only windows OS is supported for Windows default mode');
-    }
-
-    if (ls) {
-        ls.on('error', function (e) {
-            throw new Error('sayIt.play: there was an error while text2speech on window:' + e);
-        });
-    }
-    sayFinished(duration + 2);
-}
-
-function sayItSystemVolume(level) {
-    if ((!level && level !== 0) || level === 'null') return;
-
-    level = parseInt(level);
-    if (level < 0)   level = 0;
-    if (level > 100) level = 100;
-
-    if (level === sayLastVolume) return;
-    if (!libs.os) libs.os = require('os');
-
-    adapter.setState('tts.volume', level, true);
-
-    sayLastVolume = level;
-
-    var p  = libs.os.platform();
-    var ls = null;
-
-    if (p === 'linux') {
-        //linux
-        try {
-            ls = libs.child_process.spawn('amixer', ['cset', 'name="Master Playback Volume"', '--', level + '%']);
-        } catch (err) {
-            adapter.log.error('amixer is not available, so you may hear no audio. Install manually!');
-            ls = null;
-        }
-    } else if (p.match(/^win/)) {
-        //windows
-        // windows volume is from 0 to 65535
-        level = Math.round((65535 * level) / 100); // because this level is from 0 to 100
-        ls = libs.child_process.spawn (__dirname + '/nircmd/nircmdc.exe', ['setsysvolume', level]);
-    } else if (p === 'darwin') {
-        //mac osx
-        ls = libs.child_process.spawn('sudo', ['osascript', '-e', '"set Volume ' + Math.round(level / 10) + '"']);
-    }
-
-    if (ls) {
-        ls.on('error', function (e) {
-            adapter.log.error('sayIt.play: there was an error while playing the mp3 file:' + e);
-        });
-    }
-}
 var cacheRunning = false;
 var cacheFiles   = [];
 
@@ -1235,14 +201,14 @@ function cacheIt(text, language) {
             // If language;text or volume;text
             if (arr.length === 2) {
                 // If number
-                if (parseInt(arr[0]) != arr[0]) {
+                if (parseInt(arr[0]).toString() !== arr[0]) {
                     language = arr[0];
                 }
                 text = arr[1];
             } else if (arr.length === 3) {
                 // If language;volume;text or volume;language;text
                 // If number
-                if (parseInt(arr[0]) == arr[0]) {
+                if (parseInt(arr[0]).toString() === arr[0]) {
                     language = arr[1];
                 } else {
                     language = arr[0];
@@ -1277,6 +243,7 @@ function cacheIt(text, language) {
         }
 
         var md5filename = path.join(cacheDir, libs.crypto.createHash('md5').update(language + ';' + text).digest('hex') + '.mp3');
+        libs.fs = libs.fs || require('fs');
 
         if (libs.fs.existsSync(md5filename)) {
             adapter.log.debug('Text is yet cached: ' + text);
@@ -1291,8 +258,8 @@ function cacheIt(text, language) {
 
     cacheRunning = true;
 
-    sayItGetSpeech(text, language, false, function (md5filename, _language, volume, seconds) {
-        if (md5filename.substring(0, 11) === '$$$ERROR$$$') {
+    text2speech.sayItGetSpeech(text, language, false, function (md5filename, _language, volume, seconds) {
+        if (md5filename.substring(0, 11) === ERROR) {
             adapter.log.error('Cannot cache text: "' + text.substring(11));
         } else {
             adapter.log.debug('Text is cached: "' + text + '" under ' + md5filename);
@@ -1360,10 +327,10 @@ function sayIt(text, language, volume, process) {
                     try {
                         // Cache the file
                         if (md5filename) libs.fs.writeFileSync(md5filename, data);
-                        libs.fs.writeFileSync(__dirname + '/say.mp3', data);
-                        sayIt(__dirname + '/say.mp3', language, volume, process);
+                        libs.fs.writeFileSync(MP3FILE, data);
+                        sayIt(MP3FILE, language, volume, process);
                     } catch (e) {
-                        adapter.log.error('Cannot write file "' + __dirname + '/say.mp3": ' + e.toString());
+                        adapter.log.error('Cannot write file "' + MP3FILE + '": ' + e.toString());
                         sayFinished(0);
                     }
                 } else {
@@ -1377,8 +344,8 @@ function sayIt(text, language, volume, process) {
                         }
                         // Cache the file
                         if (md5filename) libs.fs.writeFileSync(md5filename, data);
-                        libs.fs.writeFileSync(__dirname + '/say.mp3', data);
-                        sayIt(__dirname + '/say.mp3', language, volume, process);
+                        libs.fs.writeFileSync(MP3FILE, data);
+                        sayIt(MP3FILE, language, volume, process);
                     } else {
                         adapter.log.warn('File "' + text + '" not found');
                         sayFinished(0);
@@ -1416,40 +383,40 @@ function sayIt(text, language, volume, process) {
     var isGenerate = false;
     if (!language) {
         language = adapter.config.engine;
-        if (adapter.config.type === 'googleHome') {
-            language = systemLanguage;
-        }
     }
     if (!volume && adapter.config.volume)   volume = adapter.config.volume;
 
     // find out if say.mp3 must be generated
-    if (!sayItIsPlayFile(text)) isGenerate = sayitOptions[adapter.config.type].mp3Required;
+    if (!sayItIsPlayFile(text)) {
+        isGenerate = sayitOptions[adapter.config.type].mp3Required;
+    }
 
+    var speechFunction = speech2device.getFunction(adapter.config.type);
     // If text first must be generated
     if (isGenerate && sayLastGeneratedText !== '[' + language + ']' + text) {
         sayLastGeneratedText = '[' + language + ']' + text;
-        sayItGetSpeech(text, language, volume, sayitFuncs[adapter.config.type].func);
+        text2speech.sayItGetSpeech(text, language, volume, speechFunction);
     } else {
         if (sayItIsPlayFile(text)) {
-            getLength(text, function (duration) {
-                sayitFuncs[adapter.config.type].func(text, language, volume, duration);
+            text2speech.getLength(text, function (duration) {
+                speechFunction(text, language, volume, duration);
             });
         } else {
             if (!isGenerate) {
-                sayitFuncs[adapter.config.type].func(text, language, volume, 0);
+                speechFunction(text, language, volume, 0);
             } else if (adapter.config.cache) {
                 md5filename = path.join(cacheDir, libs.crypto.createHash('md5').update(language + ';' + text).digest('hex') + '.mp3');
                 if (libs.fs.existsSync(md5filename)) {
-                    getLength(md5filename, function (duration) {
-                        sayitFuncs[adapter.config.type].func(md5filename, language, volume, duration);
+                    text2speech.getLength(md5filename, function (duration) {
+                        speechFunction(md5filename, language, volume, duration);
                     });
                 } else {
                     sayLastGeneratedText = '[' + language + ']' + text;
-                    sayItGetSpeech(text, language, volume, sayitFuncs[adapter.config.type].func);
+                    text2speech.sayItGetSpeech(text, language, volume, speechFunction);
                 }
             } else {
-                getLength(__dirname + '/say.mp3', function (duration) {
-                    sayitFuncs[adapter.config.type].func(text, language, volume, duration);
+                text2speech.getLength(MP3FILE, function (duration) {
+                    speechFunction(text, language, volume, duration);
                 });
             }
         }
@@ -1602,9 +569,9 @@ function start() {
     adapter.getState('tts.volume', function (err, state) {
         if (err || !state) {
             adapter.setState('tts.volume', 70, true);
-            if (adapter.config.type !== 'system') sayLastVolume = 70;
+            if (adapter.config.type !== 'system') options.sayLastVolume = 70;
         } else {
-            if (adapter.config.type !== 'system') sayLastVolume = state.val;
+            if (adapter.config.type !== 'system') options.sayLastVolume = state.val;
         }
     });
 
@@ -1618,35 +585,38 @@ function start() {
         // Read volume
         adapter.getState('tts.volume', function (err, state) {
             if (!err && state) {
-                sayItSystemVolume(state.val);
+                speech2device.sayItSystemVolume(state.val);
             } else {
-                sayItSystemVolume(70);
+                speech2device.sayItSystemVolume(70);
             }
         });
     }
 
+    // calculate weblink for devices that require it
     if ((adapter.config.type === 'sonos') ||
         (adapter.config.type === 'chromecast') ||
-        (adapter.config.type === 'mpd')) {
+        (adapter.config.type === 'mpd') ||
+        (adapter.config.type === 'googleHome')) {
+
         adapter.getForeignObject('system.adapter.' + adapter.config.web, function (err, obj) {
             if (!err && obj && obj.native) {
-                webLink = 'http';
+                options.webLink = 'http';
                 if (obj.native.auth) {
                     adapter.log.error('Cannot use server "' + adapter.config.web + '" with authentication for sonos/chromecast. Select other or create another one.');
                 } else {
-                    if (obj.native.secure) webLink += 's';
-                    webLink += '://';
+                    if (obj.native.secure) options.webLink += 's';
+                    options.webLink += '://';
                     if (obj.native.bind === 'localhost' || obj.native.bind === '127.0.0.1') {
                         adapter.log.error('Selected web server "' + adapter.config.web + '" is only on local device available. Select other or create another one.');
                     } else {
                         if (obj.native.bind === '0.0.0.0') {
-                            webLink += adapter.config.webServer;
+                            options.webLink += adapter.config.webServer;
                         } else {
-                            webLink += obj.native.bind;
+                            options.webLink += obj.native.bind;
                         }
                     }
 
-                    webLink += ':' + obj.native.port;
+                    options.webLink += ':' + obj.native.port;
                 }
             } else {
                 adapter.log.error('Cannot read information about "' + adapter.config.web + '". No web server is active');
@@ -1655,18 +625,10 @@ function start() {
     }
 
     adapter.subscribeStates('*');
-
 }
 
 function main() {
     libs.fs = require('fs');
-
-    if (adapter.config.type === 'googleHome') {
-        adapter.getForeignObject('system.config', function (err, obj) {
-            systemLanguage = obj.common.language;
-        })
-    }
-
 
     if ((process.argv && process.argv.indexOf('--install') !== -1) ||
         ((!process.argv || process.argv.indexOf('--force') === -1) && (!adapter.common || !adapter.common.enabled))) {

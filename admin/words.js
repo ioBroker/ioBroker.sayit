@@ -38,6 +38,15 @@ systemDictionary = {
     "Secret Key:":      {"en": "Secret Key:", "de": "Secret Key:", "ru": "Secret Key:"},
     "AWS Region:":      {"en": "AWS Region:", "de": "AWS Region:", "ru": "AWS регион:"},
     "Cloud instance:":  {"en": "Cloud instance:", "de": "Cloud-Intsanz:", "ru": "Cloud драйвер:"},
+    "Cache-Expiry:":    {"en": "Cache-Expiry:", "de": "Cache-Expiry:", "ru": "Срок хранения кэш:"},
+    "Browse":           {"en": "Browse",        "de": "Suchen",     "ru": "Искать"},
+    "select":           {"en": "select",        "de": "auswählen",  "ru": "выбрать"},
+    "error":            {"en": "error",         "de": "Fehler",     "ru": "ошибка"},
+    "IP not accessible for server": {
+        "en": "IP is not accessible for the device",
+        "de": "IP ist für dieses Gerät nicht erreichbar",
+        "ru": "Этот IP недоступен для устройства"
+    },
     "Install first cloud adapter": {
         "en": "Install first cloud adapter",
         "de": "Erst muss cloud-Adapter installiert werden",

@@ -11,7 +11,7 @@
 <script type="text/javascript" src="../../js/adapter-settings.js"></script>
 <script type="text/javascript" src="words.js"></script>
 <style>
-    #drop_zone{
+    #drop_zone {
         border: 2px dashed #bbb;
         -moz-border-radius: 5px;
         -webkit-border-radius: 5px;
@@ -25,9 +25,14 @@
         width: 90%;
         height: 60px;
     }
+
+    .error {
+        border: 2px solid red;
+    }
 </style>
 <script type="text/javascript">
     var webServers = null;
+    var gOnChange;
 
     function showHideSettings() {
         $('.variable').hide();
@@ -40,15 +45,16 @@
             $('.announceValue').hide();
             $('.announce').hide();
             $('.system').hide();
+            $('.googleHome').show();
+
             getIsAdapterAlive(function (isAlive) {
                 if (isAlive || common.enabled) {
                     $('#search').button('enable');
                     fillGoogleHome();
-                } else {
-                    $('#search').button('disable');
                 }
             });
         } else {
+            $('.googleHome').hide();
             $('.announceValue').show();
             $('.announce').show();
         }
@@ -131,19 +137,38 @@
         });
     }
 
-    function fillGoogleHome(current) {
+    function fillGoogleHome() {
+        $('#search').button('disable');
         sendTo(null, 'browseChromecast', null, function (list) {
             var text = '<option value="">' + _('select') + '</option>';
             if (list) {
                 for (var i = 0; i < list.length; i++) {
                     text += '<option value="' + list[i].ip + '">' + list[i].name + '[' + list[i].ip + ']</option>';
                 }
-                $('#googleHome').html(text).val(current);
+                $('#googleHome').html(text).prop('disabled', false).unbind('change').change(function () {
+                    $('#server').val($(this).val()).trigger('change');
+                });
             } else {
-                $('#googleHome').replaceWith('<input id="googleHome" class="value" value="' + (current || '') + '"></input');
+                $('#googleHome').html('<option value="">' + _('error') + '</option>').prop('disabled', true);
             }
-
+            $('#search').button('enable');
         });
+    }
+
+    function ip2hex(ip) {
+        var octets = ip.split('.');
+        if (octets.length !== 4) {
+            return 0;
+        }
+        var result = 0;
+        for (var i = 0; i < octets.length; ++i) {
+            var octet = parseInt(octets[i], 10);
+            if (Number.isNaN(octet) || octet < 0 || octet > 255) {
+                throw new Error("Each octet must be between 0 and 255");
+            }
+            result |= octet << ((octets.length - i) * 8);
+        }
+        return result;
     }
 
     function checkWeb(elem, current) {
@@ -159,34 +184,74 @@
 
                 if (webServers[i].value.native.bind === '0.0.0.0') {
                     $('#tr_webServer').show();
-                    $('#webServer').html('');
+                    var $webServer = $('#webServer');
+                    $webServer.html('');
                     // read all ipv4 addresses of host
                     socket.emit('getObject', 'system.host.' + webServers[i].value.common.host, function (err, obj) {
+                        var text = '';
                         if (!err && obj && obj.native) {
                             for (var iface in obj.native.hardware.networkInterfaces) {
-                                for (var i = 0; i < obj.native.hardware.networkInterfaces[iface].length; i++) {
-                                    if (obj.native.hardware.networkInterfaces[iface][i].family === 'IPv4' && !obj.native.hardware.networkInterfaces[iface][i].internal) {
-                                        $('#webServer').append('<option value="' + obj.native.hardware.networkInterfaces[iface][i].address + '">[IPv4] ' + obj.native.hardware.networkInterfaces[iface][i].address + ' - ' + iface + '</option>');
+                                if (obj.native.hardware.networkInterfaces.hasOwnProperty(iface)) {
+                                    for (var i = 0; i < obj.native.hardware.networkInterfaces[iface].length; i++) {
+                                        if (obj.native.hardware.networkInterfaces[iface][i].family === 'IPv4' && !obj.native.hardware.networkInterfaces[iface][i].internal) {
+                                            text += '<option value="' + obj.native.hardware.networkInterfaces[iface][i].address + '" data-mask="' + obj.native.hardware.networkInterfaces[iface][i].netmask + '">[IPv4] ' + obj.native.hardware.networkInterfaces[iface][i].address + ' - ' + iface + '</option>';
+                                        }
                                     }
                                 }
                             }
                         }
+                        $webServer.html(text);
 
-                        if (current)  $('#webServer').val(current);
+                        if (current) {
+                            $webServer.val(current);
+                        }
+                        $webServer.unbind('change').bind('change', function () {
+                            gOnChange();
+                            var ip = $(this).val();
+                            var netmask = $(this).find('option[value="' + ip + '"]').data('mask');
+                            var server;
+                            var type = $('#type').val();
+                            if (type === 'googleHome') {
+                                 server = $('#server').val();
+                            } else if (type === 'sonos') {
+                                server = $('#device').val();
+                            } else if (type === 'chromecast') {
+                                server = $('#cDevice').val();
+                            } else if (type === 'mpd') {
+                                server = $('#mpd_device').val();
+                            }
+                            if (server && ip && netmask && server.indexOf(':') === -1 && ip.indexOf(':') === -1) {
+                                ip = ip2hex(ip);
+                                netmask = ip2hex(netmask);
+                                server = ip2hex(server);
+                                if ((ip & netmask) !== (server & netmask)) {
+                                    $webServer.addClass('error').attr('title', _('IP not accessible for server'));
+                                } else {
+                                    $webServer.removeClass('error').attr('title', '');
+                                }
+                            } else {
+                                $webServer.removeClass('error');
+                            }
+
+                        });
                     });
                 } else if (webServers[i].value.native.bind === '::') {
                     // read all ipv6 addresses of host
                     socket.emit('getObject', 'system.host.' + webServers[i].value.common.host, function (err, obj) {
                         if (!err && obj && obj.native) {
                             for (var iface in obj.native.hardware.networkInterfaces) {
-                                for (var i = 0; i < obj.native.hardware.networkInterfaces[iface].length; i++) {
-                                    if (obj.native.hardware.networkInterfaces[iface][i].family === 'IPv6' && !obj.native.hardware.networkInterfaces[iface][i].internal) {
-                                        $('#webServer').append('<option value="' + obj.native.hardware.networkInterfaces[iface][i].address + '">[IPv6] ' + obj.native.hardware.networkInterfaces[iface][i].address + ' - ' + iface + '</option>');
+                                if (obj.native.hardware.networkInterfaces.hasOwnProperty(iface)) {
+                                    for (var i = 0; i < obj.native.hardware.networkInterfaces[iface].length; i++) {
+                                        if (obj.native.hardware.networkInterfaces[iface][i].family === 'IPv6' && !obj.native.hardware.networkInterfaces[iface][i].internal) {
+                                            $('#webServer').append('<option value="' + obj.native.hardware.networkInterfaces[iface][i].address + '">[IPv6] ' + obj.native.hardware.networkInterfaces[iface][i].address + ' - ' + iface + '</option>');
+                                        }
                                     }
                                 }
                             }
                         }
-                        if (current)  $('#webServer').val(current);
+                        if (current) {
+                            $('#webServer').val(current);
+                        }
                     });
                 } else {
                     $('#tr_webServer').hide();
@@ -207,7 +272,8 @@
             }
             $(elem).val(current);
             if ((type === 'sonos') ||
-                (type === 'chromecast')) {
+                (type === 'chromecast') ||
+                (type === 'googleHome')) {
                 checkWeb('#web', webServer);
             }
         });
@@ -295,9 +361,10 @@
     function load(settings, onChange) {
         if (!settings) return;
 
-        if (settings.googleHome === undefined) settings.googleHome = '';
-
-        if (!settings.player) settings.player = 'mpg321';
+        if (!settings.player) {
+            settings.player = 'mpg321';
+        }
+        gOnChange = onChange;
 
         $('#play').button({icons: {primary: 'ui-icon-play'}, text: false}).css({width: 22, height: 22}).click(function () {
             socket.emit('readFile', 'sayit.' + instance, 'tts.userfiles/' + $('#announce').val(), function (err, data) {
@@ -321,31 +388,28 @@
             $t.append('<option value="' + name + '">' + sayitOptions[name].name + '</option>');
         }
 
-        $('#search').button().click(function () {
-            fillGoogleHome(settings.googleHome);
+        $('#search').button({
+            label: _('Browse')
+        }).click(function () {
+            fillGoogleHome();
         });
 
         getIsAdapterAlive(function (isAlive) {
             if (isAlive || common.enabled) {
                 $('#search').button('enable');
                 if (settings.type === 'googleHome') {
-                    fillGoogleHome(settings.googleHome);
+                    fillGoogleHome();
                 }
             } else {
-                $('#googleHome').replaceWith('<input id="googleHome" class="value" value="' + (settings.googleHome || '') + '"></input');
-
-                $('#googleHome').change(function () {
-                        onChange();
-                    }).keyup(function () {
-                        $(this).trigger('change');
-                    });
-                $('#search').button('disable');
+                $('#search').button('disable').title(_('Adapter must be enabled'));
             }
         });
 
         var $e = $('#engine');
         for (var name in sayitEngines) {
-            $e.append('<option value="' + name + '">' + sayitEngines[name].name + '</option>');
+            if (sayitEngines.hasOwnProperty(name)) {
+                $e.append('<option value="' + name + '">' + sayitEngines[name].name + '</option>');
+            }
         }
         for (var key in settings) {
             if (settings.hasOwnProperty(key)) {
@@ -371,7 +435,8 @@
                 var type = $('#type').val();
                 if ((type === 'sonos') ||
                     (type === 'chromecast') ||
-                    (type === 'mpd')) {
+                    (type === 'mpd') ||
+                    (type === 'googleHome')) {
                     checkWeb('#web');
                     $('#announce').val('').trigger('change');
                     showHideSettings();
@@ -419,7 +484,8 @@
 
         if ((settings.type === 'sonos') ||
             (settings.type === 'chromecast') ||
-            (settings.type === 'mpd')){
+            (settings.type === 'mpd') ||
+            (settings.type === 'googleHome')){
             $('.announce').hide();
             if (settings.announce) {
                 $('#announce').val('').trigger('change');
@@ -484,10 +550,7 @@
         onChange(false);
     }
 
-    // ... and the function save has to exist.
-    // you have to make sure the callback is called with the settings object as first param!
     function save(callback) {
-        // example: select elements with class=value and build settings object
         var obj = {};
         $('.value').each(function () {
             var $this = $(this);
@@ -548,21 +611,20 @@
             <tr class="system"><td><label class="translate" for="command">System command:</label></td><td class="admin-icon" data-link="system-command"></td><td><input class="value" id="command"/></td></tr>
             <tr class="announceValue"><td><label class="translate" for="announce">Announce:</label></td><td class="admin-icon"></td><td><select class="value" id="announce"></select>&nbsp;<button id="play"></button></td></tr>
             <tr class="announceValue"><td></td><td></td><td><input type="file" accept=".mp3,audio/*" id="files" name="files[]" multiple /></td></tr>
-            <tr class="announce"><td><label class="translate" for="annoTimeout">Announce timeout (sec):</label></td><td class="admin-icon"></td><td><input class="value" id="annoTimeout" type="text" size="8" /></td></tr>
-            <tr class="announce"><td><label class="translate" for="annoDuration">Announce length (sec):</label></td><td class="admin-icon"></td><td><input class="value" id="annoDuration" type="text" size="2" /></td></tr>
-            <tr class="announce"><td><label class="translate" for="annoVolume">Announce volume (%):</label></td><td class="admin-icon"></td><td><input class="value" id="annoVolume" type="text" size="3" /></td></tr>
+            <tr class="announce"><td><label class="translate" for="annoTimeout">Announce timeout (sec):</label></td><td class="admin-icon"></td><td><input class="value" id="annoTimeout" size="8" /></td></tr>
+            <tr class="announce"><td><label class="translate" for="annoDuration">Announce length (sec):</label></td><td class="admin-icon"></td><td><input class="value" id="annoDuration" size="2" /></td></tr>
+            <tr class="announce"><td><label class="translate" for="annoVolume">Announce volume (%):</label></td><td class="admin-icon"></td><td><input class="value" id="annoVolume" size="3" /></td></tr>
             <tr><td>&nbsp;</td><td></td><td>&nbsp;</td></tr>
 
             <tr id="tr_cache"      class="variable"><td><label class="translate" for="cache">Cache:</label></td><td class="admin-icon"></td>   <td><input class="value" id="cache"   type="checkbox" /></td></tr>
-            <tr id="tr_cacheExpiryDays"      class="variable"><td><label class="translate" for="tr_cacheExpiryDays">Cache-Expiry:</label></td><td class="admin-icon"></td>   <td><input class="value" id="cacheExpiryDays"   type="text" size="5" /></td></tr>
-            <tr id="tr_server"     class="variable"><td><label class="translate" for="server">Server:</label></td><td class="admin-icon"></td>  <td><input class="value" id="server"  type="text" /></td></tr>
-            <tr id="tr_port"       class="variable"><td><label class="translate" for="port">Port:</label></td><td class="admin-icon"></td>    <td><input class="value" id="port"    type="text" size="5"  maxlength="5"/></td></tr>
-            <tr id="tr_user"       class="variable"><td><label class="translate" for="user">User:</label></td><td class="admin-icon"></td>    <td><input class="value" id="user"    type="text" /></td></tr>
-            <tr id="tr_pass"       class="variable"><td><label class="translate" for="pass">Password:</label></td><td class="admin-icon"></td><td><input class="value" id="pass"    type="text" /></td></tr>
-            <tr id="tr_instance"   class="variable"><td><label class="translate" for="instance">Browser instance:</label></td><td class="admin-icon"></td><td><input class="value" id="instance" type="text" /></td></tr>
+            <tr id="tr_cacheExpiryDays"      class="variable"><td><label class="translate" for="tr_cacheExpiryDays">Cache-Expiry:</label></td><td class="admin-icon"></td>   <td><input class="value" id="cacheExpiryDays"   size="5" /></td></tr>
+            <tr id="tr_server"     class="variable"><td><label class="translate" for="server">Server:</label></td><td class="admin-icon"></td>  <td><input class="value" id="server"/><select class="value googleHome" id="googleHome"><option value="" class="translate">none</option></select><button style="font-size: 10px; margin-left: 10px;" id="search" class="translate googleHome"></button></td></tr>
+            <tr id="tr_port"       class="variable"><td><label class="translate" for="port">Port:</label></td><td class="admin-icon"></td>    <td><input class="value" id="port"    size="5"  maxlength="5"/></td></tr>
+            <tr id="tr_user"       class="variable"><td><label class="translate" for="user">User:</label></td><td class="admin-icon"></td>    <td><input class="value" id="user"    /></td></tr>
+            <tr id="tr_pass"       class="variable"><td><label class="translate" for="pass">Password:</label></td><td class="admin-icon"></td><td><input class="value" id="pass"    /></td></tr>
+            <tr id="tr_instance"   class="variable"><td><label class="translate" for="instance">Browser instance:</label></td><td class="admin-icon"></td><td><input class="value" id="instance" /></td></tr>
             <tr id="tr_device"     class="variable"><td><label class="translate" for="device">Device:</label></td><td class="admin-icon"></td><td><select class="value" id="device"><option value="" class="translate">All</option></select></td></tr>
             <tr id="tr_cDevice"    class="variable"><td><label class="translate" for="cDevice">Device:</label></td><td class="admin-icon"></td><td><select class="value" id="cDevice"><option value="" class="translate">All</option></select></td></tr>
-            <tr id="tr_googleHome" class="variable"><td><label class="translate" for="googleHome">Device:</label></td><td class="admin-icon"></td><td><select class="value" id="googleHome"><option value="" class="translate">none</option></select><button style="font-size: 10px;margin-left: 10px;" id="search" class="translate">Browse</button></td></tr>
             <tr id="tr_mpd_device" class="variable"><td><label class="translate" for="mpd_device">Device:</label></td><td class="admin-icon"></td><td><select class="value" id="mpd_device"><option value="" class="translate">All</option></select></td></tr>
             <tr id="tr_web"        class="variable"><td><label class="translate" for="web">Web instance:</label></td><td class="admin-icon"></td><td><select class="value" id="web"></select></td></tr>
             <tr id="tr_webServer"  class="variable"><td><label class="translate" for="webServer">Web server IP:</label></td><td class="admin-icon"></td><td><select class="value" id="webServer"></select></td></tr>

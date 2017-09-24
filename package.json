@@ -1,6 +1,6 @@
 {
   "name": "iobroker.sayit",
-  "version": "1.5.3",
+  "version": "1.6.0",
   "description": "Text to speech interface for ioBroker.",
   "author": {
     "name": "bluefox",
@@ -32,7 +32,6 @@
     "url": "https://github.com/ioBroker/ioBroker.sayit"
   },
   "optionalDependencies": {
-    "google-tts-api": "^0.0.2",
     "castv2-client": "^1.2.0",
     "mdns": "^2.3.3"
   },

@@ -1,8 +1,13 @@
 {
     "common": {
         "name":                     "sayit",
-        "version": "1.5.3",
+        "version": "1.6.0",
         "news": {
+          "1.6.0": {
+            "en": "Code refactoring\nAdd google home as output\nRemove ivona because not more supported",
+            "de": "Code refactoring\nGoogle Home als Ausgabe hinzugefügt\nivona gelöscht",
+            "ru": "Переработка кода\nДобавлен google home "
+          },
           "1.5.3": {
             "en": "Add expiry option for caching (in days)",
             "de": "Caching-Verfalls-Möglichkeit (in Tagen) hinzugefügt",
@@ -42,36 +47,6 @@
             "en": "small fix of config dialog\nfix Volume change by linux",
             "de": "Kleine Verbesserung von Konfigdialog\nKorrigiere Lautstärke änderung bei Linux",
             "ru": "Маленькое улучшение настроек\nИсправлено регулирование громкости на linux"
-          },
-          "1.3.0": {
-			"en": "add mpd",
-            "de": "MPD Option hinzugefügt",
-            "ru": "Добавлен MPD"
-          },
-          "1.2.1": {
-            "en": "Fix cache",
-            "de": "Korrigiere cache",
-            "ru": "Исправлена cache"
-          },
-          "1.2.0": {
-            "en": "Finish sayit",
-            "de": "Beende sayit",
-            "ru": "Закрыть sayit, всеми способами"
-          },
-          "1.1.3": {
-            "en": "Fix changing of engine",
-            "de": "Korrigiere Änderung von Engine fon omxplayer",
-            "ru": "Исправлена смена движка"
-          },
-          "1.1.2": {
-            "en": "Add omxplayer option",
-            "de": "Unterstützung fon omxplayer",
-            "ru": "Поддержка omxplayer"
-          },
-          "1.0.1": {
-            "en": "support of blockly",
-            "de": "Blockly-Unterstützung",
-            "ru": "Поддержка blockly"
           }
         },
         "title":                    "Text to speech Adapter",
@@ -106,7 +81,6 @@
         "engine":                   "",
         "sonos":                    "",
         "server":                   "",
-        "googleHome":               "",
         "port":                     0,
         "user":                     "",
         "pass":                     "",
