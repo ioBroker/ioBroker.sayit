@@ -141,7 +141,7 @@ Following values for engines are possible:
 - **en-US_CLOUD_Male_Chipmunk** -  en-US - Male - Chipmunk
 - **en-US_CLOUD_Male_Eric** -      en-US - Male - Eric
 - **en-US_CLOUD_Female_Ivy** -     en-US - Female - Ivy
-- en-US_CLOUD_Female_Jennifer en-US - Female - Jennifer
+- **en-US_CLOUD_Female_Jennifer** -  en-US - Female - Jennifer
 - **en-US_CLOUD_Male_Justin** -    en-US - Male - Justin
 - **en-US_CLOUD_Female_Kendra** -  en-US - Female - Kendra
 - **en-US_CLOUD_Female_Kimberly** -  en-US - Female - Kimberly
