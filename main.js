@@ -258,7 +258,7 @@ function cacheIt(text, language) {
 
     cacheRunning = true;
 
-    text2speech.sayItGetSpeech(text, language, false, function (md5filename, _language, volume, seconds) {
+    text2speech.sayItGetSpeech(text, language, false, cacheDir, function (md5filename, _language, volume, seconds) {
         if (md5filename.substring(0, 11) === ERROR) {
             adapter.log.error('Cannot cache text: "' + text.substring(11));
         } else {
@@ -395,7 +395,7 @@ function sayIt(text, language, volume, process) {
     // If text first must be generated
     if (isGenerate && sayLastGeneratedText !== '[' + language + ']' + text) {
         sayLastGeneratedText = '[' + language + ']' + text;
-        text2speech.sayItGetSpeech(text, language, volume, speechFunction);
+        text2speech.sayItGetSpeech(text, language, volume, cacheDir, speechFunction);
     } else {
         if (sayItIsPlayFile(text)) {
             text2speech.getLength(text, function (duration) {
@@ -412,7 +412,7 @@ function sayIt(text, language, volume, process) {
                     });
                 } else {
                     sayLastGeneratedText = '[' + language + ']' + text;
-                    text2speech.sayItGetSpeech(text, language, volume, speechFunction);
+                    text2speech.sayItGetSpeech(text, language, volume, cacheDir, speechFunction);
                 }
             } else {
                 text2speech.getLength(MP3FILE, function (duration) {
