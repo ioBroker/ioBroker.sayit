@@ -1,12 +1,17 @@
 {
     "common": {
         "name":                     "sayit",
-        "version": "1.6.0",
+        "version": "1.6.1",
         "news": {
+          "1.6.1": {
+            "en": "Fix",
+            "de": "Fix",
+            "ru": "Fix"
+          },
           "1.6.0": {
             "en": "Code refactoring\nAdd google home as output\nRemove ivona because not more supported",
             "de": "Code refactoring\nGoogle Home als Ausgabe hinzugefügt\nivona gelöscht",
-            "ru": "Переработка кода\nДобавлен google home "
+            "ru": "Переработка кода\nДобавлен google home"
           },
           "1.5.3": {
             "en": "Add expiry option for caching (in days)",
