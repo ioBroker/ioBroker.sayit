@@ -2,8 +2,6 @@
 /* jshint strict: false */
 /*jslint node: true */
 'use strict';
-
-var path          = require('path');
 var utils         = require(__dirname + '/lib/utils'); // Get common adapter utils
 var engines       = require(__dirname + '/admin/engines.js');
 var Text2Speech   = require(__dirname + '/lib/text2speech');
@@ -51,9 +49,7 @@ adapter.on('stateChange', function (id, state) {
     }
 });
 
-adapter.on('ready', function () {
-    main();
-});
+adapter.on('ready', main);
 
 adapter.on('message', function (obj) {
     if (obj) processMessage(obj);
@@ -118,16 +114,17 @@ function stop(callback) {
 
 var options = {
     sayLastVolume: null,
-    webLink:       ''
+    webLink:       '',
+    cacheDir:      ''
 };
+
 var sayLastGeneratedText = '';
-var cacheDir             = '';
 var list                 = [];
 var lastSay              = null;
-var text2speech          = new Text2Speech(adapter, libs, sayIt, sayFinished);
-var speech2device        = new Speech2Device(adapter, libs, options, sayItIsPlayFile, sayFinished);
+var text2speech          = new Text2Speech(adapter, libs, options, sayIt);
+var speech2device        = new Speech2Device(adapter, libs, options);
 var MP3FILE              = __dirname + '/say.mp3';
-var ERROR                = '$$$ERROR$$$';
+
 
 function mkpathSync(rootpath, dirpath) {
     libs.fs = libs.fs || require('fs');
@@ -148,7 +145,10 @@ function mkpathSync(rootpath, dirpath) {
     }
 }
 
-function sayFinished(duration) {
+function sayFinished(error, duration) {
+    if (error) {
+        adapter.log.error(error);
+    }
     duration = duration || 0;
     if (list.length) {
         adapter.log.debug('Duration "' + list[0].text + '": ' + duration);
@@ -161,16 +161,6 @@ function sayFinished(duration) {
             sayIt(list[0].text, list[0].language, list[0].volume, true);
         }
     }, duration * 1000);
-}
-
-function sayItIsPlayFile(text) {
-    if (text.length > 4) {
-        var ext = text.substring(text.length - 4).toLowerCase();
-        if (ext === '.mp3' || ext === '.wav') {
-            return true;
-        }
-    }
-    return false;
 }
 
 var cacheRunning = false;
@@ -231,10 +221,10 @@ function cacheIt(text, language) {
         if (!language) language = adapter.config.engine;
 
         // find out if say.mp3 must be generated
-        if (!sayItIsPlayFile(text)) isGenerate = sayitOptions[adapter.config.type].mp3Required;
+        if (!speech2device.sayItIsPlayFile(text)) isGenerate = sayitOptions[adapter.config.type].mp3Required;
 
         if (!isGenerate) {
-            if (sayItIsPlayFile(text)) {
+            if (speech2device.sayItIsPlayFile(text)) {
                 adapter.log.warn('mp3 file must not be cached: ' + text);
             } else {
                 adapter.log.warn('Cache does not required for this engine: ' + adapter.config.engine);
@@ -242,7 +232,7 @@ function cacheIt(text, language) {
             return;
         }
 
-        var md5filename = path.join(cacheDir, libs.crypto.createHash('md5').update(language + ';' + text).digest('hex') + '.mp3');
+        var md5filename = libs.path.join(options.cacheDir, libs.crypto.createHash('md5').update(language + ';' + text).digest('hex') + '.mp3');
         libs.fs = libs.fs || require('fs');
 
         if (libs.fs.existsSync(md5filename)) {
@@ -258,9 +248,9 @@ function cacheIt(text, language) {
 
     cacheRunning = true;
 
-    text2speech.sayItGetSpeech(text, language, false, function (md5filename, _language, volume, seconds) {
-        if (md5filename.substring(0, 11) === ERROR) {
-            adapter.log.error('Cannot cache text: "' + text.substring(11));
+    text2speech.sayItGetSpeech(text, language, false, function (error, md5filename, _language, volume, seconds) {
+        if (error) {
+            adapter.log.error('Cannot cache text: "' + error);
         } else {
             adapter.log.debug('Text is cached: "' + text + '" under ' + md5filename);
         }
@@ -309,7 +299,7 @@ function sayIt(text, language, volume, process) {
     if (text[0] === '/') {
         var cached = false;
         if (adapter.config.cache) {
-            md5filename = path.join(cacheDir, libs.crypto.createHash('md5').update(text).digest('hex') + '.mp3');
+            md5filename = libs.path.join(options.cacheDir, libs.crypto.createHash('md5').update(text).digest('hex') + '.mp3');
 
             if (libs.fs.existsSync(md5filename)) {
                 cached = true;
@@ -387,36 +377,41 @@ function sayIt(text, language, volume, process) {
     if (!volume && adapter.config.volume)   volume = adapter.config.volume;
 
     // find out if say.mp3 must be generated
-    if (!sayItIsPlayFile(text)) {
+    if (!speech2device.sayItIsPlayFile(text)) {
         isGenerate = sayitOptions[adapter.config.type].mp3Required;
     }
 
     var speechFunction = speech2device.getFunction(adapter.config.type);
+
     // If text first must be generated
     if (isGenerate && sayLastGeneratedText !== '[' + language + ']' + text) {
         sayLastGeneratedText = '[' + language + ']' + text;
-        text2speech.sayItGetSpeech(text, language, volume, speechFunction);
+        text2speech.sayItGetSpeech(text, language, volume, function (error, text, language, volume, duration) {
+            speechFunction(error, text, language, volume, duration, sayFinished);
+        });
     } else {
-        if (sayItIsPlayFile(text)) {
-            text2speech.getLength(text, function (duration) {
-                speechFunction(text, language, volume, duration);
+        if (speech2device.sayItIsPlayFile(text)) {
+            text2speech.getLength(text, function (error, duration) {
+                speechFunction(error, text, language, volume, duration, sayFinished);
             });
         } else {
             if (!isGenerate) {
-                speechFunction(text, language, volume, 0);
+                speechFunction(text, language, volume, 0, sayFinished);
             } else if (adapter.config.cache) {
-                md5filename = path.join(cacheDir, libs.crypto.createHash('md5').update(language + ';' + text).digest('hex') + '.mp3');
+                md5filename = libs.path.join(options.cacheDir, libs.crypto.createHash('md5').update(language + ';' + text).digest('hex') + '.mp3');
                 if (libs.fs.existsSync(md5filename)) {
-                    text2speech.getLength(md5filename, function (duration) {
-                        speechFunction(md5filename, language, volume, duration);
+                    text2speech.getLength(md5filename, function (error, duration) {
+                        speechFunction(error, md5filename, language, volume, duration, sayFinished);
                     });
                 } else {
                     sayLastGeneratedText = '[' + language + ']' + text;
-                    text2speech.sayItGetSpeech(text, language, volume, speechFunction);
+                    text2speech.sayItGetSpeech(text, language, volume, function (error, text, language, volume, duration) {
+                        speechFunction(error, text, language, volume, duration, sayFinished);
+                    });
                 }
             } else {
-                text2speech.getLength(MP3FILE, function (duration) {
-                    speechFunction(text, language, volume, duration);
+                text2speech.getLength(MP3FILE, function (error, duration) {
+                    speechFunction(error, text, language, volume, duration, sayFinished);
                 });
             }
         }
@@ -425,7 +420,7 @@ function sayIt(text, language, volume, process) {
 
 function uploadFile(file, callback) {
     try {
-        var stat = libs.fs.statSync(path.join(__dirname + '/mp3/', file));
+        var stat = libs.fs.statSync(libs.path.join(__dirname + '/mp3/', file));
         if (!stat.isFile()) {
             // ignore not a file
             if (callback) callback();
@@ -441,7 +436,7 @@ function uploadFile(file, callback) {
     adapter.readFile(adapter.namespace, 'tts.userfiles/' + file, function (err, data) {
         if (err || !data) {
             try {
-                adapter.writeFile(adapter.namespace, 'tts.userfiles/' + file, libs.fs.readFileSync(path.join(__dirname + '/mp3/', file)), function () {
+                adapter.writeFile(adapter.namespace, 'tts.userfiles/' + file, libs.fs.readFileSync(libs.path.join(__dirname + '/mp3/', file)), function () {
                     if (callback) callback();
                 });
             } catch (e) {
@@ -480,12 +475,12 @@ function start() {
         adapter.config.annoTimeout  = parseInt(adapter.config.annoTimeout)  || 15;
         adapter.config.annoVolume   = parseInt(adapter.config.annoVolume)   || 70; // percent from actual volume
 
-        if (!libs.fs.existsSync(path.join(__dirname, adapter.config.announce))) {
+        if (!libs.fs.existsSync(libs.path.join(__dirname, adapter.config.announce))) {
             adapter.readFile(adapter.namespace, 'tts.userfiles/' + adapter.config.announce, function (err, data) {
                 if (data) {
                     try {
-                        libs.fs.writeFileSync(path.join(__dirname, adapter.config.announce), data);
-                        adapter.config.announce = path.join(__dirname, adapter.config.announce);
+                        libs.fs.writeFileSync(libs.path.join(__dirname, adapter.config.announce), data);
+                        adapter.config.announce = libs.path.join(__dirname, adapter.config.announce);
                     } catch (e) {
                         adapter.log.error('Cannot write file: ' + e.toString());
                         adapter.config.announce = '';
@@ -499,16 +494,20 @@ function start() {
 
     // If cache enabled
     if (adapter.config.cache) {
-        if (adapter.config.cacheDir && (adapter.config.cacheDir[0] === '/' || adapter.config.cacheDir[0] === '\\')) adapter.config.cacheDir = adapter.config.cacheDir.substring(1);
-        cacheDir = path.join(__dirname, adapter.config.cacheDir);
-        if (cacheDir) {
-            cacheDir = cacheDir.replace(/\\/g, '/');
-            if (cacheDir[cacheDir.length - 1] === '/') cacheDir = cacheDir.substring(0, cacheDir.length - 1);
+        if (adapter.config.cacheDir && (adapter.config.cacheDir[0] === '/' || adapter.config.cacheDir[0] === '\\')) {
+            adapter.config.cacheDir = adapter.config.cacheDir.substring(1);
+        }
+        options.cacheDir = libs.path.join(__dirname, adapter.config.cacheDir);
+        if (options.cacheDir) {
+            options.cacheDir = options.cacheDir.replace(/\\/g, '/');
+            if (options.cacheDir[options.cacheDir.length - 1] === '/') {
+                options.cacheDir = options.cacheDir.substring(0, options.cacheDir.length - 1);
+            }
         } else {
-            cacheDir = '';
+            options.cacheDir = '';
         }
 
-        var parts = cacheDir.split('/');
+        var parts = options.cacheDir.split('/');
         var i = 0;
         while (i < parts.length) {
             if (parts[i] === '..') {
@@ -518,38 +517,38 @@ function start() {
                 i++;
             }
         }
-        cacheDir = parts.join('/');
+        options.cacheDir = parts.join('/');
         // Create cache dir if does not exist
-        if (!libs.fs.existsSync(cacheDir)) {
+        if (!libs.fs.existsSync(options.cacheDir)) {
             try {
                 mkpathSync(__dirname + '/', adapter.config.cacheDir);
             } catch (e) {
-                adapter.log.error('Cannot create "' + cacheDir + '": ' + e.message);
+                adapter.log.error('Cannot create "' + options.cacheDir + '": ' + e.message);
             }
         } else {
             var engine = '';
             // Read the old engine
-            if (libs.fs.existsSync(path.join(cacheDir, 'engine.txt'))) {
+            if (libs.fs.existsSync(libs.path.join(options.cacheDir, 'engine.txt'))) {
                 try {
-                    engine = libs.fs.readFileSync(path.join(cacheDir, 'engine.txt')).toString();
+                    engine = libs.fs.readFileSync(libs.path.join(options.cacheDir, 'engine.txt')).toString();
                 } catch (e) {
-                    adapter.log.error('Cannot read file "' + path.join(cacheDir, 'engine.txt') + ': ' + e.toString());
+                    adapter.log.error('Cannot read file "' + libs.path.join(options.cacheDir, 'engine.txt') + ': ' + e.toString());
                 }
             }
             // If engine changed
             if (engine !== adapter.config.engine) {
                 // Delete all files in this directory
-                var files = libs.fs.readdirSync(cacheDir);
+                var files = libs.fs.readdirSync(options.cacheDir);
                 for (var f = 0; f < files.length; f++) {
                     if (files[f] === 'engine.txt') continue;
-                    if (libs.fs.existsSync(path.join(cacheDir, files[f])) && libs.fs.lstatSync(path.join(cacheDir, files[f])).isDirectory()) {
-                        libs.fs.unlinkSync(path.join(cacheDir, files[f]));
+                    if (libs.fs.existsSync(libs.path.join(options.cacheDir, files[f])) && libs.fs.lstatSync(libs.path.join(options.cacheDir, files[f])).isDirectory()) {
+                        libs.fs.unlinkSync(libs.path.join(options.cacheDir, files[f]));
                     }
                 }
                 try {
-                    libs.fs.writeFileSync(path.join(cacheDir, 'engine.txt'), adapter.config.engine);
+                    libs.fs.writeFileSync(libs.path.join(options.cacheDir, 'engine.txt'), adapter.config.engine);
                 } catch (e) {
-                    adapter.log.error('Cannot write file "' + path.join(cacheDir, 'engine.txt') + ': ' + e.toString());
+                    adapter.log.error('Cannot write file "' + libs.path.join(options.cacheDir, 'engine.txt') + ': ' + e.toString());
                 }
             }
         }
@@ -628,7 +627,8 @@ function start() {
 }
 
 function main() {
-    libs.fs = require('fs');
+    libs.fs   = require('fs');
+    libs.path = require('path');
 
     if ((process.argv && process.argv.indexOf('--install') !== -1) ||
         ((!process.argv || process.argv.indexOf('--force') === -1) && (!adapter.common || !adapter.common.enabled))) {
