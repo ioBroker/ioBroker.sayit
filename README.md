@@ -235,11 +235,10 @@ Following values for engines are possible:
 
 ## Changelog
 
-### 1.6.2 (2017-09-25)
+### 1.6.3 (2017-10-04)
 * (bluefox) Code refactoring
 * (bluefox) Add google home as output
 * (bluefox) Remove ivona because not more supported
-* (Apollon77) Fix
 
 ### 1.5.2 (2017-03-09)
 * (bluefox) Catch error if some directory in mp3 folder

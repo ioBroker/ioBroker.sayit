@@ -1,9 +1,9 @@
 {
     "common": {
         "name":                     "sayit",
-        "version": "1.6.2",
+        "version": "1.6.3",
         "news": {
-          "1.6.2": {
+          "1.6.3": {
             "en": "Code refactoring\nAdd google home as output\nRemove ivona because not more supported",
             "de": "Code refactoring\nGoogle Home als Ausgabe hinzugefügt\nivona gelöscht",
             "ru": "Переработка кода\nДобавлен google home"

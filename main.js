@@ -396,7 +396,7 @@ function sayIt(text, language, volume, process) {
             });
         } else {
             if (!isGenerate) {
-                speechFunction(text, language, volume, 0, sayFinished);
+                speechFunction(null, text, language, volume, 0, sayFinished);
             } else if (adapter.config.cache) {
                 md5filename = libs.path.join(options.cacheDir, libs.crypto.createHash('md5').update(language + ';' + text).digest('hex') + '.mp3');
                 if (libs.fs.existsSync(md5filename)) {
