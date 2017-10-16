@@ -1,185 +1,189 @@
 {
     "common": {
-        "name":                     "sayit",
+        "name": "sayit",
         "version": "1.6.3",
         "news": {
-          "1.6.3": {
-            "en": "Code refactoring\nAdd google home as output\nRemove ivona because not more supported",
-            "de": "Code refactoring\nGoogle Home als Ausgabe hinzugefügt\nivona gelöscht",
-            "ru": "Переработка кода\nДобавлен google home"
-          },
-          "1.5.3": {
-            "en": "Add expiry option for caching (in days)",
-            "de": "Caching-Verfalls-Möglichkeit (in Tagen) hinzugefügt",
-            "ru": "Add expiry option for caching (in days)"
-          },
-          "1.5.2": {
-            "en": "Catch error if some directory in mp3 folder",
-            "de": "Fange ein Fehler, falls ein Verzeichnis in mp3",
-            "ru": "Обработка ошибки, если встречается папка вместо mp3"
-          },
-          "1.5.1": {
-            "en": "Fix blockly language",
-            "de": "Korrigiere blockly-Sprache",
-            "ru": "Поправлен язык в blockly"
-          },
-          "1.5.0": {
-            "en": "Add AWS Polly and cloud as source",
-            "de": "AWS Polly und Cloud hinzugefügt",
-            "ru": "Добавлено AWS Polly и Cloud в качестве источника"
-          },
-          "1.4.0": {
-            "en": "fix install problem\nadd PicoTTS as source",
-            "de": "Korrigiere Installationsprozess\nPicoTTS hinzugefügt",
-            "ru": "Исправлена установка\nДобавлен PicoTTS движок"
-          },
-          "1.3.3": {
-            "en": "show only installed instances in blockly",
-            "de": "Zeige nur installierten Instanzen im Blockly",
-            "ru": "Показывать только установленные инстанции в Blockly"
-          },
-		  "1.3.2": {
-            "en": "changes for new chromecast tts",
-            "de": "Änderungen für chromecast TTS",
-            "ru": "Изменения для chromecast TTS"
-          },
-          "1.3.1": {
-            "en": "small fix of config dialog\nfix Volume change by linux",
-            "de": "Kleine Verbesserung von Konfigdialog\nKorrigiere Lautstärke änderung bei Linux",
-            "ru": "Маленькое улучшение настроек\nИсправлено регулирование громкости на linux"
-          }
+            "1.6.3": {
+                "en": "Code refactoring\nAdd google home as output\nRemove ivona because not more supported",
+                "de": "Code refactoring\nGoogle Home als Ausgabe hinzugefügt\nivona gelöscht",
+                "ru": "Переработка кода\nДобавлен google home"
+            },
+            "1.5.3": {
+                "en": "Add expiry option for caching (in days)",
+                "de": "Caching-Verfalls-Möglichkeit (in Tagen) hinzugefügt",
+                "ru": "Add expiry option for caching (in days)"
+            },
+            "1.5.2": {
+                "en": "Catch error if some directory in mp3 folder",
+                "de": "Fange ein Fehler, falls ein Verzeichnis in mp3",
+                "ru": "Обработка ошибки, если встречается папка вместо mp3"
+            },
+            "1.5.1": {
+                "en": "Fix blockly language",
+                "de": "Korrigiere blockly-Sprache",
+                "ru": "Поправлен язык в blockly"
+            },
+            "1.5.0": {
+                "en": "Add AWS Polly and cloud as source",
+                "de": "AWS Polly und Cloud hinzugefügt",
+                "ru": "Добавлено AWS Polly и Cloud в качестве источника"
+            },
+            "1.4.0": {
+                "en": "fix install problem\nadd PicoTTS as source",
+                "de": "Korrigiere Installationsprozess\nPicoTTS hinzugefügt",
+                "ru": "Исправлена установка\nДобавлен PicoTTS движок"
+            },
+            "1.3.3": {
+                "en": "show only installed instances in blockly",
+                "de": "Zeige nur installierten Instanzen im Blockly",
+                "ru": "Показывать только установленные инстанции в Blockly"
+            },
+            "1.3.2": {
+                "en": "changes for new chromecast tts",
+                "de": "Änderungen für chromecast TTS",
+                "ru": "Изменения для chromecast TTS"
+            },
+            "1.3.1": {
+                "en": "small fix of config dialog\nfix Volume change by linux",
+                "de": "Kleine Verbesserung von Konfigdialog\nKorrigiere Lautstärke änderung bei Linux",
+                "ru": "Маленькое улучшение настроек\nИсправлено регулирование громкости на linux"
+            }
         },
-        "title":                    "Text to speech Adapter",
+        "title": "Text to speech Adapter",
         "desc": {
-			"en": "Text to speech in a cloud or local. Runs on windows, linux and OSX. It can play mp3/wav too.",
-			"de": "Text to speech in Cloud oder lokal für windows, linux und OSX. Mp3 und Wav können auch abgespielt werden.",
-			"ru": "Синтезатор речи локально или в облаке работает под windows, linux и OSX. Mp3 и Wav можно тоже проигрывать."
-		},
+            "en": "Text to speech in a cloud or local. Runs on windows, linux and OSX. It can play mp3/wav too.",
+            "de": "Text to speech in Cloud oder lokal für windows, linux und OSX. Mp3 und Wav können auch abgespielt werden.",
+            "ru": "Синтезатор речи локально или в облаке работает под windows, linux и OSX. Mp3 и Wav можно тоже проигрывать."
+        },
         "authors": [
             "bluefox <dogafox@gmail.com>"
         ],
-        "license":                  "MIT",
-        "platform":                 "Javascript/Node.js",
-        "mode":                     "daemon",
-        "readme":                   "https://github.com/ioBroker/ioBroker.sayit/blob/master/README.md",
-        "loglevel":                 "info",
-        "messagebox":               true,
-        "supportStopInstance":      true,
-        "stopBeforeUpdate":         true,
-        "icon":                     "sayit.png",
-        "enabled":                  true,
-        "keywords":                 ["TTS", "voice", "speech"],
-        "extIcon":                  "https://raw.githubusercontent.com/ioBroker/ioBroker.sayit/master/admin/sayit.png",
-		"type":                     "media",
-        "blockly":                  true
+        "license": "MIT",
+        "platform": "Javascript/Node.js",
+        "mode": "daemon",
+        "readme": "https://github.com/ioBroker/ioBroker.sayit/blob/master/README.md",
+        "loglevel": "info",
+        "messagebox": true,
+        "supportStopInstance": true,
+        "stopBeforeUpdate": true,
+        "icon": "sayit.png",
+        "enabled": true,
+        "keywords": [
+            "TTS",
+            "voice",
+            "speech"
+        ],
+        "extIcon": "https://raw.githubusercontent.com/ioBroker/ioBroker.sayit/master/admin/sayit.png",
+        "type": "multimedia",
+        "blockly": true
     },
     "native": {
-        "type":                     "system",
-        "command":                  "",
-        "player":                   "",
-		"cache":                    true,
-        "engine":                   "",
-        "sonos":                    "",
-        "server":                   "",
-        "port":                     0,
-        "user":                     "",
-        "pass":                     "",
-        "instance":                 "",
-        "web":                      "",
-        "webServer":                "",
-        "cacheDir":                 "../../cache/",
-        "key":                      "",
-        "announce":                 "",
-        "annoTimeout":              15,
-        "annoDuration":             0,
-        "annoVolume":               "70",
-        "cloud":                    ""
+        "type": "system",
+        "command": "",
+        "player": "",
+        "cache": true,
+        "engine": "",
+        "sonos": "",
+        "server": "",
+        "port": 0,
+        "user": "",
+        "pass": "",
+        "instance": "",
+        "web": "",
+        "webServer": "",
+        "cacheDir": "../../cache/",
+        "key": "",
+        "announce": "",
+        "annoTimeout": 15,
+        "annoDuration": 0,
+        "annoVolume": "70",
+        "cloud": ""
     },
     "instanceObjects": [
-      {
-        "_id":  "tts.userfiles",
-        "type": "meta",
-        "common": {
-          "name": "Gong files",
-          "role": "meta.user"
-        },
-        "native": {}
-      },
-      {
-        "_id":  "tts",
-        "type": "channel",
-        "common": {
-          "name": "Google text to speech",
-          "role": "media.tts"
-        },
-        "native": {}
-      },
-      {
-        "_id":  "tts.volume",
-        "type": "state",
-        "common": {
-          "role":  "level.volume",
-          "name":  "TTS Volume",
-          "min":   0,
-          "max":   100,
-          "def":   70,
-          "type":  "number",
-          "read":  true,
-          "write": true,
-          "desc":  "System volume or remote device volume"
-        },
-        "native": {}
-      },
-      {
-        "_id":  "tts.text",
-        "type": "state",
-        "common": {
-          "role":  "media.tts.text",
-          "name":  "Text to speech",
-          "type":  "string",
-          "read":  true,
-          "write": true,
-          "desc":  "This text will be converted to speech"
-        },
-        "native": {}
-      },
-      {
-            "_id":  "tts.cachetext",
-            "type": "state",
+        {
+            "_id": "tts.userfiles",
+            "type": "meta",
             "common": {
-                "role":  "media.tts.cachetext",
-                "name":  "Text to cache",
-                "type":  "string",
-                "read":  true,
-                "write": true,
-                "desc":  "This text will be cached on disk to play it later"
+                "name": "Gong files",
+                "role": "meta.user"
             },
             "native": {}
-      },
-      {
-        "_id":  "tts.playing",
-        "type": "state",
-        "common": {
-          "role":  "media.tts.text",
-          "name":  "Is now speaking",
-          "type":  "boolean",
-          "read":  true,
-          "write": false,
-          "desc":  "Is true while speaking"
         },
-        "native": {}
-      },
-      {
-        "_id":  "tts.mp3",
-        "type": "state",
-        "common": {
-          "name":  "Binary mp3 file",
-          "type":  "file",
-          "read":  true,
-          "write": false,
-          "desc":  "Can be accessed from web server under http://ip:8082/state/sayit.0.tts.mp3"
+        {
+            "_id": "tts",
+            "type": "channel",
+            "common": {
+                "name": "Google text to speech",
+                "role": "media.tts"
+            },
+            "native": {}
         },
-        "native": {}
-      }
+        {
+            "_id": "tts.volume",
+            "type": "state",
+            "common": {
+                "role": "level.volume",
+                "name": "TTS Volume",
+                "min": 0,
+                "max": 100,
+                "def": 70,
+                "type": "number",
+                "read": true,
+                "write": true,
+                "desc": "System volume or remote device volume"
+            },
+            "native": {}
+        },
+        {
+            "_id": "tts.text",
+            "type": "state",
+            "common": {
+                "role": "media.tts.text",
+                "name": "Text to speech",
+                "type": "string",
+                "read": true,
+                "write": true,
+                "desc": "This text will be converted to speech"
+            },
+            "native": {}
+        },
+        {
+            "_id": "tts.cachetext",
+            "type": "state",
+            "common": {
+                "role": "media.tts.cachetext",
+                "name": "Text to cache",
+                "type": "string",
+                "read": true,
+                "write": true,
+                "desc": "This text will be cached on disk to play it later"
+            },
+            "native": {}
+        },
+        {
+            "_id": "tts.playing",
+            "type": "state",
+            "common": {
+                "role": "media.tts.text",
+                "name": "Is now speaking",
+                "type": "boolean",
+                "read": true,
+                "write": false,
+                "desc": "Is true while speaking"
+            },
+            "native": {}
+        },
+        {
+            "_id": "tts.mp3",
+            "type": "state",
+            "common": {
+                "name": "Binary mp3 file",
+                "type": "file",
+                "read": true,
+                "write": false,
+                "desc": "Can be accessed from web server under http://ip:8082/state/sayit.0.tts.mp3"
+            },
+            "native": {}
+        }
     ]
 }
