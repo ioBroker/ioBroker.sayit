@@ -1,8 +1,13 @@
 {
     "common": {
         "name": "sayit",
-        "version": "1.6.3",
+        "version": "1.6.4",
         "news": {
+            "1.6.4": {
+                "en": "Fix system commands",
+                "de": "Korrigiere System-Kommando",
+                "ru": "Поправлены системные вызовы"
+            },
             "1.6.3": {
                 "en": "Code refactoring\nAdd google home as output\nRemove ivona because not more supported",
                 "de": "Code refactoring\nGoogle Home als Ausgabe hinzugefügt\nivona gelöscht",
