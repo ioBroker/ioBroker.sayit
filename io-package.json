@@ -1,8 +1,13 @@
 {
     "common": {
         "name": "sayit",
-        "version": "1.6.4",
+        "version": "1.6.5",
         "news": {
+            "1.6.5": {
+                "en": "Fix cloud .pro",
+                "de": "Korrigiere cloud .pro",
+                "ru": "Поправлены вызовы к .pro"
+            },
             "1.6.4": {
                 "en": "Fix system commands",
                 "de": "Korrigiere System-Kommando",

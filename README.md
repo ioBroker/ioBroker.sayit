@@ -234,6 +234,9 @@ Following values for engines are possible:
 - **(tr-TR_AP_Female)** -           tr-TR - Female - Filiz
 
 ## Changelog
+### 1.6.5 (2017-11-04)
+* (bluefox) Fix cloud .pro
+
 ### 1.6.4 (2017-10-18)
 * (bluefox) Fix system commands
 
