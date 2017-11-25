@@ -8,6 +8,8 @@ ioBroker sayit adapter
 
 
 SayIt Adapter can convert text to speech and play it on some device.
+
+## Configuration
 Actual following outputs are supported:
 
 - *Browser* - the text will be played by browser with opened iobroker.vis page. It is supported almost by every desktop browser and by few mobily Browsers.
@@ -38,11 +40,33 @@ The mp3/wav files can be played to by writing its name into the object. (e.g. "/
 
 The file must be first loaded.
 
-To use Yandex voices you must request the API key here: [https://tech.yandex.ru/speechkit/cloud/doc/dg/concepts/About-docpage/](https://tech.yandex.ru/speechkit/cloud/doc/dg/concepts/About-docpage/).
+### TTS engines
+online:  
+- Google: English, German, Russian, Italian, Spanish, French
+- Yandex: Russian  
+  To use Yandex voices you must request the API key here: [https://tech.yandex.ru/speechkit/cloud/doc/dg/concepts/About-docpage/](https://tech.yandex.ru/speechkit/cloud/doc/dg/concepts/About-docpage/).  
+- Ivona: English, German, Russian, Italian, Spanish, French, Dansk, Welsh, Icelandic, Dutch, Polish, Portuguese, Romanian, Swedish, Turkish  
+        To use Amazon(Ivona) voices you need to get access key and secret key [here](http://www.ivona.com/us/for-business/speech-cloud/).
+- Cloud:
+        To use Cloud voices you need configured cloud adapter. (It can be disabled, but must be configured). This service use AWS Polly and it can be used directly.
+- Amazon Web Services Polly:
+        To use AWS Polly voices you need to create access key and secret key [here](https://console.aws.amazon.com/iam/home). The Amazon documentation can you find [here](http://docs.aws.amazon.com/general/latest/gr/managing-aws-access-keys.html).
 
-Actual Yandex supports only russian.
+offline:  
+- PicoTTS (linux only): English, German, Italian, Spanish, French  
+        For PicoTTS it is necessary to install the following packages: libttspico-utils and lame.  
+        Installation command: 'sudo apt-get install libttspico-utils lame'
 
-To use Amazon(Ivona) voices you need to get access key and secret key [here](http://www.ivona.com/us/for-business/speech-cloud/).
+### Cloud and Amazon Web Services Polly text formatting
+You can format your text with (Speech Synthesis Markup Language)[http://docs.aws.amazon.com/polly/latest/dg/ssml.html].
+
+Most useful features:
+- ```<break time="3s"/>```- make a pause for x seconds (max 10 seconds).
+- ```<emphasis> big </emphasis>``` - make an emphasis on some word.
+- ```<prosody volume="+6dB" rate="90%">I am speaking this</prosody>``` - control speed and volume parameters.
+- ```<say-as interpret-as="digits">12345</say-as>``` - say every digit separately.
+
+More [info](https://developer.amazon.com/public/solutions/alexa/alexa-skills-kit/docs/speech-synthesis-markup-language-ssml-reference).
 
 ### System command
 If you have some program, that can play audio files locally or somewhere else, you can write this command here. E.g.
@@ -81,68 +105,165 @@ To install omxplayer write ```sudo apt-get install omxplayer``` or write ```sudo
 
 **Note:** The default announce selection will be possible only after start of the instance.
 
+### Engines
 Following values for engines are possible:
 
-- en:   Google - English
-- de:   Google - Deutsch
-- ru:   Google - Русский
-- it:   Google - Italiano
-- es:   Google - Espaniol
-- fr:   Google - Français
-- ru_YA:Yandex - Русский
-- ru-RU_AZ_Female: 	Ivona - Русский - Татьяна
-- ru-RU_AZ_Male: 	Ivona - Русский - Максим
-- de-DE_AZ_Female: 	Ivona - Deutsch - Marlene
-- de-DE_AZ_Male: 		Ivona - Deutsch - Hans
-- en-US_AZ_Female: 	Ivona - en-US - Female - Salli
-- en-US_AZ_Male: 		Ivona - en-US - Male - Joey
-- da-DK_AZ_Female: 	Ivona - da-DK - Female - Naja
-- da-DK_AZ_Male: 		Ivona - da-DK - Male - Mads
-- en-AU_AZ_Female: 	Ivona - en-AU - Female - Nicole
-- en-AU_AZ_Male: 		Ivona - en-AU - Male - Russell
-- en-GB_AZ_Female_Amy: Ivona - en-GB - Female - Amy
-- en-GB_AZ_Male: Ivona - en-GB - Male - Brian
-- en-GB_AZ_Female_Emma: Ivona - en-GB - Female - Emma
-- en-GB-WLS_AZ_Female: Ivona - en-GB-WLS - Female - Gwyneth
-- en-GB-WLS_AZ_Male: Ivona - en-GB-WLS - Male - Geraint
-- cy-GB_AZ_Female: Ivona - cy-GB - Female - Gwyneth
-- cy-GB_AZ_Male: Ivona - cy-GB - Male - Geraint
-- en-IN_AZ_Female: Ivona - en-IN - Female - Raveena
-- en-US_AZ_Male_Chipmunk: Ivona - en-US - Male - Chipmunk
-- en-US_AZ_Male_Eric: Ivona - en-US - Male - Eric
-- en-US_AZ_Female_Ivy: Ivona - en-US - Female - Ivy
-- en-US_AZ_Female_Jennifer: Ivona - en-US - Female - Jennifer
-- en-US_AZ_Male_Justin: Ivona - en-US - Male - Justin
-- en-US_AZ_Female_Kendra: Ivona - en-US - Female - Kendra
-- en-US_AZ_Female_Kimberly: Ivona - en-US - Female - Kimberly
-- es-ES_AZ_Female: Ivona - es-ES - Female - Conchita
-- es-ES_AZ_Male: Ivona - es-ES - Male - Enrique
-- es-US_AZ_Female: Ivona - es-US - Female - Penelope
-- es-US_AZ_Male: Ivona - es-US - Male - Miguel
-- fr-CA_AZ_Female: Ivona - fr-CA - Female - Chantal
-- fr-FR_AZ_Female: Ivona - fr-FR - Female - Celine
-- fr-FR_AZ_Male: Ivona - fr-FR - Male - Mathieu
-- is-IS_AZ_Female: Ivona - is-IS - Female - Dora
-- is-IS_AZ_Male: Ivona - is-IS - Male - Karl
-- it-IT_AZ_Female: Ivona - it-IT - Female - Carla
-- it-IT_AZ_Male: Ivona - it-IT - Male - Giorgio
-- nb-NO_AZ_Female: Ivona - nb-NO - Female - Liv
-- nl-NL_AZ_Female: Ivona - nl-NL - Female - Lotte
-- nl-NL_AZ_Male: Ivona - nl-NL - Male - Ruben
-- pl-PL_AZ_Female_Agnieszka:Ivona - pl-PL - Female - Agnieszka
-- pl-PL_AZ_Male_Jacek: Ivona - pl-PL - Male - Jacek
-- pl-PL_AZ_Female_Ewa: Ivona - pl-PL - Female - Ewa
-- pl-PL_AZ_Male_Jan: Ivona - pl-PL - Male - Jan
-- pl-PL_AZ_Female: Ivona - pl-PL - Female - Maja
-- pt-BR_AZ_Female: Ivona - pt-BR - Female - Vitoria
-- pt-BR_AZ_Male: Ivona - pt-BR - Male - Ricardo
-- pt-PT_AZ_Male: Ivona - pt-PT - Male - Cristiano
-- pt-PT_AZ_Female: Ivona - pt-PT - Female - Ines
-- ro-RO_AZ_Female: Ivona - ro-RO - Female - Carmen
-- sv-SE_AZ_Female: Ivona - sv-SE - Female - Astrid
-- tr-TR_AZ_Female: Ivona - tr-TR - Female - Filiz
+#### Google
+- **en** - English
+- **de** - Deutsch
+- **ru** - Русский
+- **it** - Italiano
+- **es** - Espaniol
+- **fr** - Français
+
+#### Yandex
+- **ru_YA:Yandex** - Русский
+
+#### Amazon polly via cloud
+- **ru-RU_CLOUD_Female** -         Русский - Татьяна
+- **ru-RU_CLOUD_Male** -           Русский - Максим
+- **de-DE_CLOUD_Female** -         Deutsch - Marlene
+- **de-DE_CLOUD_Male** -           Deutsch - Hans
+- **en-US_CLOUD_Female** -         en-US - Female - Salli
+- **en-US_CLOUD_Male** -           en-US - Male - Joey
+- **da-DK_CLOUD_Female** -         da-DK - Female - Naja
+- **da-DK_CLOUD_Male** -           da-DK - Male - Mads
+- **en-AU_CLOUD_Female** -         en-AU - Female - Nicole
+- **en-AU_CLOUD_Male** -           en-AU - Male - Russell
+- **en-GB_CLOUD_Female_Amy** -     en-GB - Female - Amy
+- **en-GB_CLOUD_Male** -           en-GB - Male - Brian
+- **en-GB_CLOUD_Female_Emma** -    en-GB - Female - Emma
+- **en-GB-WLS_CLOUD_Female** -     en-GB-WLS - Female - Gwyneth
+- **en-GB-WLS_CLOUD_Male** -       en-GB-WLS - Male - Geraint
+- **cy-GB_CLOUD_Female** -         cy-GB - Female - Gwyneth
+- **cy-GB_CLOUD_Male** -           cy-GB - Male - Geraint
+- **en-IN_CLOUD_Female** -         en-IN - Female - Raveena
+- **en-US_CLOUD_Male_Chipmunk** -  en-US - Male - Chipmunk
+- **en-US_CLOUD_Male_Eric** -      en-US - Male - Eric
+- **en-US_CLOUD_Female_Ivy** -     en-US - Female - Ivy
+- **en-US_CLOUD_Female_Jennifer** -  en-US - Female - Jennifer
+- **en-US_CLOUD_Male_Justin** -    en-US - Male - Justin
+- **en-US_CLOUD_Female_Kendra** -  en-US - Female - Kendra
+- **en-US_CLOUD_Female_Kimberly** -  en-US - Female - Kimberly
+- **es-ES_CLOUD_Female** -         es-ES - Female - Conchita
+- **es-ES_CLOUD_Male** -           es-ES - Male - Enrique
+- **es-US_CLOUD_Female** -         es-US - Female - Penelope
+- **es-US_CLOUD_Male** -           es-US - Male - Miguel
+- **fr-CA_CLOUD_Female** -         fr-CA - Female - Chantal
+- **fr-FR_CLOUD_Female** -         fr-FR - Female - Celine
+- **fr-FR_CLOUD_Male** -           fr-FR - Male - Mathieu
+- **is-IS_CLOUD_Female** -         is-IS - Female - Dora
+- **is-IS_CLOUD_Male** -           is-IS - Male - Karl
+- **it-IT_CLOUD_Female** -         it-IT - Female - Carla
+- **it-IT_CLOUD_Male** -           it-IT - Male - Giorgio
+- **nb-NO_CLOUD_Female** -         nb-NO - Female - Liv
+- **nl-NL_CLOUD_Female** -         nl-NL - Female - Lotte
+- **nl-NL_CLOUD_Male** -           nl-NL - Male - Ruben
+- **pl-PL_CLOUD_Female_Agnieszka** -  pl-PL - Female - Agnieszka
+- **pl-PL_CLOUD_Male_Jacek** -     pl-PL - Male - Jacek
+- **pl-PL_CLOUD_Female_Ewa** -     pl-PL - Female - Ewa
+- **pl-PL_CLOUD_Male_Jan** -       pl-PL - Male - Jan
+- **pl-PL_CLOUD_Female** -         pl-PL - Female - Maja
+- **pt-BR_CLOUD_Female** -         pt-BR - Female - Vitoria
+- **pt-BR_CLOUD_Male** -           pt-BR - Male - Ricardo
+- **pt-PT_CLOUD_Male** -           pt-PT - Male - Cristiano
+- **pt-PT_CLOUD_Female** -         pt-PT - Female - Ines
+- **ro-RO_CLOUD_Female** -         ro-RO - Female - Carmen
+- **sv-SE_CLOUD_Female** -         sv-SE - Female - Astrid
+- **tr-TR_CLOUD_Female** -         tr-TR - Female - Filiz
+
+#### Pico TTS
+- **en-US** - Englisch US
+- **en-GB** - Englisch GB
+- **de-DE** - Deutsch
+- **it-IT** - Italiano
+- **es-ES** - Espaniol
+- **fr-FR** - Français
+
+#### Amazon polly direct
+- **(ru-RU_AP_Female)** -           Русский - Татьяна
+- **(ru-RU_AP_Male)** -             Русский - Максим
+- **(de-DE_AP_Female)** -           Deutsch - Marlene
+- **(de-DE_AP_Male)** -             Deutsch - Hans
+- **(en-US_AP_Female)** -           en-US - Female - Salli
+- **(en-US_AP_Male)** -             en-US - Male - Joey
+- **(da-DK_AP_Female)** -           da-DK - Female - Naja
+- **(da-DK_AP_Male)** -             da-DK - Male - Mads
+- **(en-AU_AP_Female)** -           en-AU - Female - Nicole
+- **(en-AU_AP_Male)** -             en-AU - Male - Russell
+- **(en-GB_AP_Female_Amy)** -       en-GB - Female - Amy
+- **(en-GB_AP_Male)** -             en-GB - Male - Brian
+- **(en-GB_AP_Female_Emma)** -      en-GB - Female - Emma
+- **(en-GB-WLS_AP_Female)** -       en-GB-WLS - Female - Gwyneth
+- **(en-GB-WLS_AP_Male)** -         en-GB-WLS - Male - Geraint
+- **(cy-GB_AP_Female)** -           cy-GB - Female - Gwyneth
+- **(cy-GB_AP_Male)** -             cy-GB - Male - Geraint
+- **(en-IN_AP_Female)** -           en-IN - Female - Raveena
+- **(en-US_AP_Male_Chipmunk)** -    en-US - Male - Chipmunk
+- **(en-US_AP_Male_Eric)** -        en-US - Male - Eric
+- **(en-US_AP_Female_Ivy)** -       en-US - Female - Ivy
+- **(en-US_AP_Female_Jennifer)** -  en-US - Female - Jennifer
+- **(en-US_AP_Male_Justin)** -      en-US - Male - Justin
+- **(en-US_AP_Female_Kendra)** -    en-US - Female - Kendra
+- **(en-US_AP_Female_Kimberly)** -  en-US - Female - Kimberly
+- **(es-ES_AP_Female)** -           es-ES - Female - Conchita
+- **(es-ES_AP_Male)** -             es-ES - Male - Enrique
+- **(es-US_AP_Female)** -           es-US - Female - Penelope
+- **(es-US_AP_Male)** -             es-US - Male - Miguel
+- **(fr-CA_AP_Female)** -           fr-CA - Female - Chantal
+- **(fr-FR_AP_Female)** -           fr-FR - Female - Celine
+- **(fr-FR_AP_Male)** -             fr-FR - Male - Mathieu
+- **(is-IS_AP_Female)** -           is-IS - Female - Dora
+- **(is-IS_AP_Male)** -             is-IS - Male - Karl
+- **(it-IT_AP_Female)** -           it-IT - Female - Carla
+- **(it-IT_AP_Male)** -             it-IT - Male - Giorgio
+- **(nb-NO_AP_Female)** -           nb-NO - Female - Liv
+- **(nl-NL_AP_Female)** -           nl-NL - Female - Lotte
+- **(nl-NL_AP_Male)** -             nl-NL - Male - Ruben
+- **(pl-PL_AP_Female_Agnieszka)** -  pl-PL - Female - Agnieszka
+- **(pl-PL_AP_Male_Jacek)** -       pl-PL - Male - Jacek
+- **(pl-PL_AP_Female_Ewa)** -       pl-PL - Female - Ewa
+- **(pl-PL_AP_Male_Jan)** -         pl-PL - Male - Jan
+- **(pl-PL_AP_Female)** -           pl-PL - Female - Maja
+- **(pt-BR_AP_Female)** -           pt-BR - Female - Vitoria
+- **(pt-BR_AP_Male)** -             pt-BR - Male - Ricardo
+- **(pt-PT_AP_Male)** -             pt-PT - Male - Cristiano
+- **(pt-PT_AP_Female)** -           pt-PT - Female - Ines
+- **(ro-RO_AP_Female)** -           ro-RO - Female - Carmen
+- **(sv-SE_AP_Female)** -           sv-SE - Female - Astrid
+- **(tr-TR_AP_Female)** -           tr-TR - Female - Filiz
 
 ## Changelog
+### 1.6.5 (2017-11-04)
+* (bluefox) Fix cloud .pro
+
+### 1.6.4 (2017-10-18)
+* (bluefox) Fix system commands
+
+### 1.6.3 (2017-10-04)
+* (bluefox) Code refactoring
+* (bluefox) Add google home as output
+* (bluefox) Remove ivona because not more supported
+
+### 1.5.2 (2017-03-09)
+* (bluefox) Catch error if some directory in mp3 folder
+
+### 1.5.1 (2017-02-15)
+* (bluefox) Fix blockly language
+
+### 1.5.0 (2017-01-27)
+* (DarkChaos) Add AWS Polly as source
+* (bluefox) Add cloud as source
+
+### 1.4.0 (2017-01-16)
+* (bluefox) fix install problem
+* (bluefox) add PicoTTS as source
+
+### 1.3.3 (2017-01-13)
+* (bluefox) show only installed instances in blockly
+
+### 1.3.2 (2017-01-10)
+* (angelnu) changes for new chromecast tts
 
 ### 1.3.1 (2016-12-27)
 * (bluefox) small fix of config dialog
@@ -246,7 +367,7 @@ Following values for engines are possible:
 
 The MIT License (MIT)
 
-Copyright (c) 2014-2016, bluefox<dogafox@gmail.com>
+Copyright (c) 2014-2017, bluefox<dogafox@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
