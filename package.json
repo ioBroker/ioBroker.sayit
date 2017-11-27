@@ -1,6 +1,6 @@
 {
   "name": "iobroker.sayit",
-  "version": "1.6.5",
+  "version": "1.6.6",
   "description": "Text to speech interface for ioBroker.",
   "author": {
     "name": "bluefox",

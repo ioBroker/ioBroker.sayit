@@ -1,8 +1,13 @@
 {
     "common": {
         "name": "sayit",
-        "version": "1.6.5",
+        "version": "1.6.6",
         "news": {
+            "1.6.6": {
+                "en": "Wait for Google Home announcement to complete",
+                "de": "Wartet bis die Google Home-Ankündigung abgeschlossen ist",
+                "ru": "Дождидается завершения объявления Google Home"
+            },
             "1.6.5": {
                 "en": "Fix cloud .pro",
                 "de": "Korrigiere cloud .pro",

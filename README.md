@@ -234,6 +234,9 @@ Following values for engines are possible:
 - **(tr-TR_AP_Female)** -           tr-TR - Female - Filiz
 
 ## Changelog
+### 1.6.6 (2017-11-27)
+* (angelnu) Wait for Google Home announcement to complete
+
 ### 1.6.5 (2017-11-04)
 * (bluefox) Fix cloud .pro
 
