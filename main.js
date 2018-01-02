@@ -9,7 +9,7 @@ var Speech2Device = require(__dirname + '/lib/speech2device');
 var sayitOptions  = engines.sayitOptions;
 var libs          = {};
 
-var adapter = utils.adapter({
+var adapter = utils.Adapter({
     name:   'sayit',
     unload: stop
 });
