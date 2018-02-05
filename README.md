@@ -234,6 +234,10 @@ Following values for engines are possible:
 - **(tr-TR_AP_Female)** -           tr-TR - Female - Filiz
 
 ## Changelog
+### 1.6.7 (2018-02-05)
+* (Apollon77) Remove unneeded logging
+* (bondrogeen) Admin3 Fixes
+
 ### 1.6.6 (2017-11-27)
 * (angelnu) Wait for Google Home announcement to complete
 
