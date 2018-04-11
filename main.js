@@ -123,7 +123,7 @@ var list                 = [];
 var lastSay              = null;
 var text2speech          = new Text2Speech(adapter, libs, options, sayIt);
 var speech2device        = new Speech2Device(adapter, libs, options);
-var MP3FILE              = __dirname + '/say.mp3';
+var MP3FILE              = __dirname + '/' + adapter.namespace + '.say.mp3';
 
 
 function mkpathSync(rootpath, dirpath) {
