@@ -1,8 +1,19 @@
 {
     "common": {
         "name": "sayit",
-        "version": "1.6.7",
+        "version": "1.6.8",
         "news": {
+            "1.6.8": {
+                "en": "Generate separate mp3 file for each instance\nAlways upload the mp3 file to the state sayit.X.tts.mp3",
+                "de": "Generiere für jede Instanz eine eigene mp3 Datei\nDie mp3 Datei immer in sayit.X.tts.mp3 schreiben",
+                "ru": "Создавать отдельные mp3-файлы для каждого экземпляра\nВсегда загружайте mp3-файлы в состояние sayit.X.tts.mp3",
+                "pt": "Gere arquivos mp3 separados para cada instância\nSempre carregue arquivos mp3 para o estado sayit.X.tts.mp3",
+                "nl": "Genereer afzonderlijke mp3 voor elke instantie\nUpload altijd mp3 naar de staat sayit.X.tts.mp3",
+                "fr": "Générer des fichiers mp3 séparés pour chaque instance\nToujours télécharger des fichiers mp3 à l'état sayit.X.tts.mp3",
+                "it": "Genera mp3 separati per ogni istanza\nCarica sempre mp3 nello stato sayit.X.tts.mp3",
+                "es": "Genere mp3 separados para cada instancia\nSiempre suba mp3 al estado sayit.X.tts.mp3",
+                "pl": "Generuj osobne pliki mp3 dla każdej instancji\nZawsze przesyłaj pliki mp3 do stanu sayit.X.tts.mp3"
+            },
             "1.6.7": {
                 "en": "Admin3 Fixes",
                 "de": "Admin3-Korrekturen",
