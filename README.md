@@ -234,9 +234,14 @@ Following values for engines are possible:
 - **(tr-TR_AP_Female)** -           tr-TR - Female - Filiz
 
 ## Changelog
+### 1.7.0 (2018-06-08)
+* (bluefox) Ivona removed
+* (bluefox) Error was fixed by upload of file to FTP
+* (bluefox) admin3
+
 ### 1.6.8 (2018-04-11)
 * (BuZZy1337) Generate separate mp3 files for each instance.
-  * Fixes [Issue#34](https://github.com/ioBroker/ioBroker.sayit/issues/34)
+* Fixes [Issue#34](https://github.com/ioBroker/ioBroker.sayit/issues/34)
 * (BuZZy1337) Always upload mp3 files to the state sayit.X.tts.mp3
 
 ### 1.6.7 (2018-02-05)

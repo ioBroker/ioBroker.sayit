@@ -1,5 +1,5 @@
 <html>
-
+<head>
 <link rel="stylesheet" type="text/css" href="../../lib/css/themes/jquery-ui/redmond/jquery-ui.min.css"/>
 <script type="text/javascript" src="../../lib/js/jquery-1.11.1.min.js"></script>
 <script type="text/javascript" src="../../socket.io/socket.io.js"></script>
@@ -145,7 +145,7 @@
                 for (var i = 0; i < list.length; i++) {
                     text += '<option value="' + list[i].ip + '">' + list[i].name + '[' + list[i].ip + ']</option>';
                 }
-                $('#googleHome').html(text).prop('disabled', false).unbind('change').change(function () {
+                $('#googleHome').html(text).prop('disabled', false).off('change').on('change', function () {
                     $('#server').val($(this).val()).trigger('change');
                 });
             } else {
@@ -205,7 +205,7 @@
                         if (current) {
                             $webServer.val(current);
                         }
-                        $webServer.unbind('change').bind('change', function () {
+                        $webServer.off('change').on('change', function () {
                             gOnChange();
                             var ip = $(this).val();
                             var netmask = $(this).find('option[value="' + ip + '"]').data('mask');
@@ -422,7 +422,7 @@
             }
         }
 
-        $('.value').change(function () {
+        $('.value').on('change', function () {
             var key = $(this).attr('id');
 
             if (key === 'auth') {
@@ -567,12 +567,6 @@
                 return;
             }
         } else
-        if (obj.engine && sayitEngines[obj.engine].engine === 'ivona') {
-            if (!obj.accessKey || !obj.secretKey) {
-                showMessage(_('API Key is not set!'));
-                return;
-            }
-        } else
         if (obj.engine && sayitEngines[obj.engine].engine === 'polly') {
             if (!obj.accessKey || !obj.secretKey) {
                 showMessage(_('API Key is not set!'));
@@ -591,7 +585,8 @@
         callback(obj);
     }
 </script>
-
+</head>
+<body>
 <!-- you have to put your config page in a div with id adapter-container -->
 <div id="adapter-container" ondragover="return false" ondrop="return false">
 
@@ -642,4 +637,5 @@
     </div>
     <div id="drop_zone" style="display: none" class="translate">place here</div>
 </div>
+</body>
 </html>

@@ -1,6 +1,6 @@
 {
   "name": "iobroker.sayit",
-  "version": "1.6.8",
+  "version": "1.7.0",
   "description": "Text to speech interface for ioBroker.",
   "author": {
     "name": "bluefox",
@@ -33,19 +33,14 @@
   },
   "optionalDependencies": {
     "castv2-client": "^1.2.0",
-    "mdns": "^2.3.3"
+    "mdns": "^2.4.0"
   },
   "dependencies": {
-    "jsftp": "^1.5.5",
-    "ivona-node": "~0.2.0",
-    "aws-sdk": "~2.8.0"
+    "jsftp": "^2.1.3",
+    "aws-sdk": "~2.253.1"
   },
   "devDependencies": {
-    "grunt": "^1.0.1",
-    "grunt-replace": "^1.0.1",
-    "grunt-contrib-jshint": "^1.1.0",
-    "grunt-jscs": "^3.0.1",
-    "grunt-http": "^2.2.0",
+    "gulp": "^3.9.1",
     "mocha": "^4.1.0",
     "chai": "^4.1.2"
   },

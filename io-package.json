@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "sayit",
-        "version": "1.6.8",
+        "version": "1.7.0",
         "news": {
             "1.6.8": {
                 "en": "Generate separate mp3 file for each instance\nAlways upload the mp3 file to the state sayit.X.tts.mp3",
@@ -104,6 +104,7 @@
         "supportStopInstance": true,
         "stopBeforeUpdate": true,
         "icon": "sayit.png",
+        "materialize": true,
         "enabled": true,
         "keywords": [
             "TTS",
