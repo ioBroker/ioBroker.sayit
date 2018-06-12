@@ -86,11 +86,28 @@
                 "ru": "Маленькое улучшение настроек\nИсправлено регулирование громкости на linux"
             }
         },
-        "title": "Text to speech Adapter",
+        "title": "Text to speech",
+        "titleLang": {
+            "en": "Text to speech",
+            "de": "Text zu Sprache",
+            "ru": "Текст в речь (Text to speech)",
+            "pt": "Texto para fala (Text to speech)",
+            "nl": "Tekst naar spraak (Text to speech)",
+            "fr": "Texte pour parler (Text to speech)",
+            "it": "Sintesi vocale (Text to speech)",
+            "es": "Texto a voz (Text to speech)",
+            "pl": "Tekst na mowę (Text to speech)"
+        },
         "desc": {
             "en": "Text to speech in a cloud or local. Runs on windows, linux and OSX. It can play mp3/wav too.",
             "de": "Text to speech in Cloud oder lokal für windows, linux und OSX. Mp3 und Wav können auch abgespielt werden.",
-            "ru": "Синтезатор речи локально или в облаке работает под windows, linux и OSX. Mp3 и Wav можно тоже проигрывать."
+            "ru": "Синтезатор речи локально или в облаке работает под windows, linux и OSX. Mp3 и Wav можно тоже проигрывать.",
+            "pt": "Texto para fala em uma nuvem ou local. Funciona no windows, linux e OSX. Pode reproduzir mp3 / wav também.",
+            "nl": "Tekst naar spraak in een cloud of lokaal. Werkt op Windows, Linux en OSX. Het kan ook mp3 / wav spelen.",
+            "fr": "Text to speech dans un nuage ou local. Fonctionne sur Windows, Linux et OSX. Il peut aussi jouer au format mp3 / wav.",
+            "it": "Sintesi vocale in un cloud o locale. Funziona su Windows, Linux e OSX. Può riprodurre anche mp3 / wav.",
+            "es": "Texto a voz en una nube o local. Se ejecuta en Windows, Linux y OSX. Puede reproducir mp3 / wav también.",
+            "pl": "Tekst na mowę w chmurze lub lokalnie. Działa w systemie Windows, Linux i OSX. Może również odtwarzać mp3 / wav."
         },
         "authors": [
             "bluefox <dogafox@gmail.com>"

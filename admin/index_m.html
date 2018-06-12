@@ -1,15 +1,17 @@
 <html>
 <head>
-<link rel="stylesheet" type="text/css" href="../../lib/css/themes/jquery-ui/redmond/jquery-ui.min.css"/>
-<script type="text/javascript" src="../../lib/js/jquery-1.11.1.min.js"></script>
-<script type="text/javascript" src="../../socket.io/socket.io.js"></script>
-<script type="text/javascript" src="../../lib/js/jquery-ui-1.10.3.full.min.js"></script>
+    <!-- Materialze style -->
+    <link rel="stylesheet" type="text/css" href="../../css/adapter.css"/>
+    <link rel="stylesheet" type="text/css" href="../../lib/css/materialize.css">
 
-<link rel="stylesheet" type="text/css" href="../../css/adapter.css"/>
-<script type="text/javascript" src="engines.js"></script>
-<script type="text/javascript" src="../../js/translate.js"></script>
-<script type="text/javascript" src="../../js/adapter-settings.js"></script>
-<script type="text/javascript" src="words.js"></script>
+    <script type="text/javascript" src="../../lib/js/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="../../socket.io/socket.io.js"></script>
+
+    <script type="text/javascript" src="engines.js"></script>
+    <script type="text/javascript" src="../../js/translate.js"></script>
+    <script type="text/javascript" src="../../lib/js/materialize.js"></script>
+    <script type="text/javascript" src="../../js/adapter-settings.js"></script>
+    <script type="text/javascript" src="words.js"></script>
 <style>
     #drop_zone {
         border: 2px dashed #bbb;
@@ -49,7 +51,7 @@
 
             getIsAdapterAlive(function (isAlive) {
                 if (isAlive || common.enabled) {
-                    $('#search').button('enable');
+                    $('#search').removeClass('disabled');
                     fillGoogleHome();
                 }
             });
@@ -96,10 +98,10 @@
 
         if (!$('#announce').val()) {
             $('.announce').hide();
-            $('#play').button('disable');
+            $('#play').addClass('disabled');
         } else {
             $('.announce').show();
-            $('#play').button('enable');
+            $('#play').removeClass('disabled');
         }
     }
 
@@ -138,7 +140,7 @@
     }
 
     function fillGoogleHome() {
-        $('#search').button('disable');
+        $('#search').addClass('disabled');
         sendTo(null, 'browseChromecast', null, function (list) {
             var text = '<option value="">' + _('select') + '</option>';
             if (list) {
@@ -151,7 +153,7 @@
             } else {
                 $('#googleHome').html('<option value="">' + _('error') + '</option>').prop('disabled', true);
             }
-            $('#search').button('enable');
+            $('#search').removeClass('disabled');
         });
     }
 
@@ -366,10 +368,7 @@
         }
         gOnChange = onChange;
 
-        var $play = $('#play');
-        var $announce = $('#announce');
-
-        $play.button({icons: {primary: 'ui-icon-play'}, text: false}).css({width: 22, height: 22}).click(function () {
+        $('#play').on('click', function () {
             socket.emit('readFile', 'sayit.' + instance, 'tts.userfiles/' + $('#announce').val(), function (err, data) {
                 if (typeof AudioContext !== 'undefined') {
                     context = new AudioContext();
@@ -386,34 +385,32 @@
             });
         });
 
-        var $type = $('#type');
+        var $t = $('#type');
         for (name in sayitOptions) {
             if (sayitOptions.hasOwnProperty(name)) {
-                $type.append('<option value="' + name + '">' + sayitOptions[name].name + '</option>');
+                $t.append('<option value="' + name + '">' + sayitOptions[name].name + '</option>');
             }
         }
 
-        $('#search').button({
-            label: _('Browse')
-        }).click(function () {
+        $('#search').on('click', function () {
             fillGoogleHome();
         });
 
         getIsAdapterAlive(function (isAlive) {
             if (isAlive || common.enabled) {
-                $('#search').button('enable');
+                $('#search').removeClass('disabled');
                 if (settings.type === 'googleHome') {
                     fillGoogleHome();
                 }
             } else {
-                $('#search').button('disable').title(_('Adapter must be enabled'));
+                $('#search').addClass('disabled').attr('title', _('Adapter must be enabled'));
             }
         });
 
-        var $engine = $('#engine');
+        var $e = $('#engine');
         for (var name in sayitEngines) {
             if (sayitEngines.hasOwnProperty(name)) {
-                $engine.append('<option value="' + name + '">' + sayitEngines[name].name + '</option>');
+                $e.append('<option value="' + name + '">' + sayitEngines[name].name + '</option>');
             }
         }
         for (var key in settings) {
@@ -475,7 +472,7 @@
 
         if (!settings.engine) {
             settings.engine = systemLang;
-            $engine.val(systemLang).trigger('change');
+            $('#engine').val(systemLang).trigger('change');
         }
         if (!settings.instance) {
             settings.instance = 'FFFFFFFF';
@@ -493,7 +490,7 @@
             (settings.type === 'googleHome')){
             $('.announce').hide();
             if (settings.announce) {
-                $announce.val('').trigger('change');
+                $('#announce').val('').trigger('change');
             }
         }
         // Read names of files for gong
@@ -521,20 +518,16 @@
         });
 
         $('#voice').val(settings.voice);
-        var w = $engine.width();
-        $announce.css({width: w});
-        $type.css({width: w});
+        var w = $('#engine').width();
+        $('#announce').css({width: w});
+        $('#type').css({width: w});
 
 
         document.getElementById('files').addEventListener('change', handleFileSelect, false);
         showHideSettings();
 
-        if (!$announce.val()) {
-            $play.button('disable');
-        }
-        if (typeof AudioContext === 'undefined') {
-            $play.hide();
-        }
+        if (!$('#announce').val()) $('#play').addClass('disabled');
+        if (typeof AudioContext === 'undefined') $('#play').hide();
 
         var dropZone = document.getElementById('drop_zone');
         if (dropZone) {
@@ -596,53 +589,212 @@
 </script>
 </head>
 <body>
-<!-- you have to put your config page in a div with id adapter-container -->
-<div id="adapter-container" ondragover="return false" ondrop="return false">
+<div class="m adapter-container" ondragover="return false" ondrop="return false">
+    <div class="row">
+        <div class="col s12">
+            <div class="row">
+                <div class="col s6">
+                    <img src="sayit.png" class="logo">
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s6 m4">
+                    <select class="value" id="type"></select>
+                    <label class="translate" for="type">Type:</label>
+                </div>
+                <div class="input-field col s6 m4" id="tr_engine" >
+                    <select class="value" id="engine"></select>
+                    <label class="translate" for="engine">Language:</label>
+                </div>
+            </div>
+            <div class="row system">
+                <div class="input-field col s6 m4">
+                    <select class="value" id="player" >
+                        <option value="mpg321">mpg321</option>
+                        <option value="omxplayer">omxplayer</option>
+                    </select>
+                    <label for="player"><span class="translate">Linux player:</span><span class="translate" style="padding-left: 10px; font-size: 10px">Ignore for non linux OS</span></label>
+                </div>
+                <div  class="input-field col s6 m4 l2">
+                    <input class="value" id="command"/>
+                    <label class="translate" for="command">System command:</label>
+                </div>
+            </div>
+            <div class="row announceValue">
+                <div class="input-field col s6 m4">
+                    <select class="value" id="announce"></select>
+                    <label class="translate" for="announce">Announce:</label>
+                    &nbsp;<a class="waves-effect waves-light btn translate" id="play">play</a>
+                </div>
+                <div class="file-field input-field  col s6 m4">
+                    <div class="btn">
+                        <span class="translate">File</span>
+                        <input type="file" accept=".mp3,audio/*" id="files" name="files[]" multiple />
+                    </div>
+                    <div class="file-path-wrapper">
+                        <input class="file-path validate" type="text">
+                    </div>
+                </div>
+            </div>
+            <div class="row announce">
+                <div class="input-field col s4 m4 l2">
+                    <input class="value" id="annoTimeout" type="number" min="0" max="1000" />
+                    <label class="translate" for="annoTimeout">Announce timeout (sec):</label>
+                </div>
+                <div class="input-field col s4 m4 l2">
+                    <input class="value" id="annoDuration" type="number" min="0" max="99"/>
+                    <label class="translate" for="annoDuration">Announce length (sec):</label>
+                </div>
+                <div class="input-field col s4 m4 l2">
+                    <input class="value" id="annoVolume" type="number" min="0" max="100"/>
+                    <label class="translate" for="annoVolume">Announce volume (%):</label>
+                </div>
+            </div>
+            <div class="row">
 
-    <table><tr><td><img src="sayit.png"></td><td><h3 class="translate">sayIt adapter settings</h3></td></tr></table>
+            </div>
 
-    <div>
-        <table>
-            <tr><td><label class="translate" for="type">Type:</label></td><td class="admin-icon" data-link="configuration"></td><td><select class="value" id="type"></select></td></tr>
-            <tr id="tr_engine" class="variable"><td style="width: 150px"><label class="translate" for="engine">Language:</label></td><td class="admin-icon" data-link="tts-engines"></td><td><select class="value" id="engine"></select></td></tr>
-            <tr class="system"><td><label for="player" class="translate">Linux player:</label></td><td class="admin-icon"></td><td>
-                <select class="value" id="player" >
-                    <option value="mpg321">mpg321</option>
-                    <option value="omxplayer">omxplayer</option>
-                </select><span class="translate" style="padding-left: 10px; font-size: 10px">Ignore for non linux OS</span>
-            </td>
-            </tr>
-            <tr class="system"><td><label class="translate" for="command">System command:</label></td><td class="admin-icon" data-link="system-command"></td><td><input class="value" id="command"/></td></tr>
-            <tr class="announceValue"><td><label class="translate" for="announce">Announce:</label></td><td class="admin-icon"></td><td><select class="value" id="announce"></select>&nbsp;<button id="play"></button></td></tr>
-            <tr class="announceValue"><td></td><td></td><td><input type="file" accept=".mp3,audio/*" id="files" name="files[]" multiple /></td></tr>
-            <tr class="announce"><td><label class="translate" for="annoTimeout">Announce timeout (sec):</label></td><td class="admin-icon"></td><td><input class="value" id="annoTimeout" size="8" /></td></tr>
-            <tr class="announce"><td><label class="translate" for="annoDuration">Announce length (sec):</label></td><td class="admin-icon"></td><td><input class="value" id="annoDuration" size="2" /></td></tr>
-            <tr class="announce"><td><label class="translate" for="annoVolume">Announce volume (%):</label></td><td class="admin-icon"></td><td><input class="value" id="annoVolume" size="3" /></td></tr>
-            <tr><td>&nbsp;</td><td></td><td>&nbsp;</td></tr>
-
-            <tr id="tr_cache"      class="variable"><td><label class="translate" for="cache">Cache:</label></td><td class="admin-icon"></td>   <td><input class="value" id="cache"   type="checkbox" /></td></tr>
-            <tr id="tr_cacheExpiryDays"      class="variable"><td><label class="translate" for="tr_cacheExpiryDays">Cache-Expiry:</label></td><td class="admin-icon"></td>   <td><input class="value" id="cacheExpiryDays"   size="5" /></td></tr>
-            <tr id="tr_server"     class="variable"><td><label class="translate" for="server">Server:</label></td><td class="admin-icon"></td>  <td><input class="value" id="server"/><select class="value googleHome" id="googleHome"><option value="" class="translate">none</option></select><button style="font-size: 10px; margin-left: 10px;" id="search" class="translate googleHome"></button></td></tr>
-            <tr id="tr_port"       class="variable"><td><label class="translate" for="port">Port:</label></td><td class="admin-icon"></td>    <td><input class="value" id="port"    size="5"  maxlength="5"/></td></tr>
-            <tr id="tr_user"       class="variable"><td><label class="translate" for="user">User:</label></td><td class="admin-icon"></td>    <td><input class="value" id="user"    /></td></tr>
-            <tr id="tr_pass"       class="variable"><td><label class="translate" for="pass">Password:</label></td><td class="admin-icon"></td><td><input class="value" id="pass"    /></td></tr>
-            <tr id="tr_instance"   class="variable"><td><label class="translate" for="instance">Browser instance:</label></td><td class="admin-icon"></td><td><input class="value" id="instance" /></td></tr>
-            <tr id="tr_device"     class="variable"><td><label class="translate" for="device">Device:</label></td><td class="admin-icon"></td><td><select class="value" id="device"><option value="" class="translate">All</option></select></td></tr>
-            <tr id="tr_cDevice"    class="variable"><td><label class="translate" for="cDevice">Device:</label></td><td class="admin-icon"></td><td><select class="value" id="cDevice"><option value="" class="translate">All</option></select></td></tr>
-            <tr id="tr_mpd_device" class="variable"><td><label class="translate" for="mpd_device">Device:</label></td><td class="admin-icon"></td><td><select class="value" id="mpd_device"><option value="" class="translate">All</option></select></td></tr>
-            <tr id="tr_web"        class="variable"><td><label class="translate" for="web">Web instance:</label></td><td class="admin-icon"></td><td><select class="value" id="web"></select></td></tr>
-            <tr id="tr_webServer"  class="variable"><td><label class="translate" for="webServer">Web server IP:</label></td><td class="admin-icon"></td><td><select class="value" id="webServer"></select></td></tr>
-            <tr id="tr_voice"      class="engine"  ><td><label class="translate" for="voice">Voice:</label></td><td class="admin-icon"></td><td><select class="value" id="voice"></select></td></tr>
-            <tr id="tr_key"        class="engine"  ><td><label class="translate" for="key">API Key:</label></td><td class="admin-icon"></td><td><input class="value" id="key" type="text"/></td></tr>
-            <tr id="tr_emotion"    class="engine"  ><td><label class="translate" for="emotion">Emotion:</label></td><td class="admin-icon"></td><td><select class="value" id="emotion"></select></td></tr>
-            <tr id="tr_drunk"      class="engine"  ><td><label class="translate" for="drunk">Drunk:</label></td><td class="admin-icon"></td><td><input type="checkbox" class="value" id="drunk"/></td></tr>
-            <tr id="tr_ill"        class="engine"  ><td><label class="translate" for="ill">Ill:</label></td><td class="admin-icon"></td><td><input type="checkbox" class="value" id="ill"/></td></tr>
-            <tr id="tr_robot"      class="engine"  ><td><label class="translate" for="robot">Robot:</label></td><td class="admin-icon"></td><td><input type="checkbox" class="value" id="robot"/></td></tr>
-            <tr id="tr_accessKey"  class="engine"  ><td><label class="translate" for="accessKey">Access Key:</label></td><td class="admin-icon"></td><td><input class="value" id="accessKey" type="text"/></td></tr>
-            <tr id="tr_secretKey"  class="engine"  ><td><label class="translate" for="secretKey">Secret Key:</label></td><td class="admin-icon"></td><td><input class="value" id="secretKey" type="password"/></td></tr>
-            <tr id="tr_region"     class="engine"  ><td><label class="translate" for="region">AWS Region:</label></td><td class="admin-icon"></td><td><input class="value" id="region" type="text"/></td></tr>
-            <tr id="tr_cloud"      class="engine"  ><td><label class="translate" for="cloud">Cloud instance:</label></td><td class="admin-icon"></td><td><select class="value" id="cloud"><option value="" class="translate">Install first cloud adapter</option></select></td></tr>
-        </table>
+            <div class="row variable">
+                <div class="input-field col s6 m4" id="tr_cache">
+                    <input class="value" id="cache"   type="checkbox" />
+                    <label class="translate" for="cache">Cache:</label>
+                </div>
+                <div class="input-field col s6 m4" id="tr_cacheExpiryDays" >
+                    <input class="value" id="cacheExpiryDays"   size="5" />
+                    <label class="translate" for="tr_cacheExpiryDays">Cache-Expiry:</label>
+                </div>
+            </div>
+            <div id="tr_server"     class="row variable">
+                <div class="input-field col s6 m4 l2">
+                    <input class="value" id="server"/>
+                    <label class="translate" for="server">Server:</label>
+                    <select class="value googleHome" id="googleHome">
+                        <option value="" class="translate">none</option>
+                    </select>
+                    <a class="waves-effect waves-light btn translate googleHome" style="font-size: 10px; margin-left: 10px;" id="search">Browse</a>
+                </div>
+            </div>
+            <div id="tr_port"       class="row variable">
+                <div class="input-field col s6 m4 l2">
+                    <input class="value" id="port"    size="5"  maxlength="5"/>
+                    <label class="translate" for="port">Port:</label>
+                </div>
+            </div>
+            <div class="row variable">
+                <div id="tr_user"       class="input-field col s6 m4 l2">
+                    <input class="value" id="user"    />
+                    <label class="translate" for="user">User:</label>
+                </div>
+                <div id="tr_pass"class="input-field col s6 m4 l2">
+                    <input class="value" id="pass"    />
+                    <label class="translate" for="pass">Password:</label>
+                </div>
+            </div>
+            <div id="tr_instance"   class="row variable">
+                <div class="input-field col s6 m4 l2">
+                    <label class="translate" for="instance">Browser instance:</label>
+                    <input class="value" id="instance" />
+                </div>
+            </div>
+            <div id="tr_device"     class="row variable">
+                <div class="input-field col s6 m4 l2">
+                    <select class="value" id="device">
+                        <option value="" class="translate">All</option>
+                    </select>
+                    <label class="translate" for="device">Device:</label>
+                </div>
+            </div>
+            <div id="tr_cDevice"    class="row variable">
+                <div class="input-field col s6 m4 l2">
+                    <select class="value" id="cDevice">
+                        <option value="" class="translate">All</option>
+                    </select>
+                    <label class="translate" for="cDevice">Device:</label>
+                </div>
+            </div>
+            <div id="tr_mpd_device" class="row variable">
+                <div class="input-field col s6 m4 l2">
+                    <select class="value" id="mpd_device">
+                        <option value="" class="translate">All</option>
+                    </select>
+                    <label class="translate" for="mpd_device">Device:</label>
+                </div>
+            </div>
+            <div id="tr_web"        class="row variable">
+                <div class="input-field col s6 m4 l2">
+                    <select class="value" id="web"></select>
+                    <label class="translate" for="web">Web instance:</label>
+                </div>
+            </div>
+            <div id="tr_webServer"  class="row variable">
+                <div class="input-field col s6 m4 l2">
+                    <select class="value" id="webServer"></select>
+                    <label class="translate" for="webServer">Web server IP:</label>
+                </div>
+            </div>
+            <div id="tr_voice"      class="row engine"  >
+                <div class="input-field col s6 m4 l2">
+                    <select class="value" id="voice"></select>
+                    <label class="translate" for="voice">Voice:</label>
+                </div>
+            </div>
+            <div id="tr_key"        class="row engine"  >
+                <div class="input-field col s6 m4 l2">
+                    <input class="value" id="key" type="text"/>
+                    <label class="translate" for="key">API Key:</label>
+                </div>
+            </div>
+            <div id="tr_emotion"    class="row engine"  >
+                <div class="input-field col s6 m4 l2">
+                    <select class="value" id="emotion"></select>
+                    <label class="translate" for="emotion">Emotion:</label>
+                </div>
+            </div>
+            <div id="tr_drunk"      class="row engine"  >
+                <div class="input-field col s6 m4 l2">
+                    <input type="checkbox" class="value" id="drunk"/>
+                    <label class="translate" for="drunk">Drunk:</label>
+                </div>
+            </div>
+            <div id="tr_ill"        class="row engine"  >
+                <div class="input-field col s6 m4 l2">
+                    <input type="checkbox" class="value" id="ill"/>
+                    <label class="translate" for="ill">Ill:</label>
+                </div>
+            </div>
+            <div id="tr_robot"      class="row engine"  >
+                <div class="input-field col s6 m4 l2">
+                    <input type="checkbox" class="value" id="robot"/>
+                    <label class="translate" for="robot">Robot:</label>
+                </div>
+            </div>
+            <div id="tr_accessKey"  class="row engine"  >
+                <div class="input-field col s6 m4 l2">
+                    <label class="translate" for="accessKey">Access Key:</label>
+                    <input class="value" id="accessKey" type="text"/>
+                </div>
+            </div>
+            <div id="tr_secretKey"  class="row engine"  >
+                <div class="input-field col s6 m4 l2">
+                    <label class="translate" for="secretKey">Secret Key:</label>
+                    <input class="value" id="secretKey" type="password"/>
+                </div>
+            </div>
+            <div id="tr_region"     class="row engine"  >
+                <div class="input-field col s6 m4 l2">
+                    <input class="value" id="region" type="text"/>
+                    <label class="translate" for="region">AWS Region:</label>
+                </div>
+            </div>
+            <div id="tr_cloud"      class="row engine"  >
+                <div class="input-field col s6 m4 l2">
+                    <select class="value" id="cloud">
+                        <option value="" class="translate">Install first cloud adapter</option>
+                    </select>
+                    <label class="translate" for="cloud">Cloud instance:</label>
+                </div>
+            </div>
+        </div>
     </div>
     <div id="drop_zone" style="display: none" class="translate">place here</div>
 </div>
