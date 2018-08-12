@@ -214,9 +214,9 @@
                             var server;
                             var type = $('#type').val();
                             if (type === 'googleHome') {
-                                 server = $('#server').val();
+                                server = $('#server').val();
                             } else if (type === 'sonos') {
-                                server = $('#device').val();
+                                server = $('#device').val().split('.')[3].replace('_', '.').replace('_', '.').replace('_', '.');
                             } else if (type === 'chromecast') {
                                 server = $('#cDevice').val();
                             } else if (type === 'mpd') {
