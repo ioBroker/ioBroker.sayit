@@ -111,6 +111,7 @@
                 for (var i = 0; i < res.rows.length; i++) {
                     $(elem).append('<option value="' + res.rows[i].id + '">' + res.rows[i].id + '</option>');
                 }
+                $(elem).select();
             }
             $(elem).val(current);
         });
@@ -123,6 +124,7 @@
 					var n =  res.rows[i].id.replace('system.adapter.', '');
                     $(elem).append('<option value="' + n + '">' + n + '</option>');
                 }
+                $(elem).select();
             }
             $(elem).val(current);
         });
@@ -135,6 +137,7 @@
                     $(elem).append('<option value="' + res.rows[i].id + '">' + res.rows[i].id + '</option>');
                 }
             }
+            $(elem).select();
             $(elem).val(current);
         });
     }
@@ -154,6 +157,7 @@
                 $('#googleHome').html('<option value="">' + _('error') + '</option>').prop('disabled', true);
             }
             $('#search').removeClass('disabled');
+            $('#googleHome').select();
         });
     }
 
@@ -203,10 +207,11 @@
                             }
                         }
                         $webServer.html(text);
-
                         if (current) {
                             $webServer.val(current);
                         }
+                        $webServer.select();
+
                         $webServer.off('change').on('change', function () {
                             gOnChange();
                             var ip = $(this).val();
@@ -234,7 +239,6 @@
                             } else {
                                 $webServer.removeClass('error');
                             }
-
                         });
                     });
                 } else if (webServers[i].value.native.bind === '::') {
@@ -255,10 +259,12 @@
                             $('#webServer').val(current);
                         }
                     });
+                  $('#webServer').select();
                 } else {
                     $('#tr_webServer').hide();
                 }
             }
+
         }
     }
 
@@ -278,6 +284,8 @@
                 (type === 'googleHome')) {
                 checkWeb('#web', webServer);
             }
+
+            $(elem).select();
         });
     }
 
@@ -326,6 +334,7 @@
                             }
                         }
                         $('#announce').html(text).val(name).trigger('change');
+                        $('#announce').select();
                         $('#files').val('');
                     });
                 }
