@@ -3,6 +3,17 @@
         "name": "sayit",
         "version": "1.7.0",
         "news": {
+            "1.7.0": {
+                "en": "Support of admin3\nError was fixed by upload of file to FTP\nIvona removed",
+                "de": "Unterstützung von admin3\nDer Fehler wurde durch Hochladen der Datei auf FTP behoben\nIvona entfernt",
+                "ru": "Поддержка admin3\nОшибка была зафиксирована путем загрузки файла на FTP\nИвона удалена",
+                "pt": "Suporte de admin3\nErro foi corrigido por upload de arquivo para FTP\nIvona removido",
+                "nl": "Ondersteuning van admin3\nFout opgelost door uploaden van bestand naar FTP\nIvona verwijderd",
+                "fr": "Support de admin3\nL'erreur a été corrigée par le téléchargement du fichier sur FTP\nIvona enlevé",
+                "it": "Supporto di admin3\nL'errore è stato risolto caricando il file su FTP\nIvona rimosso",
+                "es": "Soporte de admin3\nEl error se solucionó al cargar el archivo en FTP\nIvona eliminado",
+                "pl": "Wsparcie dla administratora3\nBłąd został naprawiony przez przesłanie pliku na serwer FTP\nIvona usunięte"
+            },
             "1.6.8": {
                 "en": "Generate separate mp3 file for each instance\nAlways upload the mp3 file to the state sayit.X.tts.mp3",
                 "de": "Generiere für jede Instanz eine eigene mp3 Datei\nDie mp3 Datei immer in sayit.X.tts.mp3 schreiben",
