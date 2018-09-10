@@ -58,7 +58,7 @@ offline:
         Installation command: 'sudo apt-get install libttspico-utils lame'
 
 ### Cloud and Amazon Web Services Polly text formatting
-You can format your text with (Speech Synthesis Markup Language)[http://docs.aws.amazon.com/polly/latest/dg/ssml.html].
+You can format your text with [Speech Synthesis Markup Language](http://docs.aws.amazon.com/polly/latest/dg/ssml.html).
 
 Most useful features:
 - ```<break time="3s"/>```- make a pause for x seconds (max 10 seconds).
