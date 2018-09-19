@@ -172,6 +172,11 @@ Blockly.Blocks['sayit'] = {
                     options.push(['sayit.' + n, '.' + n]);
                 }
             }
+            if (options.length === 0) {
+                for (var u = 0; u <= 4; u++) {
+                    options.push(['sayit.' + u, '.' + u]);
+                }
+            }
         } else {
             for (var u = 0; u <= 4; u++) {
                 options.push(['sayit.' + u, '.' + u]);
