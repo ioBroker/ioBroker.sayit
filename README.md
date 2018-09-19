@@ -234,6 +234,9 @@ Following values for engines are possible:
 - **(tr-TR_AP_Female)** -           tr-TR - Female - Filiz
 
 ## Changelog
+### 1.7.1 (2018-09-19)
+* (BuZZy1337) fixed error in Blockly-Block
+
 ### 1.7.0 (2018-06-08)
 * (bluefox) Ivona removed
 * (bluefox) Error was fixed by upload of file to FTP

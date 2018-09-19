@@ -1,8 +1,19 @@
 {
     "common": {
         "name": "sayit",
-        "version": "1.7.0",
+        "version": "1.7.1",
         "news": {
+            "1.7.1": {
+                "en": "Fix error in Blockly if no instance exists",
+                "de": "Fehler in Blockly behoben, wenn keine Instanz existiert",
+                "ru": "Исправить ошибку в блочном режиме, если не существует экземпляра",
+                "pt": "Corrigir erro no bloco se nenhuma instância existir",
+                "nl": "Fout bij oplossen in Blockly als er geen exemplaar bestaat",
+                "fr": "Correction d'une erreur dans Blockly si aucune instance n'existe",
+                "it": "Correggi l'errore in Blockly se non esiste alcuna istanza",
+                "es": "Se corrigió el error en Blockly si no existe ninguna instancia",
+                "pl": "Napraw błąd w bloku, jeśli nie istnieje żadne wystąpienie"
+            },
             "1.7.0": {
                 "en": "Support of admin3\nError was fixed by upload of file to FTP\nIvona removed",
                 "de": "Unterstützung von admin3\nDer Fehler wurde durch Hochladen der Datei auf FTP behoben\nIvona entfernt",
