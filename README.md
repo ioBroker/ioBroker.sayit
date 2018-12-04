@@ -105,6 +105,11 @@ To install omxplayer write ```sudo apt-get install omxplayer``` or write ```sudo
 
 **Note:** The default announce selection will be possible only after start of the instance.
 
+### Priorities
+To immediately pronounce the text despite the queued texts you have 2 possibilities:
+- place "!" as a first character in text, so this text will be pronounced immediately after current one.
+- write true into "tts.clearQueue" state and the queue will be cleared. After that you can write a new text into "tts.text", but all queued texts are thrown away.
+
 ### Engines
 Following values for engines are possible:
 
@@ -234,6 +239,9 @@ Following values for engines are possible:
 - **(tr-TR_AP_Female)** -           tr-TR - Female - Filiz
 
 ## Changelog
+### 1.8.0 (2018-12-04)
+* (bluefox) Priority for the text was added
+
 ### 1.7.1 (2018-09-19)
 * (BuZZy1337) fixed error in Blockly-Block
 
@@ -387,7 +395,7 @@ Following values for engines are possible:
 
 The MIT License (MIT)
 
-Copyright (c) 2014-2017, bluefox<dogafox@gmail.com>
+Copyright (c) 2014-2018, bluefox<dogafox@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

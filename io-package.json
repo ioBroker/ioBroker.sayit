@@ -1,8 +1,19 @@
 {
     "common": {
         "name": "sayit",
-        "version": "1.7.1",
+        "version": "1.8.0",
         "news": {
+            "1.8.0":  {
+                "en": "Priority for the text was added",
+                "de": "Priorität für den Text wurde hinzugefügt",
+                "ru": "Приоритет для текста был добавлен",
+                "pt": "Prioridade para o texto foi adicionado",
+                "nl": "Prioriteit voor de tekst is toegevoegd",
+                "fr": "La priorité du texte a été ajoutée",
+                "it": "È stata aggiunta la priorità per il testo",
+                "es": "Se ha añadido prioridad para el texto.",
+                "pl": "Priorytet tekstu został dodany"
+            },
             "1.7.1": {
                 "en": "Fix error in Blockly if no instance exists",
                 "de": "Fehler in Blockly behoben, wenn keine Instanz existiert",
@@ -221,6 +232,19 @@
                 "read": true,
                 "write": true,
                 "desc": "This text will be converted to speech"
+            },
+            "native": {}
+        },
+        {
+            "_id": "tts.clearQueue",
+            "type": "state",
+            "common": {
+                "role": "button",
+                "name": "Clear queued texts",
+                "type": "boolean",
+                "read": false,
+                "write": true,
+                "desc": "If you need to say something immediately and the queue is full, set it to true before sending the new task"
             },
             "native": {}
         },

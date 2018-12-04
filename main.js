@@ -18,6 +18,12 @@ process.on('SIGINT', stop);
 
 adapter.on('stateChange', (id, state) => {
     if (state && !state.ack) {
+        if (id === adapter.namespace + '.tts.clearQueue') {
+            if (list.length > 1) {
+                list.splice(1);
+                adapter.setState('tts.clearQueue', false, true);
+            }
+        } else
         if (id === adapter.namespace + '.tts.volume') {
             if (adapter.config.type === 'system') {
                 speech2device.sayItSystemVolume(state.val);
@@ -59,11 +65,8 @@ adapter.on('message', obj => {
 function processMessage(obj) {
     if (obj) {
         if (obj.command === 'stopInstance') {
-            stop(() => {
-                if (obj.callback) {
-                    adapter.sendTo(obj.from, obj.command, null, obj.callback);
-                }
-            });
+            stop(() =>
+                obj.callback && adapter.sendTo(obj.from, obj.command, null, obj.callback));
         } else if (obj.command === 'browseChromecast') {
             try {
                 const mdns = require('mdns');
@@ -75,9 +78,7 @@ function processMessage(obj) {
                 setTimeout(() => {
                     browser.stop();
                     browser = null;
-                    if (obj.callback) {
-                        adapter.sendTo(obj.from, obj.command, result, obj.callback);
-                    }
+                    obj.callback && adapter.sendTo(obj.from, obj.command, result, obj.callback);
                 }, 2000);
 
                 browser.start();
@@ -256,7 +257,7 @@ function cacheIt(text, language) {
     });
 }
 
-function sayIt(text, language, volume, process) {
+function sayIt(text, language, volume, processing) {
     let md5filename;
 
     // Extract language from "en;volume;Text to say"
@@ -266,23 +267,28 @@ function sayIt(text, language, volume, process) {
         if (arr.length === 2) {
             // If number
             if (parseInt(arr[0]).toString() === arr[0].toString()) {
-                volume = arr[0];
+                volume = arr[0].trim();
             } else {
-                language = arr[0];
+                language = arr[0].trim();
             }
-            text = arr[1];
+            text = arr[1].trim();
         } else if (arr.length === 3) {
             // If language;volume;text or volume;language;text
             // If number
             if (parseInt(arr[0]).toString() === arr[0].toString()) {
-                volume   = arr[0];
-                language = arr[1];
+                volume   = arr[0].trim();
+                language = arr[1].trim();
             } else {
-                volume   = arr[1];
-                language = arr[0];
+                volume   = arr[1].trim();
+                language = arr[0].trim();
             }
-            text = arr[2];
+            text = arr[2].trim();
         }
+    }
+
+    const sayFirst = text[0] === '!';
+    if (sayFirst) {
+        text = text.substring(1);
     }
 
     // if no text => do not process
@@ -314,7 +320,7 @@ function sayIt(text, language, volume, process) {
                         // Cache the file
                         if (md5filename) libs.fs.writeFileSync(md5filename, data);
                         libs.fs.writeFileSync(MP3FILE, data);
-                        sayIt(MP3FILE, language, volume, process);
+                        sayIt((sayFirst ? '!' : '') + MP3FILE, language, volume, processing);
                     } catch (e) {
                         adapter.log.error('Cannot write file "' + MP3FILE + '": ' + e.toString());
                         sayFinished(0);
@@ -331,7 +337,7 @@ function sayIt(text, language, volume, process) {
                         // Cache the file
                         if (md5filename) libs.fs.writeFileSync(md5filename, data);
                         libs.fs.writeFileSync(MP3FILE, data);
-                        sayIt(MP3FILE, language, volume, process);
+                        sayIt((sayFirst ? '!' : '') + MP3FILE, language, volume, processing);
                     } else {
                         adapter.log.warn('File "' + text + '" not found');
                         sayFinished(0);
@@ -342,7 +348,7 @@ function sayIt(text, language, volume, process) {
         }
     }
 
-    if (!process) {
+    if (!processing) {
         const time = Date.now();
 
         // Workaround for double text
@@ -352,14 +358,27 @@ function sayIt(text, language, volume, process) {
         }
         // If more time than 15 seconds
         if (adapter.config.announce && !list.length && (!lastSay || (time - lastSay > adapter.config.annoTimeout * 1000))) {
-            // place as first the announce mp3
-            list.push({text: adapter.config.announce, language: language, volume: (volume || adapter.config.volume) / 2, time: time});
-            // and then text
-            list.push({text: text, language: language, volume: (volume || adapter.config.volume), time: time});
+            if (sayFirst && list.length > 1) {
+                list.splice(1, 0,
+                    // place as first the announce mp3
+                    {text: adapter.config.announce, language: language, volume: (volume || adapter.config.volume) / 2, time: time},
+                    // and then text
+                    {text: text, language: language, volume: (volume || adapter.config.volume), time: time});
+            } else {
+                // place as first the announce mp3
+                list.push({text: adapter.config.announce, language: language, volume: (volume || adapter.config.volume) / 2, time: time});
+                // and then text
+                list.push({text: text, language: language, volume: (volume || adapter.config.volume), time: time});
+            }
             text = adapter.config.announce;
             volume = Math.round((volume || adapter.config.volume) / 100 * adapter.config.annoVolume);
         } else {
-            list.push({text: text, language: language, volume: (volume || adapter.config.volume), time: time});
+            // if high priority text
+            if (sayFirst && list.length > 1) {
+                list.splice(1, 0, {text: text, language: language, volume: (volume || adapter.config.volume), time: time});
+            } else {
+                list.push({text: text, language: language, volume: (volume || adapter.config.volume), time: time});
+            }
             if (list.length > 1) return;
         }
     }
@@ -396,19 +415,16 @@ function sayIt(text, language, volume, process) {
             } else if (adapter.config.cache) {
                 md5filename = libs.path.join(options.cacheDir, libs.crypto.createHash('md5').update(language + ';' + text).digest('hex') + '.mp3');
                 if (libs.fs.existsSync(md5filename)) {
-                    text2speech.getLength(md5filename, (error, duration) => {
-                        speechFunction(error, md5filename, language, volume, duration, sayFinished);
-                    });
+                    text2speech.getLength(md5filename, (error, duration) =>
+                        speechFunction(error, md5filename, language, volume, duration, sayFinished));
                 } else {
                     sayLastGeneratedText = '[' + language + ']' + text;
-                    text2speech.sayItGetSpeech(text, language, volume, (error, text, language, volume, duration) => {
-                        speechFunction(error, text, language, volume, duration, sayFinished);
-                    });
+                    text2speech.sayItGetSpeech(text, language, volume, (error, text, language, volume, duration) =>
+                        speechFunction(error, text, language, volume, duration, sayFinished));
                 }
             } else {
-                text2speech.getLength(MP3FILE, (error, duration) => {
-                    speechFunction(error, text, language, volume, duration, sayFinished);
-                });
+                text2speech.getLength(MP3FILE, (error, duration) =>
+                    speechFunction(error, text, language, volume, duration, sayFinished));
             }
         }
     }
@@ -427,7 +443,6 @@ function uploadFile(file, callback) {
         if (callback) callback();
         return;
     }
-
 
     adapter.readFile(adapter.namespace, 'tts.userfiles/' + file, (err, data) => {
         if (err || !data) {
