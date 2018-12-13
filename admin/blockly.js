@@ -29,6 +29,7 @@ var sayitEngines = {
     "es":       {name: "Google - Espaniol",        engine: "google",  params: []},
     "fr":       {name: "Google - Français",        engine: "google",  params: []},
     "ru_YA":    {name: "Yandex - Русский",         engine: "yandex",  params: ['key', 'voice', 'emotion', 'ill', 'drunk', 'robot'], voice: ['jane', 'zahar'], emotion: ['none', 'good', 'neutral', 'evil', 'mixed']},
+    "ru_YA_CLOUD":   {name: "Yandex Cloud - Русский",   engine: "yandexCloud",  params: ['key', 'folderID', 'voice', 'emotion'], voice: ['alyss', 'oksana', 'jane', 'zahar'], emotion: [ 'good', 'neutral', 'evil']},
 
     "en-US":    {name: "PicoTTS - Englisch US",    engine: "PicoTTS", params: []},
     "en-GB":    {name: "PicoTTS - Englisch GB",    engine: "PicoTTS", params: []},
