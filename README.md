@@ -124,7 +124,7 @@ Following values for engines are possible:
 
 #### Yandex
 - **ru_YA:Yandex** - Русский
-- **ru_YA_CLOUD:Yandex Cloud** - Русский
+- **ru_YA_CLOUD:Yandex Cloud** - Русский [Yandex.Cloud API generates files in OGG format. To play ogg files on linux mplayer should be installed and selected as system player]
 
 #### Amazon polly via cloud
 - **ru-RU_CLOUD_Female** -         Русский - Татьяна
