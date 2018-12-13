@@ -44,7 +44,8 @@ The file must be first loaded.
 online:  
 - Google: English, German, Russian, Italian, Spanish, French
 - Yandex: Russian  
-  To use Yandex voices you must request the API key here: [https://tech.yandex.ru/speechkit/cloud/doc/dg/concepts/About-docpage/](https://tech.yandex.ru/speechkit/cloud/doc/dg/concepts/About-docpage/).  
+  To use Yandex voices you must request the API key here: [https://tech.yandex.ru/speechkit/cloud/doc/dg/concepts/About-docpage/](https://tech.yandex.ru/speechkit/cloud/doc/dg/concepts/About-docpage/).  [This service will be disabled 1st of Jan 2019 and replaced by Yandex.cloud]
+  To use Yandex.cloud you should register here: [https://cloud.yandex.ru/], install SpeechKIT API in the Cloud and get Auth Token and Folder ID as described in API instructions.
 - Ivona: English, German, Russian, Italian, Spanish, French, Dansk, Welsh, Icelandic, Dutch, Polish, Portuguese, Romanian, Swedish, Turkish  
         To use Amazon(Ivona) voices you need to get access key and secret key [here](http://www.ivona.com/us/for-business/speech-cloud/).
 - Cloud:
@@ -123,6 +124,7 @@ Following values for engines are possible:
 
 #### Yandex
 - **ru_YA:Yandex** - Русский
+- **ru_YA_CLOUD:Yandex Cloud** - Русский
 
 #### Amazon polly via cloud
 - **ru-RU_CLOUD_Female** -         Русский - Татьяна
