@@ -3,7 +3,7 @@
         "name": "sayit",
         "version": "1.8.0",
         "news": {
-            "1.8.0":  {
+            "1.8.0": {
                 "en": "Priority for the text was added",
                 "de": "Priorität für den Text wurde hinzugefügt",
                 "ru": "Приоритет для текста был добавлен",
@@ -12,7 +12,8 @@
                 "fr": "La priorité du texte a été ajoutée",
                 "it": "È stata aggiunta la priorità per il testo",
                 "es": "Se ha añadido prioridad para el texto.",
-                "pl": "Priorytet tekstu został dodany"
+                "pl": "Priorytet tekstu został dodany",
+                "zh-cn": "优先的案文中加入"
             },
             "1.7.1": {
                 "en": "Fix error in Blockly if no instance exists",
@@ -23,7 +24,8 @@
                 "fr": "Correction d'une erreur dans Blockly si aucune instance n'existe",
                 "it": "Correggi l'errore in Blockly se non esiste alcuna istanza",
                 "es": "Se corrigió el error en Blockly si no existe ninguna instancia",
-                "pl": "Napraw błąd w bloku, jeśli nie istnieje żadne wystąpienie"
+                "pl": "Napraw błąd w bloku, jeśli nie istnieje żadne wystąpienie",
+                "zh-cn": "修复的错误在Blockly如果不存在实例"
             },
             "1.7.0": {
                 "en": "Support of admin3\nError was fixed by upload of file to FTP\nIvona removed",
@@ -34,7 +36,8 @@
                 "fr": "Support de admin3\nL'erreur a été corrigée par le téléchargement du fichier sur FTP\nIvona enlevé",
                 "it": "Supporto di admin3\nL'errore è stato risolto caricando il file su FTP\nIvona rimosso",
                 "es": "Soporte de admin3\nEl error se solucionó al cargar el archivo en FTP\nIvona eliminado",
-                "pl": "Wsparcie dla administratora3\nBłąd został naprawiony przez przesłanie pliku na serwer FTP\nIvona usunięte"
+                "pl": "Wsparcie dla administratora3\nBłąd został naprawiony przez przesłanie pliku na serwer FTP\nIvona usunięte",
+                "zh-cn": "支持admin3\n错误是固定的由上载的文件FTP\n伊沃娜删除"
             },
             "1.6.8": {
                 "en": "Generate separate mp3 file for each instance\nAlways upload the mp3 file to the state sayit.X.tts.mp3",
@@ -45,7 +48,8 @@
                 "fr": "Générer des fichiers mp3 séparés pour chaque instance\nToujours télécharger des fichiers mp3 à l'état sayit.X.tts.mp3",
                 "it": "Genera mp3 separati per ogni istanza\nCarica sempre mp3 nello stato sayit.X.tts.mp3",
                 "es": "Genere mp3 separados para cada instancia\nSiempre suba mp3 al estado sayit.X.tts.mp3",
-                "pl": "Generuj osobne pliki mp3 dla każdej instancji\nZawsze przesyłaj pliki mp3 do stanu sayit.X.tts.mp3"
+                "pl": "Generuj osobne pliki mp3 dla każdej instancji\nZawsze przesyłaj pliki mp3 do stanu sayit.X.tts.mp3",
+                "zh-cn": "产生独立的mp3文件的每一个实例\n总是上传的mp3文件的国家sayit的。X.合成的。mp3"
             },
             "1.6.7": {
                 "en": "Admin3 Fixes",
@@ -56,67 +60,152 @@
                 "fr": "Corrections Admin3",
                 "it": "Correzioni di Admin3",
                 "es": "Correcciones de Admin3",
-                "pl": "Poprawki Admin3"
+                "pl": "Poprawki Admin3",
+                "zh-cn": "Admin3的修正"
             },
             "1.6.6": {
                 "en": "Wait for Google Home announcement to complete",
                 "de": "Wartet bis die Google Home-Ankündigung abgeschlossen ist",
-                "ru": "Дождидается завершения объявления Google Home"
+                "ru": "Дождидается завершения объявления Google Home",
+                "pt": "Esperar para o Google Home anúncio completo",
+                "nl": "Wachten voor Google Startpagina aankondiging te voltooien",
+                "fr": "Attendre que Google annonce Maison pour terminer",
+                "it": "Attendere che Google Home annuncio completo",
+                "es": "Esperar a que Google Hogar anuncio completo",
+                "pl": "Czekaj ogłoszenia w Google do domu, aby zakończyć",
+                "zh-cn": "等待谷歌家宣布完成"
             },
             "1.6.5": {
                 "en": "Fix cloud .pro",
                 "de": "Korrigiere cloud .pro",
-                "ru": "Поправлены вызовы к .pro"
+                "ru": "Поправлены вызовы к .pro",
+                "pt": "Correcção nuvem .pro",
+                "nl": "Fix cloud .pro",
+                "fr": "Fixer le cloud .pro",
+                "it": "Fix cloud .pro",
+                "es": "Revisión de la nube .pro",
+                "pl": "Naprawić chmurze .o",
+                "zh-cn": "修复云。pro"
             },
             "1.6.4": {
                 "en": "Fix system commands",
                 "de": "Korrigiere System-Kommando",
-                "ru": "Поправлены системные вызовы"
+                "ru": "Поправлены системные вызовы",
+                "pt": "Correcção comandos do sistema",
+                "nl": "Fix systeem commando ' s",
+                "fr": "Commandes du système fixer",
+                "it": "Comandi di sistema fissare",
+                "es": "Revisión de los comandos del sistema",
+                "pl": "System Fix poleceń",
+                "zh-cn": "解决系统的命令"
             },
             "1.6.3": {
                 "en": "Code refactoring\nAdd google home as output\nRemove ivona because not more supported",
                 "de": "Code refactoring\nGoogle Home als Ausgabe hinzugefügt\nivona gelöscht",
-                "ru": "Переработка кода\nДобавлен google home"
+                "ru": "Переработка кода\nДобавлен google home",
+                "pt": "Refatoração de código\nAdicionar página inicial do google como saída\nRemover ivona porque não mais suportados",
+                "nl": "Code refactoring\nVoeg google startpagina als output\nVerwijder ivona omdat niet meer ondersteund",
+                "fr": "Code refactoring\nAjouter google à la maison de la sortie\nSupprimer ivona parce que pas plus pris en charge",
+                "it": "Refactoring del codice\nAggiungere google home come output\nRimuovere ivona perché non più supportato",
+                "es": "Código de refactorización\nAgregar página principal de google como de salida\nQuitar ivona porque no más compatibles",
+                "pl": "Refaktoryzacja kodu\nDodaj Google w domu jako wyjściowego\nUsunąć Iwona, bo więcej nie jest obsługiwany",
+                "zh-cn": "代码重构\n增加谷歌家作为输出\n除伊沃娜，因为没有更多支持的"
             },
             "1.5.3": {
                 "en": "Add expiry option for caching (in days)",
                 "de": "Caching-Verfalls-Möglichkeit (in Tagen) hinzugefügt",
-                "ru": "Add expiry option for caching (in days)"
+                "ru": "Add expiry option for caching (in days)",
+                "pt": "Adicionar opção de expiração de cache (em dias)",
+                "nl": "Toevoegen verstrijken optie voor caching (in dagen)",
+                "fr": "Ajouter l'expiration de l'option pour la mise en cache (en jours)",
+                "it": "Aggiungi opzione di scadenza per la memorizzazione nella cache (in giorni)",
+                "es": "Añadir opción de expiración de la caché (en días)",
+                "pl": "Dodaj wygaśnięcia opcji buforowania (w dniach)",
+                "zh-cn": "添加到期的选择缓存(天)"
             },
             "1.5.2": {
                 "en": "Catch error if some directory in mp3 folder",
                 "de": "Fange ein Fehler, falls ein Verzeichnis in mp3",
-                "ru": "Обработка ошибки, если встречается папка вместо mp3"
+                "ru": "Обработка ошибки, если встречается папка вместо mp3",
+                "pt": "Pegar erro se algum diretório na pasta mp3",
+                "nl": "Catch fout als een map in de map mp3",
+                "fr": "Capture d'erreur si un répertoire dans le dossier mp3",
+                "it": "La cattura di errore nel caso di alcune directory nella cartella mp3",
+                "es": "Captura de error si algún directorio en la carpeta mp3",
+                "pl": "Złapać błąd, jeśli jakiś katalog do folderu MP3",
+                "zh-cn": "抓错误，如果一些目录以mp3文件夹"
             },
             "1.5.1": {
                 "en": "Fix blockly language",
                 "de": "Korrigiere blockly-Sprache",
-                "ru": "Поправлен язык в blockly"
+                "ru": "Поправлен язык в blockly",
+                "pt": "Correcção blockly idioma",
+                "nl": "Fix blockly taal",
+                "fr": "Fix blockly langue",
+                "it": "Fix blockly lingua",
+                "es": "Revisión blockly idioma",
+                "pl": "Naprawić blockley język",
+                "zh-cn": "修复blockly语言"
             },
             "1.5.0": {
                 "en": "Add AWS Polly and cloud as source",
                 "de": "AWS Polly und Cloud hinzugefügt",
-                "ru": "Добавлено AWS Polly и Cloud в качестве источника"
+                "ru": "Добавлено AWS Polly и Cloud в качестве источника",
+                "pt": "Adicionar a AWS Polly e nuvem como fonte de",
+                "nl": "Toevoegen AWS Polly en cloud als bron",
+                "fr": "Ajouter AWS Polly et le cloud comme source",
+                "it": "Aggiungere AWS Polly e il cloud come fonte",
+                "es": "Agregar AWS Polly y en la nube como fuente de",
+                "pl": "Dodaj AWP Polly i chmura jak źródło",
+                "zh-cn": "添加AWS波莉和云源"
             },
             "1.4.0": {
                 "en": "fix install problem\nadd PicoTTS as source",
                 "de": "Korrigiere Installationsprozess\nPicoTTS hinzugefügt",
-                "ru": "Исправлена установка\nДобавлен PicoTTS движок"
+                "ru": "Исправлена установка\nДобавлен PicoTTS движок",
+                "pt": "corrigir problema de instalação\nadicionar PicoTTS como fonte de",
+                "nl": "fix installatie probleem\ntoevoegen PicoTTS als bron",
+                "fr": "résout un problème d'installation\najouter PicoTTS comme source",
+                "it": "fix installare problema\naggiungere PicoTTS come fonte",
+                "es": "solucionar problema de instalación\nagregar PicoTTS como fuente de",
+                "pl": "poprawka instaluje problem\ndodaj PicoTTS jako źródło",
+                "zh-cn": "解决安装的问题\n添加PicoTTS为源"
             },
             "1.3.3": {
                 "en": "show only installed instances in blockly",
                 "de": "Zeige nur installierten Instanzen im Blockly",
-                "ru": "Показывать только установленные инстанции в Blockly"
+                "ru": "Показывать только установленные инстанции в Blockly",
+                "pt": "mostrar apenas instâncias instaladas em blockly",
+                "nl": "toon alleen geïnstalleerde exemplaren in blockly",
+                "fr": "afficher seulement les instances installées dans blockly",
+                "it": "mostra solo le istanze installate in blockly",
+                "es": "mostrar sólo las instancias instaladas en blockly",
+                "pl": "pokaż tylko zainstalowane wystąpień w blockley",
+                "zh-cn": "只显示安装的实例在blockly"
             },
             "1.3.2": {
                 "en": "changes for new chromecast tts",
                 "de": "Änderungen für chromecast TTS",
-                "ru": "Изменения для chromecast TTS"
+                "ru": "Изменения для chromecast TTS",
+                "pt": "mudança para novo chromecast tts",
+                "nl": "wijzigingen voor nieuwe chromecast tts",
+                "fr": "des changements pour la nouvelle chromecast tts",
+                "it": "le modifiche per il nuovo chromecast tts",
+                "es": "los cambios para el nuevo chromecast tts",
+                "pl": "zmiany w urządzeniu Chromecast TTS",
+                "zh-cn": "更改为新应合成"
             },
             "1.3.1": {
                 "en": "small fix of config dialog\nfix Volume change by linux",
                 "de": "Kleine Verbesserung von Konfigdialog\nKorrigiere Lautstärke änderung bei Linux",
-                "ru": "Маленькое улучшение настроек\nИсправлено регулирование громкости на linux"
+                "ru": "Маленькое улучшение настроек\nИсправлено регулирование громкости на linux",
+                "pt": "pequena correcção de diálogo de configuração\ncorrigir a alteração de Volume pelo linux",
+                "nl": "kleine fix van het dialoogvenster config\nfix Volume wijzigen door linux",
+                "fr": "petit correctif de la boîte de dialogue de configuration\ncorrection de changement de Volume par linux",
+                "it": "piccolo fix di dialogo di configurazione\nfix variazione di Volume da linux",
+                "es": "pequeña revisión de diálogo de configuración\nrevisión de cambio de Volumen por linux",
+                "pl": "mała poprawka w oknie ustawień \nnaprawić zmienić głośność w systemie Linux",
+                "zh-cn": "小修复的config对话\n解决体积变化的linux"
             }
         },
         "title": "Text to speech",
@@ -129,7 +218,8 @@
             "fr": "Texte pour parler (Text to speech)",
             "it": "Sintesi vocale (Text to speech)",
             "es": "Texto a voz (Text to speech)",
-            "pl": "Tekst na mowę (Text to speech)"
+            "pl": "Tekst na mowę (Text to speech)",
+            "zh-cn": "文字到语音"
         },
         "desc": {
             "en": "Text to speech in a cloud or local. Runs on windows, linux and OSX. It can play mp3/wav too.",
@@ -140,7 +230,8 @@
             "fr": "Text to speech dans un nuage ou local. Fonctionne sur Windows, Linux et OSX. Il peut aussi jouer au format mp3 / wav.",
             "it": "Sintesi vocale in un cloud o locale. Funziona su Windows, Linux e OSX. Può riprodurre anche mp3 / wav.",
             "es": "Texto a voz en una nube o local. Se ejecuta en Windows, Linux y OSX. Puede reproducir mp3 / wav también.",
-            "pl": "Tekst na mowę w chmurze lub lokalnie. Działa w systemie Windows, Linux i OSX. Może również odtwarzać mp3 / wav."
+            "pl": "Tekst na mowę w chmurze lub lokalnie. Działa w systemie Windows, Linux i OSX. Może również odtwarzać mp3 / wav.",
+            "zh-cn": "文字到语音在云端或局部的。 运行在windows、linux和OS x. 它可以发挥的mp3/声。"
         },
         "authors": [
             "bluefox <dogafox@gmail.com>"
