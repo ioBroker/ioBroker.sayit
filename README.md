@@ -117,6 +117,7 @@ Following values for engines are possible:
 #### Google
 - **en** - English
 - **de** - Deutsch
+- **pl** - Polski
 - **ru** - Русский
 - **it** - Italiano
 - **es** - Espaniol

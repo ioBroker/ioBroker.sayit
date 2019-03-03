@@ -3,6 +3,7 @@
 var sayitEngines = {
     "en":       {name: "Google - English",         engine: "google",  params: []},
     "de":       {name: "Google - Deutsch",         engine: "google",  params: []},
+    "pl":       {name: "Google - Polski",          engine: "google",  params: []},
     "ru":       {name: "Google - Русский",         engine: "google",  params: []},
     "it":       {name: "Google - Italiano",        engine: "google",  params: []},
     "es":       {name: "Google - Espaniol",        engine: "google",  params: []},
