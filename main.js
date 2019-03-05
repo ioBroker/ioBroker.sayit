@@ -2,7 +2,7 @@
 /* jshint strict: false */
 /* jslint node: true */
 'use strict';
-const utils         = require(__dirname + '/lib/utils'); // Get common adapter utils
+const utils = require('@iobroker/adapter-core'); // Get common adapter utils
 const engines       = require(__dirname + '/admin/engines.js');
 const Text2Speech   = require(__dirname + '/lib/text2speech');
 const Speech2Device = require(__dirname + '/lib/speech2device');
