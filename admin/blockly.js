@@ -254,4 +254,5 @@ Blockly.JavaScript['sayit'] = function(block) {
 
     return 'setState("sayit' + dropdown_instance + '.tts.text", "' + (dropdown_language ? dropdown_language + ';' : '') + (value_volume !== null && value_volume !== '' ? value_volume + ';' : '') + '" + ' + value_message  + ');\n' +
         logText;
+    }
 };
