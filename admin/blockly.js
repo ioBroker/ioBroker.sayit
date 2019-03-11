@@ -11,7 +11,7 @@ Blockly.Words['sayit_volume']        = {'en': 'volume (optional)',           'de
 Blockly.Words['sayit_tooltip']       = {'en': 'Text to speech',              'de': 'Text zu Sprache',                    'ru': 'Произнести сообщение'};
 Blockly.Words['sayit_help']          = {'en': 'https://github.com/ioBroker/ioBroker.sayit/blob/master/README.md', 'de': 'http://www.iobroker.net/?page_id=178&lang=de', 'ru': 'http://www.iobroker.net/?page_id=4262&lang=ru'};
 Blockly.Words['sayit_configured']    = {'en': 'configured',                  'de': 'Standard',                           'ru': 'настроенный'};
-Blockly.Words['sayit_anyInstance']   = {'en': 'all instances',               'pt': 'todas as instâncias',            'pl': 'wszystkie przypadki',                'nl': 'alle instanties',                'it': 'tutte le istanze',               'es': 'todas las instancias',           'fr': 'toutes les instances',               'de': 'Alle Instanzen',                     'ru': 'На все драйвера'};
+Blockly.Words['sayit_everyInstance']   = {'en': 'every instance',               'pt': 'todas as instâncias',            'pl': 'wszystkie przypadki',                'nl': 'alle instanties',                'it': 'tutte le istanze',               'es': 'todas las instancias',           'fr': 'toutes les instances',               'de': 'Alle Instanzen',                     'ru': 'На все драйвера'};
 
 Blockly.Words['sayit_log']           = {'en': 'log level',                   'de': 'Loglevel',                           'ru': 'Протокол'};
 Blockly.Words['sayit_log_none']      = {'en': 'none',                        'de': 'keins',                              'ru': 'нет'};
@@ -165,7 +165,7 @@ Blockly.Sendto.blocks['sayit'] =
 
 Blockly.Blocks['sayit'] = {
     init: function() {
-        var options = [[Blockly.Words['sayit_anyInstance'][systemLang], 'all']];
+        var options = [[Blockly.Words['sayit_everyInstance'][systemLang], 'all']];
         if (typeof main !== 'undefined' && main.instances) {
             for (var i = 0; i < main.instances.length; i++) {
                 var m = main.instances[i].match(/^system.adapter.sayit.(\d+)$/);
