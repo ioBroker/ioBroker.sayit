@@ -117,6 +117,7 @@ Following values for engines are possible:
 #### Google
 - **en** - English
 - **de** - Deutsch
+- **pl** - Polski
 - **ru** - Русский
 - **it** - Italiano
 - **es** - Espaniol
@@ -191,6 +192,7 @@ Following values for engines are possible:
 - **(ru-RU_AP_Female)** -           Русский - Татьяна
 - **(ru-RU_AP_Male)** -             Русский - Максим
 - **(de-DE_AP_Female)** -           Deutsch - Marlene
+- **(de-DE_AP_Female_Vicki)** -     Deutsch - Vicki
 - **(de-DE_AP_Male)** -             Deutsch - Hans
 - **(en-US_AP_Female)** -           en-US - Female - Salli
 - **(en-US_AP_Male)** -             en-US - Male - Joey
