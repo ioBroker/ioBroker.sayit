@@ -94,6 +94,7 @@ var sayitEngines = {
     "ru-RU_AP_Female":          {gender: "Female", engine: "polly",   params: ['accessKey', 'secretKey', 'region'], language: "ru-RU",      ename: "Tatyana",    ssml: true, name: "AWS Polly - Русский - Татьяна"},
     "ru-RU_AP_Male":            {gender: "Male",   engine: "polly",   params: ['accessKey', 'secretKey', 'region'], language: "ru-RU",      ename: "Maxim",      ssml: true, name: "AWS Polly - Русский - Максим"},
     "de-DE_AP_Female":          {gender: "Female", engine: "polly",   params: ['accessKey', 'secretKey', 'region'], language: "de-DE",      ename: "Marlene",    ssml: true, name: "AWS Polly - Deutsch - Marlene"},
+    "de-DE_AP_Female_Vicky":    {gender: "Female", engine: "polly",   params: ['accessKey', 'secretKey', 'region'], language: "de-DE",      ename: "Vicky",      ssml: true, name: "AWS Polly - Deutsch - Vicky"},
     "de-DE_AP_Male":            {gender: "Male",   engine: "polly",   params: ['accessKey', 'secretKey', 'region'], language: "de-DE",      ename: "Hans",       ssml: true, name: "AWS Polly - Deutsch - Hans"},
     "en-US_AP_Female":          {gender: "Female", engine: "polly",   params: ['accessKey', 'secretKey', 'region'], language: "en-US",      ename: "Salli",      ssml: true, name: "AWS Polly - en-US - Female - Salli"},
     "en-US_AP_Male":            {gender: "Male",   engine: "polly",   params: ['accessKey', 'secretKey', 'region'], language: "en-US",      ename: "Joey",       ssml: true, name: "AWS Polly - en-US - Male - Joey"},
@@ -238,7 +239,7 @@ Blockly.JavaScript['sayit'] = function(block) {
     } else {
         logText = '';
     }
-    
+
     if(dropdown_instance == "all") {
         let output = "";
         for (var i = 0; i < main.instances.length; i++) {
@@ -250,7 +251,7 @@ Blockly.JavaScript['sayit'] = function(block) {
         }
         return output;
     } else {
-        
+
 
     return 'setState("sayit' + dropdown_instance + '.tts.text", "' + (dropdown_language ? dropdown_language + ';' : '') + (value_volume !== null && value_volume !== '' ? value_volume + ';' : '') + '" + ' + value_message  + ');\n' +
         logText;
