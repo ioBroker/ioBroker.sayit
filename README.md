@@ -119,6 +119,7 @@ Following values for engines are possible:
 - **de** - Deutsch
 - **pl** - Polski
 - **ru** - Русский
+- **uk** - український
 - **it** - Italiano
 - **es** - Espaniol
 - **fr** - Français
