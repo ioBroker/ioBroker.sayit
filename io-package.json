@@ -1,8 +1,20 @@
 {
     "common": {
         "name": "sayit",
-        "version": "1.8.0",
+        "version": "1.8.1",
         "news": {
+            "1.8.1": {
+                "en": "Add Ukrainian Google Language",
+                "de": "Ukrainisch hinzugefügt",
+                "ru": "Украинский добавил",
+                "pt": "Ucraniano adicionado",
+                "nl": "Oekraïens toegevoegd",
+                "fr": "Ukrainien ajouté",
+                "it": "Ucraino aggiunto",
+                "es": "Ucraniano agregó",
+                "pl": "Dodano Ukrainę",
+                "zh-cn": "乌克兰补充道"
+            },
             "1.8.0": {
                 "en": "Priority for the text was added",
                 "de": "Priorität für den Text wurde hinzugefügt",
