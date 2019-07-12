@@ -606,33 +606,40 @@ function start() {
         (adapter.config.type === 'mpd') ||
         (adapter.config.type === 'googleHome')) {
 
-        adapter.getForeignObject('system.adapter.' + adapter.config.web, (err, obj) => {
-            if (!err && obj && obj.native) {
-                options.webLink = 'http';
-                if (obj.native.auth) {
-                    adapter.log.error('Cannot use server "' + adapter.config.web + '" with authentication for sonos/chromecast. Select other or create another one.');
-                } else {
-                    if (obj.native.secure) options.webLink += 's';
-                    options.webLink += '://';
-                    if (obj.native.bind === 'localhost' || obj.native.bind === '127.0.0.1') {
-                        adapter.log.error('Selected web server "' + adapter.config.web + '" is only on local device available. Select other or create another one.');
-                    } else {
-                        if (obj.native.bind === '0.0.0.0') {
-                            options.webLink += adapter.config.webServer;
-                        } else {
-                            options.webLink += obj.native.bind;
-                        }
-                    }
-
-                    options.webLink += ':' + obj.native.port;
-                }
-            } else {
-                adapter.log.error('Cannot read information about "' + adapter.config.web + '". No web server is active');
-            }
-        });
+        adapter.getForeignObject('system.adapter.' + adapter.config.web, applyWebSettings);
+        // update web link on changes
+        adapter.subscribeForeignObjects('system.adapter.' + adapter.config.web, (id, obj) =>
+            id === 'system.adapter.' + adapter.config.web && applyWebSettings(null, obj));
     }
 
     adapter.subscribeStates('*');
+}
+
+function applyWebSettings(err, obj) {
+    if (!err && obj && obj.native) {
+        options.webLink = 'http';
+        if (obj.native.auth) {
+            adapter.log.error('Cannot use server "' + adapter.config.web + '" with authentication for sonos/chromecast. Select other or create another one.');
+        } else {
+            if (obj.native.secure) {
+                options.webLink += 's';
+            }
+            options.webLink += '://';
+            if (obj.native.bind === 'localhost' || obj.native.bind === '127.0.0.1') {
+                adapter.log.error('Selected web server "' + adapter.config.web + '" is only on local device available. Select other or create another one.');
+            } else {
+                if (obj.native.bind === '0.0.0.0') {
+                    options.webLink += adapter.config.webServer;
+                } else {
+                    options.webLink += obj.native.bind;
+                }
+            }
+
+            options.webLink += ':' + obj.native.port;
+        }
+    } else {
+        adapter.log.error('Cannot read information about "' + adapter.config.web + '". No web server is active');
+    }
 }
 
 function main() {

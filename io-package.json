@@ -1,8 +1,20 @@
 {
     "common": {
         "name": "sayit",
-        "version": "1.8.1",
+        "version": "1.8.2",
         "news": {
+            "1.8.2": {
+                "en": "Web server URL will be updated if web server was updated",
+                "de": "Die Webserver-URL wird aktualisiert, wenn der Webserver aktualisiert wurde",
+                "ru": "URL веб-сервера будет обновлен, если веб-сервер был обновлен",
+                "pt": "O URL do servidor da Web será atualizado se o servidor da web tiver sido atualizado",
+                "nl": "Webserver-URL wordt bijgewerkt als de webserver is bijgewerkt",
+                "fr": "L'URL du serveur Web sera mis à jour si le serveur Web a été mis à jour",
+                "it": "L'URL del server Web verrà aggiornato se il server Web è stato aggiornato",
+                "es": "La URL del servidor web se actualizará si el servidor web se actualizó",
+                "pl": "Adres URL serwera WWW zostanie zaktualizowany, jeśli serwer WWW został zaktualizowany",
+                "zh-cn": "如果更新了Web服务器，将更新Web服务器URL"
+            },
             "1.8.1": {
                 "en": "Add Ukrainian Google Language",
                 "de": "Ukrainisch hinzugefügt",
@@ -38,18 +50,6 @@
                 "es": "Se corrigió el error en Blockly si no existe ninguna instancia",
                 "pl": "Napraw błąd w bloku, jeśli nie istnieje żadne wystąpienie",
                 "zh-cn": "修复的错误在Blockly如果不存在实例"
-            },
-            "1.7.0": {
-                "en": "Support of admin3\nError was fixed by upload of file to FTP\nIvona removed",
-                "de": "Unterstützung von admin3\nDer Fehler wurde durch Hochladen der Datei auf FTP behoben\nIvona entfernt",
-                "ru": "Поддержка admin3\nОшибка была зафиксирована путем загрузки файла на FTP\nИвона удалена",
-                "pt": "Suporte de admin3\nErro foi corrigido por upload de arquivo para FTP\nIvona removido",
-                "nl": "Ondersteuning van admin3\nFout opgelost door uploaden van bestand naar FTP\nIvona verwijderd",
-                "fr": "Support de admin3\nL'erreur a été corrigée par le téléchargement du fichier sur FTP\nIvona enlevé",
-                "it": "Supporto di admin3\nL'errore è stato risolto caricando il file su FTP\nIvona rimosso",
-                "es": "Soporte de admin3\nEl error se solucionó al cargar el archivo en FTP\nIvona eliminado",
-                "pl": "Wsparcie dla administratora3\nBłąd został naprawiony przez przesłanie pliku na serwer FTP\nIvona usunięte",
-                "zh-cn": "支持admin3\n错误是固定的由上载的文件FTP\n伊沃娜删除"
             },
             "1.6.8": {
                 "en": "Generate separate mp3 file for each instance\nAlways upload the mp3 file to the state sayit.X.tts.mp3",
@@ -134,90 +134,6 @@
                 "es": "Añadir opción de expiración de la caché (en días)",
                 "pl": "Dodaj wygaśnięcia opcji buforowania (w dniach)",
                 "zh-cn": "添加到期的选择缓存(天)"
-            },
-            "1.5.2": {
-                "en": "Catch error if some directory in mp3 folder",
-                "de": "Fange ein Fehler, falls ein Verzeichnis in mp3",
-                "ru": "Обработка ошибки, если встречается папка вместо mp3",
-                "pt": "Pegar erro se algum diretório na pasta mp3",
-                "nl": "Catch fout als een map in de map mp3",
-                "fr": "Capture d'erreur si un répertoire dans le dossier mp3",
-                "it": "La cattura di errore nel caso di alcune directory nella cartella mp3",
-                "es": "Captura de error si algún directorio en la carpeta mp3",
-                "pl": "Złapać błąd, jeśli jakiś katalog do folderu MP3",
-                "zh-cn": "抓错误，如果一些目录以mp3文件夹"
-            },
-            "1.5.1": {
-                "en": "Fix blockly language",
-                "de": "Korrigiere blockly-Sprache",
-                "ru": "Поправлен язык в blockly",
-                "pt": "Correcção blockly idioma",
-                "nl": "Fix blockly taal",
-                "fr": "Fix blockly langue",
-                "it": "Fix blockly lingua",
-                "es": "Revisión blockly idioma",
-                "pl": "Naprawić blockley język",
-                "zh-cn": "修复blockly语言"
-            },
-            "1.5.0": {
-                "en": "Add AWS Polly and cloud as source",
-                "de": "AWS Polly und Cloud hinzugefügt",
-                "ru": "Добавлено AWS Polly и Cloud в качестве источника",
-                "pt": "Adicionar a AWS Polly e nuvem como fonte de",
-                "nl": "Toevoegen AWS Polly en cloud als bron",
-                "fr": "Ajouter AWS Polly et le cloud comme source",
-                "it": "Aggiungere AWS Polly e il cloud come fonte",
-                "es": "Agregar AWS Polly y en la nube como fuente de",
-                "pl": "Dodaj AWP Polly i chmura jak źródło",
-                "zh-cn": "添加AWS波莉和云源"
-            },
-            "1.4.0": {
-                "en": "fix install problem\nadd PicoTTS as source",
-                "de": "Korrigiere Installationsprozess\nPicoTTS hinzugefügt",
-                "ru": "Исправлена установка\nДобавлен PicoTTS движок",
-                "pt": "corrigir problema de instalação\nadicionar PicoTTS como fonte de",
-                "nl": "fix installatie probleem\ntoevoegen PicoTTS als bron",
-                "fr": "résout un problème d'installation\najouter PicoTTS comme source",
-                "it": "fix installare problema\naggiungere PicoTTS come fonte",
-                "es": "solucionar problema de instalación\nagregar PicoTTS como fuente de",
-                "pl": "poprawka instaluje problem\ndodaj PicoTTS jako źródło",
-                "zh-cn": "解决安装的问题\n添加PicoTTS为源"
-            },
-            "1.3.3": {
-                "en": "show only installed instances in blockly",
-                "de": "Zeige nur installierten Instanzen im Blockly",
-                "ru": "Показывать только установленные инстанции в Blockly",
-                "pt": "mostrar apenas instâncias instaladas em blockly",
-                "nl": "toon alleen geïnstalleerde exemplaren in blockly",
-                "fr": "afficher seulement les instances installées dans blockly",
-                "it": "mostra solo le istanze installate in blockly",
-                "es": "mostrar sólo las instancias instaladas en blockly",
-                "pl": "pokaż tylko zainstalowane wystąpień w blockley",
-                "zh-cn": "只显示安装的实例在blockly"
-            },
-            "1.3.2": {
-                "en": "changes for new chromecast tts",
-                "de": "Änderungen für chromecast TTS",
-                "ru": "Изменения для chromecast TTS",
-                "pt": "mudança para novo chromecast tts",
-                "nl": "wijzigingen voor nieuwe chromecast tts",
-                "fr": "des changements pour la nouvelle chromecast tts",
-                "it": "le modifiche per il nuovo chromecast tts",
-                "es": "los cambios para el nuevo chromecast tts",
-                "pl": "zmiany w urządzeniu Chromecast TTS",
-                "zh-cn": "更改为新应合成"
-            },
-            "1.3.1": {
-                "en": "small fix of config dialog\nfix Volume change by linux",
-                "de": "Kleine Verbesserung von Konfigdialog\nKorrigiere Lautstärke änderung bei Linux",
-                "ru": "Маленькое улучшение настроек\nИсправлено регулирование громкости на linux",
-                "pt": "pequena correcção de diálogo de configuração\ncorrigir a alteração de Volume pelo linux",
-                "nl": "kleine fix van het dialoogvenster config\nfix Volume wijzigen door linux",
-                "fr": "petit correctif de la boîte de dialogue de configuration\ncorrection de changement de Volume par linux",
-                "it": "piccolo fix di dialogo di configurazione\nfix variazione di Volume da linux",
-                "es": "pequeña revisión de diálogo de configuración\nrevisión de cambio de Volumen por linux",
-                "pl": "mała poprawka w oknie ustawień \nnaprawić zmienić głośność w systemie Linux",
-                "zh-cn": "小修复的config对话\n解决体积变化的linux"
             }
         },
         "title": "Text to speech",
