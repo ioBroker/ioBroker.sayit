@@ -2,15 +2,15 @@
 /* jshint strict: false */
 /* jslint node: true */
 'use strict';
-const utils = require('@iobroker/adapter-core'); // Get common adapter utils
-const engines = require(__dirname + '/admin/engines.js');
-const Text2Speech = require(__dirname + '/lib/text2speech');
-const Speech2Device = require(__dirname + '/lib/speech2device');
-const sayitOptions = engines.sayitOptions;
-const libs = {};
+const utils         = require('@iobroker/adapter-core'); // Get common adapter utils
+const engines       = require('./admin/engines.js');
+const Text2Speech   = require('./lib/text2speech');
+const Speech2Device = require('./lib/speech2device');
+const sayitOptions  = engines.sayitOptions;
+const libs          = {};
 
 const adapter = new utils.Adapter({
-    name: 'sayit',
+    name:  'sayit',
     unload: stop
 });
 
@@ -24,34 +24,34 @@ adapter.on('stateChange', (id, state) => {
                 adapter.setState('tts.clearQueue', false, true);
             }
         } else
-            if (id === adapter.namespace + '.tts.volume') {
-                if (adapter.config.type === 'system') {
-                    speech2device.sayItSystemVolume(state.val);
-                } else {
-                    options.sayLastVolume = state.val;
-                }
-            } else if (id === adapter.namespace + '.tts.text') {
-                if (typeof state.val !== 'string') {
-                    if (state.val === null || state.val === undefined || state.val === '') {
-                        adapter.log.warn('Cannot cache empty text');
-                        return;
-                    }
-                    state.val = state.val.toString();
-                }
-
-                sayIt(state.val);
-            } else if (id === adapter.namespace + '.tts.cachetext') {
-
-                if (typeof state.val !== 'string') {
-                    if (state.val === null || state.val === undefined || state.val === '') {
-                        adapter.log.warn('Cannot cache empty text');
-                        return;
-                    }
-                    state.val = state.val.toString();
-                }
-
-                cacheIt(state.val);
+        if (id === adapter.namespace + '.tts.volume') {
+            if (adapter.config.type === 'system') {
+                speech2device.sayItSystemVolume(state.val);
+            } else {
+                options.sayLastVolume = state.val;
             }
+        } else if (id === adapter.namespace + '.tts.text') {
+            if (typeof state.val !== 'string') {
+                if (state.val === null || state.val === undefined || state.val === '') {
+                    adapter.log.warn('Cannot cache empty text');
+                    return;
+                }
+                state.val = state.val.toString();
+            }
+
+            sayIt(state.val);
+        } else if (id === adapter.namespace + '.tts.cachetext') {
+
+            if (typeof state.val !== 'string') {
+                if (state.val === null || state.val === undefined || state.val === '') {
+                    adapter.log.warn('Cannot cache empty text');
+                    return;
+                }
+                state.val = state.val.toString();
+            }
+
+            cacheIt(state.val);
+        }
     }
 });
 
@@ -74,7 +74,7 @@ function processMessage(obj) {
                 let browser = mdns.createBrowser(mdns.tcp('googlecast'));
 
                 const result = [];
-                browser.on('serviceUp', service => result.push({ name: service.name, ip: service.addresses[0] }));
+                browser.on('serviceUp', service => result.push({name: service.name, ip: service.addresses[0]}));
                 setTimeout(() => {
                     browser.stop();
                     browser = null;
@@ -109,7 +109,7 @@ function stop(callback) {
     }
 }
 
-var options = {
+const options = {
     sayLastVolume: null,
     webLink: '',
     cacheDir: '',
@@ -117,14 +117,14 @@ var options = {
 };
 
 let sayLastGeneratedText = '';
-let list = [];
-let lastSay = null;
-var fileExt = 'mp3';
-var text2speech = null;
-var speech2device = null;
-//const text2speech = new Text2Speech(adapter, libs, options, sayIt);
-//const speech2device = new Speech2Device(adapter, libs, options);
-var MP3FILE = __dirname + '/' + adapter.namespace + '.say.' + fileExt;
+let list                 = [];
+let lastSay              = null;
+let fileExt              = 'mp3';
+let text2speech          = null;
+let speech2device        = null;
+// const text2speech = new Text2Speech(adapter, libs, options, sayIt);
+// const speech2device = new Speech2Device(adapter, libs, options);
+let MP3FILE              = __dirname + '/' + adapter.namespace + '.say.' + fileExt;
 
 
 function mkpathSync(rootpath, dirpath) {
@@ -165,7 +165,7 @@ function sayFinished(error, duration) {
 }
 
 let cacheRunning = false;
-let cacheFiles = [];
+let cacheFiles   = [];
 
 function cacheIt(text, language) {
     // process queue
@@ -177,7 +177,7 @@ function cacheIt(text, language) {
         // get next queued text
         const toCache = cacheFiles.shift();
 
-        text = toCache.text;
+        text     = toCache.text;
         language = toCache.language;
     } else {
         // new text to cache
@@ -242,7 +242,7 @@ function cacheIt(text, language) {
         }
 
         if (cacheRunning) {
-            cacheFiles.push({ text: text, language: language });
+            cacheFiles.push({text, language});
             return;
         }
     }
@@ -280,10 +280,10 @@ function sayIt(text, language, volume, processing) {
             // If language;volume;text or volume;language;text
             // If number
             if (parseInt(arr[0]).toString() === arr[0].toString()) {
-                volume = arr[0].trim();
+                volume   = arr[0].trim();
                 language = arr[1].trim();
             } else {
-                volume = arr[1].trim();
+                volume   = arr[1].trim();
                 language = arr[0].trim();
             }
             text = arr[2].trim();
@@ -365,23 +365,23 @@ function sayIt(text, language, volume, processing) {
             if (sayFirst && list.length > 1) {
                 list.splice(1, 0,
                     // place as first the announce mp3
-                    { text: adapter.config.announce, language: language, volume: (volume || adapter.config.volume) / 2, time: time },
+                    {text: adapter.config.announce, language: language, volume: (volume || adapter.config.volume) / 2, time: time},
                     // and then text
-                    { text: text, language: language, volume: (volume || adapter.config.volume), time: time });
+                    {text: text, language: language, volume: (volume || adapter.config.volume), time: time});
             } else {
                 // place as first the announce mp3
-                list.push({ text: adapter.config.announce, language: language, volume: (volume || adapter.config.volume) / 2, time: time });
+                list.push({text: adapter.config.announce, language: language, volume: (volume || adapter.config.volume) / 2, time: time});
                 // and then text
-                list.push({ text: text, language: language, volume: (volume || adapter.config.volume), time: time });
+                list.push({text: text, language: language, volume: (volume || adapter.config.volume), time: time});
             }
             text = adapter.config.announce;
             volume = Math.round((volume || adapter.config.volume) / 100 * adapter.config.annoVolume);
         } else {
             // if high priority text
             if (sayFirst && list.length > 1) {
-                list.splice(1, 0, { text: text, language: language, volume: (volume || adapter.config.volume), time: time });
+                list.splice(1, 0, {text: text, language: language, volume: (volume || adapter.config.volume), time: time });
             } else {
-                list.push({ text: text, language: language, volume: (volume || adapter.config.volume), time: time });
+                list.push({text: text, language: language, volume: (volume || adapter.config.volume), time: time });
             }
             if (list.length > 1) return;
         }
@@ -393,7 +393,9 @@ function sayIt(text, language, volume, processing) {
     if (!language) {
         language = adapter.config.engine;
     }
-    if (!volume && adapter.config.volume) volume = adapter.config.volume;
+    if (!volume && adapter.config.volume) {
+		volume = adapter.config.volume;
+	}
 
     // find out if say.mp3 must be generated
     if (!speech2device.sayItIsPlayFile(text)) {
@@ -483,21 +485,19 @@ function uploadFiles(callback) {
 }
 
 function start() {
-
     if (adapter.config.engine === 'ru_YA_CLOUD') {
         fileExt = 'ogg';
-        MP3FILE = __dirname + '/' + adapter.namespace + '.say.' + fileExt;
-        options.outFileExt = fileExt;
     } else {
         fileExt = 'mp3';
-        MP3FILE = __dirname + '/' + adapter.namespace + '.say.' + fileExt;
-        options.outFileExt = fileExt;
     }
+
+    MP3FILE = __dirname + '/' + adapter.namespace + '.say.' + fileExt;
+    options.outFileExt = fileExt;
 
     if (adapter.config.announce) {
         adapter.config.annoDuration = parseInt(adapter.config.annoDuration) || 0;
-        adapter.config.annoTimeout = parseInt(adapter.config.annoTimeout) || 15;
-        adapter.config.annoVolume = parseInt(adapter.config.annoVolume) || 70; // percent from actual volume
+        adapter.config.annoTimeout  = parseInt(adapter.config.annoTimeout)  || 15;
+        adapter.config.annoVolume   = parseInt(adapter.config.annoVolume)   || 70; // percent from actual volume
 
         if (!libs.fs.existsSync(libs.path.join(__dirname, adapter.config.announce))) {
             adapter.readFile(adapter.namespace, 'tts.userfiles/' + adapter.config.announce, (err, data) => {
@@ -575,7 +575,7 @@ function start() {
                     adapter.log.error('Cannot write file "' + libs.path.join(options.cacheDir, 'engine.txt') + ': ' + e.toString());
                 }
             }
-        };     
+        }
     }
 
     // Load libs
@@ -628,11 +628,11 @@ function start() {
     }
 
     try {
-        text2speech = new Text2Speech(adapter, libs, options, sayIt);
+        text2speech   = new Text2Speech(adapter, libs, options, sayIt);
         speech2device = new Speech2Device(adapter, libs, options);
-        } catch (e) {
-            adapter.log.error("Cannot initialize engines: " + e.toString)
-        }
+    } catch (e) {
+        adapter.log.error('Cannot initialize engines: ' + e.toString);
+    }
 
     adapter.subscribeStates('*');
 }
@@ -665,7 +665,7 @@ function applyWebSettings(err, obj) {
 }
 
 function main() {
-    libs.fs = require('fs');
+    libs.fs   = require('fs');
     libs.path = require('path');
 
     if ((process.argv && process.argv.indexOf('--install') !== -1) ||
