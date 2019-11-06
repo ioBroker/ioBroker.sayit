@@ -1,8 +1,20 @@
 {
     "common": {
         "name": "sayit",
-        "version": "1.8.2",
+        "version": "1.9.0",
         "news": {
+            "1.9.0": {
+                "en": "Output file extension is changed dynamically based on the engine selected",
+                "de": "Die Ausgabedateierweiterung wird je nach ausgewähltem Modul dynamisch geändert",
+                "ru": "Расширение выходного файла изменяется динамически в зависимости от выбранного движка",
+                "pt": "A extensão do arquivo de saída é alterada dinamicamente com base no mecanismo selecionado",
+                "nl": "Uitvoerbestandsextensie wordt dynamisch gewijzigd op basis van de geselecteerde motor",
+                "fr": "L'extension du fichier de sortie est modifiée dynamiquement en fonction du moteur sélectionné",
+                "it": "L'estensione del file di output viene modificata in modo dinamico in base al motore selezionato",
+                "es": "La extensión del archivo de salida se cambia dinámicamente según el motor seleccionado",
+                "pl": "Rozszerzenie pliku wyjściowego zmienia się dynamicznie w zależności od wybranego silnika",
+                "zh-cn": "输出文件扩展名根据所选引擎动态更改"
+            },
             "1.8.2": {
                 "en": "Web server URL will be updated if web server was updated",
                 "de": "Die Webserver-URL wird aktualisiert, wenn der Webserver aktualisiert wurde",
