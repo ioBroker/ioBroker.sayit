@@ -407,14 +407,12 @@ function sayIt(text, language, volume, processing) {
     // If text first must be generated
     if (isGenerate && sayLastGeneratedText !== '[' + language + ']' + text) {
         sayLastGeneratedText = '[' + language + ']' + text;
-        text2speech.sayItGetSpeech(text, language, volume, (error, text, language, volume, duration) => {
-            speechFunction(error, text, language, volume, duration, sayFinished);
-        });
+        text2speech.sayItGetSpeech(text, language, volume, (error, text, language, volume, duration) =>
+            speechFunction(error, text, language, volume, duration, sayFinished));
     } else {
         if (speech2device.sayItIsPlayFile(text)) {
-            text2speech.getLength(text, (error, duration) => {
-                speechFunction(error, text, language, volume, duration, sayFinished);
-            });
+            text2speech.getLength(text, (error, duration) =>
+                speechFunction(error, text, language, volume, duration, sayFinished));
         } else {
             if (!isGenerate) {
                 speechFunction(null, text, language, volume, 0, sayFinished);
@@ -439,29 +437,27 @@ function sayIt(text, language, volume, processing) {
 function uploadFile(file, callback) {
     try {
         const stat = libs.fs.statSync(libs.path.join(__dirname + '/mp3/', file));
+
         if (!stat.isFile()) {
             // ignore not a file
-            if (callback) callback();
-            return;
+            return callback && callback();
         }
     } catch (e) {
         // ignore not a file
-        if (callback) callback();
-        return;
+        return callback && callback();
     }
 
     adapter.readFile(adapter.namespace, 'tts.userfiles/' + file, (err, data) => {
         if (err || !data) {
             try {
-                adapter.writeFile(adapter.namespace, 'tts.userfiles/' + file, libs.fs.readFileSync(libs.path.join(__dirname + '/mp3/', file)), () => {
-                    if (callback) callback();
-                });
+                adapter.writeFile(adapter.namespace, 'tts.userfiles/' + file, libs.fs.readFileSync(libs.path.join(__dirname + '/mp3/', file)), () =>
+                    callback && callback());
             } catch (e) {
                 adapter.log.error('Cannot read file "' + __dirname + '/mp3/' + file + '": ' + e.toString());
-                if (callback) callback();
+                callback && callback();
             }
         } else {
-            if (callback) callback();
+            callback && callback();
         }
     });
 }
@@ -469,8 +465,7 @@ function uploadFile(file, callback) {
 function _uploadFiles(files, callback) {
     if (!files || !files.length) {
         adapter.log.info('All files uploaded');
-        if (callback) callback();
-        return;
+        return callback && callback();
     }
 
     uploadFile(files.pop(), () => setTimeout(_uploadFiles, 0, files, callback));
