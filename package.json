@@ -42,8 +42,8 @@
   },
   "devDependencies": {
     "gulp": "^4.0.2",
-    "axios": "^0.19.0",
-    "mocha": "^6.2.2",
+    "axios": "^0.19.2",
+    "mocha": "^7.0.1",
     "chai": "^4.2.0"
   },
   "bugs": {
