@@ -1,8 +1,20 @@
 {
     "common": {
         "name": "sayit",
-        "version": "1.9.0",
+        "version": "1.9.1",
         "news": {
+            "1.9.1": {
+                "en": "removed usage of adapter.getMessage",
+                "de": "Verwendung von adapter.getMessage entfernt",
+                "ru": "удалено использование adapter.getMessage",
+                "pt": "removido o uso de adapter.getMessage",
+                "nl": "verwijderd gebruik van adapter.getMessage",
+                "fr": "utilisation supprimée de adapter.getMessage",
+                "it": "rimosso l'utilizzo di adapter.getMessage",
+                "es": "uso eliminado de adapter.getMessage",
+                "pl": "usunięto użycie adapter.getMessage",
+                "zh-cn": "删除了adapter.getMessage的用法"
+            },
             "1.9.0": {
                 "en": "Output file extension is changed dynamically based on the engine selected",
                 "de": "Die Ausgabedateierweiterung wird je nach ausgewähltem Modul dynamisch geändert",

@@ -58,8 +58,7 @@ adapter.on('stateChange', (id, state) => {
 adapter.on('ready', main);
 
 adapter.on('message', obj => {
-    if (obj) processMessage(obj);
-    processMessages();
+    processMessage(obj);
 });
 
 function processMessage(obj) {
@@ -88,12 +87,6 @@ function processMessage(obj) {
             }
         }
     }
-}
-
-function processMessages() {
-    adapter.getMessage((err, obj) => {
-        if (obj) setTimeout(processMessages, 0);
-    });
 }
 
 function stop(callback) {
