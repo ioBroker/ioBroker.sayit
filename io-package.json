@@ -1,8 +1,20 @@
 {
     "common": {
         "name": "sayit",
-        "version": "1.9.1",
+        "version": "1.9.2",
         "news": {
+            "1.9.2": {
+            "en": "Change type of Object to \"meta\" in order to comply with js-controller v3",
+            "de": "Ändern Sie den Objekttyp in \"meta\", um js-controller v3 zu entsprechen",
+            "ru": "Измените тип Object на «meta», чтобы соответствовать js-controller v3",
+            "pt": "Mude o tipo de objeto para \"meta\" para cumprir com o js-controller v3",
+            "nl": "Wijzig het type object in \"meta\" om te voldoen aan js-controller v3",
+            "fr": "Changer le type d'objet en \"meta\" afin de se conformer à js-controller v3",
+            "it": "Cambia il tipo di oggetto in \"meta\" per rispettare js-controller v3",
+            "es": "Cambie el tipo de Objeto a \"meta\" para cumplir con js-controller v3",
+            "pl": "Zmień typ obiektu na „meta”, aby zachować zgodność z js-controller v3",
+            "zh-cn": "将对象类型更改为“元”以符合js-controller v3"
+            },
             "1.9.1": {
                 "en": "removed usage of adapter.getMessage",
                 "de": "Verwendung von adapter.getMessage entfernt",
@@ -237,6 +249,15 @@
             "common": {
                 "name": "Gong files",
                 "role": "meta.user"
+            },
+            "native": {}
+        },
+         {
+            "_id": "",
+            "type": "meta",
+            "common": {
+                "name": "User files for SayIt",
+                "type": "meta.user"
             },
             "native": {}
         },
