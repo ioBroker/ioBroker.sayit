@@ -66,6 +66,8 @@ function startAdapter(options) {
 
     adapter.on('message', obj => processMessage(obj));
 
+    MP3FILE = __dirname + '/' + adapter.namespace + '.say.' + fileExt;
+
     return adapter;
 }
 
@@ -135,7 +137,7 @@ let text2speech          = null;
 let speech2device        = null;
 // const text2speech = new Text2Speech(adapter, libs, options, sayIt);
 // const speech2device = new Speech2Device(adapter, libs, options);
-let MP3FILE              = __dirname + '/' + adapter.namespace + '.say.' + fileExt;
+let MP3FILE;
 
 function mkpathSync(rootpath, dirpath) {
     libs.fs = libs.fs || require('fs');
