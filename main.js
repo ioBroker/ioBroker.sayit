@@ -6,60 +6,68 @@ const utils         = require('@iobroker/adapter-core'); // Get common adapter u
 const engines       = require('./admin/engines.js');
 const Text2Speech   = require('./lib/text2speech');
 const Speech2Device = require('./lib/speech2device');
+const adapterName   = require('./package.json').name.split('.').pop();
+
 const sayitOptions  = engines.sayitOptions;
 const libs          = {};
 
-const adapter = new utils.Adapter({
-    name:  'sayit',
-    unload: stop
-});
-
 process.on('SIGINT', stop);
 
-adapter.on('stateChange', (id, state) => {
-    if (state && !state.ack) {
-        if (id === adapter.namespace + '.tts.clearQueue') {
-            if (list.length > 1) {
-                list.splice(1);
-                adapter.setState('tts.clearQueue', false, true);
-            }
-        } else
-        if (id === adapter.namespace + '.tts.volume') {
-            if (adapter.config.type === 'system') {
-                speech2device.sayItSystemVolume(state.val);
-            } else {
-                options.sayLastVolume = state.val;
-            }
-        } else if (id === adapter.namespace + '.tts.text') {
-            if (typeof state.val !== 'string') {
-                if (state.val === null || state.val === undefined || state.val === '') {
-                    adapter.log.warn('Cannot cache empty text');
-                    return;
+let processMessageTimeout;
+let sayFinishedTimeout;
+let cacheTimeout;
+
+let adapter;
+
+function startAdapter(options) {
+    options = options || {};
+    Object.assign(options, {name: adapterName, unload: stop});
+    adapter = new utils.Adapter(options);
+
+    adapter.on('stateChange', (id, state) => {
+        if (state && !state.ack) {
+            if (id === adapter.namespace + '.tts.clearQueue') {
+                if (list.length > 1) {
+                    list.splice(1);
+                    adapter.setState('tts.clearQueue', false, true);
                 }
-                state.val = state.val.toString();
-            }
-
-            sayIt(state.val);
-        } else if (id === adapter.namespace + '.tts.cachetext') {
-
-            if (typeof state.val !== 'string') {
-                if (state.val === null || state.val === undefined || state.val === '') {
-                    adapter.log.warn('Cannot cache empty text');
-                    return;
+            } else if (id === adapter.namespace + '.tts.volume') {
+                if (adapter.config.type === 'system') {
+                    speech2device.sayItSystemVolume(state.val);
+                } else {
+                    options.sayLastVolume = state.val;
                 }
-                state.val = state.val.toString();
-            }
+            } else if (id === adapter.namespace + '.tts.text') {
+                if (typeof state.val !== 'string') {
+                    if (state.val === null || state.val === undefined || state.val === '') {
+                        adapter.log.warn('Cannot cache empty text');
+                        return;
+                    }
+                    state.val = state.val.toString();
+                }
 
-            cacheIt(state.val);
+                sayIt(state.val);
+            } else if (id === adapter.namespace + '.tts.cachetext') {
+
+                if (typeof state.val !== 'string') {
+                    if (state.val === null || state.val === undefined || state.val === '') {
+                        adapter.log.warn('Cannot cache empty text');
+                        return;
+                    }
+                    state.val = state.val.toString();
+                }
+
+                cacheIt(state.val);
+            }
         }
-    }
-});
+    });
 
-adapter.on('ready', main);
+    adapter.on('ready', main);
 
-adapter.on('message', obj => {
-    processMessage(obj);
-});
+    adapter.on('message', obj => processMessage(obj));
+
+    return adapter;
+}
 
 function processMessage(obj) {
     if (obj) {
@@ -74,7 +82,8 @@ function processMessage(obj) {
 
                 const result = [];
                 browser.on('serviceUp', service => result.push({name: service.name, ip: service.addresses[0]}));
-                setTimeout(() => {
+                processMessageTimeout = setTimeout(() => {
+                    processMessageTimeout = null;
                     browser.stop();
                     browser = null;
                     obj.callback && adapter.sendTo(obj.from, obj.command, result, obj.callback);
@@ -90,15 +99,24 @@ function processMessage(obj) {
 }
 
 function stop(callback) {
-    try {
-        if (adapter && adapter.log && adapter.log.info) {
-            adapter.log.info('stopping...');
-        }
-        setTimeout(() => process.exit(), 1000);
+    processMessageTimeout && clearTimeout(processMessageTimeout);
+    processMessageTimeout = null;
 
-        if (typeof callback === 'function') callback();
+    sayFinishedTimeout && clearTimeout(sayFinishedTimeout);
+    sayFinishedTimeout = null;
+
+    cacheTimeout && clearTimeout(cacheTimeout);
+    cacheTimeout = null;
+
+    try {
+        adapter && adapter.log && adapter.log.info && adapter.log.info('stopping...');
+
+        setTimeout(() => {
+            typeof callback === 'function' && callback();
+            adapter.terminate ? adapter.terminate() : process.exit()
+        }, 500);
     } catch (e) {
-        process.exit();
+        adapter.terminate ? adapter.terminate() : process.exit();
     }
 }
 
@@ -118,7 +136,6 @@ let speech2device        = null;
 // const text2speech = new Text2Speech(adapter, libs, options, sayIt);
 // const speech2device = new Speech2Device(adapter, libs, options);
 let MP3FILE              = __dirname + '/' + adapter.namespace + '.say.' + fileExt;
-
 
 function mkpathSync(rootpath, dirpath) {
     libs.fs = libs.fs || require('fs');
@@ -147,7 +164,8 @@ function sayFinished(error, duration) {
     if (list.length) {
         adapter.log.debug('Duration "' + list[0].text + '": ' + duration);
     }
-    setTimeout(() => {
+    sayFinishedTimeout = setTimeout(() => {
+        sayFinishedTimeout = null;
         // Remember when last text finished
         lastSay = Date.now();
         if (list.length) list.shift();
@@ -248,7 +266,8 @@ function cacheIt(text, language) {
         } else {
             adapter.log.debug('Text is cached: "' + text + '" under ' + md5filename);
         }
-        setTimeout(function () {
+        cacheTimeout = setTimeout(() => {
+            cacheTimeout = null;
             cacheIt(true);
         }, 2000);
     });
@@ -290,8 +309,7 @@ function sayIt(text, language, volume, processing) {
 
     // if no text => do not process
     if (!text.length) {
-        sayFinished(0);
-        return;
+        return sayFinished(0);
     }
 
     // Check: may be it is file from DB filesystem, like /vis.0/main/img/door-bell.mp3
@@ -461,7 +479,7 @@ function _uploadFiles(files, callback) {
         return callback && callback();
     }
 
-    uploadFile(files.pop(), () => setTimeout(_uploadFiles, 0, files, callback));
+    uploadFile(files.pop(), () => setImmediate(_uploadFiles, files, callback));
 }
 function uploadFiles(callback) {
     if (libs.fs.existsSync(__dirname + '/mp3')) {
@@ -665,4 +683,12 @@ function main() {
         // Check if files exists in datastorage
         uploadFiles(start);
     }
+}
+
+// If started as allInOne/compact mode => return function to create instance
+if (module && module.parent) {
+    module.exports = startAdapter;
+} else {
+    // or start the instance directly
+    startAdapter();
 }

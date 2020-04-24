@@ -1,19 +1,31 @@
 {
     "common": {
         "name": "sayit",
-        "version": "1.9.2",
+        "version": "1.9.3",
         "news": {
+            "1.9.3": {
+                "en": "Fixed blockly with missing languages",
+                "de": "Blockiert mit fehlenden Sprachen behoben",
+                "ru": "Исправлено блочно с отсутствующими языками",
+                "pt": "Corrigido em bloco com os idiomas ausentes",
+                "nl": "Blokkerig opgelost met ontbrekende talen",
+                "fr": "Correction de bloc avec les langues manquantes",
+                "it": "Risolto il problema con le lingue mancanti",
+                "es": "Solucionado en bloque con idiomas faltantes",
+                "pl": "Naprawiono blokowanie brakujących języków",
+                "zh-cn": "修复了缺少语言的情况"
+            },
             "1.9.2": {
-            "en": "Change type of Object to \"meta\" in order to comply with js-controller v3",
-            "de": "Ändern Sie den Objekttyp in \"meta\", um js-controller v3 zu entsprechen",
-            "ru": "Измените тип Object на «meta», чтобы соответствовать js-controller v3",
-            "pt": "Mude o tipo de objeto para \"meta\" para cumprir com o js-controller v3",
-            "nl": "Wijzig het type object in \"meta\" om te voldoen aan js-controller v3",
-            "fr": "Changer le type d'objet en \"meta\" afin de se conformer à js-controller v3",
-            "it": "Cambia il tipo di oggetto in \"meta\" per rispettare js-controller v3",
-            "es": "Cambie el tipo de Objeto a \"meta\" para cumplir con js-controller v3",
-            "pl": "Zmień typ obiektu na „meta”, aby zachować zgodność z js-controller v3",
-            "zh-cn": "将对象类型更改为“元”以符合js-controller v3"
+                "en": "Change type of Object to \"meta\" in order to comply with js-controller v3",
+                "de": "Ändern Sie den Objekttyp in \"meta\", um js-controller v3 zu entsprechen",
+                "ru": "Измените тип Object на «meta», чтобы соответствовать js-controller v3",
+                "pt": "Mude o tipo de objeto para \"meta\" para cumprir com o js-controller v3",
+                "nl": "Wijzig het type object in \"meta\" om te voldoen aan js-controller v3",
+                "fr": "Changer le type d'objet en \"meta\" afin de se conformer à js-controller v3",
+                "it": "Cambia il tipo di oggetto in \"meta\" per rispettare js-controller v3",
+                "es": "Cambie el tipo de Objeto a \"meta\" para cumplir con js-controller v3",
+                "pl": "Zmień typ obiektu na „meta”, aby zachować zgodność z js-controller v3",
+                "zh-cn": "将对象类型更改为“元”以符合js-controller v3"
             },
             "1.9.1": {
                 "en": "removed usage of adapter.getMessage",
@@ -211,6 +223,7 @@
         "icon": "sayit.png",
         "materialize": true,
         "enabled": true,
+        "compact": true,
         "keywords": [
             "TTS",
             "voice",

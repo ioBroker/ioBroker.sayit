@@ -1,8 +1,20 @@
 'use strict';
 
-goog.provide('Blockly.JavaScript.Sendto');
+if (typeof goog !== 'undefined') {
+    goog.provide('Blockly.JavaScript.Sendto');
 
-goog.require('Blockly.JavaScript');
+    goog.require('Blockly.JavaScript');
+}
+
+Blockly.Translate = Blockly.Translate || function (word, lang) {
+    lang = lang || systemLang;
+    if (Blockly.Words && Blockly.Words[word]) {
+        return Blockly.Words[word][lang] || Blockly.Words[word].en;
+    } else {
+        return word;
+    }
+};
+
 
 // --- SayIt --------------------------------------------------
 Blockly.Words['sayit']               = {'en': 'say text',                    'de': 'aussprechen',                        'ru': 'произнести'};
@@ -11,7 +23,7 @@ Blockly.Words['sayit_volume']        = {'en': 'volume (optional)',           'de
 Blockly.Words['sayit_tooltip']       = {'en': 'Text to speech',              'de': 'Text zu Sprache',                    'ru': 'Произнести сообщение'};
 Blockly.Words['sayit_help']          = {'en': 'https://github.com/ioBroker/ioBroker.sayit/blob/master/README.md', 'de': 'http://www.iobroker.net/?page_id=178&lang=de', 'ru': 'http://www.iobroker.net/?page_id=4262&lang=ru'};
 Blockly.Words['sayit_configured']    = {'en': 'configured',                  'de': 'Standard',                           'ru': 'настроенный'};
-Blockly.Words['sayit_everyInstance']   = {'en': 'every instance',               'pt': 'todas as instâncias',            'pl': 'wszystkie przypadki',                'nl': 'alle instanties',                'it': 'tutte le istanze',               'es': 'todas las instancias',           'fr': 'toutes les instances',               'de': 'Alle Instanzen',                     'ru': 'На все драйвера'};
+Blockly.Words['sayit_everyInstance'] = {'en': 'every instance',              'de': 'Alle Instanzen',                     'ru': 'На все драйвера', 'pt': 'todas as instâncias',            'pl': 'wszystkie przypadki',                'nl': 'alle instanties',                'it': 'tutte le istanze',               'es': 'todas las instancias',           'fr': 'toutes les instances'};
 
 Blockly.Words['sayit_log']           = {'en': 'log level',                   'de': 'Loglevel',                           'ru': 'Протокол'};
 Blockly.Words['sayit_log_none']      = {'en': 'none',                        'de': 'keins',                              'ru': 'нет'};
@@ -166,7 +178,7 @@ Blockly.Sendto.blocks['sayit'] =
 
 Blockly.Blocks['sayit'] = {
     init: function() {
-        var options = [[Blockly.Words['sayit_everyInstance'][systemLang], 'all']];
+        var options = [[Blockly.Translate('sayit_everyInstance'), 'all']];
         if (typeof main !== 'undefined' && main.instances) {
             for (var i = 0; i < main.instances.length; i++) {
                 var m = main.instances[i].match(/^system.adapter.sayit.(\d+)$/);
@@ -184,10 +196,10 @@ Blockly.Blocks['sayit'] = {
         }
 
         this.appendDummyInput('INSTANCE')
-            .appendField(Blockly.Words['sayit'][systemLang])
+            .appendField(Blockly.Translate('sayit'))
             .appendField(new Blockly.FieldDropdown(options), 'INSTANCE');
 
-        var languages = [[Blockly.Words['sayit_configured'][systemLang], '']];
+        var languages = [[Blockly.Translate('sayit_configured'), '']];
         for (var l in sayitEngines) {
             if (sayitEngines.hasOwnProperty(l)) languages.push([sayitEngines[l].name, l]);
         }
@@ -197,20 +209,20 @@ Blockly.Blocks['sayit'] = {
 
         var input = this.appendValueInput('VOLUME')
             .setCheck('Number')
-            .appendField(Blockly.Words['sayit_volume'][systemLang]);
+            .appendField(Blockly.Translate('sayit_volume'));
         if (input.connection) input.connection._optional = true;
 
         this.appendValueInput('MESSAGE')
-            .appendField(Blockly.Words['sayit_message'][systemLang]);
+            .appendField(Blockly.Translate('sayit_message'));
 
         this.appendDummyInput('LOG')
-            .appendField(Blockly.Words['sayit_log'][systemLang])
+            .appendField(Blockly.Translate('sayit_log'))
             .appendField(new Blockly.FieldDropdown([
-                [Blockly.Words['sayit_log_none'][systemLang],  ''],
-                [Blockly.Words['sayit_log_info'][systemLang],  'log'],
-                [Blockly.Words['sayit_log_debug'][systemLang], 'debug'],
-                [Blockly.Words['sayit_log_warn'][systemLang],  'warn'],
-                [Blockly.Words['sayit_log_error'][systemLang], 'error']
+                [Blockly.Translate('sayit_log_none'),  ''],
+                [Blockly.Translate('sayit_log_info'),  'log'],
+                [Blockly.Translate('sayit_log_debug'), 'debug'],
+                [Blockly.Translate('sayit_log_warn'),  'warn'],
+                [Blockly.Translate('sayit_log_error'), 'error']
             ]), 'LOG');
 
         this.setInputsInline(false);
@@ -218,8 +230,8 @@ Blockly.Blocks['sayit'] = {
         this.setNextStatement(true, null);
 
         this.setColour(Blockly.Sendto.HUE);
-        this.setTooltip(Blockly.Words['sayit_tooltip'][systemLang]);
-        this.setHelpUrl(Blockly.Words['sayit_help'][systemLang]);
+        this.setTooltip(Blockly.Translate('sayit_tooltip'));
+        this.setHelpUrl(Blockly.Translate('sayit_help'));
     }
 };
 
@@ -237,7 +249,7 @@ Blockly.JavaScript['sayit'] = function(block) {
         logText = '';
     }
 
-    if(dropdown_instance == "all") {
+    if (dropdown_instance === 'all') {
         let output = "";
         for (var i = 0; i < main.instances.length; i++) {
             var m = main.instances[i].match(/^system.adapter.sayit.(\d+)$/);
