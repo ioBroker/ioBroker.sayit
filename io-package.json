@@ -1,8 +1,20 @@
 {
     "common": {
         "name": "sayit",
-        "version": "1.9.1",
+        "version": "1.9.2",
         "news": {
+            "1.9.2": {
+                "en": "Fix Blockly\nUpdate dependencies",
+                "de": "Blockartig reparieren\nAbhängigkeiten aktualisieren",
+                "ru": "Исправить Blockly\nОбновить зависимости",
+                "pt": "Fix Blockly\nAtualizar dependências",
+                "nl": "Fix Blockly\nUpdate afhankelijkheden",
+                "fr": "Fix Blockly\nMettre à jour les dépendances",
+                "it": "Fix Blockly\nAggiorna dipendenze",
+                "es": "Fix Blockly\nActualizar dependencias",
+                "pl": "Napraw blokowanie\nZaktualizuj zależności",
+                "zh-cn": "固定修复\n更新依赖"
+            },
             "1.9.1": {
                 "en": "removed usage of adapter.getMessage",
                 "de": "Verwendung von adapter.getMessage entfernt",

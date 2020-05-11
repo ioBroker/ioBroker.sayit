@@ -238,6 +238,10 @@ Following values for engines are possible:
 - **(tr-TR_AP_Female)** -           tr-TR - Female - Filiz
 
 ## Changelog
+### 1.9.2 (2020-05-11)
+* (Apollon77) Fix Blockly
+* (Apollon77) Update dependencies
+
 ### 1.9.1 (2020-03-12)
 * (foxriver76) removed usage of adapter.getMessage
 
