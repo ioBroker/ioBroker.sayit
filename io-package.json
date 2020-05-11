@@ -269,15 +269,6 @@
     },
     "instanceObjects": [
         {
-            "_id": "tts.userfiles",
-            "type": "meta",
-            "common": {
-                "name": "Gong files",
-                "role": "meta.user"
-            },
-            "native": {}
-        },
-         {
             "_id": "",
             "type": "meta",
             "common": {
@@ -292,6 +283,15 @@
             "common": {
                 "name": "Google text to speech",
                 "role": "media.tts"
+            },
+            "native": {}
+        },
+        {
+            "_id": "tts.userfiles",
+            "type": "meta",
+            "common": {
+                "name": "Gong files",
+                "role": "meta.user"
             },
             "native": {}
         },
