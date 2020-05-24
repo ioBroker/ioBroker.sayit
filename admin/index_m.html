@@ -109,11 +109,16 @@
         socket.emit('getObjectView', 'system', 'channel', {startkey: 'sonos.', endkey: 'sonos.\u9999'}, function (err, res) {
             if (!err && res) {
                 for (var i = 0; i < res.rows.length; i++) {
-                    $(elem).append('<option value="' + res.rows[i].id + '">' + res.rows[i].id + '</option>');
+                    var name = res.rows[i].value && res.rows[i].value.common && res.rows[i].value.common.name;
+                    if (typeof name === 'object') {
+                        name = name.en;
+                    }
+
+                    $(elem).append('<option value="' + res.rows[i].id + '">' + res.rows[i].id.replace(/^sonos\.\d+\.root\./, '') + ' [' + name + ']</option>');
                 }
-                $(elem).select();
             }
             $(elem).val(current);
+            $(elem).select();
         });
     }
 
@@ -124,9 +129,10 @@
 					var n =  res.rows[i].id.replace('system.adapter.', '');
                     $(elem).append('<option value="' + n + '">' + n + '</option>');
                 }
-                $(elem).select();
+
             }
             $(elem).val(current);
+            $(elem).select();
         });
     }
 
@@ -137,8 +143,8 @@
                     $(elem).append('<option value="' + res.rows[i].id + '">' + res.rows[i].id + '</option>');
                 }
             }
-            $(elem).select();
             $(elem).val(current);
+            $(elem).select();
         });
     }
 
@@ -671,7 +677,7 @@
                 </div>
                 <div class="input-field col s6 m4" id="tr_cacheExpiryDays" >
                     <input class="value" id="cacheExpiryDays"   size="5" />
-                    <label class="translate" for="tr_cacheExpiryDays">Cache-Expiry:</label>
+                    <label class="translate" for="cacheExpiryDays">Cache-Expiry:</label>
                 </div>
             </div>
             <div id="tr_server"     class="row variable">
@@ -707,7 +713,7 @@
                 </div>
             </div>
             <div id="tr_device"     class="row variable">
-                <div class="input-field col s6 m4 l2">
+                <div class="input-field col s6 l4">
                     <select class="value" id="device">
                         <option value="" class="translate">All</option>
                     </select>
@@ -715,7 +721,7 @@
                 </div>
             </div>
             <div id="tr_cDevice"    class="row variable">
-                <div class="input-field col s6 m4 l2">
+                <div class="input-field col s6 l4">
                     <select class="value" id="cDevice">
                         <option value="" class="translate">All</option>
                     </select>
@@ -723,7 +729,7 @@
                 </div>
             </div>
             <div id="tr_mpd_device" class="row variable">
-                <div class="input-field col s6 m4 l2">
+                <div class="input-field col s6 l4">
                     <select class="value" id="mpd_device">
                         <option value="" class="translate">All</option>
                     </select>
@@ -731,13 +737,13 @@
                 </div>
             </div>
             <div id="tr_web"        class="row variable">
-                <div class="input-field col s6 m4 l2">
+                <div class="input-field col s6 l4">
                     <select class="value" id="web"></select>
                     <label class="translate" for="web">Web instance:</label>
                 </div>
             </div>
             <div id="tr_webServer"  class="row variable">
-                <div class="input-field col s6 m4 l2">
+                <div class="input-field col s6 l4">
                     <select class="value" id="webServer"></select>
                     <label class="translate" for="webServer">Web server IP:</label>
                 </div>
@@ -757,7 +763,7 @@
             <div id="tr_folderID"        class="row engine"  >
                 <div class="input-field col s6 m4 l2">
                     <input class="value" id="folderID" type="text"/>
-                    <label class="translate" for="key">Folder ID:</label>
+                    <label class="translate" for="folderID">Folder ID:</label>
                 </div>
             </div>
             <div id="tr_emotion"    class="row engine"  >

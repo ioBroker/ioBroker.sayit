@@ -1,8 +1,20 @@
 {
     "common": {
         "name": "sayit",
-        "version": "1.9.4",
+        "version": "1.9.5",
         "news": {
+            "1.9.5": {
+                "en": "Show names of SONOS devices",
+                "de": "Namen von SONOS-Geräten anzeigen",
+                "ru": "Показать названия устройств SONOS",
+                "pt": "Mostrar nomes de dispositivos SONOS",
+                "nl": "Toon namen van SONOS-apparaten",
+                "fr": "Afficher les noms des appareils SONOS",
+                "it": "Mostra i nomi dei dispositivi SONOS",
+                "es": "Mostrar nombres de dispositivos SONOS",
+                "pl": "Pokaż nazwy urządzeń SONOS",
+                "zh-cn": "显示SONOS设备的名称"
+            },
             "1.9.4": {
                 "en": "Fix Blockly\nUpdate dependencies",
                 "de": "Blockartig reparieren\nAbhängigkeiten aktualisieren",
