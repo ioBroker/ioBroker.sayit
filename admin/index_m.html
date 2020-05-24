@@ -163,6 +163,7 @@
                 $('#googleHome').html('<option value="">' + _('error') + '</option>').prop('disabled', true);
             }
             $('#search').removeClass('disabled');
+            M.updateTextFields('#search');
             $('#googleHome').select();
         });
     }
@@ -213,9 +214,7 @@
                             }
                         }
                         $webServer.html(text);
-                        if (current) {
-                            $webServer.val(current);
-                        }
+                        current && $webServer.val(current);
                         $webServer.select();
 
                         $webServer.off('change').on('change', function () {
@@ -261,11 +260,9 @@
                                 }
                             }
                         }
-                        if (current) {
-                            $('#webServer').val(current);
-                        }
+                        current && $('#webServer').val(current);
+                        $('#webServer').select();
                     });
-                  $('#webServer').select();
                 } else {
                     $('#tr_webServer').hide();
                 }
@@ -285,6 +282,7 @@
                 }
             }
             $(elem).val(current);
+
             if ((type === 'sonos') ||
                 (type === 'chromecast') ||
                 (type === 'googleHome')) {
@@ -301,7 +299,7 @@
         // Closure to capture the file information.
         reader.onload = function(e) {
             socket.emit('writeFile', 'sayit.' + instance, 'tts.userfiles/' + file.name, e.target.result, function () {
-                if (callback) callback(file.name);
+                callback && callback(file.name);
             });
         };
 
@@ -360,8 +358,7 @@
         var output = [];
         for (var i = 0, f; f = files[i]; i++) {
             if (f.size > 1024 * 1024) {
-                showMessage(_('File %s is too big. Maximum 1MB', escape(f.name)));
-                return;
+                return showMessage(_('File %s is too big. Maximum 1MB', escape(f.name)));
             }
             console.log(escape(f.name));
         }
@@ -420,6 +417,7 @@
             } else {
                 $('#search').addClass('disabled').attr('title', _('Adapter must be enabled'));
             }
+            M.updateTextFields('#search');
         });
 
         var $e = $('#engine');
@@ -456,6 +454,7 @@
                     (type === 'googleHome')) {
                     checkWeb('#web');
                     $('#announce').val('').trigger('change');
+                    M.updateTextFields('#search');
                     showHideSettings();
                 } else {
                     showHideSettings();
@@ -518,6 +517,7 @@
                 }
             }
             $('#announce').html(text).val(settings.announce);
+            $('#announce').select();
             showHideSettings();
         });
 
@@ -528,7 +528,8 @@
                     var id = list[i]._id.substring('system.adapter.'.length);
                     text += '<option value="' + id + '" ' + (id === settings.cloud ? 'selected' : '') + '>' + id + '</option>';
                 }
-                if (text) $('#cloud').html(text);
+                text && $('#cloud').html(text);
+                $('#cloud').select();
             }
         });
 
@@ -537,12 +538,15 @@
         $('#announce').css({width: w});
         $('#type').css({width: w});
 
-
         document.getElementById('files').addEventListener('change', handleFileSelect, false);
         showHideSettings();
 
-        if (!$('#announce').val()) $('#play').addClass('disabled');
-        if (typeof AudioContext === 'undefined') $('#play').hide();
+        if (!$('#announce').val()) {
+            $('#play').addClass('disabled');
+        }
+        if (typeof AudioContext === 'undefined') {
+            $('#play').hide();
+        }
 
         var dropZone = document.getElementById('drop_zone');
         if (dropZone) {

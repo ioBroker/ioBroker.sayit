@@ -1,9 +1,9 @@
 {
     "common": {
         "name": "sayit",
-        "version": "1.9.5",
+        "version": "1.9.6",
         "news": {
-            "1.9.5": {
+            "1.9.6": {
                 "en": "Show names of SONOS devices",
                 "de": "Namen von SONOS-Geräten anzeigen",
                 "ru": "Показать названия устройств SONOS",
