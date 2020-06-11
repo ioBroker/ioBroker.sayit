@@ -267,7 +267,12 @@
         ],
         "extIcon": "https://raw.githubusercontent.com/ioBroker/ioBroker.sayit/master/admin/sayit.png",
         "type": "multimedia",
-        "blockly": true
+        "blockly": true,
+        "plugins": {
+            "sentry": {
+                "dsn": "https://e814e4a55077465b9ac16ac3062dee10@sentry.iobroker.net/85"
+            }
+        }
     },
     "native": {
         "type": "system",
