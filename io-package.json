@@ -1,8 +1,20 @@
 {
     "common": {
         "name": "sayit",
-        "version": "1.9.7",
+        "version": "1.9.8",
         "news": {
+            "1.9.8": {
+                "en": "fix error handling on file copy",
+                "de": "Fehlerbehandlung bei Dateikopie behoben",
+                "ru": "исправление ошибок при копировании файлов",
+                "pt": "corrigir manipulação de erros na cópia de arquivo",
+                "nl": "foutafhandeling bij het kopiëren van bestanden repareren",
+                "fr": "correction de la gestion des erreurs lors de la copie des fichiers",
+                "it": "correggere la gestione degli errori sulla copia del file",
+                "es": "corregir el manejo de errores en la copia de archivos",
+                "pl": "naprawiono obsługę błędów przy kopiowaniu plików",
+                "zh-cn": "修复文件复制中的错误处理"
+            },
             "1.9.7": {
                 "en": "tts.ogg state added for ogg file type",
                 "de": "tts.ogg-Status für ogg-Dateityp hinzugefügt",
