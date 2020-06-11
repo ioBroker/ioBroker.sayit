@@ -1,8 +1,20 @@
 {
     "common": {
         "name": "sayit",
-        "version": "1.9.6",
+        "version": "1.9.7",
         "news": {
+            "1.9.7": {
+                "en": "tts.ogg state added for ogg file type",
+                "de": "tts.ogg-Status für ogg-Dateityp hinzugefügt",
+                "ru": "добавлено состояние tts.ogg для типа файла ogg",
+                "pt": "Estado tts.ogg adicionado ao tipo de arquivo ogg",
+                "nl": "tts.ogg staat toegevoegd voor ogg-bestandstype",
+                "fr": "état tts.ogg ajouté pour le type de fichier ogg",
+                "it": "stato tts.ogg aggiunto per il tipo di file ogg",
+                "es": "Estado tts.ogg agregado para el tipo de archivo ogg",
+                "pl": "Dodano stan tts.ogg dla typu pliku ogg",
+                "zh-cn": "为gg文件类型添加了tts.ogg状态"
+            },
             "1.9.6": {
                 "en": "Show names of SONOS devices",
                 "de": "Namen von SONOS-Geräten anzeigen",
@@ -384,6 +396,18 @@
                 "read": true,
                 "write": false,
                 "desc": "Can be accessed from web server under http://ip:8082/state/sayit.0.tts.mp3"
+            },
+            "native": {}
+        },
+        {
+            "_id": "tts.ogg",
+            "type": "state",
+            "common": {
+                "name": "Binary ogg file",
+                "type": "file",
+                "read": true,
+                "write": false,
+                "desc": "Can be accessed from web server under http://ip:8082/state/sayit.0.tts.ogg"
             },
             "native": {}
         }
