@@ -306,7 +306,10 @@
         "annoTimeout": 15,
         "annoDuration": 0,
         "annoVolume": "70",
-        "cloud": ""
+        "cloud": "",
+        "voice": "",
+        "emotion": "",
+        "folderID":""
     },
     "instanceObjects": [
         {
