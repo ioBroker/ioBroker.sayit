@@ -296,7 +296,9 @@
 
             if ((type === 'sonos') ||
                 (type === 'chromecast') ||
-                (type === 'googleHome')) {
+                (type === 'googleHome') ||
+                (type === 'mpd')
+	       ) {
                 checkWeb('#web', webServer);
             }
 
@@ -505,11 +507,12 @@
             $('#instance').val(settings.instance).trigger('change');
         }
 
+	fillEngineParams();    
         fillSonosDevices('#device', settings.device);
         fillChromecastDevices('#cDevice', settings.cDevice);
         fillWebServices('#web', settings.web, settings.type, settings.webServer);
         fillMpdDevice('#mpd_device', settings.mpd_device);
-	fillEngineParams();
+	
 
         if ((settings.type === 'sonos') ||
             (settings.type === 'chromecast') ||
