@@ -1,9 +1,9 @@
 {
     "common": {
         "name": "sayit",
-        "version": "1.9.9",
+        "version": "1.10.0",
         "news": {
-            "1.9.9": {
+            "1.10.0": {
                 "en": "GUI updated to fill drop-down correctly. Premium voices added to Yandex.Cloud engine",
                 "de": "Die Benutzeroberfläche wurde aktualisiert, um das Dropdown-Menü korrekt auszufüllen. Premium-Stimmen zur Yandex.Cloud-Engine hinzugefügt",
                 "ru": "GUI обновлен, чтобы заполнять поля правильно. Премиальные голоса добавлены в движок Yandex.Cloud",
