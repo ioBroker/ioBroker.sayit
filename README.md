@@ -240,6 +240,9 @@ Following values for engines are possible:
 
 ## Changelog
 
+### 1.10.0 (2020-07-07)
+* (algar42) GUI updated to fill drop-downs correctly. Premium voices added to Yandex.Cloud engine
+
 ### 1.9.8 (2020-06-11)
 * (Apollon77) fix error handling on file copy
 

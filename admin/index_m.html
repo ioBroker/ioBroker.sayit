@@ -68,27 +68,6 @@
 
         for (var i = 0; i < sayitEngines[engine].params.length; i++) {
             $('#tr_' + sayitEngines[engine].params[i]).show();
-            if (sayitEngines[engine][sayitEngines[engine].params[i]]) {
-                var arr = sayitEngines[engine][sayitEngines[engine].params[i]];
-                var param = sayitEngines[engine].params[i];
-
-                var $val = $('#' + param);
-                if (arr.length) {
-                    var val = $val.val();
-                    var text = '';
-                    for (var p = 0; p < arr.length; p++) {
-                        text += '<option value="' + arr[p] + '">' + arr[p] + '</option>';
-                    }
-                    $val.html(text);
-                    if (val) {
-                        $val.val(val);
-                    } else {
-                        $val.val(arr[0]);
-                    }
-                } else {
-                    $val.html('');
-                }
-            }
         }
         if (type !== 'system') {
             $('.system').hide();
@@ -104,6 +83,38 @@
             $('#play').removeClass('disabled');
         }
     }
+	
+     function fillEngineParams() {
+       var engine = $('#engine').val();
+       if (!sayitEngines[engine]) return;
+       for (var i = 0; i < sayitEngines[engine].params.length; i++) {
+            $('#tr_' + sayitEngines[engine].params[i]).show();
+            if (sayitEngines[engine][sayitEngines[engine].params[i]]) {
+                var arr = sayitEngines[engine][sayitEngines[engine].params[i]];
+                var param = sayitEngines[engine].params[i];
+
+                var $val = $('#' + param);
+                if (arr.length) {
+                    var val = $val.val();
+                    var text = '';
+                    $val.empty();
+                    for (var p = 0; p < arr.length; p++) {
+                        $val.append('<option value="' + arr[p] + '">' + arr[p] + '</option>');
+                    }
+                     $val.select();
+
+                    if (val) {
+                        $val.val(val);
+                    } else {
+                        $val.val(arr[0]);
+                    }
+                } else {
+                    $val.html('');
+                }
+            }
+        }
+    }
+	
 
     function fillSonosDevices(elem, current) {
         socket.emit('getObjectView', 'system', 'channel', {startkey: 'sonos.', endkey: 'sonos.\u9999'}, function (err, res) {
@@ -285,7 +296,9 @@
 
             if ((type === 'sonos') ||
                 (type === 'chromecast') ||
-                (type === 'googleHome')) {
+                (type === 'googleHome') ||
+                (type === 'mpd')
+	       ) {
                 checkWeb('#web', webServer);
             }
 
@@ -459,6 +472,7 @@
                 } else {
                     showHideSettings();
                 }
+		if (key === 'engine') {fillEngineParams();}    
             } else
             if (key === 'announce') {
                 showHideSettings();
@@ -493,10 +507,12 @@
             $('#instance').val(settings.instance).trigger('change');
         }
 
+	fillEngineParams();    
         fillSonosDevices('#device', settings.device);
         fillChromecastDevices('#cDevice', settings.cDevice);
         fillWebServices('#web', settings.web, settings.type, settings.webServer);
         fillMpdDevice('#mpd_device', settings.mpd_device);
+	
 
         if ((settings.type === 'sonos') ||
             (settings.type === 'chromecast') ||

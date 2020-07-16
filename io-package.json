@@ -1,8 +1,20 @@
 {
     "common": {
         "name": "sayit",
-        "version": "1.9.8",
+        "version": "1.10.0",
         "news": {
+            "1.10.0": {
+                "en": "GUI updated to fill drop-down correctly. Premium voices added to Yandex.Cloud engine",
+                "de": "Die Benutzeroberfläche wurde aktualisiert, um das Dropdown-Menü korrekt auszufüllen. Premium-Stimmen zur Yandex.Cloud-Engine hinzugefügt",
+                "ru": "GUI обновлен, чтобы заполнять поля правильно. Премиальные голоса добавлены в движок Yandex.Cloud",
+                "pt": "GUI atualizada para preencher o menu suspenso corretamente. Vozes premium adicionadas ao mecanismo Yandex.Cloud",
+                "nl": "GUI bijgewerkt om drop-down correct in te vullen. Premium stemmen toegevoegd aan de Yandex.Cloud-engine",
+                "fr": "GUI mise à jour pour remplir correctement la liste déroulante. Voix premium ajoutées au moteur Yandex.Cloud",
+                "it": "Interfaccia grafica aggiornata per riempire correttamente il menu a discesa. Voci premium aggiunte al motore Yandex.Cloud",
+                "es": "GUI actualizada para completar el menú desplegable correctamente. Voces premium añadidas al motor Yandex.Cloud",
+                "pl": "Zaktualizowano GUI, aby poprawnie wypełnić menu rozwijane. Dodano głosy premium do silnika Yandex.Cloud",
+                "zh-cn": "GUI已更新，可以正确填充下拉列表。高级语音已添加到Yandex.Cloud引擎"
+            },
             "1.9.8": {
                 "en": "fix error handling on file copy",
                 "de": "Fehlerbehandlung bei Dateikopie behoben",
@@ -306,7 +318,10 @@
         "annoTimeout": 15,
         "annoDuration": 0,
         "annoVolume": "70",
-        "cloud": ""
+        "cloud": "",
+        "voice": "",
+        "emotion": "",
+        "folderID":""
     },
     "instanceObjects": [
         {
