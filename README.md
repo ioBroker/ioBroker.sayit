@@ -240,6 +240,10 @@ Following values for engines are possible:
 
 ## Changelog
 
+### __WORK IN PROGRESS__
+* (Apollon77) Handle edge cases and prevent crashes (Sentry IOBROKER-SAYIT-4, IOBROKER-SAYIT-6)
+* (Apollon77) try to get caching working again for Yandex
+
 ### 1.10.0 (2020-07-07)
 * (algar42) GUI updated to fill drop-downs correctly. Premium voices added to Yandex.Cloud engine
 

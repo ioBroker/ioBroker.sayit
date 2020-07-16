@@ -7,3 +7,4 @@ iob_npm.done
 /.project
 /nbproject
 .vscode
+package-lock.json
