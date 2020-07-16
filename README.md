@@ -240,7 +240,7 @@ Following values for engines are possible:
 
 ## Changelog
 
-### __WORK IN PROGRESS__
+### 1.10.1 (2020-07-16)
 * (Apollon77) Handle edge cases and prevent crashes (Sentry IOBROKER-SAYIT-4, IOBROKER-SAYIT-6)
 * (Apollon77) try to get caching working again for Yandex
 

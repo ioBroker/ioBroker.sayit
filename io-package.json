@@ -1,8 +1,20 @@
 {
     "common": {
         "name": "sayit",
-        "version": "1.10.0",
+        "version": "1.10.1",
         "news": {
+            "1.10.1": {
+                "en": "Handle edge cases and prevent crashes (Sentry IOBROKER-SAYIT-4, IOBROKER-SAYIT-6)\ntry to get caching working again for Yandex",
+                "de": "Behandeln Sie Kantenfälle und verhindern Sie Abstürze (Sentry IOBROKER-SAYIT-4, IOBROKER-SAYIT-6)\nVersuchen Sie, das Caching für Yandex wieder zum Laufen zu bringen",
+                "ru": "Обработка крайних случаев и предотвращение сбоев (Sentry IOBROKER-SAYIT-4, IOBROKER-SAYIT-6)\nпопробуй снова заставить кеширование работать на яндексе",
+                "pt": "Lidar com casos de borda e evitar falhas (Sentry IOBROKER-SAYIT-4, IOBROKER-SAYIT-6)\ntente fazer o cache funcionar novamente para o Yandex",
+                "nl": "Behandel randgevallen en voorkom crashes (Sentry IOBROKER-SAYIT-4, IOBROKER-SAYIT-6)\nprobeer caching weer aan de praat te krijgen voor Yandex",
+                "fr": "Gérez les boîtiers de bord et évitez les accidents (Sentry IOBROKER-SAYIT-4, IOBROKER-SAYIT-6)\nessayez de faire fonctionner à nouveau la mise en cache pour Yandex",
+                "it": "Gestire i casi limite e prevenire gli arresti anomali (Sentry IOBROKER-SAYIT-4, IOBROKER-SAYIT-6)\nprova a far funzionare di nuovo la cache per Yandex",
+                "es": "Maneje casos extremos y evite accidentes (Sentry IOBROKER-SAYIT-4, IOBROKER-SAYIT-6)\nintenta que el almacenamiento en caché vuelva a funcionar para Yandex",
+                "pl": "Obsługa skrzynek krawędziowych i zapobieganie awariom (Sentry IOBROKER-SAYIT-4, IOBROKER-SAYIT-6)\nspróbuj ponownie uruchomić buforowanie dla Yandex",
+                "zh-cn": "处理边缘情况并防止碰撞（哨兵IOBROKER-SAYIT-4，IOBROKER-SAYIT-6）\n尝试让Yandex再次使用缓存"
+            },
             "1.10.0": {
                 "en": "GUI updated to fill drop-down correctly. Premium voices added to Yandex.Cloud engine",
                 "de": "Die Benutzeroberfläche wurde aktualisiert, um das Dropdown-Menü korrekt auszufüllen. Premium-Stimmen zur Yandex.Cloud-Engine hinzugefügt",
@@ -230,18 +242,6 @@
                 "es": "Código de refactorización\nAgregar página principal de google como de salida\nQuitar ivona porque no más compatibles",
                 "pl": "Refaktoryzacja kodu\nDodaj Google w domu jako wyjściowego\nUsunąć Iwona, bo więcej nie jest obsługiwany",
                 "zh-cn": "代码重构\n增加谷歌家作为输出\n除伊沃娜，因为没有更多支持的"
-            },
-            "1.5.3": {
-                "en": "Add expiry option for caching (in days)",
-                "de": "Caching-Verfalls-Möglichkeit (in Tagen) hinzugefügt",
-                "ru": "Add expiry option for caching (in days)",
-                "pt": "Adicionar opção de expiração de cache (em dias)",
-                "nl": "Toevoegen verstrijken optie voor caching (in dagen)",
-                "fr": "Ajouter l'expiration de l'option pour la mise en cache (en jours)",
-                "it": "Aggiungi opzione di scadenza per la memorizzazione nella cache (in giorni)",
-                "es": "Añadir opción de expiración de la caché (en días)",
-                "pl": "Dodaj wygaśnięcia opcji buforowania (w dniach)",
-                "zh-cn": "添加到期的选择缓存(天)"
             }
         },
         "title": "Text to speech",
@@ -321,7 +321,7 @@
         "cloud": "",
         "voice": "",
         "emotion": "",
-        "folderID":""
+        "folderID": ""
     },
     "instanceObjects": [
         {
