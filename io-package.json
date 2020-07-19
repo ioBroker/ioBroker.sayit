@@ -1,8 +1,20 @@
 {
     "common": {
         "name": "sayit",
-        "version": "1.10.1",
+        "version": "1.10.2",
         "news": {
+            "1.10.2": {
+                "en": "Crash case prevented (Sentry IOBROKER-SAYIT-8)",
+                "de": "Absturz verhindert (Sentry IOBROKER-SAYIT-8)",
+                "ru": "ДТП предотвращено (Sentry IOBROKER-SAYIT-8)",
+                "pt": "Caso de falha impedido (Sentry IOBROKER-SAYIT-8)",
+                "nl": "Crashcase voorkomen (Sentry IOBROKER-SAYIT-8)",
+                "fr": "Crash case évité (Sentry IOBROKER-SAYIT-8)",
+                "it": "Caso di arresto impedito (Sentry IOBROKER-SAYIT-8)",
+                "es": "Caso de bloqueo evitado (Sentry IOBROKER-SAYIT-8)",
+                "pl": "Zapobiegano awariom (Sentry IOBROKER-SAYIT-8)",
+                "zh-cn": "防止发生崩溃情况（Sentry IOBROKER-SAYIT-8）"
+            },
             "1.10.1": {
                 "en": "Handle edge cases and prevent crashes (Sentry IOBROKER-SAYIT-4, IOBROKER-SAYIT-6)\ntry to get caching working again for Yandex",
                 "de": "Behandeln Sie Kantenfälle und verhindern Sie Abstürze (Sentry IOBROKER-SAYIT-4, IOBROKER-SAYIT-6)\nVersuchen Sie, das Caching für Yandex wieder zum Laufen zu bringen",
@@ -230,18 +242,6 @@
                 "es": "Revisión de los comandos del sistema",
                 "pl": "System Fix poleceń",
                 "zh-cn": "解决系统的命令"
-            },
-            "1.6.3": {
-                "en": "Code refactoring\nAdd google home as output\nRemove ivona because not more supported",
-                "de": "Code refactoring\nGoogle Home als Ausgabe hinzugefügt\nivona gelöscht",
-                "ru": "Переработка кода\nДобавлен google home",
-                "pt": "Refatoração de código\nAdicionar página inicial do google como saída\nRemover ivona porque não mais suportados",
-                "nl": "Code refactoring\nVoeg google startpagina als output\nVerwijder ivona omdat niet meer ondersteund",
-                "fr": "Code refactoring\nAjouter google à la maison de la sortie\nSupprimer ivona parce que pas plus pris en charge",
-                "it": "Refactoring del codice\nAggiungere google home come output\nRimuovere ivona perché non più supportato",
-                "es": "Código de refactorización\nAgregar página principal de google como de salida\nQuitar ivona porque no más compatibles",
-                "pl": "Refaktoryzacja kodu\nDodaj Google w domu jako wyjściowego\nUsunąć Iwona, bo więcej nie jest obsługiwany",
-                "zh-cn": "代码重构\n增加谷歌家作为输出\n除伊沃娜，因为没有更多支持的"
             }
         },
         "title": "Text to speech",

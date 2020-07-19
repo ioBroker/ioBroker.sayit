@@ -240,7 +240,7 @@ Following values for engines are possible:
 
 ## Changelog
 
-### __WORK IN PROGRESS__
+### 1.10.2 (2020-07-19)
 * (Apollon77) Crash case prevented (Sentry IOBROKER-SAYIT-8)
 
 ### 1.10.1 (2020-07-16)
