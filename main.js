@@ -81,7 +81,7 @@ function startAdapter(options) {
         dataDir = __dirname;
     }
 
-    MP3FILE = adapter.config.dataDir + '/' + adapter.namespace + '.say.' + fileExt;
+    MP3FILE = dataDir + '/' + adapter.namespace + '.say.' + fileExt;
 
     return adapter;
 }
