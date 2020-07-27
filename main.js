@@ -8,10 +8,13 @@ const Text2Speech   = require('./lib/text2speech');
 const Speech2Device = require('./lib/speech2device');
 const adapterName   = require('./package.json').name.split('.').pop();
 
-let   dataDir       = path.normalize(utils.controllerDir + '/' + require(utils.controllerDir + '/lib/tools').getDefaultDataDir() + '/sayit');
-
 const sayitOptions  = engines.sayitOptions;
-const libs          = {};
+const libs          = {
+    fs:     require('fs'),
+    path:   require('path')
+};
+
+let dataDir = libs.path.normalize(utils.controllerDir + '/' + require(utils.controllerDir + '/lib/tools').getDefaultDataDir() + '/sayit');
 
 process.on('SIGINT', stop);
 
@@ -70,8 +73,8 @@ function startAdapter(options) {
 
     try {
         // create directory
-        if (!fs.existsSync(dataDir)) {
-            fs.mkdirSync(dataDir);
+        if (!libs.fs.existsSync(dataDir)) {
+            libs.fs.mkdirSync(dataDir);
         }
     } catch (err) {
         adapter.log.error('Could not create Storage directory: ' + err);
@@ -686,9 +689,6 @@ function applyWebSettings(err, obj) {
 }
 
 function main() {
-    libs.fs   = require('fs');
-    libs.path = require('path');
-
     if ((process.argv && process.argv.indexOf('--install') !== -1) ||
         ((!process.argv || process.argv.indexOf('--force') === -1) && (!adapter.common || !adapter.common.enabled))) {
         adapter.log.info('Install process. Upload files and stop.');
