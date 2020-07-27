@@ -80,7 +80,6 @@ function startAdapter(options) {
         adapter.log.error('Could not create Storage directory: ' + err);
         dataDir = __dirname;
     }
-    adapter.config.dataDir = dataDir;
 
     MP3FILE = adapter.config.dataDir + '/' + adapter.namespace + '.say.' + fileExt;
 
@@ -514,6 +513,7 @@ function start() {
     } else {
         fileExt = 'mp3';
     }
+    adapter.config.dataDir = dataDir;
 
     MP3FILE = adapter.config.dataDir + '/' + adapter.namespace + '.say.' + fileExt;
     options.outFileExt = fileExt;
