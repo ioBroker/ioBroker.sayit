@@ -8,6 +8,8 @@ const Text2Speech   = require('./lib/text2speech');
 const Speech2Device = require('./lib/speech2device');
 const adapterName   = require('./package.json').name.split('.').pop();
 
+let   dataDir       = path.normalize(utils.controllerDir + '/' + require(utils.controllerDir + '/lib/tools').getDefaultDataDir() + '/sayit');
+
 const sayitOptions  = engines.sayitOptions;
 const libs          = {};
 
@@ -66,7 +68,18 @@ function startAdapter(options) {
 
     adapter.on('message', obj => processMessage(obj));
 
-    MP3FILE = __dirname + '/' + adapter.namespace + '.say.' + fileExt;
+    try {
+        // create directory
+        if (!fs.existsSync(dataDir)) {
+            fs.mkdirSync(dataDir);
+        }
+    } catch (err) {
+        adapter.log.error('Could not create Storage directory: ' + err);
+        dataDir = __dirname;
+    }
+    adapter.config.dataDir = dataDir;
+
+    MP3FILE = adapter.config.dataDir + '/' + adapter.namespace + '.say.' + fileExt;
 
     return adapter;
 }
@@ -499,7 +512,7 @@ function start() {
         fileExt = 'mp3';
     }
 
-    MP3FILE = __dirname + '/' + adapter.namespace + '.say.' + fileExt;
+    MP3FILE = adapter.config.dataDir + '/' + adapter.namespace + '.say.' + fileExt;
     options.outFileExt = fileExt;
 
     if (adapter.config.announce) {
