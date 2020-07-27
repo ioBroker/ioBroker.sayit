@@ -240,6 +240,9 @@ Following values for engines are possible:
 
 ## Changelog
 
+### __WORK IN PROGRESS__
+* (Apollon77) Change File write to use Sync methods to make sure they can not run in parallel
+
 ### 1.10.2 (2020-07-19)
 * (Apollon77) Crash case prevented (Sentry IOBROKER-SAYIT-8)
 
