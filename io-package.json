@@ -1,8 +1,20 @@
 {
     "common": {
         "name": "sayit",
-        "version": "1.10.2",
+        "version": "1.11.0",
         "news": {
+            "1.11.0": {
+                "en": "Move the generated mp3 file to an own directory in iobroker-data instead of inside node_modules (Hopefully not breaking)\nChange File write to use Sync methods to make sure they can not run in parallel",
+                "de": "Verschieben Sie die generierte MP3-Datei in ein eigenes Verzeichnis in iobroker-data anstatt in node_modules (hoffentlich nicht kaputt)\nÄndern Sie das Schreiben von Dateien, um Synchronisierungsmethoden zu verwenden, um sicherzustellen, dass sie nicht parallel ausgeführt werden können",
+                "ru": "Переместить сгенерированный mp3-файл в собственную директорию в iobroker-data, а не в node_modules (надеюсь, не ломается)\nИзмените запись в файл, чтобы использовать методы синхронизации, чтобы они не могли работать параллельно",
+                "pt": "Mova o arquivo mp3 gerado para um diretório próprio no iobroker-data em vez de dentro de node_modules (Esperemos que não quebre)\nAlterar gravação de arquivo para usar os métodos de sincronização para garantir que eles não possam ser executados em paralelo",
+                "nl": "Verplaats het gegenereerde mp3-bestand naar een eigen map in iobroker-data in plaats van in node_modules (hopelijk niet kapot)\nWijzig Bestand schrijven om synchronisatiemethoden te gebruiken om ervoor te zorgen dat ze niet parallel kunnen worden uitgevoerd",
+                "fr": "Déplacez le fichier mp3 généré dans un propre répertoire dans iobroker-data au lieu de l'intérieur node_modules (espérons pas casser)\nModifiez l'écriture de fichier pour utiliser les méthodes de synchronisation pour vous assurer qu'elles ne peuvent pas s'exécuter en parallèle",
+                "it": "Spostare il file mp3 generato in una propria directory in iobroker-data anziché all'interno di node_modules (Speriamo non si rompa)\nModifica scrittura file per utilizzare i metodi di sincronizzazione per assicurarsi che non possano essere eseguiti in parallelo",
+                "es": "Mueva el archivo mp3 generado a un directorio propio en iobroker-data en lugar de dentro de node_modules (ojalá no se rompa)\nCambie la escritura de archivos para usar métodos de sincronización para asegurarse de que no se puedan ejecutar en paralelo",
+                "pl": "Przenieś wygenerowany plik mp3 do własnego katalogu w iobroker-data zamiast wewnątrz node_modules (miejmy nadzieję, że nie zepsuje)\nZmień zapis do pliku, aby użyć metod synchronizacji, aby upewnić się, że nie mogą działać równolegle",
+                "zh-cn": "将生成的mp3文件移动到iobroker-data中的自己目录中，而不是移动到node_modules内部（希望不会中断）\n更改文件写入以使用同步方法，以确保它们不能并行运行"
+            },
             "1.10.2": {
                 "en": "Crash case prevented (Sentry IOBROKER-SAYIT-8)",
                 "de": "Absturz verhindert (Sentry IOBROKER-SAYIT-8)",
@@ -230,18 +242,6 @@
                 "es": "Revisión de la nube .pro",
                 "pl": "Naprawić chmurze .o",
                 "zh-cn": "修复云。pro"
-            },
-            "1.6.4": {
-                "en": "Fix system commands",
-                "de": "Korrigiere System-Kommando",
-                "ru": "Поправлены системные вызовы",
-                "pt": "Correcção comandos do sistema",
-                "nl": "Fix systeem commando ' s",
-                "fr": "Commandes du système fixer",
-                "it": "Comandi di sistema fissare",
-                "es": "Revisión de los comandos del sistema",
-                "pl": "System Fix poleceń",
-                "zh-cn": "解决系统的命令"
             }
         },
         "title": "Text to speech",
