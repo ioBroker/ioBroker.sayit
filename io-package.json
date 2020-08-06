@@ -1,8 +1,20 @@
 {
     "common": {
         "name": "sayit",
-        "version": "1.11.0",
+        "version": "1.11.1",
         "news": {
+            "1.11.1": {
+                "en": "handle errors from process spawn better (Sentry IOBROKER-SAYIT-D)",
+                "de": "Behandeln Sie Fehler aus dem Prozess-Spawn besser (Sentry IOBROKER-SAYIT-D)",
+                "ru": "лучше обрабатывать ошибки от порождения процесса (Sentry IOBROKER-SAYIT-D)",
+                "pt": "lidar melhor com os erros do processo de geração (Sentry IOBROKER-SAYIT-D)",
+                "nl": "behandel fouten van process spawn beter (Sentry IOBROKER-SAYIT-D)",
+                "fr": "mieux gérer les erreurs du processus de spawn (Sentry IOBROKER-SAYIT-D)",
+                "it": "gestire meglio gli errori dal processo di spawn (Sentry IOBROKER-SAYIT-D)",
+                "es": "manejar los errores del proceso engendrar mejor (Sentry IOBROKER-SAYIT-D)",
+                "pl": "lepiej radzić sobie z błędami pojawiającymi się w procesie (Sentry IOBROKER-SAYIT-D)",
+                "zh-cn": "更好地处理流程产生的错误（Sentry IOBROKER-SAYIT-D）"
+            },
             "1.11.0": {
                 "en": "Move the generated mp3 file to an own directory in iobroker-data instead of inside node_modules (Hopefully not breaking)\nChange File write to use Sync methods to make sure they can not run in parallel",
                 "de": "Verschieben Sie die generierte MP3-Datei in ein eigenes Verzeichnis in iobroker-data anstatt in node_modules (hoffentlich nicht kaputt)\nÄndern Sie das Schreiben von Dateien, um Synchronisierungsmethoden zu verwenden, um sicherzustellen, dass sie nicht parallel ausgeführt werden können",
@@ -230,18 +242,6 @@
                 "es": "Esperar a que Google Hogar anuncio completo",
                 "pl": "Czekaj ogłoszenia w Google do domu, aby zakończyć",
                 "zh-cn": "等待谷歌家宣布完成"
-            },
-            "1.6.5": {
-                "en": "Fix cloud .pro",
-                "de": "Korrigiere cloud .pro",
-                "ru": "Поправлены вызовы к .pro",
-                "pt": "Correcção nuvem .pro",
-                "nl": "Fix cloud .pro",
-                "fr": "Fixer le cloud .pro",
-                "it": "Fix cloud .pro",
-                "es": "Revisión de la nube .pro",
-                "pl": "Naprawić chmurze .o",
-                "zh-cn": "修复云。pro"
             }
         },
         "title": "Text to speech",

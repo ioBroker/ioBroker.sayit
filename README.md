@@ -240,7 +240,7 @@ Following values for engines are possible:
 
 ## Changelog
 
-### __WORK IN PROGRESS__
+### 1.11.1 (2020-08-06)
 * (Apollon77) handle errors from process spawn better (Sentry IOBROKER-SAYIT-D)
 
 ### 1.11.0 (2020-08-02)
