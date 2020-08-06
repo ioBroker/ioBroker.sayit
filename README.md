@@ -240,6 +240,9 @@ Following values for engines are possible:
 
 ## Changelog
 
+### __WORK IN PROGRESS__
+* (Apollon77) handle errors from process spawn better (Sentry IOBROKER-SAYIT-D)
+
 ### 1.11.0 (2020-08-02)
 * (Apollon77) Move the generated mp3 file to an own directory in iobroker-data instead of inside node_modules (Hopefully not breaking)
 * (Apollon77) Change File write to use Sync methods to make sure they can not run in parallel
