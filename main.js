@@ -99,6 +99,7 @@ function processMessage(obj) {
 
                 const result = [];
                 browser.on('serviceUp', service => result.push({name: service.name, ip: service.addresses[0]}));
+                browser.on('error', err => adapter.log.error('Error on MDNS discovery: ' + err));
                 processMessageTimeout = setTimeout(() => {
                     processMessageTimeout = null;
                     browser.stop();

@@ -240,6 +240,9 @@ Following values for engines are possible:
 
 ## Changelog
 
+### __WORK IN PROGRESS__
+* (Apollon77) catch errors in MDNS discovery (Sentry IOBROKER-SAYIT-E)
+
 ### 1.11.1 (2020-08-06)
 * (Apollon77) handle errors from process spawn better (Sentry IOBROKER-SAYIT-D)
 
