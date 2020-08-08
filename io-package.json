@@ -1,8 +1,20 @@
 {
     "common": {
         "name": "sayit",
-        "version": "1.11.1",
+        "version": "1.11.2",
         "news": {
+            "1.11.2": {
+                "en": "catch errors in MDNS discovery (Sentry IOBROKER-SAYIT-E)",
+                "de": "Fehler bei der MDNS-Erkennung abfangen (Sentry IOBROKER-SAYIT-E)",
+                "ru": "ловить ошибки в обнаружении MDNS (Sentry IOBROKER-SAYIT-E)",
+                "pt": "detectar erros na descoberta de MDNS (Sentry IOBROKER-SAYIT-E)",
+                "nl": "fouten opvangen bij MDNS-detectie (Sentry IOBROKER-SAYIT-E)",
+                "fr": "intercepter les erreurs dans la découverte MDNS (Sentry IOBROKER-SAYIT-E)",
+                "it": "rilevare gli errori nel rilevamento MDNS (Sentry IOBROKER-SAYIT-E)",
+                "es": "detectar errores en el descubrimiento de MDNS (Sentry IOBROKER-SAYIT-E)",
+                "pl": "wychwytywanie błędów w wykrywaniu MDNS (Sentry IOBROKER-SAYIT-E)",
+                "zh-cn": "在MDNS发现中捕获错误（Sentry IOBROKER-SAYIT-E）"
+            },
             "1.11.1": {
                 "en": "handle errors from process spawn better (Sentry IOBROKER-SAYIT-D)",
                 "de": "Behandeln Sie Fehler aus dem Prozess-Spawn besser (Sentry IOBROKER-SAYIT-D)",
@@ -230,18 +242,6 @@
                 "es": "Correcciones de Admin3",
                 "pl": "Poprawki Admin3",
                 "zh-cn": "Admin3的修正"
-            },
-            "1.6.6": {
-                "en": "Wait for Google Home announcement to complete",
-                "de": "Wartet bis die Google Home-Ankündigung abgeschlossen ist",
-                "ru": "Дождидается завершения объявления Google Home",
-                "pt": "Esperar para o Google Home anúncio completo",
-                "nl": "Wachten voor Google Startpagina aankondiging te voltooien",
-                "fr": "Attendre que Google annonce Maison pour terminer",
-                "it": "Attendere che Google Home annuncio completo",
-                "es": "Esperar a que Google Hogar anuncio completo",
-                "pl": "Czekaj ogłoszenia w Google do domu, aby zakończyć",
-                "zh-cn": "等待谷歌家宣布完成"
             }
         },
         "title": "Text to speech",
