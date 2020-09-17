@@ -240,6 +240,9 @@ Following values for engines are possible:
 
 ## Changelog
 
+### __WORK IN PROGRESS__
+* (Apollon77) prevent scheduled restart problems
+
 ### 1.11.3 (2020-09-17)
 * (Apollon77) make sure initialize errors do not crash adapter (Sentry IOBROKER-SAYIT-N)
 

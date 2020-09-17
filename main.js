@@ -26,7 +26,7 @@ let adapter;
 
 function startAdapter(options) {
     options = options || {};
-    Object.assign(options, {name: adapterName, unload: stop});
+    Object.assign(options, {name: adapterName, unload: () => stop(true)});
     adapter = new utils.Adapter(options);
 
     adapter.on('stateChange', (id, state) => {
@@ -116,7 +116,11 @@ function processMessage(obj) {
     }
 }
 
-function stop(callback) {
+function stop(unload, callback) {
+    if (typeof unload === 'function') {
+        callback = unload;
+        unload = false;
+    }
     processMessageTimeout && clearTimeout(processMessageTimeout);
     processMessageTimeout = null;
 
@@ -128,6 +132,8 @@ function stop(callback) {
 
     try {
         adapter && adapter.log && adapter.log.info && adapter.log.info('stopping...');
+
+        if (unload) return;
 
         setTimeout(() => {
             typeof callback === 'function' && callback();
