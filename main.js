@@ -38,7 +38,7 @@ function startAdapter(options) {
                 }
             } else if (id === adapter.namespace + '.tts.volume') {
                 if (adapter.config.type === 'system') {
-                    speech2device.sayItSystemVolume(state.val);
+                    speech2device && speech2device.sayItSystemVolume(state.val);
                 } else {
                     options.sayLastVolume = state.val;
                 }
@@ -251,10 +251,10 @@ function cacheIt(text, language) {
         if (!language) language = adapter.config.engine;
 
         // find out if say.mp3 must be generated
-        if (!speech2device.sayItIsPlayFile(text)) isGenerate = sayitOptions[adapter.config.type].mp3Required;
+        if (!speech2device || !speech2device.sayItIsPlayFile(text)) isGenerate = sayitOptions[adapter.config.type].mp3Required;
 
         if (!isGenerate) {
-            if (speech2device.sayItIsPlayFile(text)) {
+            if (speech2device && speech2device.sayItIsPlayFile(text)) {
                 adapter.log.warn('mp3 file must not be cached: ' + text);
             } else {
                 adapter.log.warn('Cache does not required for this engine: ' + adapter.config.engine);
@@ -278,7 +278,7 @@ function cacheIt(text, language) {
 
     cacheRunning = true;
 
-    text2speech.sayItGetSpeech(text, language, false, (error, md5filename, _language, volume, seconds) => {
+    text2speech && text2speech.sayItGetSpeech(text, language, false, (error, md5filename, _language, volume, seconds) => {
         if (error) {
             adapter.log.error('Cannot cache text: "' + error);
         } else {
@@ -427,20 +427,20 @@ function sayIt(text, language, volume, processing) {
 	}
 
     // find out if say.mp3 must be generated
-    if (!speech2device.sayItIsPlayFile(text)) {
+    if (!speech2device || !speech2device.sayItIsPlayFile(text)) {
         isGenerate = sayitOptions[adapter.config.type].mp3Required;
     }
 
-    const speechFunction = speech2device.getFunction(adapter.config.type);
+    const speechFunction = speech2device && speech2device.getFunction(adapter.config.type);
 
     // If text first must be generated
     if (isGenerate && sayLastGeneratedText !== '[' + language + ']' + text) {
         sayLastGeneratedText = '[' + language + ']' + text;
-        text2speech.sayItGetSpeech(text, language, volume, (error, text, language, volume, duration) =>
+        text2speech && text2speech.sayItGetSpeech(text, language, volume, (error, text, language, volume, duration) =>
             speechFunction(error, text, language, volume, duration, sayFinished));
     } else {
-        if (speech2device.sayItIsPlayFile(text)) {
-            text2speech.getLength(text, (error, duration) =>
+        if (speech2device && speech2device.sayItIsPlayFile(text)) {
+            text2speech && text2speech.getLength(text, (error, duration) =>
                 speechFunction(error, text, language, volume, duration, sayFinished));
         } else {
             if (!isGenerate) {
@@ -448,15 +448,15 @@ function sayIt(text, language, volume, processing) {
             } else if (adapter.config.cache) {
                 md5filename = libs.path.join(options.cacheDir, libs.crypto.createHash('md5').update(language + ';' + text).digest('hex') + '.' + fileExt);
                 if (libs.fs.existsSync(md5filename)) {
-                    text2speech.getLength(md5filename, (error, duration) =>
+                    text2speech && text2speech.getLength(md5filename, (error, duration) =>
                         speechFunction(error, md5filename, language, volume, duration, sayFinished));
                 } else {
                     sayLastGeneratedText = '[' + language + ']' + text;
-                    text2speech.sayItGetSpeech(text, language, volume, (error, text, language, volume, duration) =>
+                    text2speech && text2speech.sayItGetSpeech(text, language, volume, (error, text, language, volume, duration) =>
                         speechFunction(error, text, language, volume, duration, sayFinished));
                 }
             } else {
-                text2speech.getLength(MP3FILE, (error, duration) =>
+                text2speech && text2speech.getLength(MP3FILE, (error, duration) =>
                     speechFunction(error, text, language, volume, duration, sayFinished));
             }
         }
@@ -633,9 +633,9 @@ function start() {
         // Read volume
         adapter.getState('tts.volume', (err, state) => {
             if (!err && state) {
-                speech2device.sayItSystemVolume(state.val);
+                speech2device && speech2device.sayItSystemVolume(state.val);
             } else {
-                speech2device.sayItSystemVolume(70);
+                speech2device && speech2device.sayItSystemVolume(70);
             }
         });
     }
@@ -656,7 +656,8 @@ function start() {
         text2speech   = new Text2Speech(adapter, libs, options, sayIt);
         speech2device = new Speech2Device(adapter, libs, options);
     } catch (e) {
-        adapter.log.error('Cannot initialize engines: ' + e.toString);
+        adapter.log.error('Cannot initialize engines: ' + e.toString());
+        return;
     }
 
     adapter.subscribeStates('*');
