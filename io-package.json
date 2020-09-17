@@ -1,8 +1,20 @@
 {
     "common": {
         "name": "sayit",
-        "version": "1.11.3",
+        "version": "1.11.4",
         "news": {
+            "1.11.4": {
+                "en": "prevent scheduled restart problems",
+                "de": "Verhindern Sie geplante Neustartprobleme",
+                "ru": "предотвратить проблемы с перезапуском по расписанию",
+                "pt": "evitar problemas de reinicialização programada",
+                "nl": "om geplande herstartproblemen te voorkomen",
+                "fr": "éviter les problèmes de redémarrage programmé",
+                "it": "prevenire problemi di riavvio pianificato",
+                "es": "evitar problemas de reinicio programado",
+                "pl": "zapobiegać problemom z planowanym ponownym uruchomieniem",
+                "zh-cn": "防止计划的重启问题"
+            },
             "1.11.3": {
                 "en": "make sure initialize errors do not crash adapter (Sentry IOBROKER-SAYIT-N)",
                 "de": "Stellen Sie sicher, dass Initialisierungsfehler den Adapter nicht zum Absturz bringen (Sentry IOBROKER-SAYIT-N).",
@@ -230,18 +242,6 @@
                 "es": "Se corrigió el error en Blockly si no existe ninguna instancia",
                 "pl": "Napraw błąd w bloku, jeśli nie istnieje żadne wystąpienie",
                 "zh-cn": "修复的错误在Blockly如果不存在实例"
-            },
-            "1.6.8": {
-                "en": "Generate separate mp3 file for each instance\nAlways upload the mp3 file to the state sayit.X.tts.mp3",
-                "de": "Generiere für jede Instanz eine eigene mp3 Datei\nDie mp3 Datei immer in sayit.X.tts.mp3 schreiben",
-                "ru": "Создавать отдельные mp3-файлы для каждого экземпляра\nВсегда загружайте mp3-файлы в состояние sayit.X.tts.mp3",
-                "pt": "Gere arquivos mp3 separados para cada instância\nSempre carregue arquivos mp3 para o estado sayit.X.tts.mp3",
-                "nl": "Genereer afzonderlijke mp3 voor elke instantie\nUpload altijd mp3 naar de staat sayit.X.tts.mp3",
-                "fr": "Générer des fichiers mp3 séparés pour chaque instance\nToujours télécharger des fichiers mp3 à l'état sayit.X.tts.mp3",
-                "it": "Genera mp3 separati per ogni istanza\nCarica sempre mp3 nello stato sayit.X.tts.mp3",
-                "es": "Genere mp3 separados para cada instancia\nSiempre suba mp3 al estado sayit.X.tts.mp3",
-                "pl": "Generuj osobne pliki mp3 dla każdej instancji\nZawsze przesyłaj pliki mp3 do stanu sayit.X.tts.mp3",
-                "zh-cn": "产生独立的mp3文件的每一个实例\n总是上传的mp3文件的国家sayit的。X.合成的。mp3"
             }
         },
         "title": "Text to speech",
