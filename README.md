@@ -240,7 +240,7 @@ Following values for engines are possible:
 
 ## Changelog
 
-### __WORK IN PROGRESS__
+### 1.11.3 (2020-09-17)
 * (Apollon77) make sure initialize errors do not crash adapter (Sentry IOBROKER-SAYIT-N)
 
 ### 1.11.2 (2020-08-08)

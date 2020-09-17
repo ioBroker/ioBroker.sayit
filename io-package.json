@@ -1,8 +1,20 @@
 {
     "common": {
         "name": "sayit",
-        "version": "1.11.2",
+        "version": "1.11.3",
         "news": {
+            "1.11.3": {
+                "en": "make sure initialize errors do not crash adapter (Sentry IOBROKER-SAYIT-N)",
+                "de": "Stellen Sie sicher, dass Initialisierungsfehler den Adapter nicht zum Absturz bringen (Sentry IOBROKER-SAYIT-N).",
+                "ru": "убедитесь, что ошибки инициализации не приводят к сбою адаптера (Sentry IOBROKER-SAYIT-N)",
+                "pt": "certifique-se de que os erros de inicialização não travem o adaptador (Sentry IOBROKER-SAYIT-N)",
+                "nl": "zorg ervoor dat initialisatiefouten de adapter niet crashen (Sentry IOBROKER-SAYIT-N)",
+                "fr": "assurez-vous que les erreurs d'initialisation ne plantent pas l'adaptateur (Sentry IOBROKER-SAYIT-N)",
+                "it": "assicurarsi che gli errori di inizializzazione non causino l'arresto anomalo dell'adattatore (Sentry IOBROKER-SAYIT-N)",
+                "es": "asegúrese de que los errores de inicialización no bloqueen el adaptador (Sentry IOBROKER-SAYIT-N)",
+                "pl": "upewnij się, że błędy inicjalizacji nie powodują awarii adaptera (Sentry IOBROKER-SAYIT-N)",
+                "zh-cn": "确保初始化错误不会使适配器崩溃（Sentry IOBROKER-SAYIT-N）"
+            },
             "1.11.2": {
                 "en": "catch errors in MDNS discovery (Sentry IOBROKER-SAYIT-E)",
                 "de": "Fehler bei der MDNS-Erkennung abfangen (Sentry IOBROKER-SAYIT-E)",
@@ -230,18 +242,6 @@
                 "es": "Genere mp3 separados para cada instancia\nSiempre suba mp3 al estado sayit.X.tts.mp3",
                 "pl": "Generuj osobne pliki mp3 dla każdej instancji\nZawsze przesyłaj pliki mp3 do stanu sayit.X.tts.mp3",
                 "zh-cn": "产生独立的mp3文件的每一个实例\n总是上传的mp3文件的国家sayit的。X.合成的。mp3"
-            },
-            "1.6.7": {
-                "en": "Admin3 Fixes",
-                "de": "Admin3-Korrekturen",
-                "ru": "Исправления Admin3",
-                "pt": "Admin3 Fixes",
-                "nl": "Admin3 Fixes",
-                "fr": "Corrections Admin3",
-                "it": "Correzioni di Admin3",
-                "es": "Correcciones de Admin3",
-                "pl": "Poprawki Admin3",
-                "zh-cn": "Admin3的修正"
             }
         },
         "title": "Text to speech",
