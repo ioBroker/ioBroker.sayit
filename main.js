@@ -26,7 +26,7 @@ let adapter;
 
 function startAdapter(options) {
     options = options || {};
-    Object.assign(options, {name: adapterName, unload: () => stop(true)});
+    Object.assign(options, {name: adapterName, unload: (callback) => stop(true, callback)});
     adapter = new utils.Adapter(options);
 
     adapter.on('stateChange', (id, state) => {
