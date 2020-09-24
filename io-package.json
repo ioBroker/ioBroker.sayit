@@ -1,8 +1,20 @@
 {
     "common": {
         "name": "sayit",
-        "version": "1.11.4",
+        "version": "1.11.5",
         "news": {
+            "1.11.5": {
+                "en": "prevent scheduled restart problems",
+                "de": "Verhindern Sie geplante Neustartprobleme",
+                "ru": "предотвратить проблемы с перезапуском по расписанию",
+                "pt": "evitar problemas de reinicialização programada",
+                "nl": "voorkomen van geplande herstartproblemen",
+                "fr": "éviter les problèmes de redémarrage programmé",
+                "it": "prevenire problemi di riavvio pianificato",
+                "es": "evitar problemas de reinicio programado",
+                "pl": "zapobiegać problemom z planowanym ponownym uruchomieniem",
+                "zh-cn": "防止计划的重启问题"
+            },
             "1.11.4": {
                 "en": "prevent scheduled restart problems",
                 "de": "Verhindern Sie geplante Neustartprobleme",
@@ -230,18 +242,6 @@
                 "es": "Se ha añadido prioridad para el texto.",
                 "pl": "Priorytet tekstu został dodany",
                 "zh-cn": "优先的案文中加入"
-            },
-            "1.7.1": {
-                "en": "Fix error in Blockly if no instance exists",
-                "de": "Fehler in Blockly behoben, wenn keine Instanz existiert",
-                "ru": "Исправить ошибку в блочном режиме, если не существует экземпляра",
-                "pt": "Corrigir erro no bloco se nenhuma instância existir",
-                "nl": "Fout bij oplossen in Blockly als er geen exemplaar bestaat",
-                "fr": "Correction d'une erreur dans Blockly si aucune instance n'existe",
-                "it": "Correggi l'errore in Blockly se non esiste alcuna istanza",
-                "es": "Se corrigió el error en Blockly si no existe ninguna instancia",
-                "pl": "Napraw błąd w bloku, jeśli nie istnieje żadne wystąpienie",
-                "zh-cn": "修复的错误在Blockly如果不存在实例"
             }
         },
         "title": "Text to speech",

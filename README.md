@@ -240,7 +240,7 @@ Following values for engines are possible:
 
 ## Changelog
 
-### __WORK IN PROGRESS__
+### 1.11.5 (2020-09-24)
 * (Apollon77) prevent scheduled restart problems
 
 ### 1.11.3 (2020-09-17)
