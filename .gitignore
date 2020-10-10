@@ -8,3 +8,4 @@ iob_npm.done
 /nbproject
 .vscode
 package-lock.json
+*.tgz

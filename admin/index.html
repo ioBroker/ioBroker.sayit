@@ -114,6 +114,19 @@
         });
     }
 
+    function fillHeosDevices(elem, current) {
+        socket.emit('getObjectView', 'system', 'channel', {startkey: 'heos.', endkey: 'heos.\u9999'}, function (err, res) {
+            if (!err && res) {
+                for (var i = 0; i < res.rows.length; i++) {
+                    if(res.rows[i].id.includes('.players.')){
+                        $(elem).append('<option value="' + res.rows[i].id + '">' + res.rows[i].id + '</option>');
+                    }
+                }
+            }
+            $(elem).val(current);
+        });
+    }
+
     function fillMpdDevice(elem, current) {
         socket.emit('getObjectView', 'system', 'instance', {startkey: 'system.adapter.mpd.', endkey: 'system.adapter.mpd.\u9999'}, function (err, res) {
             if (!err && res) {
@@ -215,6 +228,8 @@
                                  server = $('#server').val();
                             } else if (type === 'sonos') {
                                 server = $('#device').val();
+                            } else if (type === 'heos') {
+                                server = $('#heos_device').val();
                             } else if (type === 'chromecast') {
                                 server = $('#cDevice').val();
                             } else if (type === 'mpd') {
@@ -272,6 +287,7 @@
             }
             $(elem).val(current);
             if ((type === 'sonos') ||
+                (type === 'heos') ||
                 (type === 'chromecast') ||
                 (type === 'googleHome')) {
                 checkWeb('#web', webServer);
@@ -439,6 +455,7 @@
                 showHideSettings();
                 var type = $('#type').val();
                 if ((type === 'sonos') ||
+                    (type === 'heos') ||
                     (type === 'chromecast') ||
                     (type === 'mpd') ||
                     (type === 'googleHome')) {
@@ -483,11 +500,13 @@
         }
 
         fillSonosDevices('#device', settings.device);
+        fillHeosDevices('#heos_device', settings.device);
         fillChromecastDevices('#cDevice', settings.cDevice);
         fillWebServices('#web', settings.web, settings.type, settings.webServer);
         fillMpdDevice('#mpd_device', settings.mpd_device);
 
         if ((settings.type === 'sonos') ||
+            (settings.type === 'heos') ||
             (settings.type === 'chromecast') ||
             (settings.type === 'mpd') ||
             (settings.type === 'googleHome')){
