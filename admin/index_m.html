@@ -133,6 +133,24 @@
         });
     }
 
+    function fillHeosDevices(elem, current) {
+        socket.emit('getObjectView', 'system', 'channel', {startkey: 'heos.', endkey: 'heos.\u9999'}, function (err, res) {
+            if (!err && res) {
+                for (var i = 0; i < res.rows.length; i++) {
+                    var name = res.rows[i].value && res.rows[i].value.common && res.rows[i].value.common.name;
+                    if (typeof name === 'object') {
+                        name = name.en;
+                    }
+                    if(res.rows[i].id.includes('.players.')){
+                        $(elem).append('<option value="' + res.rows[i].id + '">' + res.rows[i].id.replace(/^heos\.\d+\.players\./, '') + ' [' + name + ']</option>');
+                    }
+                }
+            }
+            $(elem).val(current);
+            $(elem).select();
+        });
+    }
+
     function fillMpdDevice(elem, current) {
         socket.emit('getObjectView', 'system', 'instance', {startkey: 'system.adapter.mpd.', endkey: 'system.adapter.mpd.\u9999'}, function (err, res) {
             if (!err && res) {
@@ -238,6 +256,8 @@
                                 server = $('#server').val();
                             } else if (type === 'sonos') {
                                 server = $('#device').val().split('.')[3].replace('_', '.').replace('_', '.').replace('_', '.');
+                            } else if (type === 'heos') {
+                                server = $('#heos_device').val().split('.')[3].replace('_', '.').replace('_', '.').replace('_', '.');
                             } else if (type === 'chromecast') {
                                 server = $('#cDevice').val();
                             } else if (type === 'mpd') {
@@ -295,6 +315,7 @@
             $(elem).val(current);
 
             if ((type === 'sonos') ||
+                (type === 'heos') ||
                 (type === 'chromecast') ||
                 (type === 'googleHome') ||
                 (type === 'mpd')
@@ -462,6 +483,7 @@
                 showHideSettings();
                 var type = $('#type').val();
                 if ((type === 'sonos') ||
+                    (type === 'heos') ||
                     (type === 'chromecast') ||
                     (type === 'mpd') ||
                     (type === 'googleHome')) {
@@ -509,12 +531,14 @@
 
 	fillEngineParams();    
         fillSonosDevices('#device', settings.device);
+        fillHeosDevices('#heos_device', settings.device);
         fillChromecastDevices('#cDevice', settings.cDevice);
         fillWebServices('#web', settings.web, settings.type, settings.webServer);
         fillMpdDevice('#mpd_device', settings.mpd_device);
 	
 
         if ((settings.type === 'sonos') ||
+            (settings.type === 'heos') ||
             (settings.type === 'chromecast') ||
             (settings.type === 'mpd') ||
             (settings.type === 'googleHome')){
@@ -738,6 +762,14 @@
                         <option value="" class="translate">All</option>
                     </select>
                     <label class="translate" for="device">Device:</label>
+                </div>
+            </div>
+            <div id="tr_heos_device"     class="row variable">
+                <div class="input-field col s6 l4">
+                    <select class="value" id="heos_device">
+                        <option value="" class="translate">All</option>
+                    </select>
+                    <label class="translate" for="heos_device">Device:</label>
                 </div>
             </div>
             <div id="tr_cDevice"    class="row variable">

@@ -648,6 +648,7 @@ function start() {
 
     // calculate weblink for devices that require it
     if ((adapter.config.type === 'sonos') ||
+        (adapter.config.type === 'heos') ||
         (adapter.config.type === 'chromecast') ||
         (adapter.config.type === 'mpd') ||
         (adapter.config.type === 'googleHome')) {
@@ -673,7 +674,7 @@ function applyWebSettings(err, obj) {
     if (!err && obj && obj.native) {
         options.webLink = 'http';
         if (obj.native.auth) {
-            adapter.log.error('Cannot use server "' + adapter.config.web + '" with authentication for sonos/chromecast. Select other or create another one.');
+            adapter.log.error('Cannot use server "' + adapter.config.web + '" with authentication for sonos/heos/chromecast. Select other or create another one.');
         } else {
             if (obj.native.secure) {
                 options.webLink += 's';
