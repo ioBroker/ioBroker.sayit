@@ -1,8 +1,20 @@
 {
     "common": {
         "name": "sayit",
-        "version": "1.11.5",
+        "version": "1.12.0",
         "news": {
+            "1.12.0": {
+                "en": "HEOS was added",
+                "de": "HEOS wurde hinzugefügt",
+                "ru": "HEOS добавлен",
+                "pt": "HEOS foi adicionado",
+                "nl": "HEOS is toegevoegd",
+                "fr": "HEOS a été ajouté",
+                "it": "È stato aggiunto HEOS",
+                "es": "HEOS fue agregado",
+                "pl": "HEOS został dodany",
+                "zh-cn": "HEOS已添加"
+            },
             "1.11.5": {
                 "en": "prevent scheduled restart problems",
                 "de": "Verhindern Sie geplante Neustartprobleme",
@@ -110,138 +122,6 @@
                 "es": "GUI actualizada para completar el menú desplegable correctamente. Voces premium añadidas al motor Yandex.Cloud",
                 "pl": "Zaktualizowano GUI, aby poprawnie wypełnić menu rozwijane. Dodano głosy premium do silnika Yandex.Cloud",
                 "zh-cn": "GUI已更新，可以正确填充下拉列表。高级语音已添加到Yandex.Cloud引擎"
-            },
-            "1.9.8": {
-                "en": "fix error handling on file copy",
-                "de": "Fehlerbehandlung bei Dateikopie behoben",
-                "ru": "исправление ошибок при копировании файлов",
-                "pt": "corrigir manipulação de erros na cópia de arquivo",
-                "nl": "foutafhandeling bij het kopiëren van bestanden repareren",
-                "fr": "correction de la gestion des erreurs lors de la copie des fichiers",
-                "it": "correggere la gestione degli errori sulla copia del file",
-                "es": "corregir el manejo de errores en la copia de archivos",
-                "pl": "naprawiono obsługę błędów przy kopiowaniu plików",
-                "zh-cn": "修复文件复制中的错误处理"
-            },
-            "1.9.7": {
-                "en": "tts.ogg state added for ogg file type",
-                "de": "tts.ogg-Status für ogg-Dateityp hinzugefügt",
-                "ru": "добавлено состояние tts.ogg для типа файла ogg",
-                "pt": "Estado tts.ogg adicionado ao tipo de arquivo ogg",
-                "nl": "tts.ogg staat toegevoegd voor ogg-bestandstype",
-                "fr": "état tts.ogg ajouté pour le type de fichier ogg",
-                "it": "stato tts.ogg aggiunto per il tipo di file ogg",
-                "es": "Estado tts.ogg agregado para el tipo de archivo ogg",
-                "pl": "Dodano stan tts.ogg dla typu pliku ogg",
-                "zh-cn": "为gg文件类型添加了tts.ogg状态"
-            },
-            "1.9.6": {
-                "en": "Show names of SONOS devices",
-                "de": "Namen von SONOS-Geräten anzeigen",
-                "ru": "Показать названия устройств SONOS",
-                "pt": "Mostrar nomes de dispositivos SONOS",
-                "nl": "Toon namen van SONOS-apparaten",
-                "fr": "Afficher les noms des appareils SONOS",
-                "it": "Mostra i nomi dei dispositivi SONOS",
-                "es": "Mostrar nombres de dispositivos SONOS",
-                "pl": "Pokaż nazwy urządzeń SONOS",
-                "zh-cn": "显示SONOS设备的名称"
-            },
-            "1.9.4": {
-                "en": "Fix Blockly\nUpdate dependencies",
-                "de": "Blockartig reparieren\nAbhängigkeiten aktualisieren",
-                "ru": "Исправить Blockly\nОбновить зависимости",
-                "pt": "Fix Blockly\nAtualizar dependências",
-                "nl": "Fix Blockly\nUpdate afhankelijkheden",
-                "fr": "Fix Blockly\nMettre à jour les dépendances",
-                "it": "Fix Blockly\nAggiorna dipendenze",
-                "es": "Fix Blockly\nActualizar dependencias",
-                "pl": "Napraw blokowanie\nZaktualizuj zależności",
-                "zh-cn": "固定修复\n更新依赖"
-            },
-            "1.9.3": {
-                "en": "Fixed blockly with missing languages",
-                "de": "Blockiert mit fehlenden Sprachen behoben",
-                "ru": "Исправлено блочно с отсутствующими языками",
-                "pt": "Corrigido em bloco com os idiomas ausentes",
-                "nl": "Blokkerig opgelost met ontbrekende talen",
-                "fr": "Correction de bloc avec les langues manquantes",
-                "it": "Risolto il problema con le lingue mancanti",
-                "es": "Solucionado en bloque con idiomas faltantes",
-                "pl": "Naprawiono blokowanie brakujących języków",
-                "zh-cn": "修复了缺少语言的情况"
-            },
-            "1.9.2": {
-                "en": "Change type of Object to \"meta\" in order to comply with js-controller v3",
-                "de": "Ändern Sie den Objekttyp in \"meta\", um js-controller v3 zu entsprechen",
-                "ru": "Измените тип Object на «meta», чтобы соответствовать js-controller v3",
-                "pt": "Mude o tipo de objeto para \"meta\" para cumprir com o js-controller v3",
-                "nl": "Wijzig het type object in \"meta\" om te voldoen aan js-controller v3",
-                "fr": "Changer le type d'objet en \"meta\" afin de se conformer à js-controller v3",
-                "it": "Cambia il tipo di oggetto in \"meta\" per rispettare js-controller v3",
-                "es": "Cambie el tipo de Objeto a \"meta\" para cumplir con js-controller v3",
-                "pl": "Zmień typ obiektu na „meta”, aby zachować zgodność z js-controller v3",
-                "zh-cn": "将对象类型更改为“元”以符合js-controller v3"
-            },
-            "1.9.1": {
-                "en": "removed usage of adapter.getMessage",
-                "de": "Verwendung von adapter.getMessage entfernt",
-                "ru": "удалено использование adapter.getMessage",
-                "pt": "removido o uso de adapter.getMessage",
-                "nl": "verwijderd gebruik van adapter.getMessage",
-                "fr": "utilisation supprimée de adapter.getMessage",
-                "it": "rimosso l'utilizzo di adapter.getMessage",
-                "es": "uso eliminado de adapter.getMessage",
-                "pl": "usunięto użycie adapter.getMessage",
-                "zh-cn": "删除了adapter.getMessage的用法"
-            },
-            "1.9.0": {
-                "en": "Output file extension is changed dynamically based on the engine selected",
-                "de": "Die Ausgabedateierweiterung wird je nach ausgewähltem Modul dynamisch geändert",
-                "ru": "Расширение выходного файла изменяется динамически в зависимости от выбранного движка",
-                "pt": "A extensão do arquivo de saída é alterada dinamicamente com base no mecanismo selecionado",
-                "nl": "Uitvoerbestandsextensie wordt dynamisch gewijzigd op basis van de geselecteerde motor",
-                "fr": "L'extension du fichier de sortie est modifiée dynamiquement en fonction du moteur sélectionné",
-                "it": "L'estensione del file di output viene modificata in modo dinamico in base al motore selezionato",
-                "es": "La extensión del archivo de salida se cambia dinámicamente según el motor seleccionado",
-                "pl": "Rozszerzenie pliku wyjściowego zmienia się dynamicznie w zależności od wybranego silnika",
-                "zh-cn": "输出文件扩展名根据所选引擎动态更改"
-            },
-            "1.8.2": {
-                "en": "Web server URL will be updated if web server was updated",
-                "de": "Die Webserver-URL wird aktualisiert, wenn der Webserver aktualisiert wurde",
-                "ru": "URL веб-сервера будет обновлен, если веб-сервер был обновлен",
-                "pt": "O URL do servidor da Web será atualizado se o servidor da web tiver sido atualizado",
-                "nl": "Webserver-URL wordt bijgewerkt als de webserver is bijgewerkt",
-                "fr": "L'URL du serveur Web sera mis à jour si le serveur Web a été mis à jour",
-                "it": "L'URL del server Web verrà aggiornato se il server Web è stato aggiornato",
-                "es": "La URL del servidor web se actualizará si el servidor web se actualizó",
-                "pl": "Adres URL serwera WWW zostanie zaktualizowany, jeśli serwer WWW został zaktualizowany",
-                "zh-cn": "如果更新了Web服务器，将更新Web服务器URL"
-            },
-            "1.8.1": {
-                "en": "Add Ukrainian Google Language",
-                "de": "Ukrainisch hinzugefügt",
-                "ru": "Украинский добавил",
-                "pt": "Ucraniano adicionado",
-                "nl": "Oekraïens toegevoegd",
-                "fr": "Ukrainien ajouté",
-                "it": "Ucraino aggiunto",
-                "es": "Ucraniano agregó",
-                "pl": "Dodano Ukrainę",
-                "zh-cn": "乌克兰补充道"
-            },
-            "1.8.0": {
-                "en": "Priority for the text was added",
-                "de": "Priorität für den Text wurde hinzugefügt",
-                "ru": "Приоритет для текста был добавлен",
-                "pt": "Prioridade para o texto foi adicionado",
-                "nl": "Prioriteit voor de tekst is toegevoegd",
-                "fr": "La priorité du texte a été ajoutée",
-                "it": "È stata aggiunta la priorità per il testo",
-                "es": "Se ha añadido prioridad para el texto.",
-                "pl": "Priorytet tekstu został dodany",
-                "zh-cn": "优先的案文中加入"
             }
         },
         "title": "Text to speech",

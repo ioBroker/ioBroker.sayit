@@ -241,6 +241,8 @@ Following values for engines are possible:
 - **(tr-TR_AP_Female)** -           tr-TR - Female - Filiz
 
 ## Changelog
+### 1.12.0 (2020-10-19)
+* (withstu) Support for HEOS was added
 
 ### 1.11.5 (2020-09-24)
 * (Apollon77) prevent scheduled restart problems
