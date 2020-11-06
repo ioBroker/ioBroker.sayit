@@ -596,8 +596,12 @@ function start() {
                 const files = libs.fs.readdirSync(options.cacheDir);
                 for (let f = 0; f < files.length; f++) {
                     if (files[f] === 'engine.txt') continue;
-                    if (libs.fs.existsSync(libs.path.join(options.cacheDir, files[f])) && libs.fs.lstatSync(libs.path.join(options.cacheDir, files[f])).isDirectory()) {
-                        libs.fs.unlinkSync(libs.path.join(options.cacheDir, files[f]));
+                    try {
+                        if (libs.fs.existsSync(libs.path.join(options.cacheDir, files[f])) && libs.fs.lstatSync(libs.path.join(options.cacheDir, files[f])).isDirectory()) {
+                            libs.fs.unlinkSync(libs.path.join(options.cacheDir, files[f]));
+                        }
+                    } catch (e) {
+                        adapter.log.error('Cannot remove cache file "' + libs.path.join(options.cacheDir, files[f]) + ': ' + e.toString());
                     }
                 }
                 try {
