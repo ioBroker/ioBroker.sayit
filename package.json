@@ -47,7 +47,7 @@
     "@alcalzone/release-script": "^1.8.1",
     "gulp": "^4.0.2",
     "axios": "^0.20.0",
-    "mocha": "^8.2.0",
+    "mocha": "^8.2.1",
     "chai": "^4.2.0"
   },
   "bugs": {
