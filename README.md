@@ -241,7 +241,7 @@ Following values for engines are possible:
 - **(tr-TR_AP_Female)** -           tr-TR - Female - Filiz
 
 ## Changelog
-### __WORK IN PROGRESS__
+### 1.12.2 (2020-11-07)
 * (Apollon77) Prevent crash case (Sentry IOBROKER-SAYIT-Q, IOBROKER-SAYIT-S, IOBROKER-SAYIT-T)
 
 ### 1.12.0 (2020-10-19)
