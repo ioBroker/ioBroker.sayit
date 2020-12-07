@@ -36,7 +36,7 @@
   },
   "optionalDependencies": {
     "castv2-client": "^1.2.0",
-    "mdns": "^2.5.1"
+    "mdns": "^2.7.2"
   },
   "dependencies": {
     "jsftp": "^2.1.3",
