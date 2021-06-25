@@ -11,7 +11,7 @@ const adapterName   = require('./package.json').name.split('.').pop();
 const sayitOptions  = engines.sayitOptions;
 const libs          = {
     fs:     require('fs'),
-    path:   require('path')
+    path:   require('path'),
 };
 
 let dataDir = libs.path.normalize(`${utils.controllerDir}/${require(utils.controllerDir + '/lib/tools').getDefaultDataDir()}/sayit`);
@@ -223,7 +223,7 @@ function cacheIt(text, language) {
         }
 
         // Extract language from "en;volume;Text to say"
-        if (text.indexOf(';') !== -1) {
+        if (text.includes(';')) {
             const arr = text.split(';', 3);
             // If language;text or volume;text
             if (arr.length === 2) {
@@ -301,7 +301,7 @@ function sayIt(text, language, volume, processing) {
     let md5filename;
 
     // Extract language from "en;volume;Text to say"
-    if (text.indexOf(';') !== -1) {
+    if (text.includes(';')) {
         const arr = text.split(';', 3);
         // If language;text or volume;text
         if (arr.length === 2) {
@@ -361,7 +361,7 @@ function sayIt(text, language, volume, processing) {
                         libs.fs.writeFileSync(MP3FILE, data);
                         sayIt((sayFirst ? '!' : '') + MP3FILE, language, volume, processing);
                     } catch (e) {
-                        adapter.log.error('Cannot write file "' + MP3FILE + '": ' + e.toString());
+                        adapter.log.error(`Cannot write file "${MP3FILE}": ${e.toString()}`);
                         sayFinished(0);
                     }
                 } else {
@@ -370,15 +370,15 @@ function sayIt(text, language, volume, processing) {
                         try {
                             data = libs.fs.readFileSync(text);
                         } catch (e) {
-                            adapter.log.error('Cannot read file "' + text + '": ' + e.toString());
+                            adapter.log.error(`Cannot read file "${text}": ${e.toString()}`);
                             sayFinished(0);
                         }
                         // Cache the file
-                        if (md5filename) libs.fs.writeFileSync(md5filename, data);
+                        md5filename && libs.fs.writeFileSync(md5filename, data);
                         libs.fs.writeFileSync(MP3FILE, data);
                         sayIt((sayFirst ? '!' : '') + MP3FILE, language, volume, processing);
                     } else {
-                        adapter.log.warn('File "' + text + '" not found');
+                        adapter.log.warn(`File "${text}" not found`);
                         sayFinished(0);
                     }
                 }
@@ -638,11 +638,8 @@ function start() {
         }
     });
 
-    adapter.getState('tts.playing', (err, state) => {
-        if (err || !state) {
-            adapter.setState('tts.playing', false, true);
-        }
-    });
+    adapter.getState('tts.playing', (err, state) =>
+        (err || !state) && adapter.setState('tts.playing', false, true));
 
     if (adapter.config.type === 'system') {
         // Read volume
@@ -707,13 +704,19 @@ function applyWebSettings(err, obj) {
 }
 
 function main() {
-    if ((process.argv && process.argv.includes('--install')) ||
-        ((!process.argv || !process.argv.includes('--force')) && (!adapter.common || !adapter.common.enabled))) {
+    if (
+        (process.argv && process.argv.includes('--install')) ||
+        (
+            (!process.argv || !process.argv.includes('--force')) && // If no arguments or no --force
+            (!adapter.common || !adapter.common.enabled) && // And adapter is not enabled
+            !process.argv.includes('--debug') // and not debug
+        )
+    ) {
         adapter.log.info('Install process. Upload files and stop.');
-        // Check if files exists in datastorage
+        // Check if files exists in data storage
         uploadFiles(() => adapter.stop ? adapter.stop() : process.exit());
     } else {
-        // Check if files exists in datastorage
+        // Check if files exists in data storage
         uploadFiles(start);
     }
 }
