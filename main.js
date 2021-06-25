@@ -14,7 +14,7 @@ const libs          = {
     path:   require('path')
 };
 
-let dataDir = libs.path.normalize(utils.controllerDir + '/' + require(utils.controllerDir + '/lib/tools').getDefaultDataDir() + '/sayit');
+let dataDir = libs.path.normalize(`${utils.controllerDir}/${require(utils.controllerDir + '/lib/tools').getDefaultDataDir()}/sayit`);
 
 process.on('SIGINT', stop);
 
@@ -45,19 +45,16 @@ function startAdapter(options) {
             } else if (id === adapter.namespace + '.tts.text') {
                 if (typeof state.val !== 'string') {
                     if (state.val === null || state.val === undefined || state.val === '') {
-                        adapter.log.warn('Cannot cache empty text');
-                        return;
+                        return adapter.log.warn('Cannot cache empty text');
                     }
                     state.val = state.val.toString();
                 }
 
                 sayIt(state.val);
             } else if (id === adapter.namespace + '.tts.cachetext') {
-
                 if (typeof state.val !== 'string') {
                     if (state.val === null || state.val === undefined || state.val === '') {
-                        adapter.log.warn('Cannot cache empty text');
-                        return;
+                        return adapter.log.warn('Cannot cache empty text');
                     }
                     state.val = state.val.toString();
                 }
@@ -81,7 +78,7 @@ function startAdapter(options) {
         dataDir = __dirname;
     }
 
-    MP3FILE = dataDir + '/' + adapter.namespace + '.say.' + fileExt;
+    MP3FILE = `${dataDir}/${adapter.namespace}.say.${fileExt}`;
 
     return adapter;
 }
@@ -110,7 +107,7 @@ function processMessage(obj) {
                 browser.start();
             } catch (e) {
                 adapter.log.error(e);
-                if (obj.callback) adapter.sendTo(obj.from, obj.command, null, obj.callback);
+                obj.callback && adapter.sendTo(obj.from, obj.command, null, obj.callback);
             }
         }
     }
@@ -133,7 +130,9 @@ function stop(unload, callback) {
     try {
         adapter && adapter.log && adapter.log.info && adapter.log.info('stopping...');
 
-        if (unload) return;
+        if (unload) {
+            return;
+        }
 
         setTimeout(() => {
             typeof callback === 'function' && callback();
@@ -166,7 +165,9 @@ function mkpathSync(rootpath, dirpath) {
     // Remove filename
     dirpath = dirpath.split('/');
     dirpath.pop();
-    if (!dirpath.length) return;
+    if (!dirpath.length) {
+        return;
+    }
 
     for (let i = 0; i < dirpath.length; i++) {
         rootpath += dirpath[i] + '/';
@@ -181,18 +182,19 @@ function mkpathSync(rootpath, dirpath) {
 }
 
 function sayFinished(error, duration) {
-    if (error) {
-        adapter.log.error(error);
-    }
+    error && adapter.log.error(error);
+
     duration = duration || 0;
     if (list.length) {
-        adapter.log.debug('Duration "' + list[0].text + '": ' + duration);
+        adapter.log.debug(`Duration "${list[0].text}": ${duration}`);
     }
+
     sayFinishedTimeout = setTimeout(() => {
         sayFinishedTimeout = null;
         // Remember when last text finished
         lastSay = Date.now();
-        if (list.length) list.shift();
+        list.length && list.shift();
+
         if (list.length) {
             sayIt(list[0].text, list[0].language, list[0].volume, true);
         }
@@ -217,8 +219,7 @@ function cacheIt(text, language) {
     } else {
         // new text to cache
         if (!adapter.config.cache) {
-            adapter.log.warn('Cache is not enabled. Unable to cache: ' + text);
-            return;
+            return adapter.log.warn('Cache is not enabled. Unable to cache: ' + text);
         }
 
         // Extract language from "en;volume;Text to say"
@@ -249,15 +250,16 @@ function cacheIt(text, language) {
 
         // Check: may be it is file from DB filesystem, like /vis.0/main/img/door-bell.mp3
         if (text[0] === '/') {
-            adapter.log.warn('mp3 file must not be cached: ' + text);
-            return;
+            return adapter.log.warn('mp3 file must not be cached: ' + text);
         }
 
         let isGenerate = false;
-        if (!language) language = adapter.config.engine;
+        language = language || adapter.config.engine;
 
         // find out if say.mp3 must be generated
-        if (!speech2device || !speech2device.sayItIsPlayFile(text)) isGenerate = sayitOptions[adapter.config.type].mp3Required;
+        if (!speech2device || !speech2device.sayItIsPlayFile(text)) {
+            isGenerate = sayitOptions[adapter.config.type].mp3Required;
+        }
 
         if (!isGenerate) {
             if (speech2device && speech2device.sayItIsPlayFile(text)) {
@@ -272,13 +274,11 @@ function cacheIt(text, language) {
         libs.fs = libs.fs || require('fs');
 
         if (libs.fs.existsSync(md5filename)) {
-            adapter.log.debug('Text is yet cached: ' + text);
-            return;
+            return adapter.log.debug('Text is yet cached: ' + text);
         }
 
         if (cacheRunning) {
-            cacheFiles.push({text, language});
-            return;
+            return cacheFiles.push({text, language});
         }
     }
 
@@ -392,8 +392,7 @@ function sayIt(text, language, volume, processing) {
 
         // Workaround for double text
         if (list.length > 1 && (list[list.length - 1].text === text) && (time - list[list.length - 1].time < 500)) {
-            adapter.log.warn('Same text in less than half a second.. Strange. Ignore it.');
-            return;
+            return adapter.log.warn('Same text in less than half a second.. Strange. Ignore it.');
         }
         // If more time than 15 seconds
         if (adapter.config.announce && !list.length && (!lastSay || (time - lastSay > adapter.config.annoTimeout * 1000))) {
@@ -418,7 +417,9 @@ function sayIt(text, language, volume, processing) {
             } else {
                 list.push({text: text, language: language, volume: (volume || adapter.config.volume), time: time });
             }
-            if (list.length > 1) return;
+            if (list.length > 1) {
+                return;
+            }
         }
     }
 
@@ -440,8 +441,8 @@ function sayIt(text, language, volume, processing) {
     const speechFunction = speech2device && speech2device.getFunction(adapter.config.type);
 
     // If text first must be generated
-    if (isGenerate && sayLastGeneratedText !== '[' + language + ']' + text) {
-        sayLastGeneratedText = '[' + language + ']' + text;
+    if (isGenerate && sayLastGeneratedText !== `[${language}]${text}`) {
+        sayLastGeneratedText = `[${language}]${text}`;
         text2speech && text2speech.sayItGetSpeech(text, language, volume, (error, text, language, volume, duration) =>
             speechFunction(error, text, language, volume, duration, sayFinished));
     } else {
@@ -488,7 +489,7 @@ function uploadFile(file, callback) {
                 adapter.writeFile(adapter.namespace, 'tts.userfiles/' + file, libs.fs.readFileSync(libs.path.join(__dirname + '/mp3/', file)), () =>
                     callback && callback());
             } catch (e) {
-                adapter.log.error('Cannot read file "' + __dirname + '/mp3/' + file + '": ' + e.toString());
+                adapter.log.error(`Cannot read file "${__dirname}/mp3/${file}": ${e.toString()}`);
                 callback && callback();
             }
         } else {
@@ -578,7 +579,7 @@ function start() {
             try {
                 mkpathSync(__dirname + '/', adapter.config.cacheDir);
             } catch (e) {
-                adapter.log.error('Cannot create "' + options.cacheDir + '": ' + e.message);
+                adapter.log.error(`Cannot create "${options.cacheDir}": ${e.message}`);
             }
         } else {
             let engine = '';
@@ -587,7 +588,7 @@ function start() {
                 try {
                     engine = libs.fs.readFileSync(libs.path.join(options.cacheDir, 'engine.txt')).toString();
                 } catch (e) {
-                    adapter.log.error('Cannot read file "' + libs.path.join(options.cacheDir, 'engine.txt') + ': ' + e.toString());
+                    adapter.log.error(`Cannot read file "${libs.path.join(options.cacheDir, 'engine.txt')}: ${e.toString()}`);
                 }
             }
             // If engine changed
@@ -601,13 +602,13 @@ function start() {
                             libs.fs.unlinkSync(libs.path.join(options.cacheDir, files[f]));
                         }
                     } catch (e) {
-                        adapter.log.error('Cannot remove cache file "' + libs.path.join(options.cacheDir, files[f]) + ': ' + e.toString());
+                        adapter.log.error(`Cannot remove cache file "${libs.path.join(options.cacheDir, files[f])}: ${e.toString()}`);
                     }
                 }
                 try {
                     libs.fs.writeFileSync(libs.path.join(options.cacheDir, 'engine.txt'), adapter.config.engine);
                 } catch (e) {
-                    adapter.log.error('Cannot write file "' + libs.path.join(options.cacheDir, 'engine.txt') + ': ' + e.toString());
+                    adapter.log.error(`Cannot write file "${libs.path.join(options.cacheDir, 'engine.txt')}: ${e.toString()}`);
                 }
             }
         }
@@ -627,9 +628,13 @@ function start() {
     adapter.getState('tts.volume', (err, state) => {
         if (err || !state) {
             adapter.setState('tts.volume', 70, true);
-            if (adapter.config.type !== 'system') options.sayLastVolume = 70;
+            if (adapter.config.type !== 'system') {
+                options.sayLastVolume = 70;
+            }
         } else {
-            if (adapter.config.type !== 'system') options.sayLastVolume = state.val;
+            if (adapter.config.type !== 'system') {
+                options.sayLastVolume = state.val;
+            }
         }
     });
 
@@ -678,14 +683,14 @@ function applyWebSettings(err, obj) {
     if (!err && obj && obj.native) {
         options.webLink = 'http';
         if (obj.native.auth) {
-            adapter.log.error('Cannot use server "' + adapter.config.web + '" with authentication for sonos/heos/chromecast. Select other or create another one.');
+            adapter.log.error(`Cannot use server "${adapter.config.web}" with authentication for sonos/heos/chromecast. Select other or create another one.`);
         } else {
             if (obj.native.secure) {
                 options.webLink += 's';
             }
             options.webLink += '://';
             if (obj.native.bind === 'localhost' || obj.native.bind === '127.0.0.1') {
-                adapter.log.error('Selected web server "' + adapter.config.web + '" is only on local device available. Select other or create another one.');
+                adapter.log.error(`Selected web server "${adapter.config.web}" is only on local device available. Select other or create another one.`);
             } else {
                 if (obj.native.bind === '0.0.0.0') {
                     options.webLink += adapter.config.webServer;
@@ -697,13 +702,13 @@ function applyWebSettings(err, obj) {
             options.webLink += ':' + obj.native.port;
         }
     } else {
-        adapter.log.error('Cannot read information about "' + adapter.config.web + '". No web server is active');
+        adapter.log.error(`Cannot read information about "${adapter.config.web}". No web server is active`);
     }
 }
 
 function main() {
-    if ((process.argv && process.argv.indexOf('--install') !== -1) ||
-        ((!process.argv || process.argv.indexOf('--force') === -1) && (!adapter.common || !adapter.common.enabled))) {
+    if ((process.argv && process.argv.includes('--install')) ||
+        ((!process.argv || !process.argv.includes('--force')) && (!adapter.common || !adapter.common.enabled))) {
         adapter.log.info('Install process. Upload files and stop.');
         // Check if files exists in datastorage
         uploadFiles(() => adapter.stop ? adapter.stop() : process.exit());

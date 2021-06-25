@@ -186,6 +186,11 @@
         "stopBeforeUpdate": true,
         "icon": "sayit.png",
         "materialize": true,
+        "adminUI": {
+            "config": "materialize"
+        },
+        "connectionType": "cloud",
+        "dataSource": "none",
         "enabled": true,
         "compact": true,
         "keywords": [
