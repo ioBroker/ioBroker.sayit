@@ -252,7 +252,7 @@ Following values for engines are possible:
 	### __WORK IN PROGRESS__
 -->
 ## Changelog
-### __WORK IN PROGRESS__
+### 1.12.3 (2021-06-25)
 * (bluefox) corrected the google engine
 * (bluefox) Added new voices: german, korean, brasil, Dutch
 

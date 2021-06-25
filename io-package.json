@@ -1,8 +1,20 @@
 {
     "common": {
         "name": "sayit",
-        "version": "1.12.2",
+        "version": "1.12.3",
         "news": {
+            "1.12.3": {
+                "en": "corrected the google engine\nAdded new voices: german, korean, brasil, Dutch",
+                "de": "die Google-Engine korrigiert\nNeue Stimmen hinzugefügt: Deutsch, Koreanisch, Brasil, Niederländisch",
+                "ru": "исправил движок гугл\nДобавлены новые голоса: немецкий, корейский, бразильский, голландский.",
+                "pt": "corrigiu o motor do google\nAdicionadas novas vozes: alemão, coreano, brasil, holandês",
+                "nl": "de google engine gecorrigeerd correct\nNieuwe stemmen toegevoegd: Duits, Koreaans, Brazilië, Nederlands",
+                "fr": "corrigé le moteur google\nAjout de nouvelles voix : allemand, coréen, brésilien, néerlandais",
+                "it": "corretto il motore di Google\nAggiunte nuove voci: tedesco, coreano, brasiliano, olandese",
+                "es": "corrigió el motor de google\nAñadidas nuevas voces: alemán, coreano, brasil, holandés",
+                "pl": "poprawiłem silnik google\nDodano nowe głosy: niemiecki, koreański, brazylijski, holenderski",
+                "zh-cn": "更正了谷歌引擎\n添加了新的声音：德语、韩语、巴西语、荷兰语"
+            },
             "1.12.2": {
                 "en": "Prevent crash case (Sentry IOBROKER-SAYIT-Q, IOBROKER-SAYIT-S, IOBROKER-SAYIT-T)",
                 "de": "Absturz verhindern (Sentry IOBROKER-SAYIT-Q, IOBROKER-SAYIT-S, IOBROKER-SAYIT-T)",
