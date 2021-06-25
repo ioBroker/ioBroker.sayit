@@ -1,9 +1,13 @@
 ![Logo](admin/sayit.png)
 # ioBroker sayit adapter
 
-![Number of Installations](http://iobroker.live/badges/sayit-installed.svg) ![Number of Installations](http://iobroker.live/badges/sayit-stable.svg) [![NPM version](http://img.shields.io/npm/v/iobroker.sayit.svg)](https://www.npmjs.com/package/iobroker.sayit)
+![Number of Installations](http://iobroker.live/badges/sayit-installed.svg)
+![Number of Installations](http://iobroker.live/badges/sayit-stable.svg)
+[![NPM version](http://img.shields.io/npm/v/iobroker.sayit.svg)](https://www.npmjs.com/package/iobroker.sayit)
+
+![Test and Release](https://github.com/ioBroker/iobroker.sayit/workflows/Test%20and%20Release/badge.svg)
+[![Translation status](https://weblate.iobroker.net/widgets/adapters/-/sayit/svg-badge.svg)](https://weblate.iobroker.net/engage/adapters/?utm_source=widget)
 [![Downloads](https://img.shields.io/npm/dm/iobroker.sayit.svg)](https://www.npmjs.com/package/iobroker.sayit)
-[![NPM](https://nodei.co/npm/iobroker.sayit.png?downloads=true)](https://nodei.co/npm/iobroker.sayit/)
 
 **This adapter uses Sentry libraries to automatically report exceptions and code errors to the developers.** For more details and for information how to disable the error reporting see [Sentry-Plugin Documentation](https://github.com/ioBroker/plugin-sentry#plugin-sentry)! Sentry reporting is used starting with js-controller 3.0.
 

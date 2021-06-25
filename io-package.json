@@ -203,6 +203,7 @@
         },
         "connectionType": "cloud",
         "dataSource": "none",
+        "tier": 3,
         "enabled": true,
         "compact": true,
         "keywords": [
