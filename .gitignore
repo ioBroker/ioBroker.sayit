@@ -9,3 +9,5 @@ iob_npm.done
 .vscode
 package-lock.json
 *.tgz
+/sayit.0.say.mp3
+/gong.mp3
