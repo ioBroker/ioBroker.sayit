@@ -3,12 +3,16 @@
 /* jslint node: true */
 'use strict';
 const utils         = require('@iobroker/adapter-core'); // Get common adapter utils
-const engines       = require('./admin/engines.js');
 const Text2Speech   = require('./lib/text2speech');
 const Speech2Device = require('./lib/speech2device');
 const adapterName   = require('./package.json').name.split('.').pop();
 
-const sayitOptions  = engines.sayitOptions;
+const languages = require('./lib/definitions').languages;
+const engines = require('./lib/definitions').engines;
+const voices = require('./lib/definitions').voices;
+const coquiTTSvocoders = require('./lib/definitions').coquiTTSvocoders;
+const sayitOptions  = require('./lib/definitions').outputs;
+
 const libs          = {
     fs:     require('fs'),
     path:   require('path'),
@@ -83,33 +87,236 @@ function startAdapter(options) {
     return adapter;
 }
 
-function processMessage(obj) {
+async function processMessage(obj) {
     if (obj) {
-        if (obj.command === 'stopInstance') {
-            stop(() =>
-                obj.callback && adapter.sendTo(obj.from, obj.command, null, obj.callback));
-        } else if (obj.command === 'browseChromecast') {
-            try {
-                const mdns = require('mdns');
 
-                let browser = mdns.createBrowser(mdns.tcp('googlecast'));
+        switch (obj.command) {
+            case 'stopInstance': {
+                stop(() =>
+                    obj.callback && adapter.sendTo(obj.from, obj.command, null, obj.callback));
+                break;
+            }
+            case 'browseChromecast': {
+                const chromecast = browseChromecast();
+                obj.callback && adapter.sendTo(obj.from, obj.command, chromecast, obj.callback);
+                break;
+            }
+            case 'getDevices': {
+                let result = [{'label': 'none', 'value': 'none'}];
+                switch (obj.message.type) {
+                    case 'mpd': {
+                        const web = await adapter.getObjectViewAsync('system', 'instance', {
+                            startkey: 'system.adapter.mpd.',
+                            endkey: 'system.adapter.mpd.\u9999'
+                        })
+                        for (let i = 0; i < web.rows.length; i++) {
+                            let n = web.rows[i].id.replace('system.adapter.', '');
+                            result.push({'label': n, 'value': n});
+                        }
+                        obj.callback && adapter.sendTo(obj.from, obj.command, result, obj.callback);
+                        break;
+                    }
+                    case 'chromecast': {
+                        const chromecast = await adapter.getObjectViewAsync('system', 'device', {
+                            startkey: 'chromecast.',
+                            endkey: 'chromecast.\u9999'
+                        })
+                        for (let i = 0; i < chromecast.rows.length; i++) {
+                            result.push({'label': chromecast.rows.length[i], 'value': chromecast.rows.length[i]});
+                        }
+                        obj.callback && adapter.sendTo(obj.from, obj.command, result, obj.callback);
+                        break;
+                    }
+                    case 'googleHome': {
+                        let result = [];
+                        const devices = browseChromecast();
+                        if(devices){
+                            for (let i = 0; i < list.length; i++) {
+                                result.push({'label': `${list[i].name} [${list[i].ip}]`, 'value': list[i].ip});
+                            }
+                        } else {
+                            result.push({'label': 'No device found', 'value': ''})
+                        }
+                        obj.callback && adapter.sendTo(obj.from, obj.command, result, obj.callback);
+                        break;
+                    }
+                    case 'heos': {
+                        const heos = await adapter.getObjectViewAsync('system', 'channel', {
+                            startkey: 'heos.',
+                            endkey: 'heos.\u9999'
+                        })
+                        for (let i = 0; i < heos.rows.length; i++) {
+                            result.push({'label': heos.rows.length[i], 'value': heos.rows.length[i]});
+                        }
+                        obj.callback && adapter.sendTo(obj.from, obj.command, result, obj.callback);
+                        break;
+                    }
+                    case 'sonos': {
+                        const sonos = await adapter.getObjectViewAsync('system', 'channel', {
+                            startkey: 'sonos.',
+                            endkey: 'sonos.\u9999'
+                        })
+                        for (let i = 0; i < sonos.rows.length; i++) {
+                            result.push({'label': sonos.rows.length[i], 'value': sonos.rows.length[i]});
+                        }
+                        obj.callback && adapter.sendTo(obj.from, obj.command, result, obj.callback);
+                        break;
+                    }
+                }
+                break;
+            }
+            case 'getWebInstances': {
+                let result = [{'label': 'none', 'value': 'none'}];
+                const web = await adapter.getObjectViewAsync('system', 'instance', {startkey: 'system.adapter.web.', endkey: 'system.adapter.web.\u9999'});
+                for (let i = 0; i < web.rows.length; i++) {
+                    let n = web.rows[i].id.replace('system.adapter.', '');
+                    result.push({'label': n, 'value': n});
+                }
+                obj.callback && adapter.sendTo(obj.from, obj.command, result, obj.callback);
+                break;
+            }
+            case 'getWebServers': {
+                let result = [{'label': 'none', 'value': 'none'}];
 
-                const result = [];
-                browser.on('serviceUp', service => result.push({name: service.name, ip: service.addresses[0]}));
-                browser.on('error', err => adapter.log.error('Error on MDNS discovery: ' + err));
-                processMessageTimeout = setTimeout(() => {
-                    processMessageTimeout = null;
-                    browser.stop();
-                    browser = null;
+                if(obj.message.web !== undefined && obj.message.web !== ''){
+                    const web = await adapter.getForeignObjectAsync(`system.adapter.${obj.message.web}`)
+                    const host = await adapter.getForeignObjectAsync(`system.host.${web.common.host}`);
+                    if(web.native.bind === '0.0.0.0'){
+                        if (host && host.native) {
+                            for (let iface in host.native.hardware.networkInterfaces) {
+                                if (host.native.hardware.networkInterfaces.hasOwnProperty(iface)) {
+                                    for (let i = 0; i < host.native.hardware.networkInterfaces[iface].length; i++) {
+                                        if (host.native.hardware.networkInterfaces[iface][i].family === 'IPv4' && !host.native.hardware.networkInterfaces[iface][i].internal) {
+                                            result.push({'label': `[IPv4] ${host.native.hardware.networkInterfaces[iface][i].address} - ${iface}`, 'value': host.native.hardware.networkInterfaces[iface][i].address})
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    } else if(web.native.bind === '::'){
+                        if (host && host.native) {
+                            for (let iface in host.native.hardware.networkInterfaces) {
+                                if (host.native.hardware.networkInterfaces.hasOwnProperty(iface)) {
+                                    for (let i = 0; i < host.native.hardware.networkInterfaces[iface].length; i++) {
+                                        if (host.native.hardware.networkInterfaces[iface][i].family === 'IPv6' && !host.native.hardware.networkInterfaces[iface][i].internal) {
+                                            result.push({'label': `[IPv6] ${host.native.hardware.networkInterfaces[iface][i].address} - ${iface}`, 'value': host.native.hardware.networkInterfaces[iface][i].address})
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                }
+
+                obj.callback && adapter.sendTo(obj.from, obj.command, result, obj.callback);
+                break;
+            }
+            case 'getLanguages': {
+                if (obj.message.engine === null || obj.message.engine === '') {
+                    obj.callback && adapter.sendTo(obj.from, obj.command, languages, obj.callback);
+                } else {
+                    let result = [{'label': 'none', 'value': 'none'}];
+
+                    for (let l in languages) {
+                        for (let e in languages[l].engines) {
+
+                            if (languages[l].engines[e] === obj.message.engine) {
+                                result.push(languages[l]);
+                            }
+                        }
+                    }
                     obj.callback && adapter.sendTo(obj.from, obj.command, result, obj.callback);
-                }, 2000);
-
-                browser.start();
-            } catch (e) {
-                adapter.log.error(e);
-                obj.callback && adapter.sendTo(obj.from, obj.command, null, obj.callback);
+                }
+                break;
+            }
+            case 'getEngines': {
+                if (obj.message.language === null || obj.message.language === '' || obj.message.language === 'undefined' || obj.message.language === 'none') {
+                    obj.callback && adapter.sendTo(obj.from, obj.command, engines, obj.callback);
+                } else {
+                    let result = [{'label': 'none', 'value': 'none'}];
+                    for (let l in languages) {
+                        if (languages[l].value === obj.message.language) {
+                            for (let e in languages[l].engines) {
+                                for (let x in engines) {
+                                    if (engines[x].value === languages[l].engines[e]) {
+                                        result.push(engines[x]);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    obj.callback && adapter.sendTo(obj.from, obj.command, result, obj.callback);
+                }
+                break;
+            }
+            case 'getVoices': {
+                let result = [{'label': 'none', 'value': 'none'}];
+                if (obj.message.engine === 'none' ||(obj.message.engine === null || obj.message.engine === '' || obj.message.engine === 'undefined') && (obj.message.language === null || obj.message.language === '' || obj.message.language === 'undefined')) {
+                    obj.callback && adapter.sendTo(obj.from, obj.command, voices, obj.callback);
+                } else {
+                    for (let v in voices) {
+                        for (let l in voices[v].languages) {
+                            if (voices[v].languages[l] === obj.message.language) {
+                                for (let e in voices[v].engines) {
+                                    if (voices[v].engines[e] === obj.message.engine) {
+                                        result.push(voices[v]);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    obj.callback && adapter.sendTo(obj.from, obj.command, result, obj.callback);
+                }
+                break;
+            }
+            case 'getVocoders': {
+                obj.callback && adapter.sendTo(obj.from, obj.command, coquiTTSvocoders, obj.callback);
+                break;
+            }
+            case 'getCloudInstances':{
+                let result = [{'label': 'none', 'value': 'none'}];
+                const cloud = await adapter.getObjectViewAsync('system', 'instance', {startkey: 'system.adapter.cloud.', endkey: 'system.adapter.cloud.\u9999'});
+                for (let i = 0; i < cloud.rows.length; i++) {
+                    let n = cloud.rows[i].id.replace('system.adapter.', '');
+                    result.push({'label': n, 'value': n});
+                }
+                obj.callback && adapter.sendTo(obj.from, obj.command, result, obj.callback);
+                break;
+            }
+            case 'getAnnouncementSounds': {
+                let files = await libs.fs.readdirSync(`${__dirname.replace('node_modules/iobroker.sayit', '')}/iobroker-data/files/${adapter.namespace}/tts.userfiles`);
+                let result = [{'label': 'none', 'value': 'none'}];
+                for(let i in files){
+                    result.push({'label': files[i].replace('.mp3', ''), 'value': files[i]});
+                }
+                obj.callback && adapter.sendTo(obj.from, obj.command, result, obj.callback);
+                break;
             }
         }
+    }
+}
+
+function browseChromecast(){
+    try {
+        const mdns = require('mdns');
+
+        let browser = mdns.createBrowser(mdns.tcp('googlecast'));
+
+        const result = [];
+        browser.on('serviceUp', service => result.push({label: service.name, value: service.addresses[0]}));
+        browser.on('error', err => adapter.log.error('Error on MDNS discovery: ' + err));
+        processMessageTimeout = setTimeout(() => {
+            processMessageTimeout = null;
+            browser.stop();
+            browser = null;
+            return result;
+        }, 2000);
+
+        browser.start();
+    } catch (e) {
+        adapter.log.error(e);
+        return null;
     }
 }
 
@@ -204,7 +411,7 @@ function sayFinished(error, duration) {
 let cacheRunning = false;
 let cacheFiles   = [];
 
-function cacheIt(text, language) {
+async function cacheIt(text, language) {
     // process queue
     if (text === true) {
         if (!cacheFiles.length) {
@@ -258,7 +465,8 @@ function cacheIt(text, language) {
 
         // find out if say.mp3 must be generated
         if (!speech2device || !speech2device.sayItIsPlayFile(text)) {
-            isGenerate = sayitOptions[adapter.config.type].mp3Required;
+            const output = await getArrayMemberByValue(sayitOptions, 'value', adapter.config.type);
+            isGenerate = output.options.mp3Required;
         }
 
         if (!isGenerate) {
@@ -297,34 +505,8 @@ function cacheIt(text, language) {
     });
 }
 
-function sayIt(text, language, volume, processing) {
+async function sayIt(text, language, volume, processing) {
     let md5filename;
-
-    // Extract language from "en;volume;Text to say"
-    if (text.includes(';')) {
-        const arr = text.split(';', 3);
-        // If language;text or volume;text
-        if (arr.length === 2) {
-            // If number
-            if (parseInt(arr[0]).toString() === arr[0].toString()) {
-                volume = arr[0].trim();
-            } else {
-                language = arr[0].trim();
-            }
-            text = arr[1].trim();
-        } else if (arr.length === 3) {
-            // If language;volume;text or volume;language;text
-            // If number
-            if (parseInt(arr[0]).toString() === arr[0].toString()) {
-                volume   = arr[0].trim();
-                language = arr[1].trim();
-            } else {
-                volume   = arr[1].trim();
-                language = arr[0].trim();
-            }
-            text = arr[2].trim();
-        }
-    }
 
     const sayFirst = text[0] === '!';
     if (sayFirst) {
@@ -399,12 +581,12 @@ function sayIt(text, language, volume, processing) {
             if (sayFirst && list.length > 1) {
                 list.splice(1, 0,
                     // place as first the announce mp3
-                    {text: adapter.config.announce, language: language, volume: (volume || adapter.config.volume) / 2, time: time},
+                    {text: `${__dirname.replace('node_modules/iobroker.sayit', '')}/iobroker-data/sayit/tts.userfiles/${adapter.config.announce}`, language: language, volume: (volume || adapter.config.volume) / 2, time: time},
                     // and then text
                     {text: text, language: language, volume: (volume || adapter.config.volume), time: time});
             } else {
                 // place as first the announce mp3
-                list.push({text: adapter.config.announce, language: language, volume: (volume || adapter.config.volume) / 2, time: time});
+                list.push({text: `${__dirname.replace('node_modules/iobroker.sayit', '')}/iobroker-data/sayit/tts.userfiles/${adapter.config.announce}`, language: language, volume: (volume || adapter.config.volume) / 2, time: time});
                 // and then text
                 list.push({text: text, language: language, volume: (volume || adapter.config.volume), time: time});
             }
@@ -427,7 +609,7 @@ function sayIt(text, language, volume, processing) {
 
     let isGenerate = false;
     if (!language) {
-        language = adapter.config.engine;
+        language = adapter.config.language;
     }
     if (!volume && adapter.config.volume) {
 		volume = adapter.config.volume;
@@ -435,7 +617,8 @@ function sayIt(text, language, volume, processing) {
 
     // find out if say.mp3 must be generated
     if (!speech2device || !speech2device.sayItIsPlayFile(text)) {
-        isGenerate = sayitOptions[adapter.config.type].mp3Required;
+        const output = await getArrayMemberByValue(sayitOptions, 'value', adapter.config.type);
+        isGenerate = output.options.mp3Required;
     }
 
     const speechFunction = speech2device && speech2device.getFunction(adapter.config.type);
@@ -515,7 +698,7 @@ function uploadFiles(callback) {
     }
 }
 
-function start() {
+async function start() {
     if (adapter.config.engine === 'ru_YA_CLOUD') {
         fileExt = 'ogg';
     } else {
@@ -615,8 +798,9 @@ function start() {
     }
 
     // Load libs
-    for (let j = 0; j < sayitOptions[adapter.config.type].libs.length; j++) {
-        libs[sayitOptions[adapter.config.type].libs[j]] = require(sayitOptions[adapter.config.type].libs[j]);
+    const output = await getArrayMemberByValue(sayitOptions, 'value', adapter.config.type);
+    for (let j = 0; j < output.options.libs.length; j++) {
+        libs[output.options.libs[j]] = require(output.options.libs[j]);
     }
 
     adapter.getState('tts.text', (err, state) => {
@@ -674,6 +858,21 @@ function start() {
     }
 
     adapter.subscribeStates('*');
+}
+
+/**
+ *
+ * @param {array} array
+ * @param {string} key
+ * @param {string} value
+ * @returns {Promise<object>}
+ */
+async function getArrayMemberByValue(array, key, value){
+    for(let i in array){
+        if(array[i][key] === value){
+            return array[i];
+        }
+    }
 }
 
 function applyWebSettings(err, obj) {

@@ -32,7 +32,7 @@
     "System command:": "Systemkommando",
     "Type:": "Ausgabe durch",
     "User:": "Anwender",
-    "Voice:": "Stimme",
+    "voice": "Stimme",
     "Web instance:": "Web instance",
     "Web server IP:": "Web server IP",
     "error": "Fehler",

@@ -199,7 +199,7 @@
         "icon": "sayit.png",
         "materialize": true,
         "adminUI": {
-            "config": "materialize"
+            "config": "json"
         },
         "connectionType": "cloud",
         "dataSource": "none",
@@ -316,6 +316,7 @@
                 "type": "boolean",
                 "read": false,
                 "write": true,
+                "def": false,
                 "desc": "If you need to say something immediately and the queue is full, set it to true before sending the new task"
             },
             "native": {}
