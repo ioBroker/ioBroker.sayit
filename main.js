@@ -285,7 +285,7 @@ async function processMessage(obj) {
                 break;
             }
             case 'getAnnouncementSounds': {
-                let files = await libs.fs.readdirSync(`${__dirname.replace('node_modules/iobroker.sayit', '')}/iobroker-data/files/${adapter.namespace}/tts.userfiles`);
+                let files = await adapter.readDirAsync('sayit', `${__dirname.replace('node_modules/iobroker.sayit', '')}/iobroker-data/files/${adapter.namespace}/tts.userfiles`);
                 let result = [{'label': 'none', 'value': 'none'}];
                 for(let i in files){
                     result.push({'label': files[i].replace('.mp3', ''), 'value': files[i]});
@@ -466,7 +466,10 @@ async function cacheIt(text, language) {
         // find out if say.mp3 must be generated
         if (!speech2device || !speech2device.sayItIsPlayFile(text)) {
             const output = await getArrayMemberByValue(sayitOptions, 'value', adapter.config.type);
-            isGenerate = output.options.mp3Required;
+            if(output && output.options){
+                isGenerate = output.options.mp3Required;
+            }
+
         }
 
         if (!isGenerate) {
@@ -618,7 +621,9 @@ async function sayIt(text, language, volume, processing) {
     // find out if say.mp3 must be generated
     if (!speech2device || !speech2device.sayItIsPlayFile(text)) {
         const output = await getArrayMemberByValue(sayitOptions, 'value', adapter.config.type);
-        isGenerate = output.options.mp3Required;
+        if(output && output.options){
+            isGenerate = output.options.mp3Required;
+        }
     }
 
     const speechFunction = speech2device && speech2device.getFunction(adapter.config.type);
@@ -799,8 +804,10 @@ async function start() {
 
     // Load libs
     const output = await getArrayMemberByValue(sayitOptions, 'value', adapter.config.type);
-    for (let j = 0; j < output.options.libs.length; j++) {
-        libs[output.options.libs[j]] = require(output.options.libs[j]);
+    if (output && output.options) {
+        for (let j = 0; j < output.options.libs.length; j++) {
+            libs[output.options.libs[j]] = require(output.options.libs[j]);
+        }
     }
 
     adapter.getState('tts.text', (err, state) => {

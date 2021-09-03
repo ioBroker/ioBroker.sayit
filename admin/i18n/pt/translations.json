@@ -16,7 +16,6 @@
     "Cloud instance:": "Instância de nuvem",
     "Device:": "Dispositivo",
     "Drunk:": "Bêbado",
-    "Emotion:": "Emoção",
     "File": "Arquivo",
     "IP not accessible for server": "IP não está acessível para o dispositivo",
     "Ignore for non linux OS": "Ignorar para SO não linux",
@@ -32,9 +31,9 @@
     "System command:": "Comando do sistema",
     "Type:": "Saída em",
     "User:": "Do utilizador",
-    "Voice:": "Voz",
     "Web instance:": "Instância da Web",
     "Web server IP:": "IP do servidor da Web",
+    "emotion": "Emoção",
     "error": "erro",
     "place here": "Coloque arquivos aqui",
     "play": "Toque",
@@ -42,5 +41,6 @@
     "select": "selecione",
     "tooltip_command": "Este comando será executado para usar o player do sistema personalizado",
     "tooltip_type": "Especifique onde a voz deve ser tocada",
-    "tree": "árvore"
+    "tree": "árvore",
+    "voice:": "Voz"
 }

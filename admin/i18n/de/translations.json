@@ -16,7 +16,6 @@
     "Cloud instance:": "Cloud-Instanz",
     "Device:": "Gerät",
     "Drunk:": "Betrunken",
-    "Emotion:": "Emotion",
     "File": "Datei",
     "IP not accessible for server": "IP ist für dieses Gerät nicht erreichbar",
     "Ignore for non linux OS": "Ignorieren für nicht linux OS",
@@ -32,9 +31,9 @@
     "System command:": "Systemkommando",
     "Type:": "Ausgabe durch",
     "User:": "Benutzer",
-    "Voice:": "Stimme",
     "Web instance:": "Web instance",
     "Web server IP:": "Web server IP",
+    "emotion": "Emotion",
     "error": "Fehler",
     "place here": "Dateien hier ablegen",
     "play": "abspielen",
@@ -42,5 +41,6 @@
     "select": "auswählen",
     "tooltip_command": "Dieses Kommando wird ausgeführt, um eigenen System-Player zu benutzen",
     "tooltip_type": "Damit wird gesetzt, wo die Sprache ausgegeben wird",
-    "tree": "Baum"
+    "tree": "Baum",
+    "voice:": "Stimme"
 }

@@ -16,7 +16,6 @@
     "Cloud instance:": "Cloud драйвер",
     "Device:": "Устройство",
     "Drunk:": "Пьяный голос",
-    "Emotion:": "Емоциональный окрас",
     "File": "файл",
     "IP not accessible for server": "Этот IP недоступен для устройства",
     "Ignore for non linux OS": "Игнорировать для не linux OS",
@@ -32,9 +31,9 @@
     "System command:": "Системный вызов",
     "Type:": "Вывод звука",
     "User:": "Пользователь",
-    "Voice:": "Голос",
     "Web instance:": "Web instance",
     "Web server IP:": "IP Веб сервера",
+    "emotion": "Емоциональный окрас",
     "error": "ошибка",
     "place here": "Перетащите файлы сюда",
     "play": "играть",
@@ -42,5 +41,6 @@
     "select": "выбрать",
     "tooltip_command": "Эта команда выполнится для проигрывания с собственным плеером",
     "tooltip_type": "Укажите как и где будет выводится голос",
-    "tree": "дерево"
+    "tree": "дерево",
+    "voice:": "Голос"
 }

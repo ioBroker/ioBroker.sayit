@@ -16,7 +16,6 @@
     "Cloud instance:": "云实例",
     "Device:": "装置",
     "Drunk:": "喝醉了",
-    "Emotion:": "情感",
     "File": "文件",
     "IP not accessible for server": "知识产权是不可访问设备",
     "Ignore for non linux OS": "忽略不linux操作系统",
@@ -32,9 +31,9 @@
     "System command:": "系统的命令",
     "Type:": "输出",
     "User:": "用户",
-    "Voice:": "声音",
     "Web instance:": "网络实例",
     "Web server IP:": "网络服务器的IP",
+    "emotion": "情感",
     "error": "错误",
     "place here": "地方文件在这里",
     "play": "玩",
@@ -42,5 +41,6 @@
     "select": "选择",
     "tooltip_command": "这种命令将被执行的，使用的定义系统中的玩家",
     "tooltip_type": "指定的语音必须发挥",
-    "tree": "树"
+    "tree": "树",
+    "voice:": "声音"
 }

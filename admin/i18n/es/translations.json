@@ -16,7 +16,6 @@
     "Cloud instance:": "Instancia de la nube",
     "Device:": "Dispositivo",
     "Drunk:": "Borracho",
-    "Emotion:": "Emoción",
     "File": "Expediente",
     "IP not accessible for server": "IP no es accesible para el dispositivo",
     "Ignore for non linux OS": "Ignorar para el sistema operativo no Linux",
@@ -32,9 +31,9 @@
     "System command:": "Comando del sistema",
     "Type:": "Salida en",
     "User:": "Usuario",
-    "Voice:": "Voz",
     "Web instance:": "Instancia web",
     "Web server IP:": "Servidor web IP",
+    "emotion": "Emoción",
     "error": "error",
     "place here": "Coloque los archivos aquí",
     "play": "jugar",
@@ -42,5 +41,6 @@
     "select": "seleccionar",
     "tooltip_command": "Este comando se ejecutará para usar el reproductor de sistema personalizado",
     "tooltip_type": "Especifique dónde debe reproducirse la voz",
-    "tree": "árbol"
+    "tree": "árbol",
+    "voice:": "Voz"
 }

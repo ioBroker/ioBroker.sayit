@@ -16,7 +16,6 @@
     "Cloud instance:": "Istanza Cloud",
     "Device:": "Dispositivo",
     "Drunk:": "Ubriaco",
-    "Emotion:": "Emozione",
     "File": "File",
     "IP not accessible for server": "L'IP non è accessibile per il dispositivo",
     "Ignore for non linux OS": "Ignora per sistema operativo non Linux",
@@ -32,9 +31,9 @@
     "System command:": "Comando di sistema",
     "Type:": "Uscita in",
     "User:": "Utente",
-    "Voice:": "Voce",
     "Web instance:": "Istanza Web",
     "Web server IP:": "IP del server Web",
+    "emotion": "Emozione",
     "error": "errore",
     "place here": "Inserisci i file qui",
     "play": "giocare",
@@ -42,5 +41,6 @@
     "select": "selezionare",
     "tooltip_command": "Questo comando verrà eseguito, per utilizzare il player di sistema personalizzato",
     "tooltip_type": "Specificare dove deve essere suonata la voce",
-    "tree": "albero"
+    "tree": "albero",
+    "voice:": "Voce"
 }

@@ -265,7 +265,7 @@ Following values for engines are possible:
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### ***WORK IN PROGRESS***
+### **WORK IN PROGRESS**
 * (jey cee) **Breaking change** Support for Admin5 only.
 * (jey cee) **Breaking change** tts does no longer accept parameters
 * (jey cee) Added  new offline engine Coqui TTS 

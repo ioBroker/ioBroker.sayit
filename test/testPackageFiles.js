@@ -65,15 +65,6 @@ describe('Test package.json and io-package.json', () => {
             console.log();
         }
 
-        if (!ioPackage.common.controller && !ioPackage.common.onlyWWW && !ioPackage.common.noConfig) {
-            if (!ioPackage.common.materialize || !fs.existsSync(__dirname + '/../admin/index_m.html') || !fs.existsSync(__dirname + '/../gulpfile.js')) {
-                console.log('WARNING: Admin3 support is missing! Please add it');
-                console.log();
-            }
-            if (ioPackage.common.materialize) {
-                expect(fs.existsSync(__dirname + '/../admin/index_m.html'), 'Admin3 support is enabled in io-package.json, but index_m.html is missing!').to.be.true;
-            }
-        }
 
         const licenseFileExists = fs.existsSync(__dirname + '/../LICENSE');
         const fileContentReadme = fs.readFileSync(__dirname + '/../README.md', 'utf8');

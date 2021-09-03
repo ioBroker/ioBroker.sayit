@@ -16,7 +16,6 @@
     "Cloud instance:": "Instance de cloud",
     "Device:": "Dispositif",
     "Drunk:": "Ivre",
-    "Emotion:": "Émotion",
     "File": "Fichier",
     "IP not accessible for server": "L'adresse IP n'est pas accessible pour l'appareil",
     "Ignore for non linux OS": "Ignorer pour les systèmes d'exploitation autres que Linux",
@@ -32,9 +31,9 @@
     "System command:": "Commande système",
     "Type:": "Sortie dans",
     "User:": "Utilisateur",
-    "Voice:": "Voix",
     "Web instance:": "Instance Web",
     "Web server IP:": "Adresse IP du serveur Web",
+    "emotion": "Émotion",
     "error": "Erreur",
     "place here": "Placez les fichiers ici",
     "play": "jouer",
@@ -42,5 +41,6 @@
     "select": "sélectionner",
     "tooltip_command": "Cette commande sera exécutée pour utiliser le lecteur système personnalisé",
     "tooltip_type": "Précisez où la voix doit être jouée",
-    "tree": "arbre"
+    "tree": "arbre",
+    "voice:": "Voix"
 }

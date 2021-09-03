@@ -16,7 +16,6 @@
     "Cloud instance:": "Cloud instantie",
     "Device:": "Apparaat",
     "Drunk:": "Dronken",
-    "Emotion:": "Emotie",
     "File": "het dossier",
     "IP not accessible for server": "IP is niet toegankelijk voor het apparaat",
     "Ignore for non linux OS": "Negeren voor niet-Linux OS",
@@ -32,9 +31,9 @@
     "System command:": "Systeemopdracht",
     "Type:": "Uitgang in",
     "User:": "Gebruiker",
-    "Voice:": "Stem",
     "Web instance:": "Web-instantie",
     "Web server IP:": "Webserver IP",
+    "emotion": "Emotie",
     "error": "fout",
     "place here": "Plaats hier bestanden",
     "play": "spelen",
@@ -42,5 +41,6 @@
     "select": "kiezen",
     "tooltip_command": "Deze opdracht wordt uitgevoerd om de aangepaste systeemspeler te gebruiken",
     "tooltip_type": "Geef op waar de stem moet worden afgespeeld",
-    "tree": "boom"
+    "tree": "boom",
+    "voice:": "Stem"
 }

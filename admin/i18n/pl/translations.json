@@ -16,7 +16,6 @@
     "Cloud instance:": "Instancja chmury",
     "Device:": "Urządzenie",
     "Drunk:": "Pijany",
-    "Emotion:": "Emocja",
     "File": "Plik",
     "IP not accessible for server": "Adres IP jest niedostępny dla urządzenia",
     "Ignore for non linux OS": "Zignoruj dla systemu operacyjnego non linux",
@@ -32,9 +31,9 @@
     "System command:": "Polecenie systemowe",
     "Type:": "Wyjście w",
     "User:": "Użytkownik",
-    "Voice:": "Głos",
     "Web instance:": "Instancja internetowa",
     "Web server IP:": "Adres IP serwera WWW",
+    "emotion": "Emocja",
     "error": "błąd",
     "place here": "Umieść pliki tutaj",
     "play": "grać",
@@ -42,5 +41,6 @@
     "select": "Wybierz",
     "tooltip_command": "To polecenie zostanie wykonane, aby użyć niestandardowego odtwarzacza systemu",
     "tooltip_type": "Określ, gdzie musi być odtwarzany głos",
-    "tree": "drzewo"
+    "tree": "drzewo",
+    "voice:": "Głos"
 }
