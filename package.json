@@ -40,7 +40,7 @@
   },
   "dependencies": {
     "jsftp": "^2.1.3",
-    "aws-sdk": "~2.998.0",
+    "aws-sdk": "~2.1018.0",
     "@iobroker/adapter-core": "^2.5.1",
     "google-tts-api": "^2.0.2"
   },
