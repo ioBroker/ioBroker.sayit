@@ -122,7 +122,7 @@ async function processMessage(obj) {
                             endkey: 'chromecast.\u9999'
                         })
                         for (let i = 0; i < chromecast.rows.length; i++) {
-                            result.push({'label': chromecast.rows.length[i], 'value': chromecast.rows.length[i]});
+                            result.push({'label': chromecast.rows[i].value.common.name, 'value': chromecast.rows[i].value._id});
                         }
                         obj.callback && adapter.sendTo(obj.from, obj.command, result, obj.callback);
                         break;
@@ -146,7 +146,7 @@ async function processMessage(obj) {
                             endkey: 'heos.\u9999'
                         })
                         for (let i = 0; i < heos.rows.length; i++) {
-                            result.push({'label': heos.rows.length[i], 'value': heos.rows.length[i]});
+                            result.push({'label': heos.rows[i].value.common.name, 'value': heos.rows[i].value._id});
                         }
                         obj.callback && adapter.sendTo(obj.from, obj.command, result, obj.callback);
                         break;
@@ -157,7 +157,7 @@ async function processMessage(obj) {
                             endkey: 'sonos.\u9999'
                         })
                         for (let i = 0; i < sonos.rows.length; i++) {
-                            result.push({'label': sonos.rows.length[i], 'value': sonos.rows.length[i]});
+                            result.push({'label': sonos.rows[i].value.common.name, 'value': sonos.rows[i].value._id});
                         }
                         obj.callback && adapter.sendTo(obj.from, obj.command, result, obj.callback);
                         break;
@@ -285,10 +285,11 @@ async function processMessage(obj) {
                 break;
             }
             case 'getAnnouncementSounds': {
-                let files = await adapter.readDirAsync('sayit', `${__dirname.replace('node_modules/iobroker.sayit', '')}/iobroker-data/files/${adapter.namespace}/tts.userfiles`);
+                let files = await adapter.readDirAsync(adapter.namespace, '/tts.userfiles');
                 let result = [{'label': 'none', 'value': 'none'}];
-                for(let i in files){
-                    result.push({'label': files[i].replace('.mp3', ''), 'value': files[i]});
+                for (let i in files){
+                    if(files[i].isDir === true) { continue; };
+                    result.push({'label': files[i].file.replace('.mp3', ''), 'value': files[i].file});
                 }
                 obj.callback && adapter.sendTo(obj.from, obj.command, result, obj.callback);
                 break;
@@ -390,8 +391,6 @@ function mkpathSync(rootpath, dirpath) {
 
 function sayFinished(error, duration) {
     error && adapter.log.error(error);
-
-    duration = duration || 0;
     if (list.length) {
         adapter.log.debug(`Duration "${list[0].text}": ${duration}`);
     }
@@ -857,7 +856,7 @@ async function start() {
     }
 
     try {
-        text2speech   = new Text2Speech(adapter, libs, options, sayIt);
+        text2speech = new Text2Speech(adapter, libs, options, sayIt);
         speech2device = new Speech2Device(adapter, libs, options);
     } catch (e) {
         adapter.log.error('Cannot initialize engines: ' + e.toString());

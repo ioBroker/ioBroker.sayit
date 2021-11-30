@@ -240,7 +240,7 @@
         "instance": "",
         "web": "",
         "webServer": "",
-        "cacheDir": "../../cache/",
+        "cacheDir": "/cache/",
         "key": "",
         "announce": "",
         "annoTimeout": 15,
