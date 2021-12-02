@@ -178,7 +178,7 @@ async function processMessage(obj) {
             case 'getWebServers': {
                 let result = [{'label': 'none', 'value': 'none'}];
 
-                if(obj.message.web !== undefined && obj.message.web !== ''){
+                if(obj.message.web !== undefined && obj.message.web !== null && obj.message.web !== ''){
                     const web = await adapter.getForeignObjectAsync(`system.adapter.${obj.message.web}`)
                     const host = await adapter.getForeignObjectAsync(`system.host.${web.common.host}`);
                     if(web.native.bind === '0.0.0.0'){
