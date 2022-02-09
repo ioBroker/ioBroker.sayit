@@ -64,7 +64,7 @@ function startAdapter(options) {
         }
     });
 
-    adapter.on('ready', main);
+    adapter.on('ready', async () => await main());
 
     adapter.on('message', obj => processMessage(obj));
 
@@ -470,48 +470,60 @@ function sayIt(text, language, volume, processing) {
     }
 }
 
-function uploadFile(file, callback) {
+async function uploadFile(file, callback) {
     try {
         const stat = libs.fs.statSync(libs.path.join(__dirname + '/mp3/', file));
 
         if (!stat.isFile()) {
             // ignore not a file
-            return callback && callback();
+            return;
         }
     } catch (e) {
         // ignore not a file
-        return callback && callback();
+        return;
     }
 
-    adapter.readFile(adapter.namespace, 'tts.userfiles/' + file, (err, data) => {
-        if (err || !data) {
-            try {
-                adapter.writeFile(adapter.namespace, 'tts.userfiles/' + file, libs.fs.readFileSync(libs.path.join(__dirname + '/mp3/', file)), () =>
-                    callback && callback());
-            } catch (e) {
-                adapter.log.error(`Cannot read file "${__dirname}/mp3/${file}": ${e.toString()}`);
-                callback && callback();
-            }
-        } else {
-            callback && callback();
+    let data;
+    try {
+        data = await adapter.readFileAsync(adapter.namespace, 'tts.userfiles/' + file);
+    } catch (error) {
+        // ignore error
+    }
+
+    if (!data) {
+        try {
+            await adapter.writeFileAsync(adapter.namespace, 'tts.userfiles/' + file, libs.fs.readFileSync(libs.path.join(__dirname + '/mp3/', file)));
+        } catch (e) {
+            adapter.log.error(`Cannot write file "${__dirname}/mp3/${file}": ${e.toString()}`);
         }
-    });
-}
-
-function _uploadFiles(files, callback) {
-    if (!files || !files.length) {
-        adapter.log.info('All files uploaded');
-        return callback && callback();
     }
-
-    uploadFile(files.pop(), () => setImmediate(_uploadFiles, files, callback));
 }
-function uploadFiles(callback) {
+
+async function uploadFiles() {
     if (libs.fs.existsSync(__dirname + '/mp3')) {
         adapter.log.info('Upload announce mp3 files');
-        _uploadFiles(libs.fs.readdirSync(__dirname + '/mp3'), callback);
-    } else if (callback) {
-        callback();
+        let obj;
+        try {
+            obj = await adapter.getForeignObjectAsync(adapter.namespace);
+        } catch (e) {
+            // ignore
+        }
+
+        if (!obj) {
+            await adapter.setForeignObjectAsync(adapter.namespace, {
+                type: 'meta',
+                common: {
+                    name: 'User files for SayIt',
+                    type: 'meta.user'
+                },
+                native: {}
+            });
+        }
+
+        const files = libs.fs.readdirSync(__dirname + '/mp3');
+        for (let f = 0; f < files.length; f++) {
+            await uploadFile(files[f]);
+        }
     }
 }
 
@@ -703,7 +715,7 @@ function applyWebSettings(err, obj) {
     }
 }
 
-function main() {
+async function main() {
     if (
         (process.argv && process.argv.includes('--install')) ||
         (
@@ -714,10 +726,16 @@ function main() {
     ) {
         adapter.log.info('Install process. Upload files and stop.');
         // Check if files exists in data storage
-        uploadFiles(() => adapter.stop ? adapter.stop() : process.exit());
+        await uploadFiles();
+        if (adapter.stop) {
+            adapter.stop()
+        } else {
+            process.exit();
+        }
     } else {
         // Check if files exists in data storage
-        uploadFiles(start);
+        await uploadFiles();
+        start();
     }
 }
 

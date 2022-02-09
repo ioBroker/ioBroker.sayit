@@ -256,8 +256,11 @@ Following values for engines are possible:
 	### __WORK IN PROGRESS__
 -->
 ## Changelog
+### __WORK IN PROGRESS__
+* (bluefox) Fixed errors in io-package.json
+
 ### 1.12.3 (2021-06-25)
-* (bluefox) corrected the google engine
+* (bluefox) corrected the Google engine
 * (bluefox) Added new voices: german, korean, brasil, Dutch
 
 ### 1.12.2 (2020-11-07)
@@ -479,7 +482,7 @@ Changed type of top-level object to "meta" in order to comply with js-controller
 
 The MIT License (MIT)
 
-Copyright (c) 2014-2021, bluefox <dogafox@gmail.com>
+Copyright (c) 2014-2022, bluefox <dogafox@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
