@@ -1,374 +1,302 @@
 {
-    "common": {
-        "name": "sayit",
-        "version": "1.12.3",
-        "news": {
-            "1.12.3": {
-                "en": "corrected the google engine\nAdded new voices: german, korean, brasil, Dutch",
-                "de": "die Google-Engine korrigiert\nNeue Stimmen hinzugefügt: Deutsch, Koreanisch, Brasil, Niederländisch",
-                "ru": "исправил движок гугл\nДобавлены новые голоса: немецкий, корейский, бразильский, голландский.",
-                "pt": "corrigiu o motor do google\nAdicionadas novas vozes: alemão, coreano, brasil, holandês",
-                "nl": "de google engine gecorrigeerd correct\nNieuwe stemmen toegevoegd: Duits, Koreaans, Brazilië, Nederlands",
-                "fr": "corrigé le moteur google\nAjout de nouvelles voix : allemand, coréen, brésilien, néerlandais",
-                "it": "corretto il motore di Google\nAggiunte nuove voci: tedesco, coreano, brasiliano, olandese",
-                "es": "corrigió el motor de google\nAñadidas nuevas voces: alemán, coreano, brasil, holandés",
-                "pl": "poprawiłem silnik google\nDodano nowe głosy: niemiecki, koreański, brazylijski, holenderski",
-                "zh-cn": "更正了谷歌引擎\n添加了新的声音：德语、韩语、巴西语、荷兰语"
-            },
-            "1.12.2": {
-                "en": "Prevent crash case (Sentry IOBROKER-SAYIT-Q, IOBROKER-SAYIT-S, IOBROKER-SAYIT-T)",
-                "de": "Absturz verhindern (Sentry IOBROKER-SAYIT-Q, IOBROKER-SAYIT-S, IOBROKER-SAYIT-T)",
-                "ru": "Случай предотвращения сбоя (Sentry IOBROKER-SAYIT-Q, IOBROKER-SAYIT-S, IOBROKER-SAYIT-T)",
-                "pt": "Prevenir caso de travamento (Sentry IOBROKER-SAYIT-Q, IOBROKER-SAYIT-S, IOBROKER-SAYIT-T)",
-                "nl": "Voorkom crash case (Sentry IOBROKER-SAYIT-Q, IOBROKER-SAYIT-S, IOBROKER-SAYIT-T)",
-                "fr": "Prévenir les cas de crash (Sentry IOBROKER-SAYIT-Q, IOBROKER-SAYIT-S, IOBROKER-SAYIT-T)",
-                "it": "Prevenire il crash case (Sentry IOBROKER-SAYIT-Q, IOBROKER-SAYIT-S, IOBROKER-SAYIT-T)",
-                "es": "Caso de prevención de accidentes (Sentry IOBROKER-SAYIT-Q, IOBROKER-SAYIT-S, IOBROKER-SAYIT-T)",
-                "pl": "Zapobiegaj awariom (Sentry IOBROKER-SAYIT-Q, IOBROKER-SAYIT-S, IOBROKER-SAYIT-T)",
-                "zh-cn": "防止发生崩溃情况（哨兵IOBROKER-SAYIT-Q，IOBROKER-SAYIT-S，IOBROKER-SAYIT-T）"
-            },
-            "1.12.1": {
-                "en": "Prevent crash case (Sentry IOBROKER-SAYIT-Q, IOBROKER-SAYIT-S, IOBROKER-SAYIT-T)",
-                "de": "Absturz verhindern (Sentry IOBROKER-SAYIT-Q, IOBROKER-SAYIT-S, IOBROKER-SAYIT-T)",
-                "ru": "Случай предотвращения сбоя (Sentry IOBROKER-SAYIT-Q, IOBROKER-SAYIT-S, IOBROKER-SAYIT-T)",
-                "pt": "Prevenir caso de travamento (Sentry IOBROKER-SAYIT-Q, IOBROKER-SAYIT-S, IOBROKER-SAYIT-T)",
-                "nl": "Voorkom crash case (Sentry IOBROKER-SAYIT-Q, IOBROKER-SAYIT-S, IOBROKER-SAYIT-T)",
-                "fr": "Prévenir les cas de crash (Sentry IOBROKER-SAYIT-Q, IOBROKER-SAYIT-S, IOBROKER-SAYIT-T)",
-                "it": "Prevenire il crash case (Sentry IOBROKER-SAYIT-Q, IOBROKER-SAYIT-S, IOBROKER-SAYIT-T)",
-                "es": "Caso de prevención de accidentes (Sentry IOBROKER-SAYIT-Q, IOBROKER-SAYIT-S, IOBROKER-SAYIT-T)",
-                "pl": "Zapobiegaj awariom (Sentry IOBROKER-SAYIT-Q, IOBROKER-SAYIT-S, IOBROKER-SAYIT-T)",
-                "zh-cn": "防止发生崩溃情况（哨兵IOBROKER-SAYIT-Q，IOBROKER-SAYIT-S，IOBROKER-SAYIT-T）"
-            },
-            "1.12.0": {
-                "en": "HEOS was added",
-                "de": "HEOS wurde hinzugefügt",
-                "ru": "HEOS добавлен",
-                "pt": "HEOS foi adicionado",
-                "nl": "HEOS is toegevoegd",
-                "fr": "HEOS a été ajouté",
-                "it": "È stato aggiunto HEOS",
-                "es": "HEOS fue agregado",
-                "pl": "HEOS został dodany",
-                "zh-cn": "HEOS已添加"
-            },
-            "1.11.5": {
-                "en": "prevent scheduled restart problems",
-                "de": "Verhindern Sie geplante Neustartprobleme",
-                "ru": "предотвратить проблемы с перезапуском по расписанию",
-                "pt": "evitar problemas de reinicialização programada",
-                "nl": "voorkomen van geplande herstartproblemen",
-                "fr": "éviter les problèmes de redémarrage programmé",
-                "it": "prevenire problemi di riavvio pianificato",
-                "es": "evitar problemas de reinicio programado",
-                "pl": "zapobiegać problemom z planowanym ponownym uruchomieniem",
-                "zh-cn": "防止计划的重启问题"
-            },
-            "1.11.4": {
-                "en": "prevent scheduled restart problems",
-                "de": "Verhindern Sie geplante Neustartprobleme",
-                "ru": "предотвратить проблемы с перезапуском по расписанию",
-                "pt": "evitar problemas de reinicialização programada",
-                "nl": "om geplande herstartproblemen te voorkomen",
-                "fr": "éviter les problèmes de redémarrage programmé",
-                "it": "prevenire problemi di riavvio pianificato",
-                "es": "evitar problemas de reinicio programado",
-                "pl": "zapobiegać problemom z planowanym ponownym uruchomieniem",
-                "zh-cn": "防止计划的重启问题"
-            },
-            "1.11.3": {
-                "en": "make sure initialize errors do not crash adapter (Sentry IOBROKER-SAYIT-N)",
-                "de": "Stellen Sie sicher, dass Initialisierungsfehler den Adapter nicht zum Absturz bringen (Sentry IOBROKER-SAYIT-N).",
-                "ru": "убедитесь, что ошибки инициализации не приводят к сбою адаптера (Sentry IOBROKER-SAYIT-N)",
-                "pt": "certifique-se de que os erros de inicialização não travem o adaptador (Sentry IOBROKER-SAYIT-N)",
-                "nl": "zorg ervoor dat initialisatiefouten de adapter niet crashen (Sentry IOBROKER-SAYIT-N)",
-                "fr": "assurez-vous que les erreurs d'initialisation ne plantent pas l'adaptateur (Sentry IOBROKER-SAYIT-N)",
-                "it": "assicurarsi che gli errori di inizializzazione non causino l'arresto anomalo dell'adattatore (Sentry IOBROKER-SAYIT-N)",
-                "es": "asegúrese de que los errores de inicialización no bloqueen el adaptador (Sentry IOBROKER-SAYIT-N)",
-                "pl": "upewnij się, że błędy inicjalizacji nie powodują awarii adaptera (Sentry IOBROKER-SAYIT-N)",
-                "zh-cn": "确保初始化错误不会使适配器崩溃（Sentry IOBROKER-SAYIT-N）"
-            },
-            "1.11.2": {
-                "en": "catch errors in MDNS discovery (Sentry IOBROKER-SAYIT-E)",
-                "de": "Fehler bei der MDNS-Erkennung abfangen (Sentry IOBROKER-SAYIT-E)",
-                "ru": "ловить ошибки в обнаружении MDNS (Sentry IOBROKER-SAYIT-E)",
-                "pt": "detectar erros na descoberta de MDNS (Sentry IOBROKER-SAYIT-E)",
-                "nl": "fouten opvangen bij MDNS-detectie (Sentry IOBROKER-SAYIT-E)",
-                "fr": "intercepter les erreurs dans la découverte MDNS (Sentry IOBROKER-SAYIT-E)",
-                "it": "rilevare gli errori nel rilevamento MDNS (Sentry IOBROKER-SAYIT-E)",
-                "es": "detectar errores en el descubrimiento de MDNS (Sentry IOBROKER-SAYIT-E)",
-                "pl": "wychwytywanie błędów w wykrywaniu MDNS (Sentry IOBROKER-SAYIT-E)",
-                "zh-cn": "在MDNS发现中捕获错误（Sentry IOBROKER-SAYIT-E）"
-            },
-            "1.11.1": {
-                "en": "handle errors from process spawn better (Sentry IOBROKER-SAYIT-D)",
-                "de": "Behandeln Sie Fehler aus dem Prozess-Spawn besser (Sentry IOBROKER-SAYIT-D)",
-                "ru": "лучше обрабатывать ошибки от порождения процесса (Sentry IOBROKER-SAYIT-D)",
-                "pt": "lidar melhor com os erros do processo de geração (Sentry IOBROKER-SAYIT-D)",
-                "nl": "behandel fouten van process spawn beter (Sentry IOBROKER-SAYIT-D)",
-                "fr": "mieux gérer les erreurs du processus de spawn (Sentry IOBROKER-SAYIT-D)",
-                "it": "gestire meglio gli errori dal processo di spawn (Sentry IOBROKER-SAYIT-D)",
-                "es": "manejar los errores del proceso engendrar mejor (Sentry IOBROKER-SAYIT-D)",
-                "pl": "lepiej radzić sobie z błędami pojawiającymi się w procesie (Sentry IOBROKER-SAYIT-D)",
-                "zh-cn": "更好地处理流程产生的错误（Sentry IOBROKER-SAYIT-D）"
-            },
-            "1.11.0": {
-                "en": "Move the generated mp3 file to an own directory in iobroker-data instead of inside node_modules (Hopefully not breaking)\nChange File write to use Sync methods to make sure they can not run in parallel",
-                "de": "Verschieben Sie die generierte MP3-Datei in ein eigenes Verzeichnis in iobroker-data anstatt in node_modules (hoffentlich nicht kaputt)\nÄndern Sie das Schreiben von Dateien, um Synchronisierungsmethoden zu verwenden, um sicherzustellen, dass sie nicht parallel ausgeführt werden können",
-                "ru": "Переместить сгенерированный mp3-файл в собственную директорию в iobroker-data, а не в node_modules (надеюсь, не ломается)\nИзмените запись в файл, чтобы использовать методы синхронизации, чтобы они не могли работать параллельно",
-                "pt": "Mova o arquivo mp3 gerado para um diretório próprio no iobroker-data em vez de dentro de node_modules (Esperemos que não quebre)\nAlterar gravação de arquivo para usar os métodos de sincronização para garantir que eles não possam ser executados em paralelo",
-                "nl": "Verplaats het gegenereerde mp3-bestand naar een eigen map in iobroker-data in plaats van in node_modules (hopelijk niet kapot)\nWijzig Bestand schrijven om synchronisatiemethoden te gebruiken om ervoor te zorgen dat ze niet parallel kunnen worden uitgevoerd",
-                "fr": "Déplacez le fichier mp3 généré dans un propre répertoire dans iobroker-data au lieu de l'intérieur node_modules (espérons pas casser)\nModifiez l'écriture de fichier pour utiliser les méthodes de synchronisation pour vous assurer qu'elles ne peuvent pas s'exécuter en parallèle",
-                "it": "Spostare il file mp3 generato in una propria directory in iobroker-data anziché all'interno di node_modules (Speriamo non si rompa)\nModifica scrittura file per utilizzare i metodi di sincronizzazione per assicurarsi che non possano essere eseguiti in parallelo",
-                "es": "Mueva el archivo mp3 generado a un directorio propio en iobroker-data en lugar de dentro de node_modules (ojalá no se rompa)\nCambie la escritura de archivos para usar métodos de sincronización para asegurarse de que no se puedan ejecutar en paralelo",
-                "pl": "Przenieś wygenerowany plik mp3 do własnego katalogu w iobroker-data zamiast wewnątrz node_modules (miejmy nadzieję, że nie zepsuje)\nZmień zapis do pliku, aby użyć metod synchronizacji, aby upewnić się, że nie mogą działać równolegle",
-                "zh-cn": "将生成的mp3文件移动到iobroker-data中的自己目录中，而不是移动到node_modules内部（希望不会中断）\n更改文件写入以使用同步方法，以确保它们不能并行运行"
-            },
-            "1.10.2": {
-                "en": "Crash case prevented (Sentry IOBROKER-SAYIT-8)",
-                "de": "Absturz verhindert (Sentry IOBROKER-SAYIT-8)",
-                "ru": "ДТП предотвращено (Sentry IOBROKER-SAYIT-8)",
-                "pt": "Caso de falha impedido (Sentry IOBROKER-SAYIT-8)",
-                "nl": "Crashcase voorkomen (Sentry IOBROKER-SAYIT-8)",
-                "fr": "Crash case évité (Sentry IOBROKER-SAYIT-8)",
-                "it": "Caso di arresto impedito (Sentry IOBROKER-SAYIT-8)",
-                "es": "Caso de bloqueo evitado (Sentry IOBROKER-SAYIT-8)",
-                "pl": "Zapobiegano awariom (Sentry IOBROKER-SAYIT-8)",
-                "zh-cn": "防止发生崩溃情况（Sentry IOBROKER-SAYIT-8）"
-            },
-            "1.10.1": {
-                "en": "Handle edge cases and prevent crashes (Sentry IOBROKER-SAYIT-4, IOBROKER-SAYIT-6)\ntry to get caching working again for Yandex",
-                "de": "Behandeln Sie Kantenfälle und verhindern Sie Abstürze (Sentry IOBROKER-SAYIT-4, IOBROKER-SAYIT-6)\nVersuchen Sie, das Caching für Yandex wieder zum Laufen zu bringen",
-                "ru": "Обработка крайних случаев и предотвращение сбоев (Sentry IOBROKER-SAYIT-4, IOBROKER-SAYIT-6)\nпопробуй снова заставить кеширование работать на яндексе",
-                "pt": "Lidar com casos de borda e evitar falhas (Sentry IOBROKER-SAYIT-4, IOBROKER-SAYIT-6)\ntente fazer o cache funcionar novamente para o Yandex",
-                "nl": "Behandel randgevallen en voorkom crashes (Sentry IOBROKER-SAYIT-4, IOBROKER-SAYIT-6)\nprobeer caching weer aan de praat te krijgen voor Yandex",
-                "fr": "Gérez les boîtiers de bord et évitez les accidents (Sentry IOBROKER-SAYIT-4, IOBROKER-SAYIT-6)\nessayez de faire fonctionner à nouveau la mise en cache pour Yandex",
-                "it": "Gestire i casi limite e prevenire gli arresti anomali (Sentry IOBROKER-SAYIT-4, IOBROKER-SAYIT-6)\nprova a far funzionare di nuovo la cache per Yandex",
-                "es": "Maneje casos extremos y evite accidentes (Sentry IOBROKER-SAYIT-4, IOBROKER-SAYIT-6)\nintenta que el almacenamiento en caché vuelva a funcionar para Yandex",
-                "pl": "Obsługa skrzynek krawędziowych i zapobieganie awariom (Sentry IOBROKER-SAYIT-4, IOBROKER-SAYIT-6)\nspróbuj ponownie uruchomić buforowanie dla Yandex",
-                "zh-cn": "处理边缘情况并防止碰撞（哨兵IOBROKER-SAYIT-4，IOBROKER-SAYIT-6）\n尝试让Yandex再次使用缓存"
-            },
-            "1.10.0": {
-                "en": "GUI updated to fill drop-down correctly. Premium voices added to Yandex.Cloud engine",
-                "de": "Die Benutzeroberfläche wurde aktualisiert, um das Dropdown-Menü korrekt auszufüllen. Premium-Stimmen zur Yandex.Cloud-Engine hinzugefügt",
-                "ru": "GUI обновлен, чтобы заполнять поля правильно. Премиальные голоса добавлены в движок Yandex.Cloud",
-                "pt": "GUI atualizada para preencher o menu suspenso corretamente. Vozes premium adicionadas ao mecanismo Yandex.Cloud",
-                "nl": "GUI bijgewerkt om drop-down correct in te vullen. Premium stemmen toegevoegd aan de Yandex.Cloud-engine",
-                "fr": "GUI mise à jour pour remplir correctement la liste déroulante. Voix premium ajoutées au moteur Yandex.Cloud",
-                "it": "Interfaccia grafica aggiornata per riempire correttamente il menu a discesa. Voci premium aggiunte al motore Yandex.Cloud",
-                "es": "GUI actualizada para completar el menú desplegable correctamente. Voces premium añadidas al motor Yandex.Cloud",
-                "pl": "Zaktualizowano GUI, aby poprawnie wypełnić menu rozwijane. Dodano głosy premium do silnika Yandex.Cloud",
-                "zh-cn": "GUI已更新，可以正确填充下拉列表。高级语音已添加到Yandex.Cloud引擎"
-            }
-        },
-        "title": "Text to speech",
-        "titleLang": {
-            "en": "Text to speech",
-            "de": "Text zu Sprache",
-            "ru": "Текст в речь (Text to speech)",
-            "pt": "Texto para fala (Text to speech)",
-            "nl": "Tekst naar spraak (Text to speech)",
-            "fr": "Texte pour parler (Text to speech)",
-            "it": "Sintesi vocale (Text to speech)",
-            "es": "Texto a voz (Text to speech)",
-            "pl": "Tekst na mowę (Text to speech)",
-            "zh-cn": "文字到语音"
-        },
-        "desc": {
-            "en": "Text to speech in a cloud or local. Runs on windows, linux and OSX. It can play mp3/wav too.",
-            "de": "Text to speech in Cloud oder lokal für windows, linux und OSX. Mp3 und Wav können auch abgespielt werden.",
-            "ru": "Синтезатор речи локально или в облаке работает под windows, linux и OSX. Mp3 и Wav можно тоже проигрывать.",
-            "pt": "Texto para fala em uma nuvem ou local. Funciona no windows, linux e OSX. Pode reproduzir mp3 / wav também.",
-            "nl": "Tekst naar spraak in een cloud of lokaal. Werkt op Windows, Linux en OSX. Het kan ook mp3 / wav spelen.",
-            "fr": "Text to speech dans un nuage ou local. Fonctionne sur Windows, Linux et OSX. Il peut aussi jouer au format mp3 / wav.",
-            "it": "Sintesi vocale in un cloud o locale. Funziona su Windows, Linux e OSX. Può riprodurre anche mp3 / wav.",
-            "es": "Texto a voz en una nube o local. Se ejecuta en Windows, Linux y OSX. Puede reproducir mp3 / wav también.",
-            "pl": "Tekst na mowę w chmurze lub lokalnie. Działa w systemie Windows, Linux i OSX. Może również odtwarzać mp3 / wav.",
-            "zh-cn": "文字到语音在云端或局部的。 运行在windows、linux和OS x. 它可以发挥的mp3/声。"
-        },
-        "authors": [
-            "bluefox <dogafox@gmail.com>"
-        ],
-        "license": "MIT",
-        "platform": "Javascript/Node.js",
-        "mode": "daemon",
-        "readme": "https://github.com/ioBroker/ioBroker.sayit/blob/master/README.md",
-        "loglevel": "info",
-        "messagebox": true,
-        "supportStopInstance": true,
-        "stopBeforeUpdate": true,
-        "icon": "sayit.png",
-        "materialize": true,
-        "adminUI": {
-            "config": "materialize"
-        },
-        "connectionType": "cloud",
-        "dataSource": "push",
-        "tier": 3,
-        "enabled": true,
-        "compact": true,
-        "keywords": [
-            "TTS",
-            "voice",
-            "speech"
-        ],
-        "extIcon": "https://raw.githubusercontent.com/ioBroker/ioBroker.sayit/master/admin/sayit.png",
-        "type": "multimedia",
-        "blockly": true,
-        "plugins": {
-            "sentry": {
-                "dsn": "https://e814e4a55077465b9ac16ac3062dee10@sentry.iobroker.net/85"
-            }
-        },
-        "dependencies": [
-            {
-                "js-controller": ">=2.0.0"
-            }
-        ]
+  "common": {
+    "name": "sayit",
+    "version": "1.12.4",
+    "news": {
+      "1.12.4": {
+        "en": "Fixed errors in io-package.json",
+        "de": "Fehler in io-package.json behoben",
+        "ru": "Исправлены ошибки в io-package.json",
+        "pt": "Corrigidos erros em io-package.json",
+        "nl": "Fouten opgelost in io-package.json",
+        "fr": "Correction d'erreurs dans io-package.json",
+        "it": "Risolti errori in io-package.json",
+        "es": "Se corrigieron errores en io-package.json",
+        "pl": "Naprawiono błędy w io-package.json",
+        "zh-cn": "修复了 io-package.json 中的错误"
+      },
+      "1.12.3": {
+        "en": "corrected the google engine\nAdded new voices: german, korean, brasil, Dutch",
+        "de": "die Google-Engine korrigiert\nNeue Stimmen hinzugefügt: Deutsch, Koreanisch, Brasil, Niederländisch",
+        "ru": "исправил движок гугл\nДобавлены новые голоса: немецкий, корейский, бразильский, голландский.",
+        "pt": "corrigiu o motor do google\nAdicionadas novas vozes: alemão, coreano, brasil, holandês",
+        "nl": "de google engine gecorrigeerd correct\nNieuwe stemmen toegevoegd: Duits, Koreaans, Brazilië, Nederlands",
+        "fr": "corrigé le moteur google\nAjout de nouvelles voix : allemand, coréen, brésilien, néerlandais",
+        "it": "corretto il motore di Google\nAggiunte nuove voci: tedesco, coreano, brasiliano, olandese",
+        "es": "corrigió el motor de google\nAñadidas nuevas voces: alemán, coreano, brasil, holandés",
+        "pl": "poprawiłem silnik google\nDodano nowe głosy: niemiecki, koreański, brazylijski, holenderski",
+        "zh-cn": "更正了谷歌引擎\n添加了新的声音：德语、韩语、巴西语、荷兰语"
+      },
+      "1.12.2": {
+        "en": "Prevent crash case (Sentry IOBROKER-SAYIT-Q, IOBROKER-SAYIT-S, IOBROKER-SAYIT-T)",
+        "de": "Absturz verhindern (Sentry IOBROKER-SAYIT-Q, IOBROKER-SAYIT-S, IOBROKER-SAYIT-T)",
+        "ru": "Случай предотвращения сбоя (Sentry IOBROKER-SAYIT-Q, IOBROKER-SAYIT-S, IOBROKER-SAYIT-T)",
+        "pt": "Prevenir caso de travamento (Sentry IOBROKER-SAYIT-Q, IOBROKER-SAYIT-S, IOBROKER-SAYIT-T)",
+        "nl": "Voorkom crash case (Sentry IOBROKER-SAYIT-Q, IOBROKER-SAYIT-S, IOBROKER-SAYIT-T)",
+        "fr": "Prévenir les cas de crash (Sentry IOBROKER-SAYIT-Q, IOBROKER-SAYIT-S, IOBROKER-SAYIT-T)",
+        "it": "Prevenire il crash case (Sentry IOBROKER-SAYIT-Q, IOBROKER-SAYIT-S, IOBROKER-SAYIT-T)",
+        "es": "Caso de prevención de accidentes (Sentry IOBROKER-SAYIT-Q, IOBROKER-SAYIT-S, IOBROKER-SAYIT-T)",
+        "pl": "Zapobiegaj awariom (Sentry IOBROKER-SAYIT-Q, IOBROKER-SAYIT-S, IOBROKER-SAYIT-T)",
+        "zh-cn": "防止发生崩溃情况（哨兵IOBROKER-SAYIT-Q，IOBROKER-SAYIT-S，IOBROKER-SAYIT-T）"
+      },
+      "1.12.1": {
+        "en": "Prevent crash case (Sentry IOBROKER-SAYIT-Q, IOBROKER-SAYIT-S, IOBROKER-SAYIT-T)",
+        "de": "Absturz verhindern (Sentry IOBROKER-SAYIT-Q, IOBROKER-SAYIT-S, IOBROKER-SAYIT-T)",
+        "ru": "Случай предотвращения сбоя (Sentry IOBROKER-SAYIT-Q, IOBROKER-SAYIT-S, IOBROKER-SAYIT-T)",
+        "pt": "Prevenir caso de travamento (Sentry IOBROKER-SAYIT-Q, IOBROKER-SAYIT-S, IOBROKER-SAYIT-T)",
+        "nl": "Voorkom crash case (Sentry IOBROKER-SAYIT-Q, IOBROKER-SAYIT-S, IOBROKER-SAYIT-T)",
+        "fr": "Prévenir les cas de crash (Sentry IOBROKER-SAYIT-Q, IOBROKER-SAYIT-S, IOBROKER-SAYIT-T)",
+        "it": "Prevenire il crash case (Sentry IOBROKER-SAYIT-Q, IOBROKER-SAYIT-S, IOBROKER-SAYIT-T)",
+        "es": "Caso de prevención de accidentes (Sentry IOBROKER-SAYIT-Q, IOBROKER-SAYIT-S, IOBROKER-SAYIT-T)",
+        "pl": "Zapobiegaj awariom (Sentry IOBROKER-SAYIT-Q, IOBROKER-SAYIT-S, IOBROKER-SAYIT-T)",
+        "zh-cn": "防止发生崩溃情况（哨兵IOBROKER-SAYIT-Q，IOBROKER-SAYIT-S，IOBROKER-SAYIT-T）"
+      },
+      "1.12.0": {
+        "en": "HEOS was added",
+        "de": "HEOS wurde hinzugefügt",
+        "ru": "HEOS добавлен",
+        "pt": "HEOS foi adicionado",
+        "nl": "HEOS is toegevoegd",
+        "fr": "HEOS a été ajouté",
+        "it": "È stato aggiunto HEOS",
+        "es": "HEOS fue agregado",
+        "pl": "HEOS został dodany",
+        "zh-cn": "HEOS已添加"
+      },
+      "1.11.5": {
+        "en": "prevent scheduled restart problems",
+        "de": "Verhindern Sie geplante Neustartprobleme",
+        "ru": "предотвратить проблемы с перезапуском по расписанию",
+        "pt": "evitar problemas de reinicialização programada",
+        "nl": "voorkomen van geplande herstartproblemen",
+        "fr": "éviter les problèmes de redémarrage programmé",
+        "it": "prevenire problemi di riavvio pianificato",
+        "es": "evitar problemas de reinicio programado",
+        "pl": "zapobiegać problemom z planowanym ponownym uruchomieniem",
+        "zh-cn": "防止计划的重启问题"
+      },
+      "1.11.4": {
+        "en": "prevent scheduled restart problems",
+        "de": "Verhindern Sie geplante Neustartprobleme",
+        "ru": "предотвратить проблемы с перезапуском по расписанию",
+        "pt": "evitar problemas de reinicialização programada",
+        "nl": "om geplande herstartproblemen te voorkomen",
+        "fr": "éviter les problèmes de redémarrage programmé",
+        "it": "prevenire problemi di riavvio pianificato",
+        "es": "evitar problemas de reinicio programado",
+        "pl": "zapobiegać problemom z planowanym ponownym uruchomieniem",
+        "zh-cn": "防止计划的重启问题"
+      }
     },
-    "native": {
-        "type": "system",
-        "command": "",
-        "player": "",
-        "cache": true,
-        "engine": "",
-        "sonos": "",
-        "server": "",
-        "port": 0,
-        "user": "",
-        "pass": "",
-        "instance": "",
-        "web": "",
-        "webServer": "",
-        "cacheDir": "../../cache/",
-        "key": "",
-        "announce": "",
-        "annoTimeout": 15,
-        "annoDuration": 0,
-        "annoVolume": "70",
-        "cloud": "",
-        "voice": "",
-        "emotion": "",
-        "folderID": ""
+    "title": "Text to speech",
+    "titleLang": {
+      "en": "Text to speech",
+      "de": "Text zu Sprache",
+      "ru": "Текст в речь (Text to speech)",
+      "pt": "Texto para fala (Text to speech)",
+      "nl": "Tekst naar spraak (Text to speech)",
+      "fr": "Texte pour parler (Text to speech)",
+      "it": "Sintesi vocale (Text to speech)",
+      "es": "Texto a voz (Text to speech)",
+      "pl": "Tekst na mowę (Text to speech)",
+      "zh-cn": "文字到语音"
     },
-    "instanceObjects": [
-        {
-            "_id": "",
-            "type": "meta",
-            "common": {
-                "name": "User files for SayIt",
-                "type": "meta.user"
-            },
-            "native": {}
-        },
-        {
-            "_id": "tts",
-            "type": "channel",
-            "common": {
-                "name": "Google text to speech",
-                "role": "media.tts"
-            },
-            "native": {}
-        },
-        {
-            "_id": "tts.userfiles",
-            "type": "meta",
-            "common": {
-                "name": "Gong files",
-                "role": "meta.user"
-            },
-            "native": {}
-        },
-        {
-            "_id": "tts.volume",
-            "type": "state",
-            "common": {
-                "role": "level.volume",
-                "name": "TTS Volume",
-                "min": 0,
-                "max": 100,
-                "def": 70,
-                "type": "number",
-                "read": true,
-                "write": true,
-                "desc": "System volume or remote device volume"
-            },
-            "native": {}
-        },
-        {
-            "_id": "tts.text",
-            "type": "state",
-            "common": {
-                "role": "media.tts.text",
-                "name": "Text to speech",
-                "type": "string",
-                "read": true,
-                "write": true,
-                "desc": "This text will be converted to speech"
-            },
-            "native": {}
-        },
-        {
-            "_id": "tts.clearQueue",
-            "type": "state",
-            "common": {
-                "role": "button",
-                "name": "Clear queued texts",
-                "type": "boolean",
-                "read": false,
-                "write": true,
-                "desc": "If you need to say something immediately and the queue is full, set it to true before sending the new task"
-            },
-            "native": {}
-        },
-        {
-            "_id": "tts.cachetext",
-            "type": "state",
-            "common": {
-                "role": "media.tts.cachetext",
-                "name": "Text to cache",
-                "type": "string",
-                "read": true,
-                "write": true,
-                "desc": "This text will be cached on disk to play it later"
-            },
-            "native": {}
-        },
-        {
-            "_id": "tts.playing",
-            "type": "state",
-            "common": {
-                "role": "media.tts.text",
-                "name": "Is now speaking",
-                "type": "boolean",
-                "read": true,
-                "write": false,
-                "desc": "Is true while speaking"
-            },
-            "native": {}
-        },
-        {
-            "_id": "tts.mp3",
-            "type": "state",
-            "common": {
-                "name": "Binary mp3 file",
-                "type": "file",
-                "read": true,
-                "write": false,
-                "desc": "Can be accessed from web server under http://ip:8082/state/sayit.0.tts.mp3"
-            },
-            "native": {}
-        },
-        {
-            "_id": "tts.ogg",
-            "type": "state",
-            "common": {
-                "name": "Binary ogg file",
-                "type": "file",
-                "read": true,
-                "write": false,
-                "desc": "Can be accessed from web server under http://ip:8082/state/sayit.0.tts.ogg"
-            },
-            "native": {}
-        }
+    "desc": {
+      "en": "Text to speech in a cloud or local. Runs on windows, linux and OSX. It can play mp3/wav too.",
+      "de": "Text to speech in Cloud oder lokal für windows, linux und OSX. Mp3 und Wav können auch abgespielt werden.",
+      "ru": "Синтезатор речи локально или в облаке работает под windows, linux и OSX. Mp3 и Wav можно тоже проигрывать.",
+      "pt": "Texto para fala em uma nuvem ou local. Funciona no windows, linux e OSX. Pode reproduzir mp3 / wav também.",
+      "nl": "Tekst naar spraak in een cloud of lokaal. Werkt op Windows, Linux en OSX. Het kan ook mp3 / wav spelen.",
+      "fr": "Text to speech dans un nuage ou local. Fonctionne sur Windows, Linux et OSX. Il peut aussi jouer au format mp3 / wav.",
+      "it": "Sintesi vocale in un cloud o locale. Funziona su Windows, Linux e OSX. Può riprodurre anche mp3 / wav.",
+      "es": "Texto a voz en una nube o local. Se ejecuta en Windows, Linux y OSX. Puede reproducir mp3 / wav también.",
+      "pl": "Tekst na mowę w chmurze lub lokalnie. Działa w systemie Windows, Linux i OSX. Może również odtwarzać mp3 / wav.",
+      "zh-cn": "文字到语音在云端或局部的。 运行在windows、linux和OS x. 它可以发挥的mp3/声。"
+    },
+    "authors": [
+      "bluefox <dogafox@gmail.com>"
+    ],
+    "license": "MIT",
+    "platform": "Javascript/Node.js",
+    "mode": "daemon",
+    "readme": "https://github.com/ioBroker/ioBroker.sayit/blob/master/README.md",
+    "loglevel": "info",
+    "messagebox": true,
+    "supportStopInstance": true,
+    "stopBeforeUpdate": true,
+    "icon": "sayit.png",
+    "materialize": true,
+    "adminUI": {
+      "config": "materialize"
+    },
+    "connectionType": "cloud",
+    "dataSource": "push",
+    "tier": 3,
+    "enabled": true,
+    "compact": true,
+    "keywords": [
+      "TTS",
+      "voice",
+      "speech"
+    ],
+    "extIcon": "https://raw.githubusercontent.com/ioBroker/ioBroker.sayit/master/admin/sayit.png",
+    "type": "multimedia",
+    "blockly": true,
+    "plugins": {
+      "sentry": {
+        "dsn": "https://e814e4a55077465b9ac16ac3062dee10@sentry.iobroker.net/85"
+      }
+    },
+    "dependencies": [
+      {
+        "js-controller": ">=2.0.0"
+      }
     ]
+  },
+  "native": {
+    "type": "system",
+    "command": "",
+    "player": "",
+    "cache": true,
+    "engine": "",
+    "sonos": "",
+    "server": "",
+    "port": 0,
+    "user": "",
+    "pass": "",
+    "instance": "",
+    "web": "",
+    "webServer": "",
+    "cacheDir": "../../cache/",
+    "key": "",
+    "announce": "",
+    "annoTimeout": 15,
+    "annoDuration": 0,
+    "annoVolume": "70",
+    "cloud": "",
+    "voice": "",
+    "emotion": "",
+    "folderID": ""
+  },
+  "instanceObjects": [
+    {
+      "_id": "",
+      "type": "meta",
+      "common": {
+        "name": "User files for SayIt",
+        "type": "meta.user"
+      },
+      "native": {}
+    },
+    {
+      "_id": "tts",
+      "type": "channel",
+      "common": {
+        "name": "Google text to speech",
+        "role": "media.tts"
+      },
+      "native": {}
+    },
+    {
+      "_id": "tts.userfiles",
+      "type": "meta",
+      "common": {
+        "name": "Gong files",
+        "role": "meta.user"
+      },
+      "native": {}
+    },
+    {
+      "_id": "tts.volume",
+      "type": "state",
+      "common": {
+        "role": "level.volume",
+        "name": "TTS Volume",
+        "min": 0,
+        "max": 100,
+        "def": 70,
+        "type": "number",
+        "read": true,
+        "write": true,
+        "desc": "System volume or remote device volume"
+      },
+      "native": {}
+    },
+    {
+      "_id": "tts.text",
+      "type": "state",
+      "common": {
+        "role": "media.tts.text",
+        "name": "Text to speech",
+        "type": "string",
+        "read": true,
+        "write": true,
+        "desc": "This text will be converted to speech"
+      },
+      "native": {}
+    },
+    {
+      "_id": "tts.clearQueue",
+      "type": "state",
+      "common": {
+        "role": "button",
+        "name": "Clear queued texts",
+        "type": "boolean",
+        "read": false,
+        "write": true,
+        "desc": "If you need to say something immediately and the queue is full, set it to true before sending the new task"
+      },
+      "native": {}
+    },
+    {
+      "_id": "tts.cachetext",
+      "type": "state",
+      "common": {
+        "role": "media.tts.cachetext",
+        "name": "Text to cache",
+        "type": "string",
+        "read": true,
+        "write": true,
+        "desc": "This text will be cached on disk to play it later"
+      },
+      "native": {}
+    },
+    {
+      "_id": "tts.playing",
+      "type": "state",
+      "common": {
+        "role": "media.tts.text",
+        "name": "Is now speaking",
+        "type": "boolean",
+        "read": true,
+        "write": false,
+        "desc": "Is true while speaking"
+      },
+      "native": {}
+    },
+    {
+      "_id": "tts.mp3",
+      "type": "state",
+      "common": {
+        "name": "Binary mp3 file",
+        "type": "file",
+        "read": true,
+        "write": false,
+        "desc": "Can be accessed from web server under http://ip:8082/state/sayit.0.tts.mp3"
+      },
+      "native": {}
+    },
+    {
+      "_id": "tts.ogg",
+      "type": "state",
+      "common": {
+        "name": "Binary ogg file",
+        "type": "file",
+        "read": true,
+        "write": false,
+        "desc": "Can be accessed from web server under http://ip:8082/state/sayit.0.tts.ogg"
+      },
+      "native": {}
+    }
+  ]
 }
