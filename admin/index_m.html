@@ -64,7 +64,9 @@
         $('.engine').hide();
         var engine = $('#engine').val();
 
-        if (!sayitEngines[engine] || sayitOptions[type].params.indexOf('engine') === -1) return;
+        if (!sayitEngines[engine] || sayitOptions[type].params.indexOf('engine') === -1) {
+            return;
+        }
 
         for (var i = 0; i < sayitEngines[engine].params.length; i++) {
             $('#tr_' + sayitEngines[engine].params[i]).show();
@@ -83,7 +85,7 @@
             $('#play').removeClass('disabled');
         }
     }
-	
+
      function fillEngineParams() {
        var engine = $('#engine').val();
        if (!sayitEngines[engine]) return;
@@ -114,7 +116,7 @@
             }
         }
     }
-	
+
 
     function fillSonosDevices(elem, current) {
         socket.emit('getObjectView', 'system', 'channel', {startkey: 'sonos.', endkey: 'sonos.\u9999'}, function (err, res) {
@@ -494,7 +496,7 @@
                 } else {
                     showHideSettings();
                 }
-		if (key === 'engine') {fillEngineParams();}    
+		if (key === 'engine') {fillEngineParams();}
             } else
             if (key === 'announce') {
                 showHideSettings();
@@ -529,13 +531,13 @@
             $('#instance').val(settings.instance).trigger('change');
         }
 
-	fillEngineParams();    
+	fillEngineParams();
         fillSonosDevices('#device', settings.device);
         fillHeosDevices('#heos_device', settings.device);
         fillChromecastDevices('#cDevice', settings.cDevice);
         fillWebServices('#web', settings.web, settings.type, settings.webServer);
         fillMpdDevice('#mpd_device', settings.mpd_device);
-	
+
 
         if ((settings.type === 'sonos') ||
             (settings.type === 'heos') ||

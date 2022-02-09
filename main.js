@@ -527,12 +527,18 @@ async function uploadFiles() {
     }
 }
 
-function start() {
+async function start() {
+    if (!adapter.config.engine) {
+        const systemConfig = await adapter.getForeignObjectAsync('system.config');
+        adapter.config.engine = (systemConfig && systemConfig.common && systemConfig.common.language) || 'de';
+    }
+
     if (adapter.config.engine === 'ru_YA_CLOUD') {
         fileExt = 'ogg';
     } else {
         fileExt = 'mp3';
     }
+
     adapter.config.dataDir = dataDir;
 
     MP3FILE = adapter.config.dataDir + '/' + adapter.namespace + '.say.' + fileExt;
