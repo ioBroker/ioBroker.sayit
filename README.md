@@ -256,7 +256,7 @@ Following values for engines are possible:
 	### __WORK IN PROGRESS__
 -->
 ## Changelog
-### __WORK IN PROGRESS__
+### 1.12.6 (2022-02-09)
 * (bluefox) used setForeignBinaryState if possible
 
 ### 1.12.5 (2022-02-09)
