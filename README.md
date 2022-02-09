@@ -256,7 +256,7 @@ Following values for engines are possible:
 	### __WORK IN PROGRESS__
 -->
 ## Changelog
-### __WORK IN PROGRESS__
+### 1.12.5 (2022-02-09)
 * (bluefox) Fixed errors in io-package.json
 
 ### 1.12.3 (2021-06-25)

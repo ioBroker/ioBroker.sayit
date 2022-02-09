@@ -1,8 +1,20 @@
 {
   "common": {
     "name": "sayit",
-    "version": "1.12.4",
+    "version": "1.12.5",
     "news": {
+      "1.12.5": {
+        "en": "Fixed errors in io-package.json",
+        "de": "Fehler in io-package.json behoben",
+        "ru": "Исправлены ошибки в io-package.json",
+        "pt": "Corrigidos erros em io-package.json",
+        "nl": "Fouten opgelost in io-package.json",
+        "fr": "Correction d'erreurs dans io-package.json",
+        "it": "Risolti errori in io-package.json",
+        "es": "Se corrigieron errores en io-package.json",
+        "pl": "Naprawiono błędy w io-package.json",
+        "zh-cn": "修复了 io-package.json 中的错误"
+      },
       "1.12.4": {
         "en": "Fixed errors in io-package.json",
         "de": "Fehler in io-package.json behoben",
@@ -69,18 +81,6 @@
         "ru": "предотвратить проблемы с перезапуском по расписанию",
         "pt": "evitar problemas de reinicialização programada",
         "nl": "voorkomen van geplande herstartproblemen",
-        "fr": "éviter les problèmes de redémarrage programmé",
-        "it": "prevenire problemi di riavvio pianificato",
-        "es": "evitar problemas de reinicio programado",
-        "pl": "zapobiegać problemom z planowanym ponownym uruchomieniem",
-        "zh-cn": "防止计划的重启问题"
-      },
-      "1.11.4": {
-        "en": "prevent scheduled restart problems",
-        "de": "Verhindern Sie geplante Neustartprobleme",
-        "ru": "предотвратить проблемы с перезапуском по расписанию",
-        "pt": "evitar problemas de reinicialização programada",
-        "nl": "om geplande herstartproblemen te voorkomen",
         "fr": "éviter les problèmes de redémarrage programmé",
         "it": "prevenire problemi di riavvio pianificato",
         "es": "evitar problemas de reinicio programado",
