@@ -11,12 +11,12 @@
 	"plugins": [],
 	"rules": {
 		"indent": [
-			"error",
-			"tab",
-			{
-				"SwitchCase": 1
-			}
-		],
+            "error",
+            4,
+            {
+                "SwitchCase": 1
+            }
+        ],
 		"no-console": "off",
 		"no-var": "error",
 		"no-trailing-spaces": "error",
