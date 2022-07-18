@@ -57,7 +57,7 @@ class Sayit extends utils.Adapter {
                 libs.fs.mkdirSync(dataDir);
             }
         } catch (err) {
-            this.log.error('Could not create storage directory: ' + err);
+            this.log.error(`Could not create storage directory: ${err}`);
             dataDir = __dirname;
         }
 
@@ -221,7 +221,7 @@ class Sayit extends utils.Adapter {
         }
 
         try {
-            text2speech   = new Text2Speech(this, libs, options, this.sayIt);
+            text2speech   = new Text2Speech(this, libs, options, this.sayIt.bind(this));
             speech2device = new Speech2Device(this, libs, options);
         } catch (e) {
             this.log.error('Cannot initialize engines: ' + e.toString());
@@ -232,7 +232,6 @@ class Sayit extends utils.Adapter {
     }
 
     mkpathSync(rootpath, dirpath) {
-        libs.fs = libs.fs || require('fs');
         // Remove filename
         dirpath = dirpath.split('/');
         dirpath.pop();
@@ -253,37 +252,23 @@ class Sayit extends utils.Adapter {
     }
 
     async uploadFiles() {
-        if (libs.fs.existsSync(__dirname + '/mp3')) {
+        const folderPath = libs.path.join(__dirname, '/mp3/');
+
+        if (libs.fs.existsSync(folderPath)) {
             this.log.info('Upload announce mp3 files');
 
-            let obj;
-            try {
-                obj = await this.getForeignObjectAsync(this.namespace);
-            } catch (e) {
-                // ignore
-            }
-
-            if (!obj) {
-                await this.setForeignObjectAsync(this.namespace, {
-                    type: 'meta',
-                    common: {
-                        name: 'User files for SayIt',
-                        type: 'meta.user'
-                    },
-                    native: {}
-                });
-            }
-
-            const files = libs.fs.readdirSync(__dirname + '/mp3');
+            const files = libs.fs.readdirSync(folderPath);
             for (let f = 0; f < files.length; f++) {
-                await this.uploadFile(files[f]);
+                await this.uploadFile(files[f], folderPath);
             }
         }
     }
 
-    async uploadFile(file) {
+    async uploadFile(file, folder) {
+        const filePath = libs.path.join(folder, file);
+
         try {
-            const stat = libs.fs.statSync(libs.path.join(__dirname + '/mp3/', file));
+            const stat = libs.fs.statSync(filePath);
 
             if (!stat.isFile()) {
                 // ignore not a file
@@ -296,16 +281,17 @@ class Sayit extends utils.Adapter {
 
         let data;
         try {
-            data = await this.readFileAsync(this.namespace, 'tts.userfiles/' + file);
+            data = await this.readFileAsync(this.namespace, `tts.userfiles/${file}`);
         } catch (error) {
             // ignore error
         }
 
         if (!data) {
             try {
-                await this.writeFileAsync(this.namespace, 'tts.userfiles/' + file, libs.fs.readFileSync(libs.path.join(__dirname + '/mp3/', file)));
+                await this.writeFileAsync(this.namespace, `tts.userfiles/${file}`, libs.fs.readFileSync(filePath));
+                this.log.info(`Uploaded "${filePath}"`);
             } catch (e) {
-                this.log.error(`Cannot write file "${__dirname}/mp3/${file}": ${e.toString()}`);
+                this.log.error(`Cannot write file "${filePath}": ${e.toString()}`);
             }
         }
     }
@@ -321,7 +307,7 @@ class Sayit extends utils.Adapter {
             if (id === this.namespace + '.tts.clearQueue') {
                 if (list.length > 1) {
                     list.splice(1);
-                    this.setState('tts.clearQueue', false, true);
+                    this.setState('tts.clearQueue', { val: false, ack: true });
                 }
             } else if (id === this.namespace + '.tts.volume') {
                 if (this.config.type === 'system') {
@@ -332,12 +318,14 @@ class Sayit extends utils.Adapter {
             } else if (id === this.namespace + '.tts.text') {
                 if (typeof state.val !== 'string') {
                     if (state.val === null || state.val === undefined || state.val === '') {
-                        return this.log.warn('Cannot cache empty text');
+                        return this.log.warn('Cannot say empty text');
                     }
                     state.val = state.val.toString();
                 }
 
                 this.sayIt(state.val);
+
+                this.setState('tts.text', { val: state.val, ack: true });
             } else if (id === this.namespace + '.tts.cachetext') {
                 if (typeof state.val !== 'string') {
                     if (state.val === null || state.val === undefined || state.val === '') {
@@ -607,7 +595,7 @@ class Sayit extends utils.Adapter {
             }
         }
 
-        this.log.info('saying: ' + text);
+        this.log.info(`saying: "${text}"`);
 
         let isGenerate = false;
 
@@ -630,27 +618,27 @@ class Sayit extends utils.Adapter {
         if (isGenerate && sayLastGeneratedText !== `[${language}]${text}`) {
             sayLastGeneratedText = `[${language}]${text}`;
             text2speech && text2speech.sayItGetSpeech(text, language, volume, (error, text, language, volume, duration) =>
-                speechFunction(error, text, language, volume, duration, this.sayFinished));
+                speechFunction(error, text, language, volume, duration, this.sayFinished.bind(this)));
         } else {
             if (speech2device && speech2device.sayItIsPlayFile(text)) {
                 text2speech && text2speech.getLength(text, (error, duration) =>
-                    speechFunction(error, text, language, volume, duration, this.sayFinished));
+                    speechFunction(error, text, language, volume, duration, this.sayFinished.bind(this)));
             } else {
                 if (!isGenerate) {
-                    speechFunction(null, text, language, volume, 0, this.sayFinished);
+                    speechFunction(null, text, language, volume, 0, this.sayFinished.bind(this));
                 } else if (this.config.cache) {
                     md5filename = libs.path.join(options.cacheDir, libs.crypto.createHash('md5').update(language + ';' + text).digest('hex') + '.' + fileExt);
                     if (libs.fs.existsSync(md5filename)) {
                         text2speech && text2speech.getLength(md5filename, (error, duration) =>
-                            speechFunction(error, md5filename, language, volume, duration, this.sayFinished));
+                            speechFunction(error, md5filename, language, volume, duration, this.sayFinished.bind(this)));
                     } else {
                         sayLastGeneratedText = '[' + language + ']' + text;
                         text2speech && text2speech.sayItGetSpeech(text, language, volume, (error, text, language, volume, duration) =>
-                            speechFunction(error, text, language, volume, duration, this.sayFinished));
+                            speechFunction(error, text, language, volume, duration, this.sayFinished.bind(this)));
                     }
                 } else {
                     text2speech && text2speech.getLength(MP3FILE, (error, duration) =>
-                        speechFunction(error, text, language, volume, duration, this.sayFinished));
+                        speechFunction(error, text, language, volume, duration, this.sayFinished.bind(this)));
                 }
             }
         }
