@@ -25,7 +25,7 @@ let text2speech = null;
 let speech2device = null;
 let MP3FILE;
 let cacheRunning = false;
-let cacheFiles   = [];
+let cacheFiles = [];
 
 class Sayit extends utils.Adapter {
     /**
@@ -48,16 +48,16 @@ class Sayit extends utils.Adapter {
     }
 
     async onReady() {
-        let dataDir = libs.path.normalize(`${utils.controllerDir}/${require(utils.controllerDir + '/lib/tools').getDefaultDataDir()}/sayit`);
+        let dataDir = libs.path.normalize(`${utils.getAbsoluteDefaultDataDir()}/sayit`);
 
         try {
             // create directory
             if (!libs.fs.existsSync(dataDir)) {
-                this.log.debug(`Creating storage directory: ${dataDir}`);
+                this.log.debug(`[onReady] Creating storage directory: ${dataDir}`);
                 libs.fs.mkdirSync(dataDir);
             }
         } catch (err) {
-            this.log.error(`Could not create storage directory: ${err}`);
+            this.log.error(`[onReady] Could not create storage directory: ${err}`);
             dataDir = __dirname;
         }
 
@@ -87,19 +87,27 @@ class Sayit extends utils.Adapter {
             this.config.annoVolume   = parseInt(this.config.annoVolume)   || 70; // percent from actual volume
 
             if (!libs.fs.existsSync(libs.path.join(__dirname, this.config.announce))) {
-                this.readFile(this.namespace, 'tts.userfiles/' + this.config.announce, (err, data) => {
-                    if (data) {
+                this.readFile(this.namespace, this.config.announce, (err, data) => {
+                    if (!err && data) {
+                        const targetPath = String(this.config.announce).replace('/tts.userfiles/', '');
+
                         try {
-                            libs.fs.writeFileSync(libs.path.join(__dirname, this.config.announce), data);
-                            this.config.announce = libs.path.join(__dirname, this.config.announce);
+                            libs.fs.writeFileSync(libs.path.join(__dirname, targetPath), data);
+                            this.config.announce = libs.path.join(__dirname, targetPath);
+
+                            this.log.debug(`[onReady] Set announce to ${this.config.announce}`);
                         } catch (e) {
-                            this.log.error('Cannot write file: ' + e.toString());
+                            this.log.error(`[onReady] Cannot write file: ${e.toString()}`);
                             this.config.announce = '';
                         }
+                    } else {
+                        this.log.error(`[onReady] Cannot read announcement file: ${this.config.announce}`);
                     }
                 });
             } else {
                 this.config.announce = __dirname + '/' + this.config.announce;
+
+                this.log.debug(`[onReady] Set announce to ${this.config.announce}`);
             }
         }
 
@@ -108,7 +116,9 @@ class Sayit extends utils.Adapter {
             if (this.config.cacheDir && (this.config.cacheDir[0] === '/' || this.config.cacheDir[0] === '\\')) {
                 this.config.cacheDir = this.config.cacheDir.substring(1);
             }
+
             options.cacheDir = libs.path.join(__dirname, this.config.cacheDir);
+
             if (options.cacheDir) {
                 options.cacheDir = options.cacheDir.replace(/\\/g, '/');
                 if (options.cacheDir[options.cacheDir.length - 1] === '/') {
@@ -134,7 +144,7 @@ class Sayit extends utils.Adapter {
                 try {
                     this.mkpathSync(__dirname + '/', this.config.cacheDir);
                 } catch (e) {
-                    this.log.error(`Cannot create "${options.cacheDir}": ${e.message}`);
+                    this.log.error(`[onReady] Cannot create "${options.cacheDir}": ${e.message}`);
                 }
             } else {
                 let engine = '';
@@ -143,7 +153,7 @@ class Sayit extends utils.Adapter {
                     try {
                         engine = libs.fs.readFileSync(libs.path.join(options.cacheDir, 'engine.txt')).toString();
                     } catch (e) {
-                        this.log.error(`Cannot read file "${libs.path.join(options.cacheDir, 'engine.txt')}: ${e.toString()}`);
+                        this.log.error(`[onReady] Cannot read file "${libs.path.join(options.cacheDir, 'engine.txt')}: ${e.toString()}`);
                     }
                 }
                 // If engine changed
@@ -157,13 +167,13 @@ class Sayit extends utils.Adapter {
                                 libs.fs.unlinkSync(libs.path.join(options.cacheDir, files[f]));
                             }
                         } catch (e) {
-                            this.log.error(`Cannot remove cache file "${libs.path.join(options.cacheDir, files[f])}: ${e.toString()}`);
+                            this.log.error(`[onReady] Cannot remove cache file "${libs.path.join(options.cacheDir, files[f])}: ${e.toString()}`);
                         }
                     }
                     try {
                         libs.fs.writeFileSync(libs.path.join(options.cacheDir, 'engine.txt'), this.config.engine);
                     } catch (e) {
-                        this.log.error(`Cannot write file "${libs.path.join(options.cacheDir, 'engine.txt')}: ${e.toString()}`);
+                        this.log.error(`[onReady] Cannot write file "${libs.path.join(options.cacheDir, 'engine.txt')}: ${e.toString()}`);
                     }
                 }
             }
@@ -214,17 +224,22 @@ class Sayit extends utils.Adapter {
             (this.config.type === 'mpd') ||
             (this.config.type === 'googleHome')) {
 
-            this.getForeignObject('system.adapter.' + this.config.webInstance, this.applyWebSettings);
+            const webInstance = `system.adapter.${this.config.webInstance}`;
+
+            this.log.debug(`[onReady] Applying web settings on object ${webInstance}`);
+
+            this.getForeignObject(webInstance, this.applyWebSettings.bind(this));
+
             // update web link on changes
-            this.subscribeForeignObjects('system.adapter.' + this.config.webInstance, (id, obj) =>
-                id === 'system.adapter.' + this.config.webInstance && this.applyWebSettings(null, obj));
+            this.subscribeForeignObjects(webInstance, (id, obj) =>
+                id === webInstance && this.applyWebSettings(null, obj));
         }
 
         try {
             text2speech   = new Text2Speech(this, libs, options, this.sayIt.bind(this));
             speech2device = new Speech2Device(this, libs, options);
         } catch (e) {
-            this.log.error('Cannot initialize engines: ' + e.toString());
+            this.log.error('[onReady] Cannot initialize engines: ' + e.toString());
             return;
         }
 
@@ -255,7 +270,7 @@ class Sayit extends utils.Adapter {
         const folderPath = libs.path.join(__dirname, '/mp3/');
 
         if (libs.fs.existsSync(folderPath)) {
-            this.log.info('Upload announce mp3 files');
+            this.log.info('[uploadFiles] Uploading announce mp3 files');
 
             const files = libs.fs.readdirSync(folderPath);
             for (let f = 0; f < files.length; f++) {
@@ -289,9 +304,9 @@ class Sayit extends utils.Adapter {
         if (!data) {
             try {
                 await this.writeFileAsync(this.namespace, `tts.userfiles/${file}`, libs.fs.readFileSync(filePath));
-                this.log.info(`Uploaded "${filePath}"`);
+                this.log.info(`[uploadFile] Uploaded "${filePath}"`);
             } catch (e) {
-                this.log.error(`Cannot write file "${filePath}": ${e.toString()}`);
+                this.log.error(`[uploadFile] Cannot write file "${filePath}": ${e.toString()}`);
             }
         }
     }
@@ -455,7 +470,7 @@ class Sayit extends utils.Adapter {
         } else {
             // new text to cache
             if (!this.config.cache) {
-                return this.log.warn('Cache is not enabled. Unable to cache: ' + text);
+                return this.log.warn('[cacheIt] Cache is not enabled. Unable to cache: ' + text);
             }
 
             // Extract language from "en;volume;Text to say"
@@ -486,7 +501,7 @@ class Sayit extends utils.Adapter {
 
             // Check: may be it is file from DB filesystem, like /vis.0/main/img/door-bell.mp3
             if (text[0] === '/') {
-                return this.log.warn('mp3 file must not be cached: ' + text);
+                return this.log.warn('[cacheIt] mp3 file must not be cached: ' + text);
             }
 
             let isGenerate = false;
@@ -499,18 +514,17 @@ class Sayit extends utils.Adapter {
 
             if (!isGenerate) {
                 if (speech2device && speech2device.sayItIsPlayFile(text)) {
-                    this.log.warn('mp3 file must not be cached: ' + text);
+                    this.log.warn('[cacheIt] mp3 file must not be cached: ' + text);
                 } else {
-                    this.log.warn('Cache does not required for this engine: ' + this.config.engine);
+                    this.log.warn('[cacheIt] Cache does not required for this engine: ' + this.config.engine);
                 }
                 return;
             }
 
             const md5filename = libs.path.join(options.cacheDir, libs.crypto.createHash('md5').update(language + ';' + text).digest('hex') + '.' + fileExt);
-            libs.fs = libs.fs || require('fs');
 
             if (libs.fs.existsSync(md5filename)) {
-                return this.log.debug('Text is yet cached: ' + text);
+                return this.log.debug('[cacheIt] Text is yet cached: ' + text);
             }
 
             if (cacheRunning) {
@@ -522,9 +536,9 @@ class Sayit extends utils.Adapter {
 
         text2speech && text2speech.sayItGetSpeech(text, language, false, (error, md5filename, _language, volume, seconds) => {
             if (error) {
-                this.log.error('Cannot cache text: "' + error);
+                this.log.error('[cacheIt] Cannot cache text: "' + error);
             } else {
-                this.log.debug('Text is cached: "' + text + '" under ' + md5filename);
+                this.log.debug('[cacheIt] Text is cached: "' + text + '" under ' + md5filename);
             }
 
             this.cacheTimeout = this.setTimeout(() => {
@@ -598,7 +612,7 @@ class Sayit extends utils.Adapter {
                             libs.fs.writeFileSync(MP3FILE, data);
                             this.sayIt((sayFirst ? '!' : '') + MP3FILE, language, volume, processing);
                         } catch (e) {
-                            this.log.error(`Cannot write file "${MP3FILE}": ${e.toString()}`);
+                            this.log.error(`[sayIt] Cannot write file "${MP3FILE}": ${e.toString()}`);
                             this.sayFinished(0);
                         }
                     } else {
@@ -607,7 +621,7 @@ class Sayit extends utils.Adapter {
                             try {
                                 data = libs.fs.readFileSync(text);
                             } catch (e) {
-                                this.log.error(`Cannot read file "${text}": ${e.toString()}`);
+                                this.log.error(`[sayIt] Cannot read file "${text}": ${e.toString()}`);
                                 this.sayFinished(0);
                             }
 
@@ -616,7 +630,7 @@ class Sayit extends utils.Adapter {
                             libs.fs.writeFileSync(MP3FILE, data);
                             this.sayIt((sayFirst ? '!' : '') + MP3FILE, language, volume, processing);
                         } else {
-                            this.log.warn(`File "${text}" not found`);
+                            this.log.warn(`[sayIt] File "${text}" not found`);
                             this.sayFinished(0);
                         }
                     }
@@ -630,7 +644,7 @@ class Sayit extends utils.Adapter {
 
             // Workaround for double text
             if (list.length > 1 && (list[list.length - 1].text === text) && (time - list[list.length - 1].time < 500)) {
-                return this.log.warn('Same text in less than half a second.. Strange. Ignore it.');
+                return this.log.warn('[sayIt] Same text in less than half a second.. Strange. Ignore it.');
             }
             // If more time than 15 seconds
             if (this.config.announce && !list.length && (!lastSay || (time - lastSay > this.config.annoTimeout * 1000))) {
@@ -663,7 +677,7 @@ class Sayit extends utils.Adapter {
             }
         }
 
-        this.log.info(`saying: "${text}"`);
+        this.log.info(`[sayIt] Saying: "${text}"`);
 
         let isGenerate = false;
 
@@ -717,7 +731,7 @@ class Sayit extends utils.Adapter {
 
         duration = duration || 0;
         if (list.length) {
-            this.log.debug(`Duration "${list[0].text}": ${duration}`);
+            this.log.debug(`[sayFinished] Duration "${list[0].text}": ${duration}`);
         }
 
         this.sayFinishedTimeout = this.setTimeout(() => {
@@ -736,26 +750,28 @@ class Sayit extends utils.Adapter {
         if (!err && obj && obj.native) {
             options.webLink = 'http';
             if (obj.native.auth) {
-                this.log.error(`Cannot use server "${this.config.webInstance}" with authentication for sonos/heos/chromecast. Select other or create another one.`);
+                this.log.error(`[applyWebSettings] Cannot use server "${this.config.webInstance}" with authentication for sonos/heos/chromecast/mpd/googleHome. Select other or create another one.`);
             } else {
                 if (obj.native.secure) {
                     options.webLink += 's';
                 }
                 options.webLink += '://';
                 if (obj.native.bind === 'localhost' || obj.native.bind === '127.0.0.1') {
-                    this.log.error(`Selected web server "${this.config.webInstance}" is only on local device available. Select other or create another one.`);
+                    this.log.error(`[applyWebSettings] Selected web server "${this.config.webInstance}" is only on local device available. Select other or create another one.`);
                 } else {
                     if (obj.native.bind === '0.0.0.0') {
-                        options.webLink += this.config.webServer;
+                        options.webLink += ''; //this.config.webServer;
                     } else {
                         options.webLink += obj.native.bind;
                     }
                 }
 
                 options.webLink += ':' + obj.native.port;
+
+                this.log.info(`[applyWebSettings] Using "${options.webLink}" as options.webLink`);
             }
         } else {
-            this.log.error(`Cannot read information about "${this.config.webInstance}". No web server is active`);
+            this.log.error(`[applyWebSettings] Cannot read information about "${this.config.webInstance}". No web server is active`);
         }
     }
 
