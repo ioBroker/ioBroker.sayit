@@ -164,20 +164,30 @@
     "protectedNative": [
         "awsAccessKey",
         "awsSecretKey",
-        "yandexKey"
+        "yandexKey",
+        "mp24User",
+        "mp24Pass"
     ],
     "encryptedNative": [
         "awsSecretKey",
-        "yandexKey"
+        "yandexKey",
+        "mp24Pass"
     ],
     "native": {
         "type": "system",
         "player": "",
         "command": "",
         "browserInstance": "",
-        "web": "",
+        "webInstance": "",
         "deviceSonos": "",
         "deviceHeos": "",
+        "deviceChromecast": "",
+        "deviceMpd": "",
+        "serverMp24": "",
+        "serverGoogleHome": "",
+        "mp24Port": 21,
+        "mp24User": "anonymous",
+        "mp24Pass": "anonymous",
 
         "engine": "en",
         "cloudInstance": "",
@@ -197,14 +207,10 @@
         "annoDuration": 0,
         "annoVolume": 70,
 
-        "cache": true,
-        "server": "",
-        "port": 0,
-        "user": "",
-        "pass": "",
         "webServer": "",
-        "cacheDir": "../../cache/",
-        "folderID": ""
+
+        "cache": true,
+        "cacheDir": "../../cache/"
     },
     "instanceObjects": [
         {

@@ -90,6 +90,71 @@
                     "lg": 4,
                     "label": "Heos device"
                 },
+                "deviceChromecast": {
+                    "hidden": "data.type !== 'chromecast'",
+                    "type": "selectSendTo",
+                    "command": "getChromecastDevices",
+                    "manual": false,
+                    "multiple": false,
+                    "noTranslation": true,
+                    "sm": 12,
+                    "md": 4,
+                    "lg": 4,
+                    "label": "Chromecast device"
+                },
+                "deviceMpd": {
+                    "hidden": "data.type !== 'mpd'",
+                    "type": "selectSendTo",
+                    "command": "getMpdDevices",
+                    "manual": false,
+                    "multiple": false,
+                    "noTranslation": true,
+                    "sm": 12,
+                    "md": 4,
+                    "lg": 4,
+                    "label": "MPD device"
+                },
+                "serverMp24": {
+                    "hidden": "['mp24', 'mp24ftp'].indexOf(data.type) === -1",
+                    "type": "text",
+                    "sm": 12,
+                    "md": 4,
+                    "lg": 4,
+                    "label": "MediaPlayer24 Server"
+                },
+                "serverGoogleHome": {
+                    "hidden": "data.type !== 'googleHome'",
+                    "type": "text",
+                    "sm": 12,
+                    "md": 4,
+                    "lg": 4,
+                    "label": "Google Home Server"
+                },
+                "mp24Port": {
+                    "hidden": "data.type !== 'mp24ftp'",
+                    "type": "number",
+                    "sm": 12,
+                    "md": 4,
+                    "lg": 4,
+                    "label": "Port"
+                },
+                "mp24User": {
+                    "hidden": "data.type !== 'mp24ftp'",
+                    "newLine": true,
+                    "type": "text",
+                    "sm": 12,
+                    "md": 4,
+                    "lg": 4,
+                    "label": "User"
+                },
+                "mp24Pass": {
+                    "hidden": "data.type !== 'mp24ftp'",
+                    "type": "text",
+                    "sm": 12,
+                    "md": 4,
+                    "lg": 4,
+                    "label": "Password"
+                },
                 "_divider1": {
                     "type": "divider"
                 },

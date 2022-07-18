@@ -363,7 +363,7 @@ class Sayit extends utils.Adapter {
 
                     if (!err && res) {
                         for (let i = 0; i < res.rows.length; i++) {
-                            var name = res.rows[i].value && res.rows[i].value.common && res.rows[i].value.common.name;
+                            let name = res.rows[i].value && res.rows[i].value.common && res.rows[i].value.common.name;
                             if (typeof name === 'object') {
                                 name = name.en;
                             }
@@ -383,7 +383,7 @@ class Sayit extends utils.Adapter {
 
                     if (!err && res) {
                         for (let i = 0; i < res.rows.length; i++) {
-                            var name = res.rows[i].value && res.rows[i].value.common && res.rows[i].value.common.name;
+                            let name = res.rows[i].value && res.rows[i].value.common && res.rows[i].value.common.name;
                             if (typeof name === 'object') {
                                 name = name.en;
                             }
@@ -394,7 +394,24 @@ class Sayit extends utils.Adapter {
 
                     obj.callback && this.sendTo(obj.from, obj.command, options, obj.callback);
                 });
-            } else if (obj.command === 'browseChromecast') {
+            } else if (obj.command === 'getMpdDevices') {
+                this.getObjectView('system', 'instance', {
+                    startkey: 'system.adapter.mpd.',
+                    endkey: 'system.adapter.mpd.\u9999'
+                }, (err, res) => {
+                    const options = [];
+
+                    if (!err && res) {
+                        for (let i = 0; i < res.rows.length; i++) {
+                            const instanceId = res.rows[i].id.replace('system.adapter.', '');
+
+                            options.push({ value: instanceId, label: instanceId });
+                        }
+                    }
+
+                    obj.callback && this.sendTo(obj.from, obj.command, options, obj.callback);
+                });
+            } else if (obj.command === 'getChromecastDevices') {
                 try {
                     const mdns = require('mdns');
 
@@ -408,7 +425,10 @@ class Sayit extends utils.Adapter {
                         this.processMessageTimeout = null;
                         browser.stop();
                         browser = null;
-                        obj.callback && this.sendTo(obj.from, obj.command, result, obj.callback);
+
+                        const options = result.map(device => ({value: device.ip, label: `${device.name} [${device.ip}]`}));
+
+                        obj.callback && this.sendTo(obj.from, obj.command, options, obj.callback);
                     }, 2000);
 
                     browser.start();
