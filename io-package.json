@@ -130,7 +130,7 @@
         "icon": "sayit.png",
         "materialize": true,
         "adminUI": {
-            "config": "materialize"
+            "config": "json"
         },
         "connectionType": "cloud",
         "dataSource": "push",
@@ -152,33 +152,58 @@
         },
         "dependencies": [
             {
-                "js-controller": ">=2.0.0"
+                "js-controller": ">=3.3.22"
+            }
+        ],
+        "globalDependencies": [
+            {
+              "admin": ">=5.3.2"
             }
         ]
     },
+    "protectedNative": [
+        "awsAccessKey",
+        "awsSecretKey",
+        "yandexKey"
+    ],
+    "encryptedNative": [
+        "awsSecretKey",
+        "yandexKey"
+    ],
     "native": {
         "type": "system",
-        "command": "",
         "player": "",
+        "command": "",
+        "browserInstance": "",
+        "web": "",
+        "deviceSonos": "",
+        "deviceHeos": "",
+
+        "engine": "en",
+        "cloudInstance": "",
+        "awsAccessKey": "",
+        "awsSecretKey": "",
+        "awsRegion": "",
+        "effectDrunk": false,
+        "effectIll": false,
+        "effectRobot": false,
+        "effectEmotion": "",
+        "effectVoice": "",
+        "yandexKey": "",
+        "yandexFolderID": "",
+
+        "announce": "",
+        "annoTimeout": 15,
+        "annoDuration": 0,
+        "annoVolume": 70,
+
         "cache": true,
-        "engine": "",
-        "sonos": "",
         "server": "",
         "port": 0,
         "user": "",
         "pass": "",
-        "instance": "",
-        "web": "",
         "webServer": "",
         "cacheDir": "../../cache/",
-        "key": "",
-        "announce": "",
-        "annoTimeout": 15,
-        "annoDuration": 0,
-        "annoVolume": "70",
-        "cloud": "",
-        "voice": "",
-        "emotion": "",
         "folderID": ""
     },
     "instanceObjects": [

@@ -1,0 +1,310 @@
+{
+    "i18n": true,
+    "type": "tabs",
+    "items": {
+        "_options": {
+            "type": "panel",
+            "label": "options",
+            "items": {
+                "type": {
+                    "type": "selectSendTo",
+                    "command": "getTypes",
+                    "manual": false,
+                    "multiple": false,
+                    "noTranslation": true,
+                    "sm": 12,
+                    "md": 4,
+                    "lg": 4,
+                    "label": "Type"
+                },
+                "player": {
+                    "hidden": "data.type !== 'system'",
+                    "type": "select",
+                    "sm": 12,
+                    "md": 4,
+                    "lg": 4,
+                    "options": [
+                        {
+                            "label": "mpg321",
+                            "value": "mpg321"
+                        },
+                        {
+                            "label": "omxplayer",
+                            "value": "omxplayer"
+                        },
+                        {
+                            "label": "mplayer",
+                            "value": "mplayer"
+                        }
+                    ],
+                    "default": "mpg321",
+                    "label": "Linux player"
+                },
+                "command": {
+                    "hidden": "data.type !== 'system'",
+                    "type": "text",
+                    "sm": 12,
+                    "md": 4,
+                    "lg": 4,
+                    "label": "System command"
+                },
+                "browserInstance": {
+                    "hidden": "data.type !== 'browser'",
+                    "type": "instance",
+                    "adapter": "vis",
+                    "sm": 12,
+                    "md": 4,
+                    "lg": 4,
+                    "label": "Browser instance"
+                },
+                "webInstance": {
+                    "hidden": "['sonos', 'heos', 'chromecast', 'mpd', 'googleHome'].indexOf(data.type) === -1",
+                    "type": "instance",
+                    "adapter": "web",
+                    "sm": 12,
+                    "md": 4,
+                    "lg": 4,
+                    "label": "Web instance"
+                },
+                "deviceSonos": {
+                    "hidden": "data.type !== 'sonos'",
+                    "type": "selectSendTo",
+                    "command": "getSonosDevices",
+                    "manual": false,
+                    "multiple": false,
+                    "noTranslation": true,
+                    "sm": 12,
+                    "md": 4,
+                    "lg": 4,
+                    "label": "Sonos device"
+                },
+                "deviceHeos": {
+                    "hidden": "data.type !== 'heos'",
+                    "type": "selectSendTo",
+                    "command": "getHeosDevices",
+                    "manual": false,
+                    "multiple": false,
+                    "noTranslation": true,
+                    "sm": 12,
+                    "md": 4,
+                    "lg": 4,
+                    "label": "Heos device"
+                },
+                "_divider1": {
+                    "type": "divider"
+                },
+                "engine": {
+                    "newLine": true,
+                    "type": "selectSendTo",
+                    "command": "getEngines",
+                    "manual": false,
+                    "multiple": false,
+                    "noTranslation": true,
+                    "sm": 12,
+                    "md": 4,
+                    "lg": 4,
+                    "label": "Engine"
+                },
+                "cloudInstance": {
+                    "hidden": "!data.engine.includes('_CLOUD_')",
+                    "newLine": true,
+                    "type": "instance",
+                    "adapter": "cloud",
+                    "sm": 12,
+                    "md": 4,
+                    "lg": 4,
+                    "label": "Cloud instance"
+                },
+                "awsAccessKey": {
+                    "hidden": "!data.engine.includes('_AP_')",
+                    "newLine": true,
+                    "type": "text",
+                    "sm": 12,
+                    "md": 4,
+                    "lg": 4,
+                    "label": "AWS Access Key"
+                },
+                "awsSecretKey": {
+                    "hidden": "!data.engine.includes('_AP_')",
+                    "type": "text",
+                    "sm": 12,
+                    "md": 4,
+                    "lg": 4,
+                    "label": "AWS Secret Key"
+                },
+                "awsRegion": {
+                    "hidden": "!data.engine.includes('_AP_')",
+                    "type": "text",
+                    "sm": 12,
+                    "md": 4,
+                    "lg": 4,
+                    "label": "AWS Region"
+                },
+                "effectDrunk": {
+                    "hidden": "data.engine !== 'ru_YA'",
+                    "newLine": true,
+                    "type": "checkbox",
+                    "sm": 12,
+                    "md": 4,
+                    "lg": 4,
+                    "label": "Effect drunk"
+                },
+                "effectIll": {
+                    "hidden": "data.engine !== 'ru_YA'",
+                    "type": "checkbox",
+                    "sm": 12,
+                    "md": 4,
+                    "lg": 4,
+                    "label": "Effect ill"
+                },
+                "effectRobot": {
+                    "hidden": "data.engine !== 'ru_YA'",
+                    "type": "checkbox",
+                    "sm": 12,
+                    "md": 4,
+                    "lg": 4,
+                    "label": "Effect robot"
+                },
+                "effectEmotion": {
+                    "hidden": "data.engine !== 'ru_YA' && data.engine !== 'ru_YA_CLOUD'",
+                    "newLine": true,
+                    "type": "select",
+                    "sm": 12,
+                    "md": 4,
+                    "lg": 4,
+                    "options": [
+                        {
+                            "label": "none",
+                            "value": "none"
+                        },
+                        {
+                            "label": "good",
+                            "value": "good"
+                        },
+                        {
+                            "label": "neutral",
+                            "value": "neutral"
+                        },
+                        {
+                            "label": "evil",
+                            "value": "evil"
+                        },
+                        {
+                            "label": "mixed",
+                            "value": "mixed"
+                        }
+                    ],
+                    "default": "none",
+                    "label": "Emotion"
+                },
+                "effectVoice": {
+                    "hidden": "data.engine !== 'ru_YA' && data.engine !== 'ru_YA_CLOUD'",
+                    "type": "select",
+                    "sm": 12,
+                    "md": 4,
+                    "lg": 4,
+                    "options": [
+                        {
+                            "label": "jane",
+                            "value": "jane"
+                        },
+                        {
+                            "label": "zahar",
+                            "value": "zahar"
+                        },
+                        {
+                            "label": "alyss",
+                            "value": "alyss"
+                        },
+                        {
+                            "label": "oksana",
+                            "value": "oksana"
+                        },
+                        {
+                            "label": "nick",
+                            "value": "nick"
+                        },
+                        {
+                            "label": "ermil",
+                            "value": "ermil"
+                        },
+                        {
+                            "label": "alena Premium",
+                            "value": "alena Premium"
+                        },
+                        {
+                            "label": "filipp Premium",
+                            "value": "filipp Premium"
+                        }
+                    ],
+                    "default": "jane",
+                    "label": "Voice"
+                },
+                "yandexKey": {
+                    "hidden": "data.engine !== 'ru_YA'",
+                    "type": "text",
+                    "sm": 12,
+                    "md": 4,
+                    "lg": 4,
+                    "label": "Yandex API Key"
+                },
+                "yandexFolderID": {
+                    "hidden": "data.engine !== 'ru_YA_CLOUD'",
+                    "type": "text",
+                    "sm": 12,
+                    "md": 4,
+                    "lg": 4,
+                    "label": "Yandex Folder ID"
+                },
+                "_divider2": {
+                    "type": "divider"
+                },
+                "announce": {
+                    "hidden": "data.type === 'googleHome'",
+                    "newLine": true,
+                    "type": "fileSelector",
+                    "objectID": "sayit.%INSTANCE%",
+                    "upload": "/tts.userfiles",
+                    "refresh": true,
+                    "delete": false,
+                    "noNone": false,
+                    "noSize": true,
+                    "withFolder": false,
+                    "sm": 12,
+                    "md": 4,
+                    "lg": 4,
+                    "label": "Announce"
+                },
+                "annoTimeout": {
+                    "hidden": "data.type === 'googleHome'",
+                    "newLine": true,
+                    "type": "number",
+                    "min": 0,
+                    "sm": 12,
+                    "md": 4,
+                    "lg": 4,
+                    "label": "Announce timeout (sec)"
+                },
+                "annoDuration": {
+                    "hidden": "data.type === 'googleHome'",
+                    "type": "number",
+                    "min": 0,
+                    "sm": 12,
+                    "md": 4,
+                    "lg": 4,
+                    "label": "Announce length (sec)"
+                },
+                "annoVolume": {
+                    "hidden": "data.type === 'googleHome'",
+                    "type": "number",
+                    "min": 0,
+                    "max": 100,
+                    "sm": 12,
+                    "md": 4,
+                    "lg": 4,
+                    "label": "Announce volume (%)"
+                }
+            }
+        }
+    }
+}

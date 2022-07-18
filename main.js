@@ -214,10 +214,10 @@ class Sayit extends utils.Adapter {
             (this.config.type === 'mpd') ||
             (this.config.type === 'googleHome')) {
 
-            this.getForeignObject('system.adapter.' + this.config.web, this.applyWebSettings);
+            this.getForeignObject('system.adapter.' + this.config.webInstance, this.applyWebSettings);
             // update web link on changes
-            this.subscribeForeignObjects('system.adapter.' + this.config.web, (id, obj) =>
-                id === 'system.adapter.' + this.config.web && this.applyWebSettings(null, obj));
+            this.subscribeForeignObjects('system.adapter.' + this.config.webInstance, (id, obj) =>
+                id === 'system.adapter.' + this.config.webInstance && this.applyWebSettings(null, obj));
         }
 
         try {
@@ -346,6 +346,54 @@ class Sayit extends utils.Adapter {
         if (obj) {
             if (obj.command === 'stopInstance') {
                 this.stop(() => obj.callback && this.sendTo(obj.from, obj.command, null, obj.callback));
+            } else if (obj.command === 'getTypes') {
+                const options = Object.keys(engines.sayitOptions).map(type => ({value: type, label: engines.sayitOptions[type].name}));
+
+                obj.callback && this.sendTo(obj.from, obj.command, options, obj.callback);
+            } else if (obj.command === 'getEngines') {
+                const options = Object.keys(engines.sayitEngines).map(engine => ({value: engine, label: engines.sayitEngines[engine].name}));
+
+                obj.callback && this.sendTo(obj.from, obj.command, options, obj.callback);
+            } else if (obj.command === 'getSonosDevices') {
+                this.getObjectView('system', 'channel', {
+                    startkey: 'sonos.',
+                    endkey: 'sonos.\u9999'
+                }, (err, res) => {
+                    const options = [];
+
+                    if (!err && res) {
+                        for (let i = 0; i < res.rows.length; i++) {
+                            var name = res.rows[i].value && res.rows[i].value.common && res.rows[i].value.common.name;
+                            if (typeof name === 'object') {
+                                name = name.en;
+                            }
+
+                            options.push({ value: res.rows[i].id, label: res.rows[i].id.replace(/^sonos\.\d+\.root\./, '') + ' [' + name + ']' });
+                        }
+                    }
+
+                    obj.callback && this.sendTo(obj.from, obj.command, options, obj.callback);
+                });
+            } else if (obj.command === 'getHeosDevices') {
+                this.getObjectView('system', 'channel', {
+                    startkey: 'heos.',
+                    endkey: 'heos.\u9999'
+                }, (err, res) => {
+                    const options = [];
+
+                    if (!err && res) {
+                        for (let i = 0; i < res.rows.length; i++) {
+                            var name = res.rows[i].value && res.rows[i].value.common && res.rows[i].value.common.name;
+                            if (typeof name === 'object') {
+                                name = name.en;
+                            }
+
+                            options.push({ value: res.rows[i].id, label: res.rows[i].id.replace(/^heos\.\d+\.players\./, '') + ' [' + name + ']' });
+                        }
+                    }
+
+                    obj.callback && this.sendTo(obj.from, obj.command, options, obj.callback);
+                });
             } else if (obj.command === 'browseChromecast') {
                 try {
                     const mdns = require('mdns');
@@ -668,14 +716,14 @@ class Sayit extends utils.Adapter {
         if (!err && obj && obj.native) {
             options.webLink = 'http';
             if (obj.native.auth) {
-                this.log.error(`Cannot use server "${this.config.web}" with authentication for sonos/heos/chromecast. Select other or create another one.`);
+                this.log.error(`Cannot use server "${this.config.webInstance}" with authentication for sonos/heos/chromecast. Select other or create another one.`);
             } else {
                 if (obj.native.secure) {
                     options.webLink += 's';
                 }
                 options.webLink += '://';
                 if (obj.native.bind === 'localhost' || obj.native.bind === '127.0.0.1') {
-                    this.log.error(`Selected web server "${this.config.web}" is only on local device available. Select other or create another one.`);
+                    this.log.error(`Selected web server "${this.config.webInstance}" is only on local device available. Select other or create another one.`);
                 } else {
                     if (obj.native.bind === '0.0.0.0') {
                         options.webLink += this.config.webServer;
@@ -687,7 +735,7 @@ class Sayit extends utils.Adapter {
                 options.webLink += ':' + obj.native.port;
             }
         } else {
-            this.log.error(`Cannot read information about "${this.config.web}". No web server is active`);
+            this.log.error(`Cannot read information about "${this.config.webInstance}". No web server is active`);
         }
     }
 
