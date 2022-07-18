@@ -114,7 +114,10 @@
       "zh-cn": "文字到语音在云端或局部的。 运行在windows、linux和OS x. 它可以发挥的mp3/声。"
     },
     "authors": [
-      "bluefox <dogafox@gmail.com>"
+      "bluefox <dogafox@gmail.com>",
+      "Jey-Cee <jey-cee@live.com>",
+      "apollon77 <iobroker@fischer-ka.de>",
+      "Matthias Kleine <info@haus-automatisierung.com>"
     ],
     "license": "MIT",
     "platform": "Javascript/Node.js",

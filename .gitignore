@@ -1,13 +1,17 @@
+# No dot-directories except github/vscode
+.*/
+!.vscode/
+!.github/
+
+*.code-workspace
 node_modules
-.idea
-tmp
-admin/i18n/*/flat.txt
+nbproject
+
+# npm package files
+iobroker.*.tgz
+
+Thumbs.db
+
+# i18n intermediate files
 admin/i18n/flat.txt
-iob_npm.done
-/.project
-/nbproject
-.vscode
-package-lock.json
-*.tgz
-/sayit.0.say.mp3
-/gong.mp3
+admin/i18n/*/flat.txt
