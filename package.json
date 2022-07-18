@@ -89,6 +89,7 @@
     "test": "npm run test:js && npm run test:package",
     "check": "tsc --noEmit -p tsconfig.check.json",
     "lint": "eslint",
+    "translate": "translate-adapter",
     "install": "node main.js --install",
     "release": "release-script",
     "release-patch": "release-script patch --yes",
