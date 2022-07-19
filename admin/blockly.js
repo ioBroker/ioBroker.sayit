@@ -32,7 +32,7 @@ Blockly.Words['sayit_log_debug']     = {'en': 'debug',                       'de
 Blockly.Words['sayit_log_warn']      = {'en': 'warning',                     'de': 'warning',                            'ru': 'warning'};
 Blockly.Words['sayit_log_error']     = {'en': 'error',                       'de': 'error',                              'ru': 'ошибка'};
 
-// this is copy of engines.js
+// this is copy of lib/engines.js
 const sayitEngines = {
     'en':                           {name: 'Google - English',                          engine: 'google'},
     'de':                           {name: 'Google - Deutsch',                          engine: 'google'},

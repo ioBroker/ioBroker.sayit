@@ -7,7 +7,7 @@ const libs = {
     fs: require('fs'),
     path: require('path'),
 };
-const engines = require('./admin/engines.js');
+const engines = require('./lib/engines.js');
 const sayitOptions = engines.sayitOptions;
 
 const options = {
