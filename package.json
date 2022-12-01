@@ -48,7 +48,7 @@
     "gulp": "^4.0.2",
     "axios": "^1.2.0",
     "mocha": "^10.1.0",
-    "chai": "^4.3.6"
+    "chai": "^4.3.7"
   },
   "bugs": {
     "url": "https://github.com/ioBroker/ioBroker.sayit/issues"
