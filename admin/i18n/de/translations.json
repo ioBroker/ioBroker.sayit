@@ -1,8 +1,8 @@
 {
     "API Key is not set!": "API Key ist leer!",
-    "API Key:": "API Key",
+    "API Key:": "API Schlüssel",
     "AWS Region:": "AWS Region",
-    "Access Key:": "Access Key",
+    "Access Key:": "Zugangs Schlüssel",
     "Adapter must be enabled": "Adapter muss aktiviert sein",
     "All": "Alle",
     "Announce length (sec):": "Ankündigunglänge (Sek)",
