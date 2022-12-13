@@ -86,7 +86,7 @@
         }
     }
 
-     function fillEngineParams() {
+    function fillEngineParams() {
        var engine = $('#engine').val();
        if (!sayitEngines[engine]) return;
        for (var i = 0; i < sayitEngines[engine].params.length; i++) {
@@ -116,7 +116,6 @@
             }
         }
     }
-
 
     function fillSonosDevices(elem, current) {
         socket.emit('getObjectView', 'system', 'channel', {startkey: 'sonos.', endkey: 'sonos.\u9999'}, function (err, res) {
@@ -550,7 +549,7 @@
             }
         }
         // Read names of files for gong
-        socket.emit('readDir', 'sayit.' + instance, 'tts.userfiles', function (err, dir) {
+        socket.emit('readDir', 'sayit.' + instance, 'tts.userfiles', null, function (err, dir) {
             var text = '<option value="">' + _('none') + '</option>';
             if (dir) {
                 for (var i = 0; i < dir.length; i++) {
@@ -694,7 +693,7 @@
                         <input type="file" accept=".mp3,audio/*" id="files" name="files[]" multiple />
                     </div>
                     <div class="file-path-wrapper">
-                        <input class="file-path validate" type="text">
+                        <input class="file-path validate" type="text" />
                     </div>
                 </div>
             </div>
