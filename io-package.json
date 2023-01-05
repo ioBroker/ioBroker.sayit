@@ -180,6 +180,7 @@
         "browserInstance": "",
         "webInstance": "",
         "deviceSonos": "",
+        "deviceLametric": "",
         "deviceHeos": "",
         "deviceChromecast": "",
         "deviceMpd": "",

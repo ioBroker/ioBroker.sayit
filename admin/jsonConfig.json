@@ -58,7 +58,7 @@
                     "label": "Browser instance"
                 },
                 "webInstance": {
-                    "hidden": "['sonos', 'heos', 'chromecast', 'mpd', 'googleHome'].indexOf(data.type) === -1",
+                    "hidden": "['sonos', 'heos', 'lametric', 'chromecast', 'mpd', 'googleHome'].indexOf(data.type) === -1",
                     "type": "instance",
                     "adapter": "web",
                     "sm": 12,
@@ -89,6 +89,18 @@
                     "md": 4,
                     "lg": 4,
                     "label": "Heos device"
+                },
+                "deviceLametric": {
+                    "hidden": "data.type !== 'lametric'",
+                    "type": "selectSendTo",
+                    "command": "getLametricDevices",
+                    "manual": false,
+                    "multiple": false,
+                    "noTranslation": true,
+                    "sm": 12,
+                    "md": 4,
+                    "lg": 4,
+                    "label": "LaMetric device"
                 },
                 "deviceChromecast": {
                     "hidden": "data.type !== 'chromecast'",

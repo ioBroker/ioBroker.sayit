@@ -258,6 +258,7 @@ Following values for engines are possible:
 ## Changelog
 ### __WORK IN PROGRESS__
 
+* (klein0r) Added LaMetric as target
 * (klein0r) Dropped admin 5 support
 * (klein0r) Refactored code
 

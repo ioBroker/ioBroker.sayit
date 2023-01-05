@@ -138,7 +138,9 @@ class Sayit extends utils.Adapter {
                     i++;
                 }
             }
+
             options.cacheDir = parts.join('/');
+
             // Create cache dir if does not exist
             if (!libs.fs.existsSync(options.cacheDir)) {
                 try {
@@ -186,7 +188,7 @@ class Sayit extends utils.Adapter {
 
         this.getState('tts.text', (err, state) => {
             if (err || !state) {
-                this.setState('tts.text', '', true);
+                this.setState('tts.text', { val: '', ack: true });
             }
         });
 
@@ -215,14 +217,8 @@ class Sayit extends utils.Adapter {
                     speech2device && speech2device.sayItSystemVolume(70);
                 }
             });
-        }
-
-        // calculate weblink for devices that require it
-        if ((this.config.type === 'sonos') ||
-            (this.config.type === 'heos') ||
-            (this.config.type === 'chromecast') ||
-            (this.config.type === 'mpd') ||
-            (this.config.type === 'googleHome')) {
+        } else if (['sonos', 'heos', 'lametric', 'chromecast', 'mpd', 'googleHome'].includes(this.config.type)) {
+            // Generate weblink for devices that require it
 
             const webInstance = `system.adapter.${this.config.webInstance}`;
 
@@ -404,6 +400,23 @@ class Sayit extends utils.Adapter {
                             }
 
                             options.push({ value: res.rows[i].id, label: res.rows[i].id.replace(/^heos\.\d+\.players\./, '') + ' [' + name + ']' });
+                        }
+                    }
+
+                    obj.callback && this.sendTo(obj.from, obj.command, options, obj.callback);
+                });
+            } else if (obj.command === 'getLametricDevices') {
+                this.getObjectView('system', 'instance', {
+                    startkey: 'system.adapter.lametric.',
+                    endkey: 'system.adapter.lametric.\u9999'
+                }, (err, res) => {
+                    const options = [];
+
+                    if (!err && res) {
+                        for (let i = 0; i < res.rows.length; i++) {
+                            const instanceId = res.rows[i].id.replace('system.adapter.', '');
+
+                            options.push({ value: instanceId, label: instanceId });
                         }
                     }
 
@@ -748,14 +761,15 @@ class Sayit extends utils.Adapter {
 
     applyWebSettings(err, obj) {
         if (!err && obj && obj.native) {
-            options.webLink = 'http';
             if (obj.native.auth) {
                 this.log.error(`[applyWebSettings] Cannot use server "${this.config.webInstance}" with authentication for sonos/heos/chromecast/mpd/googleHome. Select other or create another one.`);
             } else {
                 if (obj.native.secure) {
-                    options.webLink += 's';
+                    options.webLink += 'https://';
+                } else {
+                    options.webLink = 'http://';
                 }
-                options.webLink += '://';
+
                 if (obj.native.bind === 'localhost' || obj.native.bind === '127.0.0.1') {
                     this.log.error(`[applyWebSettings] Selected web server "${this.config.webInstance}" is only on local device available. Select other or create another one.`);
                 } else {
