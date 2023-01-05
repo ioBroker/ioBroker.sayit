@@ -88,7 +88,6 @@
                 "zh-cn": "HEOS已添加"
             }
         },
-        "title": "Text to speech",
         "titleLang": {
             "en": "Text to speech",
             "de": "Text zu Sprache",
@@ -128,9 +127,13 @@
         "supportStopInstance": true,
         "stopBeforeUpdate": true,
         "icon": "sayit.png",
-        "materialize": true,
         "adminUI": {
             "config": "json"
+        },
+        "docs": {
+            "en": [
+                "docs/en/README.md"
+            ]
         },
         "connectionType": "cloud",
         "dataSource": "push",
