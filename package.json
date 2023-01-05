@@ -40,10 +40,10 @@
     "mdns": "^2.7.2"
   },
   "dependencies": {
-    "@iobroker/adapter-core": "^2.6.0",
-    "aws-sdk": "~2.1185.0",
-    "google-tts-api": "^2.0.2",
-    "jsftp": "^2.1.3"
+    "jsftp": "^2.1.3",
+    "aws-sdk": "~2.1244.0",
+    "@iobroker/adapter-core": "^2.6.7",
+    "google-tts-api": "^2.0.2"
   },
   "devDependencies": {
     "@alcalzone/release-script": "^3.5.9",
@@ -61,11 +61,13 @@
     "chai": "^4.3.6",
     "chai-as-promised": "^7.1.1",
     "eslint": "^8.18.0",
-    "mocha": "^10.0.0",
+    "mocha": "^10.1.0",
     "proxyquire": "^2.1.3",
     "sinon": "^14.0.0",
     "sinon-chai": "^3.7.0",
-    "typescript": "^4.7.4"
+    "typescript": "^4.7.4",
+    "gulp": "^4.0.2",
+    "axios": "^1.2.0"
   },
   "bugs": {
     "url": "https://github.com/ioBroker/ioBroker.sayit/issues"

@@ -60,6 +60,9 @@ jobs:
       startsWith(github.ref, 'refs/tags/v')
 
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [14.x]
 
     steps:
       - uses: ioBroker/testing-action-deploy@v1
