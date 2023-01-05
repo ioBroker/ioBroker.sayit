@@ -256,6 +256,11 @@ Following values for engines are possible:
 	### __WORK IN PROGRESS__
 -->
 ## Changelog
+### __WORK IN PROGRESS__
+
+* (klein0r) Dropped admin 5 support
+* (klein0r) Refactored code
+
 ### 1.12.6 (2022-02-09)
 * (bluefox) used setForeignBinaryState if possible
 
