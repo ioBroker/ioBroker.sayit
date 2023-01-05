@@ -18,14 +18,10 @@ const options = {
 };
 
 let sayLastGeneratedText = '';
-let list = [];
 let lastSay = null;
 let fileExt = 'mp3';
 let text2speech = null;
 let speech2device = null;
-let MP3FILE;
-let cacheRunning = false;
-let cacheFiles = [];
 
 class Sayit extends utils.Adapter {
     /**
@@ -36,6 +32,13 @@ class Sayit extends utils.Adapter {
             ...options,
             name: 'sayit',
         });
+
+        this.dataDir = null;
+        this.mp3File = null;
+
+        this.list = [];
+        this.cacheFiles = [];
+        this.cacheRunning = false;
 
         this.processMessageTimeout = null;
         this.sayFinishedTimeout = null;
@@ -61,14 +64,7 @@ class Sayit extends utils.Adapter {
             dataDir = __dirname;
         }
 
-        MP3FILE = `${dataDir}/${this.namespace}.say.${fileExt}`;
-
         await this.uploadFiles();
-
-        if (!this.config.engine) {
-            const systemConfig = await this.getForeignObjectAsync('system.config');
-            this.config.engine = (systemConfig && systemConfig.common && systemConfig.common.language) || 'de';
-        }
 
         if (this.config.engine === 'ru_YA_CLOUD') {
             fileExt = 'ogg';
@@ -76,9 +72,11 @@ class Sayit extends utils.Adapter {
             fileExt = 'mp3';
         }
 
-        this.config.dataDir = dataDir;
+        this.mp3File = `${dataDir}/${this.namespace}.say.${fileExt}`;
+        this.dataDir = dataDir;
 
-        MP3FILE = this.config.dataDir + '/' + this.namespace + '.say.' + fileExt;
+        this.log.debug(`[onReady] Data dir is configured to "${this.dataDir}"`);
+
         options.outFileExt = fileExt;
 
         if (this.config.announce) {
@@ -205,8 +203,9 @@ class Sayit extends utils.Adapter {
             }
         });
 
-        this.getState('tts.playing', (err, state) =>
-            (err || !state) && this.setState('tts.playing', false, true));
+        this.getState('tts.playing', (err, state) => {
+            (err || !state) && this.setState('tts.playing', { val: false, ack: true });
+        });
 
         if (this.config.type === 'system') {
             // Read volume
@@ -220,15 +219,20 @@ class Sayit extends utils.Adapter {
         } else if (['sonos', 'heos', 'lametric', 'chromecast', 'mpd', 'googleHome'].includes(this.config.type)) {
             // Generate weblink for devices that require it
 
-            const webInstance = `system.adapter.${this.config.webInstance}`;
+            if (this.config.webInstance) {
+                const webInstance = `system.adapter.${this.config.webInstance}`;
 
-            this.log.debug(`[onReady] Applying web settings on object ${webInstance}`);
+                this.log.debug(`[onReady] Applying web settings on object ${webInstance}`);
 
-            this.getForeignObject(webInstance, this.applyWebSettings.bind(this));
+                this.getForeignObject(webInstance, this.applyWebSettings.bind(this));
 
-            // update web link on changes
-            this.subscribeForeignObjects(webInstance, (id, obj) =>
-                id === webInstance && this.applyWebSettings(null, obj));
+                // update web link on changes
+                this.subscribeForeignObjects(webInstance, (id, obj) => {
+                    id === webInstance && this.applyWebSettings(null, obj);
+                });
+            } else {
+                this.log.error(`[onReady] Web instance is not configured (but required for type ${this.config.type})`);
+            }
         }
 
         try {
@@ -316,8 +320,8 @@ class Sayit extends utils.Adapter {
             this.log.debug(`state ${id} changed: ${state.val} (ack = ${state.ack})`);
 
             if (id === this.namespace + '.tts.clearQueue') {
-                if (list.length > 1) {
-                    list.splice(1);
+                if (this.list.length > 1) {
+                    this.list.splice(1);
                     this.setState('tts.clearQueue', { val: false, ack: true });
                 }
             } else if (id === this.namespace + '.tts.volume') {
@@ -346,6 +350,8 @@ class Sayit extends utils.Adapter {
                 }
 
                 this.cacheIt(state.val);
+
+                this.setState('tts.cachetext', { val: state.val, ack: true });
             }
         }
     }
@@ -471,12 +477,13 @@ class Sayit extends utils.Adapter {
     cacheIt(text, language) {
         // process queue
         if (text === true) {
-            if (!cacheFiles.length) {
-                cacheRunning = false;
+            if (!this.cacheFiles.length) {
+                this.cacheRunning = false;
                 return;
             }
+
             // get next queued text
-            const toCache = cacheFiles.shift();
+            const toCache = this.cacheFiles.shift();
 
             text = toCache.text;
             language = toCache.language;
@@ -540,12 +547,12 @@ class Sayit extends utils.Adapter {
                 return this.log.debug('[cacheIt] Text is yet cached: ' + text);
             }
 
-            if (cacheRunning) {
-                return cacheFiles.push({text, language});
+            if (this.cacheRunning) {
+                return this.cacheFiles.push({ text, language });
             }
         }
 
-        cacheRunning = true;
+        this.cacheRunning = true;
 
         text2speech && text2speech.sayItGetSpeech(text, language, false, (error, md5filename, _language, volume, seconds) => {
             if (error) {
@@ -603,14 +610,17 @@ class Sayit extends utils.Adapter {
         // Check: may be it is file from DB filesystem, like /vis.0/main/img/door-bell.mp3
         if (text[0] === '/') {
             let cached = false;
+
             if (this.config.cache) {
                 md5filename = libs.path.join(options.cacheDir, libs.crypto.createHash('md5').update(text).digest('hex') + '.' + fileExt);
 
+                // Check if cached file exists
                 if (libs.fs.existsSync(md5filename)) {
                     cached = true;
                     text = md5filename;
                 }
             }
+
             if (!cached) {
                 const parts = text.split('/');
                 const adap = parts[0];
@@ -622,10 +632,10 @@ class Sayit extends utils.Adapter {
                         try {
                             // Cache the file
                             if (md5filename) libs.fs.writeFileSync(md5filename, data);
-                            libs.fs.writeFileSync(MP3FILE, data);
-                            this.sayIt((sayFirst ? '!' : '') + MP3FILE, language, volume, processing);
+                            libs.fs.writeFileSync(this.mp3File, data);
+                            this.sayIt((sayFirst ? '!' : '') + this.mp3File, language, volume, processing);
                         } catch (e) {
-                            this.log.error(`[sayIt] Cannot write file "${MP3FILE}": ${e.toString()}`);
+                            this.log.error(`[sayIt] Cannot write file "${this.mp3File}": ${e.toString()}`);
                             this.sayFinished(0);
                         }
                     } else {
@@ -640,8 +650,8 @@ class Sayit extends utils.Adapter {
 
                             // Cache the file
                             md5filename && libs.fs.writeFileSync(md5filename, data);
-                            libs.fs.writeFileSync(MP3FILE, data);
-                            this.sayIt((sayFirst ? '!' : '') + MP3FILE, language, volume, processing);
+                            libs.fs.writeFileSync(this.mp3File, data);
+                            this.sayIt((sayFirst ? '!' : '') + this.mp3File, language, volume, processing);
                         } else {
                             this.log.warn(`[sayIt] File "${text}" not found`);
                             this.sayFinished(0);
@@ -656,35 +666,36 @@ class Sayit extends utils.Adapter {
             const time = Date.now();
 
             // Workaround for double text
-            if (list.length > 1 && (list[list.length - 1].text === text) && (time - list[list.length - 1].time < 500)) {
+            if (this.list.length > 1 && (this.list[this.list.length - 1].text === text) && (time - this.list[this.list.length - 1].time < 500)) {
                 return this.log.warn('[sayIt] Same text in less than half a second.. Strange. Ignore it.');
             }
+
             // If more time than 15 seconds
-            if (this.config.announce && !list.length && (!lastSay || (time - lastSay > this.config.annoTimeout * 1000))) {
-                if (sayFirst && list.length > 1) {
-                    list.splice(1, 0,
+            if (this.config.announce && !this.list.length && (!lastSay || (time - lastSay > this.config.annoTimeout * 1000))) {
+                if (sayFirst && this.list.length > 1) {
+                    this.list.splice(1, 0,
                         // place as first the announce mp3
                         {text: this.config.announce, language: language, volume: (volume || this.config.volume) / 2, time: time},
                         // and then text
                         {text: text, language: language, volume: (volume || this.config.volume), time: time});
                 } else {
                     // place as first the announce mp3
-                    list.push({text: this.config.announce, language: language, volume: (volume || this.config.volume) / 2, time: time});
+                    this.list.push({text: this.config.announce, language: language, volume: (volume || this.config.volume) / 2, time: time});
                     // and then text
-                    list.push({text: text, language: language, volume: (volume || this.config.volume), time: time});
+                    this.list.push({text: text, language: language, volume: (volume || this.config.volume), time: time});
                 }
 
                 text = this.config.announce;
                 volume = Math.round((volume || this.config.volume) / 100 * this.config.annoVolume);
             } else {
                 // if high priority text
-                if (sayFirst && list.length > 1) {
-                    list.splice(1, 0, {text: text, language: language, volume: (volume || this.config.volume), time: time });
+                if (sayFirst && this.list.length > 1) {
+                    this.list.splice(1, 0, {text: text, language: language, volume: (volume || this.config.volume), time: time });
                 } else {
-                    list.push({text: text, language: language, volume: (volume || this.config.volume), time: time });
+                    this.list.push({text: text, language: language, volume: (volume || this.config.volume), time: time });
                 }
 
-                if (list.length > 1) {
+                if (this.list.length > 1) {
                     return;
                 }
             }
@@ -712,8 +723,9 @@ class Sayit extends utils.Adapter {
         // If text first must be generated
         if (isGenerate && sayLastGeneratedText !== `[${language}]${text}`) {
             sayLastGeneratedText = `[${language}]${text}`;
-            text2speech && text2speech.sayItGetSpeech(text, language, volume, (error, text, language, volume, duration) =>
-                speechFunction(error, text, language, volume, duration, this.sayFinished.bind(this)));
+            text2speech && text2speech.sayItGetSpeech(text, language, volume, (error, text, language, volume, duration) => {
+                speechFunction(error, text, language, volume, duration, this.sayFinished.bind(this));
+            });
         } else {
             if (speech2device && speech2device.sayItIsPlayFile(text)) {
                 text2speech && text2speech.getLength(text, (error, duration) =>
@@ -724,16 +736,19 @@ class Sayit extends utils.Adapter {
                 } else if (this.config.cache) {
                     md5filename = libs.path.join(options.cacheDir, libs.crypto.createHash('md5').update(language + ';' + text).digest('hex') + '.' + fileExt);
                     if (libs.fs.existsSync(md5filename)) {
-                        text2speech && text2speech.getLength(md5filename, (error, duration) =>
-                            speechFunction(error, md5filename, language, volume, duration, this.sayFinished.bind(this)));
+                        text2speech && text2speech.getLength(md5filename, (error, duration) => {
+                            speechFunction(error, md5filename, language, volume, duration, this.sayFinished.bind(this));
+                        });
                     } else {
                         sayLastGeneratedText = '[' + language + ']' + text;
-                        text2speech && text2speech.sayItGetSpeech(text, language, volume, (error, text, language, volume, duration) =>
-                            speechFunction(error, text, language, volume, duration, this.sayFinished.bind(this)));
+                        text2speech && text2speech.sayItGetSpeech(text, language, volume, (error, text, language, volume, duration) => {
+                            speechFunction(error, text, language, volume, duration, this.sayFinished.bind(this));
+                        });
                     }
                 } else {
-                    text2speech && text2speech.getLength(MP3FILE, (error, duration) =>
-                        speechFunction(error, text, language, volume, duration, this.sayFinished.bind(this)));
+                    text2speech && text2speech.getLength(this.mp3File, (error, duration) => {
+                        speechFunction(error, text, language, volume, duration, this.sayFinished.bind(this));
+                    });
                 }
             }
         }
@@ -743,18 +758,18 @@ class Sayit extends utils.Adapter {
         error && this.log.error(error);
 
         duration = duration || 0;
-        if (list.length) {
-            this.log.debug(`[sayFinished] Duration "${list[0].text}": ${duration}`);
+        if (this.list.length) {
+            this.log.debug(`[sayFinished] Duration "${this.list[0].text}": ${duration}`);
         }
 
         this.sayFinishedTimeout = this.setTimeout(() => {
             this.sayFinishedTimeout = null;
             // Remember when last text finished
             lastSay = Date.now();
-            list.length && list.shift();
+            this.list.length && this.list.shift();
 
-            if (list.length) {
-                this.sayIt(list[0].text, list[0].language, list[0].volume, true);
+            if (this.list.length) {
+                this.sayIt(this.list[0].text, this.list[0].language, this.list[0].volume, true);
             }
         }, duration * 1000);
     }
@@ -774,7 +789,7 @@ class Sayit extends utils.Adapter {
                     this.log.error(`[applyWebSettings] Selected web server "${this.config.webInstance}" is only on local device available. Select other or create another one.`);
                 } else {
                     if (obj.native.bind === '0.0.0.0') {
-                        options.webLink += ''; //this.config.webServer;
+                        options.webLink += '';
                     } else {
                         options.webLink += obj.native.bind;
                     }
