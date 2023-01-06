@@ -365,7 +365,13 @@ class Sayit extends utils.Adapter {
 	 */
     onMessage(obj) {
         if (obj) {
-            if (obj.command === 'stopInstance') {
+            if (obj.command === 'say') {
+                const text = obj.message.text;
+                const language = obj.message?.language;
+                const volume = obj.message?.volume;
+
+                this.sayIt(text, language, volume);
+            } else if (obj.command === 'stopInstance') {
                 this.stop(() => obj.callback && this.sendTo(obj.from, obj.command, null, obj.callback));
             } else if (obj.command === 'getTypes') {
                 const options = Object.keys(engines.sayitOptions).map(type => ({value: type, label: engines.sayitOptions[type].name}));
@@ -430,7 +436,7 @@ class Sayit extends utils.Adapter {
                         browser.stop();
                         browser = null;
 
-                        const options = result.map(device => ({value: device.ip, label: `${device.name} [${device.ip}]`}));
+                        const options = result.map(device => ({ value: device.ip, label: `${device.name} [${device.ip}]` }));
 
                         obj.callback && this.sendTo(obj.from, obj.command, options, obj.callback);
                     }, 2000);
@@ -544,14 +550,16 @@ class Sayit extends utils.Adapter {
         // Extract language from "en;volume;Text to say"
         if (text.includes(';')) {
             const arr = text.split(';', 3);
+
             // If language;text or volume;text
             if (arr.length === 2) {
-                // If number
+                // If number (volume)
                 if (parseInt(arr[0]).toString() === arr[0].toString()) {
                     volume = arr[0].trim();
                 } else {
                     language = arr[0].trim();
                 }
+
                 text = arr[1].trim();
             } else if (arr.length === 3) {
                 // If language;volume;text or volume;language;text
@@ -563,6 +571,7 @@ class Sayit extends utils.Adapter {
                     volume   = arr[1].trim();
                     language = arr[0].trim();
                 }
+
                 text = arr[2].trim();
             }
         }

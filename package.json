@@ -35,6 +35,9 @@
     "type": "git",
     "url": "https://github.com/ioBroker/ioBroker.sayit"
   },
+  "engines": {
+    "node": ">=14.5.0"
+  },
   "optionalDependencies": {
     "castv2-client": "^1.2.0",
     "mdns": "^2.7.2"

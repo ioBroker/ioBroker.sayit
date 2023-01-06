@@ -29,6 +29,9 @@ Can convert text to speech and play it on several device.
 ## Changelog
 ### __WORK IN PROGRESS__
 
+NodeJS 14.5 is required
+
+* (klein0r) Replaced blockly logic with sendTo
 * (klein0r) Replaced binary states (deprecated) with files
 * (klein0r) Added LaMetric as target
 * (klein0r) Dropped admin 5 support
