@@ -321,7 +321,7 @@
                     "zh-cn": "发言案文"
                 },
                 "type": "string",
-                "role": "media.tts.text",
+                "role": "media.tts",
                 "read": true,
                 "write": true,
                 "desc": "This text will be converted to speech"
@@ -369,7 +369,7 @@
                     "zh-cn": "果关系案文"
                 },
                 "type": "string",
-                "role": "media.tts.cachetext",
+                "role": "media.tts",
                 "read": true,
                 "write": true,
                 "desc": "This text will be cached on disk to play it later"
@@ -397,52 +397,6 @@
                 "read": true,
                 "write": false,
                 "desc": "Is true while speaking"
-            },
-            "native": {}
-        },
-        {
-            "_id": "tts.mp3",
-            "type": "state",
-            "common": {
-                "name": {
-                    "en": "Binary data of mp3 file",
-                    "de": "Binäre Daten der mp3-Datei",
-                    "ru": "Бинарные данные файла mp3",
-                    "pt": "Dados binários do arquivo mp3",
-                    "nl": "Binary data van mp3 dossier",
-                    "fr": "Données binaires du fichier mp3",
-                    "it": "Dati binari del file mp3",
-                    "es": "Datos binarios del archivo mp3",
-                    "pl": "Dane podstawowe pliku mp3",
-                    "zh-cn": "经验3档案的原始数据"
-                },
-                "type": "file",
-                "read": true,
-                "write": false,
-                "desc": "Can be accessed from web server under http://ip:8082/state/sayit.0.tts.mp3"
-            },
-            "native": {}
-        },
-        {
-            "_id": "tts.ogg",
-            "type": "state",
-            "common": {
-                "name": {
-                    "en": "Binary data of ogg file",
-                    "de": "Binäre Daten der ogg-Datei",
-                    "ru": "Бинарные данные файла ogg",
-                    "pt": "Dados binários do arquivo ogg",
-                    "nl": "Binary data van een eierbestand",
-                    "fr": "Données binaires du fichier ogg",
-                    "it": "Dati binari del file ogg",
-                    "es": "Datos binarios del archivo ogg",
-                    "pl": "Dane z pliku ogg",
-                    "zh-cn": "弱势档案资料"
-                },
-                "type": "file",
-                "read": true,
-                "write": false,
-                "desc": "Can be accessed from web server under http://ip:8082/state/sayit.0.tts.ogg"
             },
             "native": {}
         }

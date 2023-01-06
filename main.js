@@ -53,6 +53,10 @@ class Sayit extends utils.Adapter {
     async onReady() {
         let dataDir = libs.path.normalize(`${utils.getAbsoluteDefaultDataDir()}/sayit`);
 
+        // Remove old state objects (binary)
+        await this.delObjectAsync(`tts.mp3`);
+        await this.delObjectAsync(`tts.ogg`);
+
         try {
             // create directory
             if (!libs.fs.existsSync(dataDir)) {

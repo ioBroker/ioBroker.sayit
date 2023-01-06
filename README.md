@@ -29,6 +29,7 @@ Can convert text to speech and play it on several device.
 ## Changelog
 ### __WORK IN PROGRESS__
 
+* (klein0r) Replaced binary states (deprecated) with files
 * (klein0r) Added LaMetric as target
 * (klein0r) Dropped admin 5 support
 * (klein0r) Refactored code
