@@ -415,40 +415,6 @@ class Sayit extends utils.Adapter {
 
                     obj.callback && this.sendTo(obj.from, obj.command, options, obj.callback);
                 });
-            } else if (obj.command === 'getLametricDevices') {
-                this.getObjectView('system', 'instance', {
-                    startkey: 'system.adapter.lametric.',
-                    endkey: 'system.adapter.lametric.\u9999'
-                }, (err, res) => {
-                    const options = [];
-
-                    if (!err && res) {
-                        for (let i = 0; i < res.rows.length; i++) {
-                            const instanceId = res.rows[i].id.replace('system.adapter.', '');
-
-                            options.push({ value: instanceId, label: instanceId });
-                        }
-                    }
-
-                    obj.callback && this.sendTo(obj.from, obj.command, options, obj.callback);
-                });
-            } else if (obj.command === 'getMpdDevices') {
-                this.getObjectView('system', 'instance', {
-                    startkey: 'system.adapter.mpd.',
-                    endkey: 'system.adapter.mpd.\u9999'
-                }, (err, res) => {
-                    const options = [];
-
-                    if (!err && res) {
-                        for (let i = 0; i < res.rows.length; i++) {
-                            const instanceId = res.rows[i].id.replace('system.adapter.', '');
-
-                            options.push({ value: instanceId, label: instanceId });
-                        }
-                    }
-
-                    obj.callback && this.sendTo(obj.from, obj.command, options, obj.callback);
-                });
             } else if (obj.command === 'getChromecastDevices') {
                 try {
                     const mdns = require('mdns');
