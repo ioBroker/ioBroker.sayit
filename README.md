@@ -35,6 +35,7 @@ NodeJS 14.5 is required
 * (klein0r) Replaced blockly logic with sendTo
 * (klein0r) Replaced binary states (deprecated) with files
 * (klein0r) Added LaMetric as target
+* (klein0r) Added Norwegian (via Google)
 * (klein0r) Dropped admin 5 support
 * (klein0r) Refactored code
 
