@@ -394,6 +394,7 @@
                 },
                 "type": "boolean",
                 "role": "media.tts.text",
+                "def": false,
                 "read": true,
                 "write": false,
                 "desc": "Is true while speaking"

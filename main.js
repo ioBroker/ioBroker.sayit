@@ -33,6 +33,7 @@ class Sayit extends utils.Adapter {
             name: 'sayit',
         });
 
+        this.defaultVolume = 70;
         this.dataDir = null;
         this.mp3File = null;
 
@@ -56,6 +57,11 @@ class Sayit extends utils.Adapter {
         // Remove old state objects (binary)
         await this.delObjectAsync(`tts.mp3`);
         await this.delObjectAsync(`tts.ogg`);
+
+        const defaultVolume = await this.getStateAsync('tts.volume');
+        if (defaultVolume && defaultVolume.val) {
+            this.defaultVolume = Number(defaultVolume.val);
+        }
 
         try {
             // create directory
@@ -85,8 +91,8 @@ class Sayit extends utils.Adapter {
 
         if (this.config.announce) {
             this.config.annoDuration = parseInt(this.config.annoDuration) || 0;
-            this.config.annoTimeout  = parseInt(this.config.annoTimeout)  || 15;
-            this.config.annoVolume   = parseInt(this.config.annoVolume)   || 70; // percent from actual volume
+            this.config.annoTimeout = parseInt(this.config.annoTimeout)  || 15;
+            this.config.annoVolume = parseInt(this.config.annoVolume)   || 70; // percent from actual volume
 
             if (!libs.fs.existsSync(libs.path.join(__dirname, this.config.announce))) {
                 this.readFile(this.namespace, this.config.announce, (err, data) => {
@@ -152,6 +158,7 @@ class Sayit extends utils.Adapter {
                 }
             } else {
                 let engine = '';
+
                 // Read the old engine
                 if (libs.fs.existsSync(libs.path.join(options.cacheDir, 'engine.txt'))) {
                     try {
@@ -160,6 +167,7 @@ class Sayit extends utils.Adapter {
                         this.log.error(`[onReady] Cannot read file "${libs.path.join(options.cacheDir, 'engine.txt')}: ${e.toString()}`);
                     }
                 }
+
                 // If engine changed
                 if (engine !== this.config.engine) {
                     // Delete all files in this directory
@@ -188,28 +196,7 @@ class Sayit extends utils.Adapter {
             libs[sayitOptions[this.config.type].libs[j]] = require(sayitOptions[this.config.type].libs[j]);
         }
 
-        this.getState('tts.text', (err, state) => {
-            if (err || !state) {
-                this.setState('tts.text', { val: '', ack: true });
-            }
-        });
-
-        this.getState('tts.volume', (err, state) => {
-            if (err || !state) {
-                this.setState('tts.volume', 70, true);
-                if (this.config.type !== 'system') {
-                    options.sayLastVolume = 70;
-                }
-            } else {
-                if (this.config.type !== 'system') {
-                    options.sayLastVolume = state.val;
-                }
-            }
-        });
-
-        this.getState('tts.playing', (err, state) => {
-            (err || !state) && this.setState('tts.playing', { val: false, ack: true });
-        });
+        options.sayLastVolume = this.defaultVolume;
 
         if (this.config.type === 'system') {
             // Read volume
@@ -217,7 +204,7 @@ class Sayit extends utils.Adapter {
                 if (!err && state) {
                     speech2device && speech2device.sayItSystemVolume(state.val);
                 } else {
-                    speech2device && speech2device.sayItSystemVolume(70);
+                    speech2device && speech2device.sayItSystemVolume(this.defaultVolume);
                 }
             });
         } else if (['sonos', 'heos', 'lametric', 'chromecast', 'mpd', 'googleHome'].includes(this.config.type)) {
@@ -247,7 +234,7 @@ class Sayit extends utils.Adapter {
             return;
         }
 
-        this.subscribeStates('*');
+        await this.subscribeStatesAsync('*');
     }
 
     mkpathSync(rootpath, dirpath) {
@@ -326,7 +313,6 @@ class Sayit extends utils.Adapter {
             if (id === this.namespace + '.tts.clearQueue') {
                 if (this.list.length > 1) {
                     this.list.splice(1);
-                    this.setState('tts.clearQueue', { val: false, ack: true });
                 }
             } else if (id === this.namespace + '.tts.volume') {
                 if (this.config.type === 'system') {
@@ -334,6 +320,10 @@ class Sayit extends utils.Adapter {
                 } else {
                     options.sayLastVolume = state.val;
                 }
+
+                this.defaultVolume = state.val;
+
+                this.setState('tts.volume', { val: state.val, ack: true });
             } else if (id === this.namespace + '.tts.text') {
                 if (typeof state.val !== 'string') {
                     if (state.val === null || state.val === undefined || state.val === '') {
@@ -654,24 +644,25 @@ class Sayit extends utils.Adapter {
                 if (sayFirst && this.list.length > 1) {
                     this.list.splice(1, 0,
                         // place as first the announce mp3
-                        {text: this.config.announce, language: language, volume: (volume || this.config.volume) / 2, time: time},
+                        { text: this.config.announce, language: language, volume: (volume || this.defaultVolume) / 2, time: time },
                         // and then text
-                        {text: text, language: language, volume: (volume || this.config.volume), time: time});
+                        { text: text, language: language, volume: (volume || this.defaultVolume), time: time }
+                    );
                 } else {
                     // place as first the announce mp3
-                    this.list.push({text: this.config.announce, language: language, volume: (volume || this.config.volume) / 2, time: time});
+                    this.list.push({ text: this.config.announce, language: language, volume: (volume || this.defaultVolume) / 2, time: time });
                     // and then text
-                    this.list.push({text: text, language: language, volume: (volume || this.config.volume), time: time});
+                    this.list.push({ text: text, language: language, volume: (volume || this.defaultVolume), time: time });
                 }
 
                 text = this.config.announce;
-                volume = Math.round((volume || this.config.volume) / 100 * this.config.annoVolume);
+                volume = Math.round((volume || this.defaultVolume) / 100 * this.config.annoVolume);
             } else {
                 // if high priority text
                 if (sayFirst && this.list.length > 1) {
-                    this.list.splice(1, 0, {text: text, language: language, volume: (volume || this.config.volume), time: time });
+                    this.list.splice(1, 0, { text: text, language: language, volume: (volume || this.defaultVolume), time: time });
                 } else {
-                    this.list.push({text: text, language: language, volume: (volume || this.config.volume), time: time });
+                    this.list.push({ text: text, language: language, volume: (volume || this.defaultVolume), time: time });
                 }
 
                 if (this.list.length > 1) {
@@ -688,8 +679,8 @@ class Sayit extends utils.Adapter {
             language = this.config.engine;
         }
 
-        if (!volume && this.config.volume) {
-            volume = this.config.volume;
+        if (!volume) {
+            volume = this.defaultVolume;
         }
 
         // find out if say.mp3 must be generated
