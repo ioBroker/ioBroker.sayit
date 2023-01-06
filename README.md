@@ -31,6 +31,7 @@ Can convert text to speech and play it on several device.
 
 NodeJS 14.5 is required
 
+* (klein0r) Added AWS Polly neural engine
 * (klein0r) Fixed default volume handling
 * (klein0r) Replaced blockly logic with sendTo
 * (klein0r) Replaced binary states (deprecated) with files

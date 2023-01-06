@@ -209,7 +209,9 @@
                     "sm": 12,
                     "md": 4,
                     "lg": 4,
-                    "label": "AWS Region"
+                    "label": "AWS Region",
+                    "help": "Choose an available AWS region",
+                    "helpLink": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html#concepts-regions"
                 },
                 "effectDrunk": {
                     "hidden": "data.engine !== 'ru_YA'",

@@ -197,7 +197,7 @@
         "cloudInstance": "",
         "awsAccessKey": "",
         "awsSecretKey": "",
-        "awsRegion": "",
+        "awsRegion": "eu-central-1",
         "effectDrunk": false,
         "effectIll": false,
         "effectRobot": false,
