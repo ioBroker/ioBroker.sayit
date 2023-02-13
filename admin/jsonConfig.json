@@ -187,7 +187,7 @@
                     "label": "Cloud instance"
                 },
                 "awsAccessKey": {
-                    "hidden": "!data.engine.includes('_AP_')",
+                    "hidden": "!data.engine.includes('_AP_') && !data.engine.includes('_APN_')",
                     "newLine": true,
                     "type": "text",
                     "sm": 12,
@@ -196,7 +196,7 @@
                     "label": "AWS Access Key"
                 },
                 "awsSecretKey": {
-                    "hidden": "!data.engine.includes('_AP_')",
+                    "hidden": "!data.engine.includes('_AP_') && !data.engine.includes('_APN_')",
                     "type": "text",
                     "sm": 12,
                     "md": 4,
@@ -204,7 +204,7 @@
                     "label": "AWS Secret Key"
                 },
                 "awsRegion": {
-                    "hidden": "!data.engine.includes('_AP_')",
+                    "hidden": "!data.engine.includes('_AP_') && !data.engine.includes('_APN_')",
                     "type": "text",
                     "sm": 12,
                     "md": 4,
