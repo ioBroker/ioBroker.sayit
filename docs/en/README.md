@@ -98,7 +98,7 @@ After creation of adapter instance you can find following objects:
 
 - `sayit.N.tts.text`: Phrase to be spoken.
 - `sayit.N.tts.volume`: volume which will be used by playing of the phrase.
-- `sayit.N.tts.playing`: true if text is now playing and false if not. Supported only for "windows" and "system" play mode.
+- `sayit.N.tts.playing`: true if text is now playing and false if not. Just supported for "windows" and "system" play mode.
 - `sayit.N.tts.cachetext`: Phrase to be cached, and then it can be used without internet.
    E.g. you can enter here manually "No internet" and if ping to google.com is negative, write  "No internet" to "tts.text" and it will be pronounced. Of course cache must be enabled.
 

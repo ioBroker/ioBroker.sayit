@@ -91,30 +91,16 @@ class Sayit extends utils.Adapter {
 
         if (this.config.announce) {
             this.config.annoDuration = parseInt(this.config.annoDuration) || 0;
-            this.config.annoTimeout = parseInt(this.config.annoTimeout)  || 15;
-            this.config.annoVolume = parseInt(this.config.annoVolume)   || 70; // percent from actual volume
+            this.config.annoTimeout = parseInt(this.config.annoTimeout) || 15;
+            this.config.annoVolume = parseInt(this.config.annoVolume) || 70; // percent from actual volume
 
-            if (!libs.fs.existsSync(libs.path.join(__dirname, this.config.announce))) {
-                this.readFile(this.namespace, this.config.announce, (err, data) => {
-                    if (!err && data) {
-                        const targetPath = String(this.config.announce).replace('/tts.userfiles/', '');
+            const fileExists = await this.fileExistsAsync(`${this.namespace}.tts.userfiles`, this.config.announce);
 
-                        try {
-                            libs.fs.writeFileSync(libs.path.join(__dirname, targetPath), data);
-                            this.config.announce = libs.path.join(__dirname, targetPath);
+            if (!fileExists) {
+                this.config.announce = '';
 
-                            this.log.debug(`[onReady] Set announce to ${this.config.announce}`);
-                        } catch (e) {
-                            this.log.error(`[onReady] Cannot write file: ${e.toString()}`);
-                            this.config.announce = '';
-                        }
-                    } else {
-                        this.log.error(`[onReady] Cannot read announcement file: ${this.config.announce}`);
-                    }
-                });
+                this.log.error(`[onReady] Cannot read announcement file: ${this.config.announce}`);
             } else {
-                this.config.announce = __dirname + '/' + this.config.announce;
-
                 this.log.debug(`[onReady] Set announce to ${this.config.announce}`);
             }
         }
@@ -257,6 +243,9 @@ class Sayit extends utils.Adapter {
         }
     }
 
+    /**
+     * Copy adapter files from repo to ioBroker user files
+     */
     async uploadFiles() {
         const folderPath = libs.path.join(__dirname, '/mp3/');
 
@@ -285,16 +274,10 @@ class Sayit extends utils.Adapter {
             return;
         }
 
-        let data;
-        try {
-            data = await this.readFileAsync(this.namespace, `tts.userfiles/${file}`);
-        } catch (error) {
-            // ignore error
-        }
-
-        if (!data) {
+        const fileExists = await this.fileExistsAsync(`${this.namespace}.tts.userfiles`, file);
+        if (fileExists) {
             try {
-                await this.writeFileAsync(this.namespace, `tts.userfiles/${file}`, libs.fs.readFileSync(filePath));
+                await this.writeFileAsync(`${this.namespace}.tts.userfiles`, file, libs.fs.readFileSync(filePath));
                 this.log.info(`[uploadFile] Uploaded "${filePath}"`);
             } catch (e) {
                 this.log.error(`[uploadFile] Cannot write file "${filePath}": ${e.toString()}`);
@@ -759,6 +742,8 @@ class Sayit extends utils.Adapter {
                     this.log.error(`[applyWebSettings] Selected web server "${this.config.webInstance}" is only on local device available. Select other or create another one.`);
                 } else {
                     if (obj.native.bind === '0.0.0.0') {
+                        this.log.warn(`[applyWebSettings] Selected web server "${this.config.webInstance}" has configured binding 0.0.0.0 - select a specific interface.`);
+
                         options.webLink += '';
                     } else {
                         options.webLink += obj.native.bind;
