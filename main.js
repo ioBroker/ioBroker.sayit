@@ -10,11 +10,11 @@ const adapterName   = require('./package.json').name.split('.').pop();
 
 const sayitOptions  = engines.sayitOptions;
 const libs          = {
-    fs:     require('fs'),
-    path:   require('path'),
+    fs:   require('fs'),
+    path: require('path'),
 };
 
-let dataDir = libs.path.normalize(`${utils.controllerDir}/${require(utils.controllerDir + '/lib/tools').getDefaultDataDir()}/sayit`);
+let dataDir = `${utils.getAbsoluteDefaultDataDir()}sayit`;
 
 process.on('SIGINT', stop);
 
@@ -31,18 +31,18 @@ function startAdapter(options) {
 
     adapter.on('stateChange', (id, state) => {
         if (state && !state.ack) {
-            if (id === adapter.namespace + '.tts.clearQueue') {
+            if (id === `${adapter.namespace}.tts.clearQueue`) {
                 if (list.length > 1) {
                     list.splice(1);
                     adapter.setState('tts.clearQueue', false, true);
                 }
-            } else if (id === adapter.namespace + '.tts.volume') {
+            } else if (id === `${adapter.namespace}.tts.volume`) {
                 if (adapter.config.type === 'system') {
                     speech2device && speech2device.sayItSystemVolume(state.val);
                 } else {
                     options.sayLastVolume = state.val;
                 }
-            } else if (id === adapter.namespace + '.tts.text') {
+            } else if (id === `${adapter.namespace}.tts.text`) {
                 if (typeof state.val !== 'string') {
                     if (state.val === null || state.val === undefined || state.val === '') {
                         return adapter.log.warn('Cannot cache empty text');
@@ -51,7 +51,7 @@ function startAdapter(options) {
                 }
 
                 sayIt(state.val);
-            } else if (id === adapter.namespace + '.tts.cachetext') {
+            } else if (id === `${adapter.namespace}.tts.cachetext`) {
                 if (typeof state.val !== 'string') {
                     if (state.val === null || state.val === undefined || state.val === '') {
                         return adapter.log.warn('Cannot cache empty text');
@@ -74,7 +74,7 @@ function startAdapter(options) {
             libs.fs.mkdirSync(dataDir);
         }
     } catch (err) {
-        adapter.log.error('Could not create Storage directory: ' + err);
+        adapter.log.error(`Could not create Storage directory: ${err}`);
         dataDir = __dirname;
     }
 
@@ -96,7 +96,7 @@ function processMessage(obj) {
 
                 const result = [];
                 browser.on('serviceUp', service => result.push({name: service.name, ip: service.addresses[0]}));
-                browser.on('error', err => adapter.log.error('Error on MDNS discovery: ' + err));
+                browser.on('error', err => adapter.log.error(`Error on MDNS discovery: ${err}`));
                 processMessageTimeout = setTimeout(() => {
                     processMessageTimeout = null;
                     browser.stop();
