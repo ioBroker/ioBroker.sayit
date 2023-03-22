@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "sayit",
-    "version": "1.12.6",
+    "version": "1.13.0",
     "news": {
+      "1.13.0": {
+        "en": "Made compatible with future js-controller",
+        "de": "Kompatibel mit zukünftigem js-Controller",
+        "ru": "Совместим с будущим js-контроллером",
+        "pt": "Feito compatível com futuro js-controller",
+        "nl": "Verbonden met toekomstige Js-controller",
+        "fr": "Fabriqué compatible avec le futur contrôleur js",
+        "it": "Realizzato compatibile con il futuro js-controller",
+        "es": "Hecho compatible con js-controller futuro",
+        "pl": "Umożliwiał się przyszłemu js-kontrolerowi",
+        "uk": "Виготовлений сумісний з майбутнім js-controller",
+        "zh-cn": "与今后控制的容忍"
+      },
       "1.12.6": {
         "en": "used setForeignBinaryState if possible",
         "de": "wenn möglich setForeignBinaryState verwendet",
@@ -74,18 +87,6 @@
         "es": "Caso de prevención de accidentes (Sentry IOBROKER-SAYIT-Q, IOBROKER-SAYIT-S, IOBROKER-SAYIT-T)",
         "pl": "Zapobiegaj awariom (Sentry IOBROKER-SAYIT-Q, IOBROKER-SAYIT-S, IOBROKER-SAYIT-T)",
         "zh-cn": "防止发生崩溃情况（哨兵IOBROKER-SAYIT-Q，IOBROKER-SAYIT-S，IOBROKER-SAYIT-T）"
-      },
-      "1.12.0": {
-        "en": "HEOS was added",
-        "de": "HEOS wurde hinzugefügt",
-        "ru": "HEOS добавлен",
-        "pt": "HEOS foi adicionado",
-        "nl": "HEOS is toegevoegd",
-        "fr": "HEOS a été ajouté",
-        "it": "È stato aggiunto HEOS",
-        "es": "HEOS fue agregado",
-        "pl": "HEOS został dodany",
-        "zh-cn": "HEOS已添加"
       }
     },
     "title": "Text to speech",

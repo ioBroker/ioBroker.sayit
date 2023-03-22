@@ -256,7 +256,7 @@ Following values for engines are possible:
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### **WORK IN PROGRESS**
+### 1.13.0 (2023-03-22)
 * (bluefox) Made compatible with future js-controller
 
 ### 1.12.6 (2022-02-09)
