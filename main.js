@@ -7,33 +7,45 @@ const engines       = require('./admin/engines.js');
 const Text2Speech   = require('./lib/text2speech');
 const Speech2Device = require('./lib/speech2device');
 const adapterName   = require('./package.json').name.split('.').pop();
+const fs            = require('fs');
+const path          = require('path');
 
 const sayitOptions  = engines.sayitOptions;
-const libs          = {
-    fs:   require('fs'),
-    path: require('path'),
-};
 
 let dataDir = `${utils.getAbsoluteDefaultDataDir()}sayit`;
 
 process.on('SIGINT', stop);
 
 let processMessageTimeout;
-let sayFinishedTimeout;
-let cacheTimeout;
-
+let timeoutRunning;
+let crypto;
 let adapter;
+const options = {
+    sayLastVolume: null,
+    webLink: '',
+    cacheDir: '',
+    outFileExt: 'mp3',
+};
+
+let sayLastGeneratedText = '';
+let lastSay              = null;
+let fileExt              = 'mp3';
+let text2speech          = null;
+let speech2device        = null;
+let MP3FILE;
+const tasks = [];
+let processing = false;
 
 function startAdapter(options) {
     options = options || {};
-    Object.assign(options, {name: adapterName, unload: (callback) => stop(true, callback)});
+    Object.assign(options, {name: adapterName, unload: callback => stop(true, callback)});
     adapter = new utils.Adapter(options);
 
-    adapter.on('stateChange', (id, state) => {
+    adapter.on('stateChange', async (id, state) => {
         if (state && !state.ack) {
             if (id === `${adapter.namespace}.tts.clearQueue`) {
-                if (list.length > 1) {
-                    list.splice(1);
+                if (tasks.length > 1) {
+                    tasks.splice(1);
                     adapter.setState('tts.clearQueue', false, true);
                 }
             } else if (id === `${adapter.namespace}.tts.volume`) {
@@ -50,7 +62,7 @@ function startAdapter(options) {
                     state.val = state.val.toString();
                 }
 
-                sayIt(state.val);
+                addToQueue(state.val);
             } else if (id === `${adapter.namespace}.tts.cachetext`) {
                 if (typeof state.val !== 'string') {
                     if (state.val === null || state.val === undefined || state.val === '') {
@@ -59,8 +71,14 @@ function startAdapter(options) {
                     state.val = state.val.toString();
                 }
 
-                cacheIt(state.val);
+                addToQueue(state.val, null, null, true);
             }
+        }
+    });
+
+    adapter.on('objectChange', (id, obj) => {
+        if (id === `system.adapter.${adapter.config.web}`) {
+            applyWebSettings(obj);
         }
     });
 
@@ -70,15 +88,11 @@ function startAdapter(options) {
 
     try {
         // create directory
-        if (!libs.fs.existsSync(dataDir)) {
-            libs.fs.mkdirSync(dataDir);
-        }
+        !fs.existsSync(dataDir) && fs.mkdirSync(dataDir);
     } catch (err) {
         adapter.log.error(`Could not create Storage directory: ${err}`);
         dataDir = __dirname;
     }
-
-    MP3FILE = `${dataDir}/${adapter.namespace}.say.${fileExt}`;
 
     return adapter;
 }
@@ -86,9 +100,10 @@ function startAdapter(options) {
 function processMessage(obj) {
     if (obj) {
         if (obj.command === 'stopInstance') {
-            stop(() =>
+            stop(false, () =>
                 obj.callback && adapter.sendTo(obj.from, obj.command, null, obj.callback));
-        } else if (obj.command === 'browseChromecast') {
+        } else if (obj.callback && obj.command === 'browseChromecast' || obj.command === 'browseGoogleHome') {
+            // look for chromecast devices
             try {
                 const mdns = require('mdns');
 
@@ -101,67 +116,53 @@ function processMessage(obj) {
                     processMessageTimeout = null;
                     browser.stop();
                     browser = null;
-                    obj.callback && adapter.sendTo(obj.from, obj.command, result, obj.callback);
+                    if (obj.command === 'browseGoogleHome') {
+                        adapter.sendTo(obj.from, obj.command, result.map(s => ({label: `${s.name}[${s.ip}]`, value: s.ip})), obj.callback);
+                    } else {
+                        adapter.sendTo(obj.from, obj.command, result, obj.callback);
+                    }
                 }, 2000);
 
                 browser.start();
             } catch (e) {
                 adapter.log.error(e);
-                obj.callback && adapter.sendTo(obj.from, obj.command, null, obj.callback);
+                adapter.sendTo(obj.from, obj.command, null, obj.callback);
             }
+        }else if (obj.callback && obj.command === 'getChromecastSendTo') {
+            adapter.getObjectView('system', 'device', {startkey: 'chromecast.', endkey: 'chromecast.\u9999'}, (err, res) => {
+                const list = [];
+                if (!err && res) {
+                    for (let i = 0; i < res.rows.length; i++) {
+                        list.push({value: res.rows[i].id, label: res.rows[i].id});
+                    }
+                }
+                adapter.sendTo(obj.from, obj.command, list, obj.callback);
+            });
         }
     }
 }
 
 function stop(unload, callback) {
-    if (typeof unload === 'function') {
-        callback = unload;
-        unload = false;
-    }
     processMessageTimeout && clearTimeout(processMessageTimeout);
     processMessageTimeout = null;
 
-    sayFinishedTimeout && clearTimeout(sayFinishedTimeout);
-    sayFinishedTimeout = null;
-
-    cacheTimeout && clearTimeout(cacheTimeout);
-    cacheTimeout = null;
+    timeoutRunning && clearTimeout(timeoutRunning);
+    timeoutRunning = null;
 
     try {
         adapter && adapter.log && adapter.log.info && adapter.log.info('stopping...');
-
-        if (unload) {
-            return;
-        }
-
-        setTimeout(() => {
-            typeof callback === 'function' && callback();
-            adapter.terminate ? adapter.terminate() : process.exit()
-        }, 500);
     } catch (e) {
-        adapter.terminate ? adapter.terminate() : process.exit();
+        // ignore
+    }
+
+    typeof callback === 'function' && callback();
+
+    if (!unload) {
+        setTimeout(() => adapter.terminate ? adapter.terminate() : process.exit(), 500);
     }
 }
 
-const options = {
-    sayLastVolume: null,
-    webLink: '',
-    cacheDir: '',
-    outFileExt: 'mp3'
-};
-
-let sayLastGeneratedText = '';
-let list                 = [];
-let lastSay              = null;
-let fileExt              = 'mp3';
-let text2speech          = null;
-let speech2device        = null;
-// const text2speech = new Text2Speech(adapter, libs, options, sayIt);
-// const speech2device = new Speech2Device(adapter, libs, options);
-let MP3FILE;
-
 function mkpathSync(rootpath, dirpath) {
-    libs.fs = libs.fs || require('fs');
     // Remove filename
     dirpath = dirpath.split('/');
     dirpath.pop();
@@ -170,136 +171,18 @@ function mkpathSync(rootpath, dirpath) {
     }
 
     for (let i = 0; i < dirpath.length; i++) {
-        rootpath += dirpath[i] + '/';
-        if (!libs.fs.existsSync(rootpath)) {
+        rootpath += `${dirpath[i]}/`;
+        if (!fs.existsSync(rootpath)) {
             if (dirpath[i] !== '..') {
-                libs.fs.mkdirSync(rootpath);
+                fs.mkdirSync(rootpath);
             } else {
-                throw 'Cannot create ' + rootpath + dirpath.join('/');
+                throw `Cannot create ${rootpath}${dirpath.join('/')}`;
             }
         }
     }
 }
 
-function sayFinished(error, duration) {
-    error && adapter.log.error(error);
-
-    duration = duration || 0;
-    if (list.length) {
-        adapter.log.debug(`Duration "${list[0].text}": ${duration}`);
-    }
-
-    sayFinishedTimeout = setTimeout(() => {
-        sayFinishedTimeout = null;
-        // Remember when last text finished
-        lastSay = Date.now();
-        list.length && list.shift();
-
-        if (list.length) {
-            sayIt(list[0].text, list[0].language, list[0].volume, true);
-        }
-    }, duration * 1000);
-}
-
-let cacheRunning = false;
-let cacheFiles   = [];
-
-function cacheIt(text, language) {
-    // process queue
-    if (text === true) {
-        if (!cacheFiles.length) {
-            cacheRunning = false;
-            return;
-        }
-        // get next queued text
-        const toCache = cacheFiles.shift();
-
-        text     = toCache.text;
-        language = toCache.language;
-    } else {
-        // new text to cache
-        if (!adapter.config.cache) {
-            return adapter.log.warn('Cache is not enabled. Unable to cache: ' + text);
-        }
-
-        // Extract language from "en;volume;Text to say"
-        if (text.includes(';')) {
-            const arr = text.split(';', 3);
-            // If language;text or volume;text
-            if (arr.length === 2) {
-                // If number
-                if (parseInt(arr[0]).toString() !== arr[0]) {
-                    language = arr[0];
-                }
-                text = arr[1];
-            } else if (arr.length === 3) {
-                // If language;volume;text or volume;language;text
-                // If number
-                if (parseInt(arr[0]).toString() === arr[0]) {
-                    language = arr[1];
-                } else {
-                    language = arr[0];
-                }
-                text = arr[2];
-            }
-        }
-        // if no text => do not process
-        if (!text.length) {
-            return;
-        }
-
-        // Check: may be it is file from DB filesystem, like /vis.0/main/img/door-bell.mp3
-        if (text[0] === '/') {
-            return adapter.log.warn('mp3 file must not be cached: ' + text);
-        }
-
-        let isGenerate = false;
-        language = language || adapter.config.engine;
-
-        // find out if say.mp3 must be generated
-        if (!speech2device || !speech2device.sayItIsPlayFile(text)) {
-            isGenerate = sayitOptions[adapter.config.type].mp3Required;
-        }
-
-        if (!isGenerate) {
-            if (speech2device && speech2device.sayItIsPlayFile(text)) {
-                adapter.log.warn('mp3 file must not be cached: ' + text);
-            } else {
-                adapter.log.warn('Cache does not required for this engine: ' + adapter.config.engine);
-            }
-            return;
-        }
-
-        const md5filename = libs.path.join(options.cacheDir, libs.crypto.createHash('md5').update(language + ';' + text).digest('hex') + '.' + fileExt);
-        libs.fs = libs.fs || require('fs');
-
-        if (libs.fs.existsSync(md5filename)) {
-            return adapter.log.debug('Text is yet cached: ' + text);
-        }
-
-        if (cacheRunning) {
-            return cacheFiles.push({text, language});
-        }
-    }
-
-    cacheRunning = true;
-
-    text2speech && text2speech.sayItGetSpeech(text, language, false, (error, md5filename, _language, volume, seconds) => {
-        if (error) {
-            adapter.log.error('Cannot cache text: "' + error);
-        } else {
-            adapter.log.debug('Text is cached: "' + text + '" under ' + md5filename);
-        }
-        cacheTimeout = setTimeout(() => {
-            cacheTimeout = null;
-            cacheIt(true);
-        }, 2000);
-    });
-}
-
-function sayIt(text, language, volume, processing) {
-    let md5filename;
-
+function addToQueue(text, language, volume, onlyCache) {
     // Extract language from "en;volume;Text to say"
     if (text.includes(';')) {
         const arr = text.split(';', 3);
@@ -326,153 +209,203 @@ function sayIt(text, language, volume, processing) {
         }
     }
 
-    const sayFirst = text[0] === '!';
-    if (sayFirst) {
-        text = text.substring(1);
+    // Workaround for double text
+    // find all similar texts with interval less han 500 ms
+    const combined = [text, language, volume].filter(t => t).join(';');
+    if (tasks.find(task => task.combined === combined && Date.now() - task.ts < 500)) {
+        // ignore it
+        return;
     }
 
-    // if no text => do not process
-    if (!text.length) {
-        return sayFinished(0);
+    const highPriority = text.startsWith('!');
+
+    volume = parseInt(volume || adapter.config.volume, 10);
+    if (Number.isNaN(volume)) {
+        volume = undefined;
     }
 
-    // Check: may be it is file from DB filesystem, like /vis.0/main/img/door-bell.mp3
-    if (text[0] === '/') {
-        let cached = false;
-        if (adapter.config.cache) {
-            md5filename = libs.path.join(options.cacheDir, libs.crypto.createHash('md5').update(text).digest('hex') + '.' + fileExt);
+    const task = {text, language, volume, onlyCache, ts: Date.now(), combined};
 
-            if (libs.fs.existsSync(md5filename)) {
-                cached = true;
-                text = md5filename;
+    // If more time than 15 seconds till last text, add announcement
+    if (!onlyCache && adapter.config.announce && !tasks.length && (!lastSay || (Date.now() - lastSay > adapter.config.annoTimeout * 1000))) {
+        // place as first the announcement mp3
+        tasks.push({
+            text: adapter.config.announce,
+            language,
+            volume: Math.round((volume || 70) / 100 * (parseInt(adapter.config.annoVolume, 10) || 50)),
+            ts: task.ts
+        });
+        // and then text
+        tasks.push(task);
+    } else if (!onlyCache && highPriority) {
+        tasks.unshift(task);
+    } else {
+        tasks.push(task);
+    }
+
+    processTasks()
+        .catch(() => {});
+}
+
+function getCachedFileName(dir, text, fileExt) {
+    crypto = crypto || require('crypto');
+    return path.normalize(path.join(dir, `${crypto.createHash('md5').update(text).digest('hex')}.${fileExt}`));
+}
+
+function isCached(cacheDir, text, fileExt, cacheExpiryDays) {
+    const md5filename = getCachedFileName(options.cacheDir, text, fileExt);
+
+    if (fs.existsSync(md5filename)) {
+        if (cacheExpiryDays) {
+            const fileStat = fs.statSync(md5filename);
+            if (fileStat.ctime && (Date.now() - new Date(fileStat.ctime).getTime() > cacheExpiryDays * 1000 * 60 * 60 * 24)) {
+                this.adapter.log.info('Cached File expired, remove and re-generate');
+                fs.unlinkSync(md5filename);
+                return false;
             }
         }
-        if (!cached) {
-            const parts = text.split('/');
-            const adap = parts[0];
-            parts.splice(0, 1);
-            const _path = parts.join('/');
+        return md5filename;
+    }
 
-            adapter.readFile(adap, _path, (err, data) => {
+    return false;
+}
+
+async function processTasks() {
+    if (processing) {
+        return;
+    }
+    processing = true;
+    let {text, language, volume, onlyCache} = tasks[0];
+
+    if (text[0] === '!') {
+        text = text.substring(1);
+    }
+    volume = parseInt(volume || adapter.config.volume, 10);
+    if (Number.isNaN(volume)) {
+        volume = undefined;
+    }
+
+    let fileName;
+
+    // find out if say.mp3 must be generated
+    const isGenerate = !Speech2Device.isPlayFile(text) && sayitOptions[adapter.config.type].mp3Required;
+
+    language = language || adapter.config.engine;
+
+    // if no text => do not process
+    if (isGenerate && text.length && text2speech && speech2device) {
+        // Check: may be it is a file from DB filesystem, like /vis.0/main/img/door-bell.mp3
+        if (text[0] === '/') {
+            if (adapter.config.cache || onlyCache) {
+                fileName = isCached(options.cacheDir, text, fileExt, adapter.config.cacheExpiryDays);
+            }
+
+            if (!fileName) {
+                const parts = text.split('/');
+                const _adapter = parts[0];
+                parts.shift();
+                const _path = parts.join('/');
+
+                let data;
+
+                try {
+                    data = await adapter.readFileAsync(_adapter, _path);
+                } catch (e) {
+                    // adapter.log.error(`Cache file does not exist "${text}": ${e.toString()}`);
+                }
+
+                if (!data) {
+                    // may be the file is from real FS
+                    if (fs.existsSync(text)) {
+                        try {
+                            data = fs.readFileSync(text);
+                        } catch (e) {
+                            adapter.log.error(`Cannot read file "${text}": ${e.toString()}`);
+                        }
+                    } else {
+                        adapter.log.warn(`File "${text}" not found`);
+                    }
+                }
+
                 if (data) {
                     try {
                         // Cache the file
-                        if (md5filename) libs.fs.writeFileSync(md5filename, data);
-                        libs.fs.writeFileSync(MP3FILE, data);
-                        sayIt((sayFirst ? '!' : '') + MP3FILE, language, volume, processing);
+                        if (adapter.config.cache || onlyCache) {
+                            // get file name for cache
+                            fileName = getCachedFileName(options.cacheDir, text, fileExt);
+                        } else {
+                            fileName = MP3FILE;
+                        }
+                        fs.writeFileSync(fileName, data);
                     } catch (e) {
                         adapter.log.error(`Cannot write file "${MP3FILE}": ${e.toString()}`);
-                        sayFinished(0);
                     }
-                } else {
-                    // may be file from real FS
-                    if (libs.fs.existsSync(text)) {
-                        try {
-                            data = libs.fs.readFileSync(text);
-                        } catch (e) {
-                            adapter.log.error(`Cannot read file "${text}": ${e.toString()}`);
-                            sayFinished(0);
-                        }
-                        // Cache the file
-                        md5filename && libs.fs.writeFileSync(md5filename, data);
-                        libs.fs.writeFileSync(MP3FILE, data);
-                        sayIt((sayFirst ? '!' : '') + MP3FILE, language, volume, processing);
+                }
+            }
+        }
+
+        adapter.log.info(`saying: ${text}`);
+
+        // If text first must be generated, and it is not the same as last one
+        if (!fileName && isGenerate) {
+            if (sayLastGeneratedText !== `[${language}]${text}`) {
+                if (adapter.config.cache) {
+                    let md5filename = isCached(options.cacheDir, `${language};${text}`, fileExt, adapter.config.cacheExpiryDays);
+                    if (md5filename) {
+                        fileName = md5filename;
                     } else {
-                        adapter.log.warn(`File "${text}" not found`);
-                        sayFinished(0);
+                        try {
+                            fileName = await text2speech.sayItGetSpeech(text, language, volume);
+                            sayLastGeneratedText = `[${language}]${text}`;
+                        } catch (e) {
+                            fileName = null;
+                            adapter.log.error(`Cannot generate speech file: ${e}`);
+                        }
                     }
                 }
-            });
-            return;
-        }
-    }
-
-    if (!processing) {
-        const time = Date.now();
-
-        // Workaround for double text
-        if (list.length > 1 && (list[list.length - 1].text === text) && (time - list[list.length - 1].time < 500)) {
-            return adapter.log.warn('Same text in less than half a second.. Strange. Ignore it.');
-        }
-        // If more time than 15 seconds
-        if (adapter.config.announce && !list.length && (!lastSay || (time - lastSay > adapter.config.annoTimeout * 1000))) {
-            if (sayFirst && list.length > 1) {
-                list.splice(1, 0,
-                    // place as first the announce mp3
-                    {text: adapter.config.announce, language: language, volume: (volume || adapter.config.volume) / 2, time: time},
-                    // and then text
-                    {text: text, language: language, volume: (volume || adapter.config.volume), time: time});
             } else {
-                // place as first the announce mp3
-                list.push({text: adapter.config.announce, language: language, volume: (volume || adapter.config.volume) / 2, time: time});
-                // and then text
-                list.push({text: text, language: language, volume: (volume || adapter.config.volume), time: time});
-            }
-            text = adapter.config.announce;
-            volume = Math.round((volume || adapter.config.volume) / 100 * adapter.config.annoVolume);
-        } else {
-            // if high priority text
-            if (sayFirst && list.length > 1) {
-                list.splice(1, 0, {text: text, language: language, volume: (volume || adapter.config.volume), time: time });
-            } else {
-                list.push({text: text, language: language, volume: (volume || adapter.config.volume), time: time });
-            }
-            if (list.length > 1) {
-                return;
+                fileName = MP3FILE;
             }
         }
     }
 
-    adapter.log.info('saying: ' + text);
+    let duration = 0;
 
-    let isGenerate = false;
-    if (!language) {
-        language = adapter.config.engine;
-    }
-    if (!volume && adapter.config.volume) {
-		volume = adapter.config.volume;
-	}
-
-    // find out if say.mp3 must be generated
-    if (!speech2device || !speech2device.sayItIsPlayFile(text)) {
-        isGenerate = sayitOptions[adapter.config.type].mp3Required;
-    }
-
-    const speechFunction = speech2device && speech2device.getFunction(adapter.config.type);
-
-    // If text first must be generated
-    if (isGenerate && sayLastGeneratedText !== `[${language}]${text}`) {
-        sayLastGeneratedText = `[${language}]${text}`;
-        text2speech && text2speech.sayItGetSpeech(text, language, volume, (error, text, language, volume, duration) =>
-            speechFunction(error, text, language, volume, duration, sayFinished));
-    } else {
-        if (speech2device && speech2device.sayItIsPlayFile(text)) {
-            text2speech && text2speech.getLength(text, (error, duration) =>
-                speechFunction(error, text, language, volume, duration, sayFinished));
-        } else {
-            if (!isGenerate) {
-                speechFunction(null, text, language, volume, 0, sayFinished);
-            } else if (adapter.config.cache) {
-                md5filename = libs.path.join(options.cacheDir, libs.crypto.createHash('md5').update(language + ';' + text).digest('hex') + '.' + fileExt);
-                if (libs.fs.existsSync(md5filename)) {
-                    text2speech && text2speech.getLength(md5filename, (error, duration) =>
-                        speechFunction(error, md5filename, language, volume, duration, sayFinished));
-                } else {
-                    sayLastGeneratedText = '[' + language + ']' + text;
-                    text2speech && text2speech.sayItGetSpeech(text, language, volume, (error, text, language, volume, duration) =>
-                        speechFunction(error, text, language, volume, duration, sayFinished));
+    if (!onlyCache && text.length) {
+        try {
+            // play file
+            if (fileName) {
+                duration = await text2speech.getDuration(fileName);
+                duration = await speech2device.playFile(adapter.config.type, fileName, language, volume, duration);
+            } else if (!isGenerate) {
+                if (Speech2Device.isPlayFile(text)) {
+                    duration = await text2speech.getDuration(text);
                 }
-            } else {
-                text2speech && text2speech.getLength(MP3FILE, (error, duration) =>
-                    speechFunction(error, text, language, volume, duration, sayFinished));
+
+                duration = await speech2device.playFile(adapter.config.type, text, language, volume, duration);
             }
+            lastSay = Date.now();
+        } catch (e) {
+            adapter.log.error(`Cannot play file: ${e}`);
         }
+    }
+
+    tasks.shift();
+
+    if (tasks.length) {
+        timeoutRunning = setTimeout(() => {
+            timeoutRunning = null;
+            processing = false;
+            processTasks();
+        }, 100 + duration * 1000);
+    } else {
+        processing = false;
     }
 }
 
-async function uploadFile(file, callback) {
+async function uploadFile(file) {
     try {
-        const stat = libs.fs.statSync(libs.path.join(__dirname + '/mp3/', file));
+        const stat = fs.statSync(path.join(`${__dirname}/mp3/`, file));
 
         if (!stat.isFile()) {
             // ignore not a file
@@ -485,14 +418,14 @@ async function uploadFile(file, callback) {
 
     let data;
     try {
-        data = await adapter.readFileAsync(adapter.namespace, 'tts.userfiles/' + file);
+        data = await adapter.readFileAsync(adapter.namespace, `tts.userfiles/${file}`);
     } catch (error) {
         // ignore error
     }
 
     if (!data) {
         try {
-            await adapter.writeFileAsync(adapter.namespace, 'tts.userfiles/' + file, libs.fs.readFileSync(libs.path.join(__dirname + '/mp3/', file)));
+            await adapter.writeFileAsync(adapter.namespace, `tts.userfiles/${file}`, fs.readFileSync(path.join(`${__dirname}/mp3/`, file)));
         } catch (e) {
             adapter.log.error(`Cannot write file "${__dirname}/mp3/${file}": ${e.toString()}`);
         }
@@ -500,7 +433,7 @@ async function uploadFile(file, callback) {
 }
 
 async function uploadFiles() {
-    if (libs.fs.existsSync(__dirname + '/mp3')) {
+    if (fs.existsSync(`${__dirname}/mp3`)) {
         adapter.log.info('Upload announce mp3 files');
         let obj;
         try {
@@ -520,7 +453,7 @@ async function uploadFiles() {
             });
         }
 
-        const files = libs.fs.readdirSync(__dirname + '/mp3');
+        const files = fs.readdirSync(`${__dirname}/mp3`);
         for (let f = 0; f < files.length; f++) {
             await uploadFile(files[f]);
         }
@@ -541,7 +474,7 @@ async function start() {
 
     adapter.config.dataDir = dataDir;
 
-    MP3FILE = adapter.config.dataDir + '/' + adapter.namespace + '.say.' + fileExt;
+    MP3FILE = path.normalize(path.join(adapter.config.dataDir, `${adapter.namespace}.say.${fileExt}`));
     options.outFileExt = fileExt;
 
     if (adapter.config.announce) {
@@ -549,20 +482,27 @@ async function start() {
         adapter.config.annoTimeout  = parseInt(adapter.config.annoTimeout)  || 15;
         adapter.config.annoVolume   = parseInt(adapter.config.annoVolume)   || 70; // percent from actual volume
 
-        if (!libs.fs.existsSync(libs.path.join(__dirname, adapter.config.announce))) {
-            adapter.readFile(adapter.namespace, 'tts.userfiles/' + adapter.config.announce, (err, data) => {
+        // remove "tts.userfiles/" from file name
+        const fileName = adapter.config.announce.split('/').pop();
+
+        if (!fs.existsSync(path.join(__dirname, fileName))) {
+            try {
+                const data = await adapter.readFileAsync(adapter.namespace, `tts.userfiles/${fileName}`);
                 if (data) {
                     try {
-                        libs.fs.writeFileSync(libs.path.join(__dirname, adapter.config.announce), data);
-                        adapter.config.announce = libs.path.join(__dirname, adapter.config.announce);
+                        fs.writeFileSync(path.join(__dirname, fileName), data);
+                        adapter.config.announce = path.join(__dirname, fileName);
                     } catch (e) {
-                        adapter.log.error('Cannot write file: ' + e.toString());
+                        adapter.log.error(`Cannot write file: ${e.toString()}`);
                         adapter.config.announce = '';
                     }
                 }
-            });
+            } catch (e) {
+                adapter.log.error(`Cannot read file: ${e.toString()}`);
+                adapter.config.announce = '';
+            }
         } else {
-            adapter.config.announce = __dirname + '/' + adapter.config.announce;
+            adapter.config.announce = path.join(__dirname, fileName);
         }
     }
 
@@ -571,7 +511,7 @@ async function start() {
         if (adapter.config.cacheDir && (adapter.config.cacheDir[0] === '/' || adapter.config.cacheDir[0] === '\\')) {
             adapter.config.cacheDir = adapter.config.cacheDir.substring(1);
         }
-        options.cacheDir = libs.path.join(__dirname, adapter.config.cacheDir);
+        options.cacheDir = path.join(__dirname, adapter.config.cacheDir);
         if (options.cacheDir) {
             options.cacheDir = options.cacheDir.replace(/\\/g, '/');
             if (options.cacheDir[options.cacheDir.length - 1] === '/') {
@@ -592,110 +532,115 @@ async function start() {
             }
         }
         options.cacheDir = parts.join('/');
-        // Create cache dir if does not exist
-        if (!libs.fs.existsSync(options.cacheDir)) {
+        // Create cache directory, if does not exist
+        if (!fs.existsSync(options.cacheDir)) {
             try {
-                mkpathSync(__dirname + '/', adapter.config.cacheDir);
+                mkpathSync(`${__dirname}/`, adapter.config.cacheDir);
             } catch (e) {
                 adapter.log.error(`Cannot create "${options.cacheDir}": ${e.message}`);
             }
         } else {
             let engine = '';
             // Read the old engine
-            if (libs.fs.existsSync(libs.path.join(options.cacheDir, 'engine.txt'))) {
+            if (fs.existsSync(path.join(options.cacheDir, 'engine.txt'))) {
                 try {
-                    engine = libs.fs.readFileSync(libs.path.join(options.cacheDir, 'engine.txt')).toString();
+                    engine = fs.readFileSync(path.join(options.cacheDir, 'engine.txt')).toString();
                 } catch (e) {
-                    adapter.log.error(`Cannot read file "${libs.path.join(options.cacheDir, 'engine.txt')}: ${e.toString()}`);
+                    adapter.log.error(`Cannot read file "${path.join(options.cacheDir, 'engine.txt')}: ${e.toString()}`);
                 }
             }
             // If engine changed
             if (engine !== adapter.config.engine) {
                 // Delete all files in this directory
-                const files = libs.fs.readdirSync(options.cacheDir);
+                const files = fs.readdirSync(options.cacheDir);
                 for (let f = 0; f < files.length; f++) {
                     if (files[f] === 'engine.txt') continue;
                     try {
-                        if (libs.fs.existsSync(libs.path.join(options.cacheDir, files[f])) && libs.fs.lstatSync(libs.path.join(options.cacheDir, files[f])).isDirectory()) {
-                            libs.fs.unlinkSync(libs.path.join(options.cacheDir, files[f]));
+                        if (fs.existsSync(path.join(options.cacheDir, files[f])) && fs.lstatSync(path.join(options.cacheDir, files[f])).isDirectory()) {
+                            fs.unlinkSync(path.join(options.cacheDir, files[f]));
                         }
                     } catch (e) {
-                        adapter.log.error(`Cannot remove cache file "${libs.path.join(options.cacheDir, files[f])}: ${e.toString()}`);
+                        adapter.log.error(`Cannot remove cache file "${path.join(options.cacheDir, files[f])}: ${e.toString()}`);
                     }
                 }
                 try {
-                    libs.fs.writeFileSync(libs.path.join(options.cacheDir, 'engine.txt'), adapter.config.engine);
+                    fs.writeFileSync(path.join(options.cacheDir, 'engine.txt'), adapter.config.engine);
                 } catch (e) {
-                    adapter.log.error(`Cannot write file "${libs.path.join(options.cacheDir, 'engine.txt')}: ${e.toString()}`);
+                    adapter.log.error(`Cannot write file "${path.join(options.cacheDir, 'engine.txt')}: ${e.toString()}`);
                 }
             }
         }
     }
 
-    // Load libs
-    for (let j = 0; j < sayitOptions[adapter.config.type].libs.length; j++) {
-        libs[sayitOptions[adapter.config.type].libs[j]] = require(sayitOptions[adapter.config.type].libs[j]);
-    }
-
-    adapter.getState('tts.text', (err, state) => {
-        if (err || !state) {
-            adapter.setState('tts.text', '', true);
-        }
-    });
-
-    adapter.getState('tts.volume', (err, state) => {
-        if (err || !state) {
-            adapter.setState('tts.volume', 70, true);
-            if (adapter.config.type !== 'system') {
-                options.sayLastVolume = 70;
-            }
-        } else {
-            if (adapter.config.type !== 'system') {
-                options.sayLastVolume = state.val;
-            }
-        }
-    });
-
-    adapter.getState('tts.playing', (err, state) =>
-        (err || !state) && adapter.setState('tts.playing', false, true));
-
-    if (adapter.config.type === 'system') {
-        // Read volume
-        adapter.getState('tts.volume', (err, state) => {
-            if (!err && state) {
-                speech2device && speech2device.sayItSystemVolume(state.val);
-            } else {
-                speech2device && speech2device.sayItSystemVolume(70);
-            }
-        });
-    }
+    // initialize tts.text
+    await adapter.setStateAsync('tts.playing', false, true);
 
     // calculate weblink for devices that require it
     if ((adapter.config.type === 'sonos') ||
         (adapter.config.type === 'heos') ||
         (adapter.config.type === 'chromecast') ||
         (adapter.config.type === 'mpd') ||
-        (adapter.config.type === 'googleHome')) {
+        (adapter.config.type === 'googleHome')
+    ) {
+        const settings = await adapter.getForeignObjectAsync(`system.adapter.${adapter.config.web}`);
+        applyWebSettings(null, settings);
 
-        adapter.getForeignObject('system.adapter.' + adapter.config.web, applyWebSettings);
         // update web link on changes
-        adapter.subscribeForeignObjects('system.adapter.' + adapter.config.web, (id, obj) =>
-            id === 'system.adapter.' + adapter.config.web && applyWebSettings(null, obj));
+        await adapter.subscribeForeignObjectsAsync(`system.adapter.${adapter.config.web}`);
     }
 
+    // initialize tts.text
+    let textState;
     try {
-        text2speech   = new Text2Speech(adapter, libs, options, sayIt);
-        speech2device = new Speech2Device(adapter, libs, options);
+        textState = await adapter.getStateAsync('tts.text');
     } catch (e) {
-        adapter.log.error('Cannot initialize engines: ' + e.toString());
+        // ignore
+    }
+
+    if (!textState) {
+        await adapter.setStateAsync('tts.text', '', true);
+    }
+
+    // create Text2Speech and Speech2Device
+    try {
+        options.addToQueue = addToQueue;
+        options.getCachedFileName = getCachedFileName;
+        options.isCached = isCached;
+        text2speech   = new Text2Speech(adapter, options);
+        speech2device = new Speech2Device(adapter, options);
+    } catch (e) {
+        adapter.log.error(`Cannot initialize engines: ${e.toString()}`);
         return;
+    }
+
+    // initialize tts.volume
+    let volumeState;
+    try {
+        volumeState = await adapter.getStateAsync('tts.volume');
+    } catch (e) {
+        // ignore
+    }
+
+    if (!volumeState) {
+        await adapter.setStateAsync('tts.volume', 70, true);
+        if (adapter.config.type !== 'system') {
+            options.sayLastVolume = 70;
+        } else {
+            await speech2device.sayItSystemVolume(70);
+        }
+    } else {
+        if (adapter.config.type !== 'system') {
+            options.sayLastVolume = volumeState.val;
+        } else {
+            await speech2device.sayItSystemVolume(volumeState.val);
+        }
     }
 
     adapter.subscribeStates('*');
 }
 
-function applyWebSettings(err, obj) {
-    if (!err && obj && obj.native) {
+function applyWebSettings(obj) {
+    if (obj && obj.native) {
         options.webLink = 'http';
         if (obj.native.auth) {
             adapter.log.error(`Cannot use server "${adapter.config.web}" with authentication for sonos/heos/chromecast. Select other or create another one.`);
@@ -714,7 +659,7 @@ function applyWebSettings(err, obj) {
                 }
             }
 
-            options.webLink += ':' + obj.native.port;
+            options.webLink += `:${obj.native.port}`;
         }
     } else {
         adapter.log.error(`Cannot read information about "${adapter.config.web}". No web server is active`);
@@ -741,7 +686,7 @@ async function main() {
     } else {
         // Check if files exists in data storage
         await uploadFiles();
-        start();
+        await start();
     }
 }
 

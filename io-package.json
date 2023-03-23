@@ -128,7 +128,7 @@
     "icon": "sayit.png",
     "materialize": true,
     "adminUI": {
-      "config": "materialize"
+      "config": "json"
     },
     "connectionType": "cloud",
     "dataSource": "push",
@@ -165,7 +165,7 @@
     "port": 0,
     "user": "",
     "pass": "",
-    "instance": "",
+    "instance": "FFFFFFFF",
     "web": "",
     "webServer": "",
     "cacheDir": "../../cache/",
@@ -272,30 +272,6 @@
         "read": true,
         "write": false,
         "desc": "Is true while speaking"
-      },
-      "native": {}
-    },
-    {
-      "_id": "tts.mp3",
-      "type": "state",
-      "common": {
-        "name": "Binary mp3 file",
-        "type": "file",
-        "read": true,
-        "write": false,
-        "desc": "Can be accessed from web server under http://ip:8082/state/sayit.0.tts.mp3"
-      },
-      "native": {}
-    },
-    {
-      "_id": "tts.ogg",
-      "type": "state",
-      "common": {
-        "name": "Binary ogg file",
-        "type": "file",
-        "read": true,
-        "write": false,
-        "desc": "Can be accessed from web server under http://ip:8082/state/sayit.0.tts.ogg"
       },
       "native": {}
     }
