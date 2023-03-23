@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "sayit",
-    "version": "1.13.0",
+    "version": "2.0.0",
     "news": {
+      "2.0.0": {
+        "en": "Adapter was completely rewritten with async/await\nCould be buggy",
+        "de": "Adapter wurde komplett neu geschrieben mit async/await\nKönnte Buggy sein",
+        "ru": "Адаптер был полностью переписан с async/await\nМожет быть багги",
+        "pt": "Adapter foi completamente reescrito com async/await\nPode ser buggy",
+        "nl": "Adapter was volledig herschreven met async/a wacht\nKan insecten zijn",
+        "fr": "Adaptateur a été complètement réécrit avec async/await\nÇa pourrait être un buggy",
+        "it": "L'adattatore è stato completamente riscritto con asinc/await\nPotrebbe essere buggy",
+        "es": "Adaptador fue completamente reescrito con async/await\nPodría ser un buggy",
+        "pl": "Adapter został w całości przepisany z asynchronem/await/Adapter\nCould be buggy",
+        "uk": "Перехідник повністю переписався з асинхроном/відповіддю\nПомилки",
+        "zh-cn": "道歉完全用阿森克/瓦伊特写。\n走私"
+      },
       "1.13.0": {
         "en": "Made compatible with future js-controller",
         "de": "Kompatibel mit zukünftigem js-Controller",
@@ -65,18 +78,6 @@
         "zh-cn": "更正了谷歌引擎\n添加了新的声音：德语、韩语、巴西语、荷兰语"
       },
       "1.12.2": {
-        "en": "Prevent crash case (Sentry IOBROKER-SAYIT-Q, IOBROKER-SAYIT-S, IOBROKER-SAYIT-T)",
-        "de": "Absturz verhindern (Sentry IOBROKER-SAYIT-Q, IOBROKER-SAYIT-S, IOBROKER-SAYIT-T)",
-        "ru": "Случай предотвращения сбоя (Sentry IOBROKER-SAYIT-Q, IOBROKER-SAYIT-S, IOBROKER-SAYIT-T)",
-        "pt": "Prevenir caso de travamento (Sentry IOBROKER-SAYIT-Q, IOBROKER-SAYIT-S, IOBROKER-SAYIT-T)",
-        "nl": "Voorkom crash case (Sentry IOBROKER-SAYIT-Q, IOBROKER-SAYIT-S, IOBROKER-SAYIT-T)",
-        "fr": "Prévenir les cas de crash (Sentry IOBROKER-SAYIT-Q, IOBROKER-SAYIT-S, IOBROKER-SAYIT-T)",
-        "it": "Prevenire il crash case (Sentry IOBROKER-SAYIT-Q, IOBROKER-SAYIT-S, IOBROKER-SAYIT-T)",
-        "es": "Caso de prevención de accidentes (Sentry IOBROKER-SAYIT-Q, IOBROKER-SAYIT-S, IOBROKER-SAYIT-T)",
-        "pl": "Zapobiegaj awariom (Sentry IOBROKER-SAYIT-Q, IOBROKER-SAYIT-S, IOBROKER-SAYIT-T)",
-        "zh-cn": "防止发生崩溃情况（哨兵IOBROKER-SAYIT-Q，IOBROKER-SAYIT-S，IOBROKER-SAYIT-T）"
-      },
-      "1.12.1": {
         "en": "Prevent crash case (Sentry IOBROKER-SAYIT-Q, IOBROKER-SAYIT-S, IOBROKER-SAYIT-T)",
         "de": "Absturz verhindern (Sentry IOBROKER-SAYIT-Q, IOBROKER-SAYIT-S, IOBROKER-SAYIT-T)",
         "ru": "Случай предотвращения сбоя (Sentry IOBROKER-SAYIT-Q, IOBROKER-SAYIT-S, IOBROKER-SAYIT-T)",
