@@ -477,9 +477,9 @@ async function uploadFiles() {
                 type: 'meta',
                 common: {
                     name: 'User files for SayIt',
-                    type: 'meta.user'
+                    type: 'meta.user',
                 },
-                native: {}
+                native: {},
             });
         }
 

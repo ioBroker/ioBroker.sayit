@@ -3,19 +3,6 @@
     "name": "sayit",
     "version": "2.1.0",
     "news": {
-      "2.1.0": {
-        "en": "Added support for Coqui TTS\nRenamed all configuration attributes",
-        "de": "Unterstützung für Coqui TTS\nAlle Konfigurationsattribute umbenannt",
-        "ru": "Добавлена поддержка Coqui TTS\nПереименованные все атрибуты конфигурации",
-        "pt": "Adicionado suporte para Coqui TTS\nRenamed todos os atributos de configuração",
-        "nl": "Verleende steun voor Coqui TTS\nVertaling:",
-        "fr": "Ajout du soutien à Coqui TTS\nRenommé tous les attributs de configuration",
-        "it": "Aggiunto il supporto per Coqui TTS\nRinominare tutti gli attributi di configurazione",
-        "es": "Apoyo añadido para TTS Coqui\nRenombrado todos los atributos de configuración",
-        "pl": "Wsparcie Coqui TTS\nNazwy wszystkich cech konfiguracji",
-        "uk": "Додано підтримку Coqui TTS\nПерейменувати всі атрибути конфігурації",
-        "zh-cn": "增加对共同采购技术的支持\n重新命名所有组合的属性"
-      },
       "2.0.0": {
         "en": "Adapter was completely rewritten with async/await\nCould be buggy",
         "de": "Adapter wurde komplett neu geschrieben mit async/await\nKönnte Buggy sein",

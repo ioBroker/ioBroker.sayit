@@ -265,7 +265,7 @@ Following values for engines are possible:
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### 2.1.0 (2023-03-24)
+### **WORK IN PROGRESS**
 * (Jey-Cee) Added support for Coqui TTS
 * (bluefox) Renamed all configuration attributes
 
