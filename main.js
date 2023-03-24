@@ -400,7 +400,7 @@ async function processTasks() {
     let duration = 0;
 
     if (!onlyCache && text.length) {
-        await this.adapter.setStateAsync('tts.playing', true, true);
+        await adapter.setStateAsync('tts.playing', true, true);
         try {
             // play file
             if (fileName) {
@@ -417,7 +417,7 @@ async function processTasks() {
         } catch (e) {
             adapter.log.error(`Cannot play file: ${e}`);
         }
-        await this.adapter.setStateAsync('tts.playing', false, true);
+        await adapter.setStateAsync('tts.playing', false, true);
     }
 
     tasks.shift();
@@ -538,6 +538,9 @@ async function start() {
         delete newConfig.pass;
         delete newConfig.cDevice;
         delete newConfig.instance;
+        delete newConfig.sonos;
+        delete newConfig.googleHome;
+        delete newConfig.device;
 
         if (newConfig.engine === 'ru_YA_CLOUD') {
             newConfig.yandexKey = newConfig.key;
@@ -568,10 +571,11 @@ async function start() {
         delete newConfig.voice;
         delete newConfig.key;
         delete newConfig.folderID;
+        delete newConfig.cloud;
 
         newConfig.convertedV1toV2 = true;
 
-        const configObj = await adapter.getForeignObjectAsync('system.adapter.' + adapter.namespace);
+        const configObj = await adapter.getForeignObjectAsync(`system.adapter.${adapter.namespace}`);
         configObj.native = newConfig;
         await adapter.setForeignObjectAsync(configObj._id, configObj);
         // wait for restart

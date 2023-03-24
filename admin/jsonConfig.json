@@ -57,15 +57,16 @@
           "lg": 4
         },
         "systemCommand": {
+          "newLine": true,
           "type": "text",
           "label": "System command",
           "hidden": "data.type !== 'system'",
+          "help": "optional - If player does not work",
           "sm": 6,
           "md": 4,
           "lg": 2
         },
         "systemPlayer": {
-          "newLine": true,
           "type": "select",
           "label": "Linux player",
           "hidden": "data.type !== 'system' || data.command",

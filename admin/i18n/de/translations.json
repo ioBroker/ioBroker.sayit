@@ -49,5 +49,6 @@
   "Engine": "TTS-Engine",
   "Cache generated files": "Generierte Dateien zwischenspeichern",
   "Google home server": "Google-Heimserver",
-  "in % to playing volume": "in % zur Spiellautstärke"
+  "in % to playing volume": "in % zur Spiellautstärke",
+  "optional - If player does not work": "optional - Wenn der Player nicht funktioniert"
 }

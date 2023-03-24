@@ -49,5 +49,6 @@
   "Engine": "Двигун TTS",
   "Cache generated files": "Кешувати згенеровані файли",
   "Google home server": "Домашній сервер Google",
-  "in % to playing volume": "у % до гучності відтворення"
+  "in % to playing volume": "у % до гучності відтворення",
+  "optional - If player does not work": "необов'язково - якщо плеєр не працює"
 }

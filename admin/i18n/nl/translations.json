@@ -49,5 +49,6 @@
   "Engine": "TTS-motor",
   "Cache generated files": "Cache-gegenereerde bestanden",
   "Google home server": "Google-thuisserver",
-  "in % to playing volume": "in % van het speelvolume"
+  "in % to playing volume": "in % van het speelvolume",
+  "optional - If player does not work": "optioneel - Als de speler niet werkt"
 }

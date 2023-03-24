@@ -49,5 +49,6 @@
   "Engine": "语音合成引擎",
   "Cache generated files": "缓存生成的文件",
   "Google home server": "谷歌家庭服务器",
-  "in % to playing volume": "占播放音量的百分比"
+  "in % to playing volume": "占播放音量的百分比",
+  "optional - If player does not work": "可选 - 如果播放器不工作"
 }

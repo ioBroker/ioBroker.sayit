@@ -49,5 +49,6 @@
   "Engine": "Moteur TTS",
   "Cache generated files": "Fichiers générés par le cache",
   "Google home server": "Serveur domestique Google",
-  "in % to playing volume": "en % du volume de lecture"
+  "in % to playing volume": "en % du volume de lecture",
+  "optional - If player does not work": "facultatif - Si le lecteur ne fonctionne pas"
 }
