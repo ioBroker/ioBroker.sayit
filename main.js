@@ -12,7 +12,7 @@ const path          = require('path');
 
 const sayitOptions  = engines.sayitOptions;
 
-let dataDir = `${utils.getAbsoluteDefaultDataDir()}sayit`;
+let dataDir = path.join(utils.getAbsoluteDefaultDataDir(), 'sayit');
 
 process.on('SIGINT', stop);
 
