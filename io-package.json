@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "sayit",
-    "version": "2.0.0",
+    "version": "2.1.0",
     "news": {
+      "2.1.0": {
+        "en": "Added support for Coqui TTS\nRenamed all configuration attributes",
+        "de": "Unterstützung für Coqui TTS\nAlle Konfigurationsattribute umbenannt",
+        "ru": "Добавлена поддержка Coqui TTS\nПереименованные все атрибуты конфигурации",
+        "pt": "Adicionado suporte para Coqui TTS\nRenamed todos os atributos de configuração",
+        "nl": "Verleende steun voor Coqui TTS\nVertaling:",
+        "fr": "Ajout du soutien à Coqui TTS\nRenommé tous les attributs de configuration",
+        "it": "Aggiunto il supporto per Coqui TTS\nRinominare tutti gli attributi di configurazione",
+        "es": "Apoyo añadido para TTS Coqui\nRenombrado todos los atributos de configuración",
+        "pl": "Wsparcie Coqui TTS\nNazwy wszystkich cech konfiguracji",
+        "uk": "Додано підтримку Coqui TTS\nПерейменувати всі атрибути конфігурації",
+        "zh-cn": "增加对共同采购技术的支持\n重新命名所有组合的属性"
+      },
       "2.0.0": {
         "en": "Adapter was completely rewritten with async/await\nCould be buggy",
         "de": "Adapter wurde komplett neu geschrieben mit async/await\nKönnte Buggy sein",
@@ -76,18 +89,6 @@
         "es": "corrigió el motor de google\nAñadidas nuevas voces: alemán, coreano, brasil, holandés",
         "pl": "poprawiłem silnik google\nDodano nowe głosy: niemiecki, koreański, brazylijski, holenderski",
         "zh-cn": "更正了谷歌引擎\n添加了新的声音：德语、韩语、巴西语、荷兰语"
-      },
-      "1.12.2": {
-        "en": "Prevent crash case (Sentry IOBROKER-SAYIT-Q, IOBROKER-SAYIT-S, IOBROKER-SAYIT-T)",
-        "de": "Absturz verhindern (Sentry IOBROKER-SAYIT-Q, IOBROKER-SAYIT-S, IOBROKER-SAYIT-T)",
-        "ru": "Случай предотвращения сбоя (Sentry IOBROKER-SAYIT-Q, IOBROKER-SAYIT-S, IOBROKER-SAYIT-T)",
-        "pt": "Prevenir caso de travamento (Sentry IOBROKER-SAYIT-Q, IOBROKER-SAYIT-S, IOBROKER-SAYIT-T)",
-        "nl": "Voorkom crash case (Sentry IOBROKER-SAYIT-Q, IOBROKER-SAYIT-S, IOBROKER-SAYIT-T)",
-        "fr": "Prévenir les cas de crash (Sentry IOBROKER-SAYIT-Q, IOBROKER-SAYIT-S, IOBROKER-SAYIT-T)",
-        "it": "Prevenire il crash case (Sentry IOBROKER-SAYIT-Q, IOBROKER-SAYIT-S, IOBROKER-SAYIT-T)",
-        "es": "Caso de prevención de accidentes (Sentry IOBROKER-SAYIT-Q, IOBROKER-SAYIT-S, IOBROKER-SAYIT-T)",
-        "pl": "Zapobiegaj awariom (Sentry IOBROKER-SAYIT-Q, IOBROKER-SAYIT-S, IOBROKER-SAYIT-T)",
-        "zh-cn": "防止发生崩溃情况（哨兵IOBROKER-SAYIT-Q，IOBROKER-SAYIT-S，IOBROKER-SAYIT-T）"
       }
     },
     "title": "Text to speech",
@@ -157,48 +158,35 @@
   },
   "native": {
     "type": "system",
-
     "systemCommand": "",
     "systemPlayer": "",
-
     "cache": true,
     "cacheDir": "../../cache/",
-
     "engine": "",
-
     "sonosDevice": "",
     "heosDevice": "",
     "mpdDevice": "",
-
     "googleHomeServer": "",
-
     "chromecastDevice": "",
-
     "mp24Server": "",
     "ftpPort": 0,
     "ftpUser": "",
     "ftpPass": "",
-
     "browserInstance": "FFFFFFFF",
     "webInstance": "",
     "webServer": "",
-
     "announce": "",
     "annoTimeout": 15,
     "annoDuration": 0,
     "annoVolume": "70",
-
     "cloudInstance": "",
-
     "yandexEffectVoice": "",
     "yandexKey": "",
     "yandexEmotion": "",
     "yandexFolderID": "",
-
     "awsAccessKey": "",
     "awsSecretKey": "",
     "awsRegion": "",
-
     "convertedV1toV2": false
   },
   "instanceObjects": [
