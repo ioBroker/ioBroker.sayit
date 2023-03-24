@@ -77,7 +77,7 @@ function startAdapter(options) {
     });
 
     adapter.on('objectChange', (id, obj) => {
-        if (id === `system.adapter.${adapter.config.web}`) {
+        if (id === `system.adapter.${adapter.config.webInstance}`) {
             applyWebSettings(obj);
         }
     });
@@ -102,7 +102,7 @@ function processMessage(obj) {
         if (obj.command === 'stopInstance') {
             stop(false, () =>
                 obj.callback && adapter.sendTo(obj.from, obj.command, null, obj.callback));
-        } else if (obj.callback && obj.command === 'browseChromecast' || obj.command === 'browseGoogleHome') {
+        } else if (obj.callback && obj.command === 'browseGoogleHome') {
             // look for chromecast devices
             try {
                 const mdns = require('mdns');
@@ -128,12 +128,40 @@ function processMessage(obj) {
                 adapter.log.error(e);
                 adapter.sendTo(obj.from, obj.command, null, obj.callback);
             }
-        }else if (obj.callback && obj.command === 'getChromecastSendTo') {
+        } else if (obj.callback && obj.command === 'browseChromecast') {
             adapter.getObjectView('system', 'device', {startkey: 'chromecast.', endkey: 'chromecast.\u9999'}, (err, res) => {
                 const list = [];
                 if (!err && res) {
                     for (let i = 0; i < res.rows.length; i++) {
                         list.push({value: res.rows[i].id, label: res.rows[i].id});
+                    }
+                }
+                adapter.sendTo(obj.from, obj.command, list, obj.callback);
+            });
+        } else if (obj.callback && obj.command === 'browseHeos') {
+            adapter.getObjectView('system', 'device', {startkey: 'heos.', endkey: 'heos.\u9999'}, (err, res) => {
+                const list = [];
+                for (let i = 0; i < res.rows.length; i++) {
+                    let name = res.rows[i].value && res.rows[i].value.common && res.rows[i].value.common.name;
+                    if (typeof name === 'object') {
+                        name = name.en;
+                    }
+                    if (res.rows[i].id.includes('.players.')) {
+                        list.push({value: res.rows[i].id, label: `${res.rows[i].id.replace(/^heos\.\d+\.players\./, '')} [${name}]`});
+                    }
+                }
+                adapter.sendTo(obj.from, obj.command, list, obj.callback);
+            });
+        } else if (obj.callback && obj.command === 'browseSonos') {
+            adapter.getObjectView('system', 'device', {startkey: 'sonos.', endkey: 'heos.\u9999'}, (err, res) => {
+                const list = [];
+                for (let i = 0; i < res.rows.length; i++) {
+                    let name = res.rows[i].value && res.rows[i].value.common && res.rows[i].value.common.name;
+                    if (typeof name === 'object') {
+                        name = name.en;
+                    }
+                    if (res.rows[i].id.includes('.players.')) {
+                        list.push({value: res.rows[i].id, label: `${res.rows[i].id.replace(/^sonos\.\d+\.root\./, '')} [${name}]`});
                     }
                 }
                 adapter.sendTo(obj.from, obj.command, list, obj.callback);
@@ -372,6 +400,7 @@ async function processTasks() {
     let duration = 0;
 
     if (!onlyCache && text.length) {
+        await this.adapter.setStateAsync('tts.playing', true, true);
         try {
             // play file
             if (fileName) {
@@ -388,6 +417,7 @@ async function processTasks() {
         } catch (e) {
             adapter.log.error(`Cannot play file: ${e}`);
         }
+        await this.adapter.setStateAsync('tts.playing', false, true);
     }
 
     tasks.shift();
@@ -461,6 +491,94 @@ async function uploadFiles() {
 }
 
 async function start() {
+    if (!adapter.config.convertedV1toV2) {
+        const newConfig = JSON.parse(JSON.stringify(adapter.config));
+
+        if (newConfig.type === 'system') {
+            newConfig.systemCommand = newConfig.command;
+            newConfig.systemPlayer = newConfig.player;
+        } else
+        if (newConfig.type === 'mp24ftp') {
+            newConfig.mp24Server = newConfig.server;
+            newConfig.ftpUser = newConfig.user;
+            newConfig.ftpPort = newConfig.port;
+            newConfig.ftpPassword = newConfig.pass;
+        } else
+        if (newConfig.type === 'mp24') {
+            newConfig.mp24Server = newConfig.server;
+        } else
+        if (newConfig.type === 'chromecast') {
+            newConfig.chromecastDevice = newConfig.cDevice;
+        } else
+        if (newConfig.type === 'googleHome') {
+            newConfig.googleHomeServer = newConfig.server;
+        } else
+        if (newConfig.type === 'sonos') {
+            newConfig.sonosDevice = newConfig.device;
+        } else
+        if (newConfig.type === 'browser') {
+            newConfig.browserInstance = newConfig.instance;
+        } else
+        if (newConfig.type === 'mpd') {
+            newConfig.mpdInstance = newConfig.mpd_device;
+        } else
+        if (newConfig.type === 'heos') {
+            newConfig.heosDevice = newConfig.heos_device;
+        }
+        newConfig.webInstance = newConfig.web;
+
+        delete newConfig.server;
+        delete newConfig.mpd_device;
+        delete newConfig.heos_device;
+        delete newConfig.web;
+        delete newConfig.command;
+        delete newConfig.player;
+        delete newConfig.user;
+        delete newConfig.port;
+        delete newConfig.pass;
+        delete newConfig.cDevice;
+        delete newConfig.instance;
+
+        if (newConfig.engine === 'ru_YA_CLOUD') {
+            newConfig.yandexKey = newConfig.key;
+            newConfig.yandexCloudVoice = newConfig.voice;
+            newConfig.yandexFolderID = newConfig.folderID;
+            newConfig.yandexEmotion = newConfig.emotion;
+        } else if (newConfig.engine === 'ru_YA') {
+            newConfig.yandexKey = newConfig.key;
+            newConfig.yandexVoice = newConfig.voice;
+            newConfig.yandexEmotion = newConfig.emotion;
+            newConfig.yandexDrunk = newConfig.drunk;
+            newConfig.yandexIll = newConfig.ill;
+            newConfig.yandexRobot = newConfig.robot;
+        } else if (newConfig.engine.includes('_CLOUD_')) {
+            newConfig.cloudInstance = newConfig.cloud;
+        } else if (newConfig.engine.includes('_AP_')) {
+            newConfig.awsAccessKey = newConfig.accessKey;
+            newConfig.awsSecretKey = newConfig.secretKey;
+            newConfig.awsRegion = newConfig.region;
+        }
+        delete newConfig.accessKey;
+        delete newConfig.secretKey;
+        delete newConfig.region;
+        delete newConfig.robot;
+        delete newConfig.ill;
+        delete newConfig.drunk;
+        delete newConfig.emotion;
+        delete newConfig.voice;
+        delete newConfig.key;
+        delete newConfig.folderID;
+
+        newConfig.convertedV1toV2 = true;
+
+        const configObj = await adapter.getForeignObjectAsync('system.adapter.' + adapter.namespace);
+        configObj.native = newConfig;
+        await adapter.setForeignObjectAsync(configObj._id, configObj);
+        // wait for restart
+        return;
+    }
+
+
     if (!adapter.config.engine) {
         const systemConfig = await adapter.getForeignObjectAsync('system.config');
         adapter.config.engine = (systemConfig && systemConfig.common && systemConfig.common.language) || 'de';
@@ -582,11 +700,11 @@ async function start() {
         (adapter.config.type === 'mpd') ||
         (adapter.config.type === 'googleHome')
     ) {
-        const settings = await adapter.getForeignObjectAsync(`system.adapter.${adapter.config.web}`);
+        const settings = await adapter.getForeignObjectAsync(`system.adapter.${adapter.config.webInstance}`);
         applyWebSettings(null, settings);
 
         // update web link on changes
-        await adapter.subscribeForeignObjectsAsync(`system.adapter.${adapter.config.web}`);
+        await adapter.subscribeForeignObjectsAsync(`system.adapter.${adapter.config.webInstance}`);
     }
 
     // initialize tts.text
@@ -606,6 +724,7 @@ async function start() {
         options.addToQueue = addToQueue;
         options.getCachedFileName = getCachedFileName;
         options.isCached = isCached;
+        options.MP3FILE = MP3FILE;
         text2speech   = new Text2Speech(adapter, options);
         speech2device = new Speech2Device(adapter, options);
     } catch (e) {
@@ -643,14 +762,14 @@ function applyWebSettings(obj) {
     if (obj && obj.native) {
         options.webLink = 'http';
         if (obj.native.auth) {
-            adapter.log.error(`Cannot use server "${adapter.config.web}" with authentication for sonos/heos/chromecast. Select other or create another one.`);
+            adapter.log.error(`Cannot use server "${adapter.config.webInstance}" with authentication for sonos/heos/chromecast. Select other or create another one.`);
         } else {
             if (obj.native.secure) {
                 options.webLink += 's';
             }
             options.webLink += '://';
             if (obj.native.bind === 'localhost' || obj.native.bind === '127.0.0.1') {
-                adapter.log.error(`Selected web server "${adapter.config.web}" is only on local device available. Select other or create another one.`);
+                adapter.log.error(`Selected web server "${adapter.config.webInstance}" is only on local device available. Select other or create another one.`);
             } else {
                 if (obj.native.bind === '0.0.0.0') {
                     options.webLink += adapter.config.webServer;
@@ -662,7 +781,7 @@ function applyWebSettings(obj) {
             options.webLink += `:${obj.native.port}`;
         }
     } else {
-        adapter.log.error(`Cannot read information about "${adapter.config.web}". No web server is active`);
+        adapter.log.error(`Cannot read information about "${adapter.config.webInstance}". No web server is active`);
     }
 }
 

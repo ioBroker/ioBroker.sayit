@@ -56,7 +56,7 @@
           "md": 6,
           "lg": 4
         },
-        "command": {
+        "systemCommand": {
           "type": "text",
           "label": "System command",
           "hidden": "data.type !== 'system'",
@@ -64,7 +64,7 @@
           "md": 4,
           "lg": 2
         },
-        "player": {
+        "systemPlayer": {
           "newLine": true,
           "type": "select",
           "label": "Linux player",
@@ -156,18 +156,18 @@
           "md": 4,
           "lg": 2
         },
-        "cDevice": {
+        "chromecastDevice": {
           "newLine": true,
           "type": "selectSendTo",
           "label": "Device",
-          "command": "getChromecastSendTo",
+          "command": "browseChromecast",
           "noTranslation": true,
           "hidden": "data.type !== 'chromecast'",
           "sm": 12,
           "md": 6,
           "lg": 4
         },
-        "ghServer": {
+        "googleHomeServer": {
           "newLine": true,
           "type": "autocompleteSendTo",
           "command": "browseGoogleHome",
@@ -177,7 +177,7 @@
           "md": 6,
           "lg": 4
         },
-        "server": {
+        "mp24Server": {
           "newLine": true,
           "type": "text",
           "label": "Server IP Address",
@@ -186,7 +186,7 @@
           "md": 6,
           "lg": 4
         },
-        "port": {
+        "ftpPort": {
           "newLine": true,
           "type": "number",
           "label": "FTP Port",
@@ -195,7 +195,7 @@
           "md": 4,
           "lg": 2
         },
-        "user": {
+        "ftpUser": {
           "type": "text",
           "label": "FTP User",
           "hidden": "data.type !== 'mp24ftp'",
@@ -203,7 +203,7 @@
           "md": 4,
           "lg": 2
         },
-        "password": {
+        "ftpPassword": {
           "type": "password",
           "label": "FTP Password",
           "hidden": "data.type !== 'mp24ftp'",
@@ -211,7 +211,34 @@
           "md": 4,
           "lg": 2
         },
-        "instance": {
+        "sonosDevice": {
+          "type": "selectSendTo",
+          "label": "Device",
+          "hidden": "data.type !== 'sonos'",
+          "command": "browseSonos",
+          "sm": 6,
+          "md": 4,
+          "lg": 2
+        },
+        "heosDevice": {
+          "type": "selectSendTo",
+          "label": "Device",
+          "hidden": "data.type !== 'heos'",
+          "command": "browseHeos",
+          "sm": 6,
+          "md": 4,
+          "lg": 2
+        },
+        "mpdInstance": {
+          "type": "instance",
+          "label": "Device",
+          "hidden": "data.type !== 'mpd'",
+          "adapter": "mpd",
+          "sm": 6,
+          "md": 4,
+          "lg": 2
+        },
+        "browserInstance": {
           "newLine": true,
           "type": "text",
           "label": "Browser instance",
@@ -220,7 +247,7 @@
           "md": 3,
           "lg": 2
         },
-        "web": {
+        "webInstance": {
           "newLine": true,
           "type": "instance",
           "adapter": "web",
@@ -542,6 +569,30 @@
               "label": "PicoTTS - Français"
             },
             {
+              "value": "en_CoquiTTS",
+              "label": "CoquiTTS - English"
+            },
+            {
+              "value": "es_CoquiTTS",
+              "label": "CoquiTTS - Espaniol"
+            },
+            {
+              "value": "fr_CoquiTTS",
+              "label": "CoquiTTS - Français"
+            },
+            {
+              "value": "de_CoquiTTS",
+              "label": "CoquiTTS - Deutsch"
+            },
+            {
+              "value": "nl_CoquiTTS",
+              "label": "CoquiTTS - Dutch"
+            },
+            {
+              "value": "ja_CoquiTTS",
+              "label": "CoquiTTS - Japan"
+            },
+            {
               "value": "ru-RU_AP_Female",
               "label": "AWS Polly - Русский - Татьяна"
             },
@@ -758,7 +809,7 @@
           "md": 6,
           "lg": 4
         },
-        "key": {
+        "yandexKey": {
           "newLine": true,
           "type": "text",
           "hidden": "data.engine != 'ru_YA' && data.engine != 'ru_YA_CLOUD'",
@@ -767,7 +818,7 @@
           "md": 6,
           "lg": 4
         },
-        "voiceCloud": {
+        "yandexCloudVoice": {
           "newLine": true,
           "type": "select",
           "label": "Voice",
@@ -787,7 +838,7 @@
           "md": 6,
           "lg": 4
         },
-        "voice": {
+        "yandexVoice": {
           "newLine": true,
           "type": "select",
           "label": "Voice",
@@ -801,7 +852,7 @@
           "md": 4,
           "lg": 2
         },
-        "emotion": {
+        "yandexEmotion": {
           "type": "select",
           "hidden": "data.engine != 'ru_YA' && data.engine != 'ru_YA_CLOUD'",
           "label": "Emotion",
@@ -817,7 +868,7 @@
           "md": 4,
           "lg": 2
         },
-        "drunk": {
+        "yandexDrunk": {
           "newLine": true,
           "type": "checkbox",
           "label": "Drunk",
@@ -825,28 +876,28 @@
           "sm": 4,
           "md": 2
         },
-        "ill": {
+        "yandexIll": {
           "type": "checkbox",
           "hidden": "data.engine != 'ru_YA'",
           "label": "Ill",
           "sm": 4,
           "md": 2
         },
-        "robot": {
+        "yandexRobot": {
           "type": "checkbox",
           "hidden": "data.engine != 'ru_YA'",
           "label": "Robot",
           "sm": 4,
           "md": 2
         },
-        "folderID": {
+        "yandexFolderID": {
           "type": "text",
           "hidden": "data.engine != 'ru_YA_CLOUD'",
           "label": "Folder ID",
           "sm": 12,
           "md": 3
         },
-        "accessKey": {
+        "awsAccessKey": {
           "newLine": true,
           "type": "text",
           "label": "Access Key",
@@ -855,7 +906,7 @@
           "md": 3,
           "lg": 2
         },
-        "secretKey": {
+        "awsSecretKey": {
           "type": "password",
           "label": "Secret Key",
           "hidden": "!data.engine || !data.engine.includes('_AP_')",
@@ -863,7 +914,7 @@
           "md": 3,
           "lg": 2
         },
-        "region": {
+        "awsRegion": {
           "type": "text",
           "label": "AWS Region",
           "hidden": "!data.engine || !data.engine.includes('_AP_')",
@@ -871,12 +922,75 @@
           "md": 3,
           "lg": 1
         },
-        "cloud": {
+        "cloudInstance": {
           "newLine": true,
           "type": "instance",
           "adapter": "cloud",
           "label": "Cloud instance",
           "hidden": "!data.engine || !data.engine.includes('_CLOUD_')",
+          "sm": 12,
+          "md": 4,
+          "lg": 2
+        },
+        "coquiVocoder": {
+          "newLine": true,
+          "type": "select",
+          "label": "Cloud instance",
+          "hidden": "!data.engine || !data.engine.includes('CoquiTTS')",
+          "options": [
+              {
+                "label": "default",
+                "value": "default"
+              },
+              {
+                "label": "ek1 wavegrad",
+                "value": "ek1 wavegrad"
+              },
+              {
+                "label": "kokoro hifigan_v1",
+                "value": "kokoro hifigan_v1"
+              },
+              {
+                "label": "libri-tts fullband-melgan",
+                "value": "libri-tts fullband-melgan"
+              },
+              {
+                "label": "libri-tts wavegrad",
+                "value": "libri-tts wavegrad"
+              },
+              {
+                "label": "ljspeech hifigan_v2",
+                "value": "ljspeech hifigan_v2"
+              },
+              {
+                "label": "ljspeech multiband-melgan",
+                "value": "ljspeech multiband-melgan"
+              },
+              {
+                "label": "ljspeech univnet",
+                "value": "ljspeech univnet"
+              },
+              {
+                "label": "mai parallel-wavegan",
+                "value": "mai parallel-wavegan"
+              },
+              {
+                "label": "sam hifigan_v2",
+                "value": "sam hifigan_v2"
+              },
+              {
+                "label": "thorsten fullband-melgan",
+                "value": "thorsten fullband-melgan"
+              },
+              {
+                "label": "thorsten wavegrad",
+                "value": "thorsten wavegrad"
+              },
+              {
+                "label": "vctk hifigan_v2",
+                "value": "vctk hifigan_v2"
+              }
+          ],
           "sm": 12,
           "md": 4,
           "lg": 2

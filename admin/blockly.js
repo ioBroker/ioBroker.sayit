@@ -23,7 +23,7 @@ Blockly.Words['sayit_volume']        = {'en': 'volume (optional)',           'de
 Blockly.Words['sayit_tooltip']       = {'en': 'Text to speech',              'de': 'Text zu Sprache',                    'ru': 'Произнести сообщение'};
 Blockly.Words['sayit_help']          = {'en': 'https://github.com/ioBroker/ioBroker.sayit/blob/master/README.md', 'de': 'http://www.iobroker.net/?page_id=178&lang=de', 'ru': 'http://www.iobroker.net/?page_id=4262&lang=ru'};
 Blockly.Words['sayit_configured']    = {'en': 'configured',                  'de': 'Standard',                           'ru': 'настроенный'};
-Blockly.Words['sayit_everyInstance'] = {'en': 'every instance',              'de': 'Alle Instanzen',                     'ru': 'На все драйвера', 'pt': 'todas as instâncias',            'pl': 'wszystkie przypadki',                'nl': 'alle instanties',                'it': 'tutte le istanze',               'es': 'todas las instancias',           'fr': 'toutes les instances'};
+Blockly.Words['sayit_anyInstance']   = {'en': 'all instances',               'de': 'Alle Instanzen',                     'ru': 'На все драйвера', 'pt': 'todas as instâncias',            'pl': 'wszystkie przypadki',                'nl': 'alle instanties',                'it': 'tutte le istanze',               'es': 'todas las instancias',           'fr': 'toutes les instances'};
 
 Blockly.Words['sayit_log']           = {'en': 'log level',                   'de': 'Loglevel',                           'ru': 'Протокол'};
 Blockly.Words['sayit_log_none']      = {'en': 'none',                        'de': 'keins',                              'ru': 'нет'};
@@ -34,7 +34,7 @@ Blockly.Words['sayit_log_error']     = {'en': 'error',                       'de
 
 
 // this is copy of engines.js
-var sayitEngines = {
+const sayitEngines = {
     "en":       {name: "Google - English",         engine: "google",  params: []},
     "de":       {name: "Google - Deutsch",         engine: "google",  params: []},
     "ru":       {name: "Google - Русский",         engine: "google",  params: []},
@@ -50,6 +50,13 @@ var sayitEngines = {
     "it-IT":    {name: "PicoTTS - Italiano",       engine: "PicoTTS", params: []},
     "es-ES":    {name: "PicoTTS - Espaniol",       engine: "PicoTTS", params: []},
     "fr-FR":    {name: "PicoTTS - Français",       engine: "PicoTTS", params: []},
+
+    "en_CoquiTTS":    {name: "CoquiTTS - Englisch US", engine: "CoquiTTS", params: []},
+    "es_CoquiTTS":    {name: "CoquiTTS - Espaniol",    engine: "CoquiTTS", params: []},
+    "fr_CoquiTTS":    {name: "CoquiTTS - Français",    engine: "CoquiTTS", params: []},
+    "de_CoquiTTS":    {name: "CoquiTTS - Deutsch",     engine: "CoquiTTS", params: []},
+    "nl_CoquiTTS":    {name: "CoquiTTS - Dutch",       engine: "CoquiTTS", params: []},
+    "ja_CoquiTTS":    {name: "CoquiTTS - Japan",       engine: "CoquiTTS", params: []},
 
     "ru-RU_CLOUD_Female":       {gender: "Female", engine: "cloud",   params: ['cloud'], language: "ru-RU",      ename: "Tatyana",    ssml: true, name: "Cloud - Русский - Татьяна"},
     "ru-RU_CLOUD_Male":         {gender: "Male",   engine: "cloud",   params: ['cloud'], language: "ru-RU",      ename: "Maxim",      ssml: true, name: "Cloud - Русский - Максим"},
@@ -178,7 +185,7 @@ Blockly.Sendto.blocks['sayit'] =
 
 Blockly.Blocks['sayit'] = {
     init: function() {
-        var options = [[Blockly.Translate('sayit_everyInstance'), 'all']];
+        var options = [[Blockly.Translate('sayit_anyInstance'), 'all']];
         if (typeof main !== 'undefined' && main.instances) {
             for (var i = 0; i < main.instances.length; i++) {
                 var m = main.instances[i].match(/^system.adapter.sayit.(\d+)$/);
@@ -260,9 +267,6 @@ Blockly.JavaScript['sayit'] = function(block) {
         }
         return output;
     } else {
-
-
-    return 'setState("sayit' + dropdown_instance + '.tts.text", "' + (dropdown_language ? dropdown_language + ';' : '') + (value_volume !== null && value_volume !== '' ? '" + ' + value_volume + ' + ";' : '') + '" + ' + value_message  + ');\n' +
-        logText;
+        return 'setState("sayit' + dropdown_instance + '.tts.text", "' + (dropdown_language ? dropdown_language + ';' : '') + (value_volume !== null && value_volume !== '' ? '" + ' + value_volume + ' + ";' : '') + '" + ' + value_message  + ');\n' + logText;
     }
 };

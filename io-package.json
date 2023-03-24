@@ -157,28 +157,49 @@
   },
   "native": {
     "type": "system",
-    "command": "",
-    "player": "",
+
+    "systemCommand": "",
+    "systemPlayer": "",
+
     "cache": true,
-    "engine": "",
-    "sonos": "",
-    "server": "",
-    "port": 0,
-    "user": "",
-    "pass": "",
-    "instance": "FFFFFFFF",
-    "web": "",
-    "webServer": "",
     "cacheDir": "../../cache/",
-    "key": "",
+
+    "engine": "",
+
+    "sonosDevice": "",
+    "heosDevice": "",
+    "mpdDevice": "",
+
+    "googleHomeServer": "",
+
+    "chromecastDevice": "",
+
+    "mp24Server": "",
+    "ftpPort": 0,
+    "ftpUser": "",
+    "ftpPass": "",
+
+    "browserInstance": "FFFFFFFF",
+    "webInstance": "",
+    "webServer": "",
+
     "announce": "",
     "annoTimeout": 15,
     "annoDuration": 0,
     "annoVolume": "70",
-    "cloud": "",
-    "voice": "",
-    "emotion": "",
-    "folderID": ""
+
+    "cloudInstance": "",
+
+    "yandexEffectVoice": "",
+    "yandexKey": "",
+    "yandexEmotion": "",
+    "yandexFolderID": "",
+
+    "awsAccessKey": "",
+    "awsSecretKey": "",
+    "awsRegion": "",
+
+    "convertedV1toV2": false
   },
   "instanceObjects": [
     {
