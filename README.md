@@ -265,7 +265,7 @@ Following values for engines are possible:
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### **WORK IN PROGRESS**
+### 2.1.2 (2023-03-27)
 * (bluefox) Corrected engines with web-link
 
 ### 2.1.1 (2023-03-24)
