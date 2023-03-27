@@ -265,6 +265,15 @@
           "sm": 6,
           "md": 4,
           "lg": 2
+        },
+        "_test": {
+          "newLine": true,
+          "variant": "contained",
+          "type": "sendTo",
+          "label": "Test",
+          "command": "test",
+          "jsonData": "${JSON.stringify(data)}",
+          "icon": "send"
         }
       }
     },

@@ -78,7 +78,7 @@ function startAdapter(options) {
 
     adapter.on('objectChange', (id, obj) => {
         if (id === `system.adapter.${adapter.config.webInstance}`) {
-            applyWebSettings(obj);
+            options.webLink = getWebLink(obj, adapter.config.webServer, adapter.config.webInstance);
         }
     });
 
@@ -166,6 +166,38 @@ function processMessage(obj) {
                 }
                 adapter.sendTo(obj.from, obj.command, list, obj.callback);
             });
+        } else if (obj.callback && obj.command === 'test') {
+            const language = (obj.message.engine || adapter.config.engine).substring(0, 2);
+            let text = 'Hello';
+            if (language === 'de') {
+                text = 'Hallo';
+            } else if (language === 'pl') {
+                text = 'Cześć';
+            } else if (language === 'uk') {
+                text = 'Привіт';
+            } else if (language === 'ru') {
+                text = 'Привет';
+            } else if (language === 'it') {
+                text = 'Ciao';
+            } else if (language === 'pt') {
+                text = 'Olá';
+            } else if (language === 'es') {
+                text = 'Hola';
+            } else if (language === 'fr') {
+                text = 'Bonjour';
+            } else if (language === 'nl') {
+                text = 'Hallo';
+            } else if (language === 'zh') {
+                text = '你好';
+            }
+            const opts = {...obj.message};
+            if (obj.callback) {
+                opts.callback = error => {
+                    adapter.sendTo(obj.from, obj.command, {error, result: error ? undefined : 'Ok'}, obj.callback);
+                };
+            }
+
+            addToQueue(text, null, null, null, opts);
         }
     }
 }
@@ -210,7 +242,7 @@ function mkpathSync(rootpath, dirpath) {
     }
 }
 
-function addToQueue(text, language, volume, onlyCache) {
+function addToQueue(text, language, volume, onlyCache, testOptions) {
     // Extract language from "en;volume;Text to say"
     if (text.includes(';')) {
         const arr = text.split(';', 3);
@@ -252,7 +284,7 @@ function addToQueue(text, language, volume, onlyCache) {
         volume = undefined;
     }
 
-    const task = {text, language, volume, onlyCache, ts: Date.now(), combined};
+    const task = {text, language, volume, onlyCache, ts: Date.now(), combined, testOptions};
 
     // If more time than 15 seconds till last text, add announcement
     if (!onlyCache && adapter.config.announce && !tasks.length && (!lastSay || (Date.now() - lastSay > adapter.config.annoTimeout * 1000))) {
@@ -261,7 +293,8 @@ function addToQueue(text, language, volume, onlyCache) {
             text: adapter.config.announce,
             language,
             volume: Math.round((volume || 70) / 100 * (parseInt(adapter.config.annoVolume, 10) || 50)),
-            ts: task.ts
+            ts: task.ts,
+            testOptions
         });
         // and then text
         tasks.push(task);
@@ -303,7 +336,8 @@ async function processTasks() {
         return;
     }
     processing = true;
-    let {text, language, volume, onlyCache} = tasks[0];
+    let {text, language, volume, onlyCache, testOptions} = tasks[0];
+    let error;
 
     if (text[0] === '!') {
         text = text.substring(1);
@@ -318,7 +352,7 @@ async function processTasks() {
     // find out if say.mp3 must be generated
     const isGenerate = !Speech2Device.isPlayFile(text) && sayitOptions[adapter.config.type].mp3Required;
 
-    language = language || adapter.config.engine;
+    language = language || (testOptions && testOptions.engine) || adapter.config.engine;
 
     // if no text => do not process
     if (isGenerate && text.length && text2speech && speech2device) {
@@ -376,19 +410,22 @@ async function processTasks() {
 
         // If text first must be generated, and it is not the same as last one
         if (!fileName && isGenerate) {
-            if (sayLastGeneratedText !== `[${language}]${text}`) {
-                if (adapter.config.cache) {
+            if (sayLastGeneratedText !== `[${language}]${text}` || testOptions) {
+                if (adapter.config.cache && !testOptions) {
                     let md5filename = isCached(options.cacheDir, `${language};${text}`, fileExt, adapter.config.cacheExpiryDays);
                     if (md5filename) {
                         fileName = md5filename;
-                    } else {
-                        try {
-                            fileName = await text2speech.sayItGetSpeech(text, language, volume);
-                            sayLastGeneratedText = `[${language}]${text}`;
-                        } catch (e) {
-                            fileName = null;
-                            adapter.log.error(`Cannot generate speech file: ${e}`);
-                        }
+                    }
+                }
+
+                if (!fileName) {
+                    try {
+                        fileName = await text2speech.sayItGetSpeech(text, language, volume, testOptions);
+                        sayLastGeneratedText = `[${language}]${text}`;
+                    } catch (e) {
+                        fileName = null;
+                        error = `Cannot generate speech file: ${e}`;
+                        adapter.log.error(error);
                     }
                 }
             } else {
@@ -405,19 +442,25 @@ async function processTasks() {
             // play file
             if (fileName) {
                 duration = await text2speech.getDuration(fileName);
-                duration = await speech2device.playFile(adapter.config.type, fileName, language, volume, duration);
+                duration = await speech2device.playFile(adapter.config.type, fileName, language, volume, duration, testOptions);
             } else if (!isGenerate) {
                 if (Speech2Device.isPlayFile(text)) {
                     duration = await text2speech.getDuration(text);
                 }
 
-                duration = await speech2device.playFile(adapter.config.type, text, language, volume, duration);
+                duration = await speech2device.playFile(adapter.config.type, text, language, volume, duration, testOptions);
             }
             lastSay = Date.now();
         } catch (e) {
-            adapter.log.error(`Cannot play file: ${e}`);
+            error = `Cannot play file: ${e}`;
+            adapter.log.error(error);
         }
         await adapter.setStateAsync('tts.playing', false, true);
+    }
+
+    if (tasks[0] && tasks[0].testOptions && tasks[0].testOptions.callback) {
+        tasks[0].testOptions.callback(error);
+        tasks[0].testOptions.callback = null;
     }
 
     tasks.shift();
@@ -704,8 +747,8 @@ async function start() {
         (adapter.config.type === 'mpd') ||
         (adapter.config.type === 'googleHome')
     ) {
-        const settings = await adapter.getForeignObjectAsync(`system.adapter.${adapter.config.webInstance}`);
-        applyWebSettings(null, settings);
+        const obj = await adapter.getForeignObjectAsync(`system.adapter.${adapter.config.webInstance}`);
+        options.webLink = getWebLink(obj, adapter.config.webServer, adapter.config.webInstance);
 
         // update web link on changes
         await adapter.subscribeForeignObjectsAsync(`system.adapter.${adapter.config.webInstance}`);
@@ -728,6 +771,7 @@ async function start() {
         options.addToQueue = addToQueue;
         options.getCachedFileName = getCachedFileName;
         options.isCached = isCached;
+        options.getWebLink = getWebLink;
         options.MP3FILE = MP3FILE;
         text2speech   = new Text2Speech(adapter, options);
         speech2device = new Speech2Device(adapter, options);
@@ -762,31 +806,34 @@ async function start() {
     adapter.subscribeStates('*');
 }
 
-function applyWebSettings(obj) {
+function getWebLink(obj, webServer, webInstance) {
+    let webLink = '';
     if (obj && obj.native) {
-        options.webLink = 'http';
+        webLink = 'http';
         if (obj.native.auth) {
-            adapter.log.error(`Cannot use server "${adapter.config.webInstance}" with authentication for sonos/heos/chromecast. Select other or create another one.`);
+            adapter.log.error(`Cannot use server "${obj._id}" with authentication for sonos/heos/chromecast. Select other or create another one.`);
         } else {
             if (obj.native.secure) {
-                options.webLink += 's';
+                webLink += 's';
             }
-            options.webLink += '://';
+            webLink += '://';
             if (obj.native.bind === 'localhost' || obj.native.bind === '127.0.0.1') {
-                adapter.log.error(`Selected web server "${adapter.config.webInstance}" is only on local device available. Select other or create another one.`);
+                adapter.log.error(`Selected web server "${obj._id}" is only on local device available. Select other or create another one.`);
             } else {
                 if (obj.native.bind === '0.0.0.0') {
-                    options.webLink += adapter.config.webServer;
+                    webLink += webServer || adapter.config.webServer;
                 } else {
-                    options.webLink += obj.native.bind;
+                    webLink += obj.native.bind;
                 }
             }
 
-            options.webLink += `:${obj.native.port}`;
+            webLink += `:${obj.native.port}`;
         }
     } else {
-        adapter.log.error(`Cannot read information about "${adapter.config.webInstance}". No web server is active`);
+        adapter.log.error(`Cannot read information about "${webInstance || adapter.config.webInstance}". No web server is active`);
     }
+
+    return webLink;
 }
 
 async function main() {
