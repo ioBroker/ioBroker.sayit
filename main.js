@@ -284,15 +284,22 @@ function addToQueue(text, language, volume, onlyCache, testOptions) {
         volume = undefined;
     }
 
+    let announce = testOptions && testOptions.announce !== undefined ? testOptions.announce : adapter.config.announce;
+    const annoTimeout = parseInt(testOptions && testOptions.annoTimeout !== undefined ? testOptions.annoTimeout : adapter.config.annoTimeout, 10);
+
     const task = {text, language, volume, onlyCache, ts: Date.now(), combined, testOptions};
 
     // If more time than 15 seconds till last text, add announcement
-    if (!onlyCache && adapter.config.announce && !tasks.length && (!lastSay || (Date.now() - lastSay > adapter.config.annoTimeout * 1000))) {
+    if (!onlyCache && announce && !tasks.length && (!lastSay || (Date.now() - lastSay > annoTimeout * 1000))) {
+        testOptions && prepareAnnounceFiles(testOptions);
+        const annoVolume = parseInt(testOptions && testOptions.annoVolume !== undefined ? testOptions.annoVolume : adapter.config.annoVolume, 10);
+        announce = testOptions && testOptions.announce !== undefined ? testOptions.announce : adapter.config.announce;
+
         // place as first the announcement mp3
         tasks.push({
-            text: adapter.config.announce,
+            text: announce,
             language,
-            volume: Math.round((volume || 70) / 100 * (parseInt(adapter.config.annoVolume, 10) || 50)),
+            volume: Math.round((volume || 70) / 100 * (parseInt(annoVolume, 10) || 50)),
             ts: task.ts,
             testOptions
         });
@@ -533,6 +540,36 @@ async function uploadFiles() {
     }
 }
 
+async function prepareAnnounceFiles(config) {
+    if (config.announce) {
+        config.annoDuration = parseInt(config.annoDuration) || 0;
+        config.annoTimeout  = parseInt(config.annoTimeout)  || 15;
+        config.annoVolume   = parseInt(config.annoVolume)   || 70; // percent from actual volume
+
+        // remove "tts.userfiles/" from file name
+        const fileName = config.announce.split('/').pop();
+
+        if (!fs.existsSync(path.join(__dirname, fileName))) {
+            try {
+                const data = await adapter.readFileAsync(adapter.namespace, `tts.userfiles/${fileName}`);
+                if (data) {
+                    try {
+                        fs.writeFileSync(path.join(__dirname, fileName), data);
+                        config.announce = path.join(__dirname, fileName);
+                    } catch (e) {
+                        adapter.log.error(`Cannot write file: ${e.toString()}`);
+                        config.announce = '';
+                    }
+                }
+            } catch (e) {
+                adapter.log.error(`Cannot read file: ${e.toString()}`);
+                config.announce = '';
+            }
+        } else {
+            config.announce = path.join(__dirname, fileName);
+        }
+    }
+}
 async function start() {
     if (!adapter.config.convertedV1toV2) {
         const newConfig = JSON.parse(JSON.stringify(adapter.config));
@@ -642,34 +679,7 @@ async function start() {
     MP3FILE = path.normalize(path.join(adapter.config.dataDir, `${adapter.namespace}.say.${fileExt}`));
     options.outFileExt = fileExt;
 
-    if (adapter.config.announce) {
-        adapter.config.annoDuration = parseInt(adapter.config.annoDuration) || 0;
-        adapter.config.annoTimeout  = parseInt(adapter.config.annoTimeout)  || 15;
-        adapter.config.annoVolume   = parseInt(adapter.config.annoVolume)   || 70; // percent from actual volume
-
-        // remove "tts.userfiles/" from file name
-        const fileName = adapter.config.announce.split('/').pop();
-
-        if (!fs.existsSync(path.join(__dirname, fileName))) {
-            try {
-                const data = await adapter.readFileAsync(adapter.namespace, `tts.userfiles/${fileName}`);
-                if (data) {
-                    try {
-                        fs.writeFileSync(path.join(__dirname, fileName), data);
-                        adapter.config.announce = path.join(__dirname, fileName);
-                    } catch (e) {
-                        adapter.log.error(`Cannot write file: ${e.toString()}`);
-                        adapter.config.announce = '';
-                    }
-                }
-            } catch (e) {
-                adapter.log.error(`Cannot read file: ${e.toString()}`);
-                adapter.config.announce = '';
-            }
-        } else {
-            adapter.config.announce = path.join(__dirname, fileName);
-        }
-    }
+    await prepareAnnounceFiles(adapter.config);
 
     // If cache enabled
     if (adapter.config.cache) {
