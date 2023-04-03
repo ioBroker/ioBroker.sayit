@@ -35,6 +35,7 @@ let speech2device        = null;
 let MP3FILE;
 const tasks = [];
 let processing = false;
+let helloCounter = 1;
 
 function startAdapter(options) {
     options = options || {};
@@ -190,6 +191,7 @@ function processMessage(obj) {
             } else if (language === 'zh') {
                 text = '你好';
             }
+            text += ` ${helloCounter++}`;
             const opts = {...obj.message};
             if (obj.callback) {
                 opts.callback = error => {
@@ -349,7 +351,9 @@ async function processTasks() {
     if (text[0] === '!') {
         text = text.substring(1);
     }
-    volume = parseInt(volume || adapter.config.volume, 10);
+    const type = (testOptions && testOptions.type) || adapter.config.type;
+
+    volume = parseInt(volume || (testOptions && testOptions.volume) || adapter.config.volume, 10);
     if (Number.isNaN(volume)) {
         volume = undefined;
     }
@@ -357,7 +361,7 @@ async function processTasks() {
     let fileName;
 
     // find out if say.mp3 must be generated
-    const isGenerate = !Speech2Device.isPlayFile(text) && sayitOptions[adapter.config.type].mp3Required;
+    const isGenerate = !Speech2Device.isPlayFile(text) && sayitOptions[type].mp3Required;
 
     language = language || (testOptions && testOptions.engine) || adapter.config.engine;
 
@@ -365,7 +369,7 @@ async function processTasks() {
     if (isGenerate && text.length && text2speech && speech2device) {
         // Check: may be it is a file from DB filesystem, like /vis.0/main/img/door-bell.mp3
         if (text[0] === '/') {
-            if (adapter.config.cache || onlyCache) {
+            if (!testOptions && (adapter.config.cache || onlyCache)) {
                 fileName = isCached(options.cacheDir, text, fileExt, adapter.config.cacheExpiryDays);
             }
 
@@ -417,6 +421,7 @@ async function processTasks() {
 
         // If text first must be generated, and it is not the same as last one
         if (!fileName && isGenerate) {
+            // do not cache if test options active, to test the voice generation too
             if (sayLastGeneratedText !== `[${language}]${text}` || testOptions) {
                 if (adapter.config.cache && !testOptions) {
                     let md5filename = isCached(options.cacheDir, `${language};${text}`, fileExt, adapter.config.cacheExpiryDays);
@@ -449,13 +454,13 @@ async function processTasks() {
             // play file
             if (fileName) {
                 duration = await text2speech.getDuration(fileName);
-                duration = await speech2device.playFile(adapter.config.type, fileName, language, volume, duration, testOptions);
+                duration = await speech2device.playFile(type, fileName, language, volume, duration, testOptions);
             } else if (!isGenerate) {
                 if (Speech2Device.isPlayFile(text)) {
                     duration = await text2speech.getDuration(text);
                 }
 
-                duration = await speech2device.playFile(adapter.config.type, text, language, volume, duration, testOptions);
+                duration = await speech2device.playFile(type, text, language, volume, duration, testOptions);
             }
             lastSay = Date.now();
         } catch (e) {

@@ -265,6 +265,10 @@ Following values for engines are possible:
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### **WORK IN PROGRESS**
+* (bluefox) Restored cloud engines. Warning: update cloud adapter to at least 4.4.0
+* (bluefox) Breaking changes: Minimal node.js version is 14 
+
 ### 2.1.2 (2023-03-27)
 * (bluefox) Corrected engines with web-link
 
