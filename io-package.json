@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "sayit",
-    "version": "2.1.2",
+    "version": "3.0.0",
     "news": {
+      "3.0.0": {
+        "en": "Restored cloud engines. Warning: update cloud adapter to at least 4.4.0\nBreaking changes: Minimal node.js version is 14",
+        "de": "Restaurierte Cloud-Motoren. Warnung: Cloud-Adapter auf mindestens 4.4.0 aktualisieren\nÄnderungsvorschläge: Minimal node.js version is 14",
+        "ru": "Восстановление облачных двигателей. Внимание: обновление облачного адаптера не менее 4.4.0\nПерерыв изменений: Минимальная версия node.js 14",
+        "pt": "Motores de nuvem restaurados. Aviso: atualize o adaptador de nuvem para pelo menos 4.4.0\nAlterações de ruptura: A versão mínima do node.js é 14",
+        "nl": "Gerestaureerde wolkenmotoren. Vertaling:\nBreaking changes: Minimale node",
+        "fr": "Moteurs cloud restaurés. Avertissement: mettre à jour l'adaptateur cloud au moins 4.4.0\nChangements de rupture: Minimal node.js version est 14",
+        "it": "Motori cloud restaurati. Avvertenza: aggiornamento adattatore cloud almeno 4.4.0\nCambiamenti di rottura: Versione minimal node.js è 14",
+        "es": "Motores de nube restaurados. Advertencia: actualización del adaptador de nube a al menos 4.4.0\nCambios de ruptura: Minimal node.js versión es 14",
+        "pl": "Restored cloud engine (ang.). Warning: aktualizacja adapteru chmur do przynajmniej 4.4\nZmiany: Wersja minimalna jest 14",
+        "uk": "Відновлення хмарних двигунів. Попередження: оновлення хмарного адаптера до принаймні 4.4.0\nЗміни прориву: Minimal node.js версія 14",
+        "zh-cn": "恢复云雾器。 警告:更新云雾剂,至少4.4.0\n断然变化: 米切尔·诺贝尔版本为14。"
+      },
       "2.1.2": {
         "en": "Corrected engines with web-link",
         "de": "Korrigierte Motoren mit Weblink",
@@ -68,18 +81,6 @@
         "zh-cn": "如果可能，使用 setForeignBinaryState"
       },
       "1.12.5": {
-        "en": "Fixed errors in io-package.json",
-        "de": "Fehler in io-package.json behoben",
-        "ru": "Исправлены ошибки в io-package.json",
-        "pt": "Corrigidos erros em io-package.json",
-        "nl": "Fouten opgelost in io-package.json",
-        "fr": "Correction d'erreurs dans io-package.json",
-        "it": "Risolti errori in io-package.json",
-        "es": "Se corrigieron errores en io-package.json",
-        "pl": "Naprawiono błędy w io-package.json",
-        "zh-cn": "修复了 io-package.json 中的错误"
-      },
-      "1.12.4": {
         "en": "Fixed errors in io-package.json",
         "de": "Fehler in io-package.json behoben",
         "ru": "Исправлены ошибки в io-package.json",
