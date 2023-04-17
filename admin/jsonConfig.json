@@ -932,12 +932,18 @@
           "md": 3,
           "lg": 1
         },
+        "cloudAppKey": {
+          "newLine": true,
+          "type": "text",
+          "label": "Cloud App Key from iobroker.pro or iobroker.net",
+          "hidden": "!data.engine || !data.engine.includes('_CLOUD_') || data.cloudInstance"
+        },
         "cloudInstance": {
           "newLine": true,
           "type": "instance",
           "adapter": "cloud",
           "label": "Cloud instance",
-          "hidden": "!data.engine || !data.engine.includes('_CLOUD_')",
+          "hidden": "!data.engine || !data.engine.includes('_CLOUD_') || data.cloudAppKey",
           "sm": 12,
           "md": 4,
           "lg": 2

@@ -183,6 +183,7 @@
     "annoTimeout": 15,
     "annoDuration": 0,
     "annoVolume": "70",
+    "cloudAppKey": "",
     "cloudInstance": "",
     "yandexEffectVoice": "",
     "yandexKey": "",
