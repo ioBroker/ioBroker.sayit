@@ -1,6 +1,6 @@
 // DONT Forget to update sayitEngines in blockly.js (If you change this table)
 
-var sayitEngines = {
+const sayitEngines = {
     "en":       {name: "Google - English",         engine: "google",  params: []},
     "de":       {name: "Google - Deutsch",         engine: "google",  params: []},
     "pl":       {name: "Google - Polski",          engine: "google",  params: []},
@@ -183,7 +183,7 @@ var sayitEngines = {
     "no-NO_AP_Female_Ida":      {gender: "Female", engine: "polly",   params: ['awsAccessKey', 'awsSecretKey', 'awsRegion'], language: "no-NO",      ename: "Ida",        ssml: true, name: "AWS Polly - no-NO - Female - Ida", neural: true},
 };
 
-var sayitOptions = {
+const sayitOptions = {
     "browser":    {name: "Browser",           params: ['engine', 'cache', 'instance'],                       mp3Required: true,  checkLength: true,  func: (typeof sayItBrowser    !== 'undefined') ? sayItBrowser    : null, server: true,  libs: ['fs', 'crypto', 'http']},
     "mp24ftp":    {name: "MediaPlayer24+FTP", params: ['engine', 'cache', 'server', 'port', 'user', 'pass'], mp3Required: true,  checkLength: true,  func: (typeof sayItMP24ftp    !== 'undefined') ? sayItMP24ftp    : null, server: false, libs: ['fs', 'crypto', 'http', 'jsftp']},
     "mp24":       {name: "MediaPlayer24",     params: ['server'],                                            mp3Required: false, checkLength: true,  func: (typeof sayItMP24       !== 'undefined') ? sayItMP24       : null, server: false, libs: ['fs', 'crypto', 'http']},
