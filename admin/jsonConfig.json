@@ -567,6 +567,14 @@
               "label": "Cloud - ko-KR - Female - Seoyeon"
             },
             {
+              "value": "no-NO_CLOUD_Female_Liv",
+              "label": "Cloud - no-NO - Female - Liv"
+            },
+            {
+              "value": "no-NO_CLOUD_Female_Ida",
+              "label": "Cloud - no-NO - Female - Ida"
+            },
+            {
               "value": "en-US",
               "label": "PicoTTS - Englisch US"
             },
@@ -833,6 +841,14 @@
             {
               "value": "ko-KR_AP_Female",
               "label": "AWS Polly - ko-KR - Female - Seoyeon"
+            },
+            {
+              "value": "no-NO_AP_Female_Liv",
+              "label": "AWS Polly - no-NO - Female - Liv"
+            },
+            {
+              "value": "no-NO_AP_Female_Ida",
+              "label": "AWS Polly - no-NO - Female - Ida"
             }
           ],
           "sm": 12,

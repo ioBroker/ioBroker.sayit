@@ -94,6 +94,9 @@ var sayitEngines = {
     "tr-TR_CLOUD_Female":       {gender: "Female", engine: "cloud",   params: ['cloud'], language: "tr-TR",      ename: "Filiz",      ssml: true, name: "Cloud - tr-TR - Female - Filiz"},
     "ko-KR_CLOUD_Female":       {gender: "Female", engine: "cloud",   params: ['cloud'], language: "ko-KR",      ename: "Seoyeon",    ssml: true, name: "Cloud - ko-KR - Female - Seoyeon"},
 
+    "no-NO_CLOUD_Female_Liv":   {gender: "Female", engine: "cloud",   params: ['cloud'], language: "no-NO",      ename: "Liv",        ssml: true, name: "Cloud - no-NO - Female - Liv"},
+    "no-NO_CLOUD_Female_Ida":   {gender: "Female", engine: "cloud",   params: ['cloud'], language: "no-NO",      ename: "Ida",        ssml: true, name: "Cloud - no-NO - Female - Ida", neural: true},
+
     "en-US":    {name: "PicoTTS - Englisch US",    engine: "PicoTTS", params: []},
     "en-GB":    {name: "PicoTTS - Englisch GB",    engine: "PicoTTS", params: []},
     "de-DE":    {name: "PicoTTS - Deutsch",        engine: "PicoTTS", params: []},
@@ -174,7 +177,10 @@ var sayitEngines = {
     "ro-RO_AP_Female":          {gender: "Female", engine: "polly",   params: ['awsAccessKey', 'awsSecretKey', 'awsRegion'], language: "ro-RO",      ename: "Carmen",     ssml: true, name: "AWS Polly - ro-RO - Female - Carmen"},
     "sv-SE_AP_Female":          {gender: "Female", engine: "polly",   params: ['awsAccessKey', 'awsSecretKey', 'awsRegion'], language: "sv-SE",      ename: "Astrid",     ssml: true, name: "AWS Polly - sv-SE - Female - Astrid"},
     "tr-TR_AP_Female":          {gender: "Female", engine: "polly",   params: ['awsAccessKey', 'awsSecretKey', 'awsRegion'], language: "tr-TR",      ename: "Filiz",      ssml: true, name: "AWS Polly - tr-TR - Female - Filiz"},
-    "ko-KR_AP_Female":          {gender: "Female", engine: "polly",   params: ['awsAccessKey', 'awsSecretKey', 'awsRegion'], language: "ko-KR",      ename: "Seoyeon",    ssml: true, name: "AWS Polly - ko-KR - Female - Seoyeon"}
+    "ko-KR_AP_Female":          {gender: "Female", engine: "polly",   params: ['awsAccessKey', 'awsSecretKey', 'awsRegion'], language: "ko-KR",      ename: "Seoyeon",    ssml: true, name: "AWS Polly - ko-KR - Female - Seoyeon"},
+
+    "no-NO_AP_Female_Liv":      {gender: "Female", engine: "polly",   params: ['awsAccessKey', 'awsSecretKey', 'awsRegion'], language: "no-NO",      ename: "Liv",        ssml: true, name: "AWS Polly - no-NO - Female - Liv"},
+    "no-NO_AP_Female_Ida":      {gender: "Female", engine: "polly",   params: ['awsAccessKey', 'awsSecretKey', 'awsRegion'], language: "no-NO",      ename: "Ida",        ssml: true, name: "AWS Polly - no-NO - Female - Ida", neural: true},
 };
 
 var sayitOptions = {
