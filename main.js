@@ -20,6 +20,8 @@ let processMessageTimeout;
 let timeoutRunning;
 let crypto;
 let adapter;
+let lang;
+
 const options = {
     sayLastVolume: null,
     webLink: '',
@@ -134,7 +136,12 @@ function processMessage(obj) {
                 const list = [];
                 if (!err && res) {
                     for (let i = 0; i < res.rows.length; i++) {
-                        list.push({value: res.rows[i].id, label: res.rows[i].id});
+                        let name = res.rows[i].value && res.rows[i].value.common && res.rows[i].value.common.name;
+                        if (typeof name === 'object') {
+                            name = name[lang] || name.en;
+                        }
+
+                        list.push({value: res.rows[i].id, label: `${name} [${res.rows[i].id}]`});
                     }
                 }
                 adapter.sendTo(obj.from, obj.command, list, obj.callback);
@@ -145,7 +152,7 @@ function processMessage(obj) {
                 for (let i = 0; i < res.rows.length; i++) {
                     let name = res.rows[i].value && res.rows[i].value.common && res.rows[i].value.common.name;
                     if (typeof name === 'object') {
-                        name = name.en;
+                        name = name[lang] || name.en;
                     }
                     if (res.rows[i].id.includes('.players.')) {
                         list.push({value: res.rows[i].id, label: `${res.rows[i].id.replace(/^heos\.\d+\.players\./, '')} [${name}]`});
@@ -159,7 +166,7 @@ function processMessage(obj) {
                 for (let i = 0; i < res.rows.length; i++) {
                     let name = res.rows[i].value && res.rows[i].value.common && res.rows[i].value.common.name;
                     if (typeof name === 'object') {
-                        name = name.en;
+                        name = name[lang] || name.en;
                     }
                     if (res.rows[i].id.includes('.players.')) {
                         list.push({value: res.rows[i].id, label: `${res.rows[i].id.replace(/^sonos\.\d+\.root\./, '')} [${name}]`});
@@ -668,10 +675,11 @@ async function start() {
     }
 
 
+    const systemConfig = await adapter.getForeignObjectAsync('system.config');
     if (!adapter.config.engine) {
-        const systemConfig = await adapter.getForeignObjectAsync('system.config');
         adapter.config.engine = (systemConfig && systemConfig.common && systemConfig.common.language) || 'de';
     }
+    lang = (systemConfig && systemConfig.common && systemConfig.common.language) || 'de';
 
     if (adapter.config.engine === 'ru_YA_CLOUD') {
         fileExt = 'ogg';
