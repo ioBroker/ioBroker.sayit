@@ -936,6 +936,9 @@
           "newLine": true,
           "type": "text",
           "label": "Cloud App Key from iobroker.pro or iobroker.net",
+          "sm": 12,
+          "md": 6,
+          "lg": 4,
           "hidden": "!data.engine || !data.engine.includes('_CLOUD_') || data.cloudInstance"
         },
         "cloudInstance": {
@@ -945,8 +948,8 @@
           "label": "Cloud instance",
           "hidden": "!data.engine || !data.engine.includes('_CLOUD_') || data.cloudAppKey",
           "sm": 12,
-          "md": 4,
-          "lg": 2
+          "md": 6,
+          "lg": 4
         },
         "coquiVocoder": {
           "newLine": true,

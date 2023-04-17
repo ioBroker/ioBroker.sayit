@@ -50,5 +50,6 @@
   "Cache generated files": "Caché de archivos generados",
   "Google home server": "servidor principal de Google",
   "in % to playing volume": "en % al volumen de reproducción",
-  "optional - If player does not work": "opcional: si el reproductor no funciona"
+  "optional - If player does not work": "opcional: si el reproductor no funciona",
+  "Cloud App Key from iobroker.pro or iobroker.net": "Clave de aplicación en la nube de iobroker.pro o iobroker.net"
 }

@@ -50,5 +50,6 @@
   "Cache generated files": "Кэшировать сгенерированные файлы",
   "Google home server": "домашний сервер гугл",
   "in % to playing volume": "в % к громкости воспроизведения",
-  "optional - If player does not work": "необязательно - Если плеер не работает"
+  "optional - If player does not work": "необязательно - Если плеер не работает",
+  "Cloud App Key from iobroker.pro or iobroker.net": "Облачный App-Key от iobroker.pro или iobroker.net"
 }
