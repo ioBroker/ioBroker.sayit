@@ -106,7 +106,8 @@ const sayitEngines = {
     "it-IT_CLOUD_Female":       {gender: "Female", engine: "cloud",   params: ['cloud'], language: "it-IT",      ename: "Carla",      ssml: true, name: "Cloud - it-IT - Female - Carla"},
     "it-IT_CLOUD_Male":         {gender: "Male",   engine: "cloud",   params: ['cloud'], language: "it-IT",      ename: "Giorgio",    ssml: true, name: "Cloud - it-IT - Male - Giorgio"},
 
-    "nb-NO_CLOUD_Female":       {gender: "Female", engine: "cloud",   params: ['cloud'], language: "nb-NO",      ename: "Liv",        ssml: true, name: "Cloud - nb-NO - Female - Liv"},
+    "no-NO_CLOUD_Female":       {gender: "Female", engine: "cloud",   params: ['cloud'], language: "nb-NO",      ename: "Liv",        ssml: true, name: "Cloud - nb-NO - Female - Liv"},
+    "no-NO_CLOUD_Female_Ida":   {gender: "Female", engine: "cloud",   params: ['cloud'], language: "no-NO",      ename: "Ida",        ssml: true, name: "Cloud - no-NO - Female - Ida", neural: true},
 
     "nl-NL_CLOUD_Female":       {gender: "Female", engine: "cloud",   params: ['cloud'], language: "nl-NL",      ename: "Lotte",      ssml: true, name: "Cloud - nl-NL - Female - Lotte"},
     "nl-NL_CLOUD_Male":         {gender: "Male",   engine: "cloud",   params: ['cloud'], language: "nl-NL",      ename: "Ruben",      ssml: true, name: "Cloud - nl-NL - Male - Ruben"},
@@ -127,9 +128,6 @@ const sayitEngines = {
     "sv-SE_CLOUD_Female":       {gender: "Female", engine: "cloud",   params: ['cloud'], language: "sv-SE",      ename: "Astrid",     ssml: true, name: "Cloud - sv-SE - Female - Astrid"},
     "tr-TR_CLOUD_Female":       {gender: "Female", engine: "cloud",   params: ['cloud'], language: "tr-TR",      ename: "Filiz",      ssml: true, name: "Cloud - tr-TR - Female - Filiz"},
     "ko-KR_CLOUD_Female":       {gender: "Female", engine: "cloud",   params: ['cloud'], language: "ko-KR",      ename: "Seoyeon",    ssml: true, name: "Cloud - ko-KR - Female - Seoyeon"},
-
-    "no-NO_CLOUD_Female_Liv":   {gender: "Female", engine: "cloud",   params: ['cloud'], language: "no-NO",      ename: "Liv",        ssml: true, name: "Cloud - no-NO - Female - Liv"},
-    "no-NO_CLOUD_Female_Ida":   {gender: "Female", engine: "cloud",   params: ['cloud'], language: "no-NO",      ename: "Ida",        ssml: true, name: "Cloud - no-NO - Female - Ida", neural: true},
 
     "en-US":    {name: "PicoTTS - Englisch US",    engine: "PicoTTS", params: []},
     "en-GB":    {name: "PicoTTS - Englisch GB",    engine: "PicoTTS", params: []},
@@ -196,7 +194,8 @@ const sayitEngines = {
     "is-IS_AP_Male":            {gender: "Male",   engine: "polly",   params: ['awsAccessKey', 'awsSecretKey', 'awsRegion'], language: "is-IS",      ename: "Karl",       ssml: true, name: "AWS Polly - is-IS - Male - Karl"},
     "it-IT_AP_Female":          {gender: "Female", engine: "polly",   params: ['awsAccessKey', 'awsSecretKey', 'awsRegion'], language: "it-IT",      ename: "Carla",      ssml: true, name: "AWS Polly - it-IT - Female - Carla"},
     "it-IT_AP_Male":            {gender: "Male",   engine: "polly",   params: ['awsAccessKey', 'awsSecretKey', 'awsRegion'], language: "it-IT",      ename: "Giorgio",    ssml: true, name: "AWS Polly - it-IT - Male - Giorgio"},
-    "nb-NO_AP_Female":          {gender: "Female", engine: "polly",   params: ['awsAccessKey', 'awsSecretKey', 'awsRegion'], language: "nb-NO",      ename: "Liv",        ssml: true, name: "AWS Polly - nb-NO - Female - Liv"},
+    "no-NO_AP_Female":          {gender: "Female", engine: "polly",   params: ['awsAccessKey', 'awsSecretKey', 'awsRegion'], language: "no-NO",      ename: "Liv",        ssml: true, name: "AWS Polly - no-NO - Female - Liv"},
+    "no-NO_AP_Female_Ida":      {gender: "Female", engine: "polly",   params: ['awsAccessKey', 'awsSecretKey', 'awsRegion'], language: "no-NO",      ename: "Ida",        ssml: true, name: "AWS Polly - no-NO - Female - Ida", neural: true},
     "nl-NL_AP_Female":          {gender: "Female", engine: "polly",   params: ['awsAccessKey', 'awsSecretKey', 'awsRegion'], language: "nl-NL",      ename: "Lotte",      ssml: true, name: "AWS Polly - nl-NL - Female - Lotte"},
     "nl-NL_AP_Male":            {gender: "Male",   engine: "polly",   params: ['awsAccessKey', 'awsSecretKey', 'awsRegion'], language: "nl-NL",      ename: "Ruben",      ssml: true, name: "AWS Polly - nl-NL - Male - Ruben"},
     "pl-PL_AP_Female_Agnieszka":{gender: "Female", engine: "polly",   params: ['awsAccessKey', 'awsSecretKey', 'awsRegion'], language: "pl-PL",      ename: "Agnieszka",  ssml: true, name: "AWS Polly - pl-PL - Female - Agnieszka"},
@@ -211,10 +210,7 @@ const sayitEngines = {
     "ro-RO_AP_Female":          {gender: "Female", engine: "polly",   params: ['awsAccessKey', 'awsSecretKey', 'awsRegion'], language: "ro-RO",      ename: "Carmen",     ssml: true, name: "AWS Polly - ro-RO - Female - Carmen"},
     "sv-SE_AP_Female":          {gender: "Female", engine: "polly",   params: ['awsAccessKey', 'awsSecretKey', 'awsRegion'], language: "sv-SE",      ename: "Astrid",     ssml: true, name: "AWS Polly - sv-SE - Female - Astrid"},
     "tr-TR_AP_Female":          {gender: "Female", engine: "polly",   params: ['awsAccessKey', 'awsSecretKey', 'awsRegion'], language: "tr-TR",      ename: "Filiz",      ssml: true, name: "AWS Polly - tr-TR - Female - Filiz"},
-    "ko-KR_AP_Female":          {gender: "Female", engine: "polly",   params: ['awsAccessKey', 'awsSecretKey', 'awsRegion'], language: "ko-KR",      ename: "Seoyeon",    ssml: true, name: "AWS Polly - ko-KR - Female - Seoyeon"},
-
-    "no-NO_AP_Female_Liv":      {gender: "Female", engine: "polly",   params: ['awsAccessKey', 'awsSecretKey', 'awsRegion'], language: "no-NO",      ename: "Liv",        ssml: true, name: "AWS Polly - no-NO - Female - Liv"},
-    "no-NO_AP_Female_Ida":      {gender: "Female", engine: "polly",   params: ['awsAccessKey', 'awsSecretKey', 'awsRegion'], language: "no-NO",      ename: "Ida",        ssml: true, name: "AWS Polly - no-NO - Female - Ida", neural: true},
+    "ko-KR_AP_Female":          {gender: "Female", engine: "polly",   params: ['awsAccessKey', 'awsSecretKey', 'awsRegion'], language: "ko-KR",      ename: "Seoyeon",    ssml: true, name: "AWS Polly - ko-KR - Female - Seoyeon"}
 };
 
 // Blockly.Sendto is global variable and defined in javascript/admin/google-blockly/own/blocks_sendto.js

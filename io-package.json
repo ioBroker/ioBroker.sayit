@@ -3,45 +3,6 @@
     "name": "sayit",
     "version": "3.0.3",
     "news": {
-      "3.0.3": {
-        "en": "Corrected error with System player\nDo not allow for chromecast to cache files.\nAllowed to add cloud App-Key without running cloud adapter\nAdded austrian language",
-        "de": "Fehler behoben mit Systemplayer\nErlauben Sie nicht, dass Chromecast Dateien zwischenspeichern.\nCloud App-Key ohne Cloud-Adapter hinzufügen\nSprache hinzufügen",
-        "ru": "Исправлена ошибка с Системным игроком\nНе допускайте хромката к файлам кэша.\nДопускается добавление облачного App-Key без запуска облачного адаптера\nДобавлен австрийский язык",
-        "pt": "Erro correto com o jogador do sistema\nNão permita que o chromecast em cache arquivos.\nPermite adicionar Cloud App-Key sem executar o adaptador de nuvem\nAdicionado idioma austriano",
-        "nl": "Correctie fout met System speler\nSta niet toe dat chromecast naar cache bestanden gaat.\nWolken toevoegen App-Key zonder wolken adapter\nAustrian taal",
-        "fr": "Erreur corrigée avec le lecteur système\nNe pas permettre de chromecast aux fichiers de cache.\nPermet d'ajouter nuage App-Key sans adaptateur cloud\nAjout de la langue austrienne",
-        "it": "Errore corretto con il giocatore di sistema\nNon consentire per Chromecast a file di cache.\nConsentito di aggiungere cloud App-Key senza l'adattatore cloud in esecuzione\nAggiunto lingua austriana",
-        "es": "Error corregido con el reproductor de sistema\nNo permita el cromocast a los archivos de caché.\nPermitido añadir nube App-Key sin adaptador de nube\nIdioma austriano añadido",
-        "pl": "Poprawiony błąd z graczem Systema\nNie pozwala na chromecast do plików podręcznych.\nAllowe dodają do chmury App-Key bez uruchamiania adaptacji chmur\nJęzyk austrowany",
-        "uk": "Виправлена помилка з плеєром системи\nНе дозволяйте хромувати файлам кешу.\nДодайте хмарний App-Key без запуску хмарного адаптера\nДодана аустрія мова",
-        "zh-cn": "与系统参与者的更正错误\n不是允许用彩色图书写。.\n允许增加云雾剂,不带云雾剂。\n增加使用费语"
-      },
-      "3.0.2": {
-        "en": "Corrected error with System player\nDo not allow for chromecast to cache files.",
-        "de": "Fehler behoben mit Systemplayer\nErlauben Sie nicht, dass Chromecast Dateien zwischenspeichern.",
-        "ru": "Исправлена ошибка с Системным игроком\nНе допускайте хромката к файлам кэша.",
-        "pt": "Erro correto com o jogador do sistema\nNão permita que o chromecast em cache arquivos.",
-        "nl": "Correctie fout met System speler\nSta niet toe dat chromecast naar cache bestanden gaat.",
-        "fr": "Erreur corrigée avec le lecteur système\nNe pas permettre de chromecast aux fichiers de cache.",
-        "it": "Errore corretto con il giocatore di sistema\nNon consentire per Chromecast a file di cache.",
-        "es": "Error corregido con el reproductor de sistema\nNo permita el cromocast a los archivos de caché.",
-        "pl": "Poprawiony błąd z graczem Systema\nNie pozwala na chromecast do plików podręcznych.",
-        "uk": "Виправлена помилка з плеєром системи\nНе дозволяйте хромувати файлам кешу.",
-        "zh-cn": "与系统参与者的更正错误\n不是允许用彩色图书写。."
-      },
-      "3.0.1": {
-        "en": "Corrected error with System player",
-        "de": "Fehler behoben mit Systemplayer",
-        "ru": "Исправлена ошибка с Системным игроком",
-        "pt": "Erro correto com o jogador do sistema",
-        "nl": "Correctie fout met System speler",
-        "fr": "Erreur corrigée avec le lecteur système",
-        "it": "Errore corretto con il giocatore di sistema",
-        "es": "Error corregido con el reproductor de sistema",
-        "pl": "Poprawiony błąd z graczem Systema",
-        "uk": "Виправлена помилка з плеєром системи",
-        "zh-cn": "与系统参与者的更正错误"
-      },
       "3.0.0": {
         "en": "Restored cloud engines. Warning: update cloud adapter to at least 4.4.0\nBreaking changes: Minimal node.js version is 14",
         "de": "Restaurierte Cloud-Motoren. Warnung: Cloud-Adapter auf mindestens 4.4.0 aktualisieren\nÄnderungsvorschläge: Minimal node.js version is 14",

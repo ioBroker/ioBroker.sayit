@@ -138,6 +138,8 @@ Following values for engines are possible:
 - **de-DE_CLOUD_Female** -         Deutsch - Marlene
 - **de-DE_CLOUD_Male** -           Deutsch - Hans
 - **de-DE_CLOUD_Female_Vicki**  -  Deutsch - Vicki
+- **de-DE_CLOUD_Male_Daniel**  -   Deutsch - Daniel
+- **de-AT_CLOUD_Female_Hannah**  - Österreich - Hannah
 - **en-US_CLOUD_Female** -         en-US - Female - Salli
 - **en-US_CLOUD_Male** -           en-US - Male - Joey
 - **da-DK_CLOUD_Female** -         da-DK - Female - Naja
@@ -170,7 +172,8 @@ Following values for engines are possible:
 - **is-IS_CLOUD_Male** -           is-IS - Male - Karl
 - **it-IT_CLOUD_Female** -         it-IT - Female - Carla
 - **it-IT_CLOUD_Male** -           it-IT - Male - Giorgio
-- **nb-NO_CLOUD_Female** -         nb-NO - Female - Liv
+- **nb-NO_CLOUD_Female** -         no-NO - Female - Liv
+- **no-NO_CLOUD_Female** -         no-NO - Female - Ida
 - **nl-NL_CLOUD_Female** -         nl-NL - Female - Lotte
 - **nl-NL_CLOUD_Male** -           nl-NL - Male - Ruben
 - **pl-PL_CLOUD_Female_Agnieszka** -  pl-PL - Female - Agnieszka
@@ -264,11 +267,12 @@ Following values for engines are possible:
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### 3.0.3 (2023-04-17)
+### **WORK IN PROGRESS**
 * (bluefox) Corrected error with System player
 * (bluefox) Do not allow for chromecast to cache files.
 * (bluefox) Allowed to add cloud App-Key without running cloud adapter
 * (bluefox) Added austrian language
+* (bluefox) Added norwegian language
 
 ### 3.0.0 (2023-04-03)
 * (bluefox) Restored cloud engines. Warning: update cloud adapter to at least 4.4.0
