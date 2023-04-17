@@ -360,6 +360,18 @@ async function processTasks() {
     }
     const type = (testOptions && testOptions.type) || adapter.config.type;
 
+    if (volume === undefined || volume === null) {
+        try {
+            const state = await adapter.getForeignStateAsync(`${adapter.namespace}.tts.volume`);
+            if (state && state.val) {
+                volume = state.val;
+            }
+        } catch (e) {
+            // ignore
+        }
+    }
+
+
     volume = parseInt(volume || (testOptions && testOptions.volume) || adapter.config.volume, 10);
     if (Number.isNaN(volume)) {
         volume = undefined;
