@@ -264,8 +264,9 @@ Following values for engines are possible:
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### 3.0.1 (2023-04-17)
+### **WORK IN PROGRESS**
 * (bluefox) Corrected error with System player
+* (bluefox) Do not allow for chromecast to cache files.
 
 ### 3.0.0 (2023-04-03)
 * (bluefox) Restored cloud engines. Warning: update cloud adapter to at least 4.4.0
