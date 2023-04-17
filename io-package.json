@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "sayit",
-    "version": "3.0.2",
+    "version": "3.0.3",
     "news": {
+      "3.0.3": {
+        "en": "Corrected error with System player\nDo not allow for chromecast to cache files.\nAllowed to add cloud App-Key without running cloud adapter\nAdded austrian language",
+        "de": "Fehler behoben mit Systemplayer\nErlauben Sie nicht, dass Chromecast Dateien zwischenspeichern.\nCloud App-Key ohne Cloud-Adapter hinzufügen\nSprache hinzufügen",
+        "ru": "Исправлена ошибка с Системным игроком\nНе допускайте хромката к файлам кэша.\nДопускается добавление облачного App-Key без запуска облачного адаптера\nДобавлен австрийский язык",
+        "pt": "Erro correto com o jogador do sistema\nNão permita que o chromecast em cache arquivos.\nPermite adicionar Cloud App-Key sem executar o adaptador de nuvem\nAdicionado idioma austriano",
+        "nl": "Correctie fout met System speler\nSta niet toe dat chromecast naar cache bestanden gaat.\nWolken toevoegen App-Key zonder wolken adapter\nAustrian taal",
+        "fr": "Erreur corrigée avec le lecteur système\nNe pas permettre de chromecast aux fichiers de cache.\nPermet d'ajouter nuage App-Key sans adaptateur cloud\nAjout de la langue austrienne",
+        "it": "Errore corretto con il giocatore di sistema\nNon consentire per Chromecast a file di cache.\nConsentito di aggiungere cloud App-Key senza l'adattatore cloud in esecuzione\nAggiunto lingua austriana",
+        "es": "Error corregido con el reproductor de sistema\nNo permita el cromocast a los archivos de caché.\nPermitido añadir nube App-Key sin adaptador de nube\nIdioma austriano añadido",
+        "pl": "Poprawiony błąd z graczem Systema\nNie pozwala na chromecast do plików podręcznych.\nAllowe dodają do chmury App-Key bez uruchamiania adaptacji chmur\nJęzyk austrowany",
+        "uk": "Виправлена помилка з плеєром системи\nНе дозволяйте хромувати файлам кешу.\nДодайте хмарний App-Key без запуску хмарного адаптера\nДодана аустрія мова",
+        "zh-cn": "与系统参与者的更正错误\n不是允许用彩色图书写。.\n允许增加云雾剂,不带云雾剂。\n增加使用费语"
+      },
       "3.0.2": {
         "en": "Corrected error with System player\nDo not allow for chromecast to cache files.",
         "de": "Fehler behoben mit Systemplayer\nErlauben Sie nicht, dass Chromecast Dateien zwischenspeichern.",
@@ -80,19 +93,6 @@
         "pl": "Adapter został w całości przepisany z asynchronem/await/Adapter\nCould be buggy",
         "uk": "Перехідник повністю переписався з асинхроном/відповіддю\nПомилки",
         "zh-cn": "道歉完全用阿森克/瓦伊特写。\n走私"
-      },
-      "1.13.0": {
-        "en": "Made compatible with future js-controller",
-        "de": "Kompatibel mit zukünftigem js-Controller",
-        "ru": "Совместим с будущим js-контроллером",
-        "pt": "Feito compatível com futuro js-controller",
-        "nl": "Verbonden met toekomstige Js-controller",
-        "fr": "Fabriqué compatible avec le futur contrôleur js",
-        "it": "Realizzato compatibile con il futuro js-controller",
-        "es": "Hecho compatible con js-controller futuro",
-        "pl": "Umożliwiał się przyszłemu js-kontrolerowi",
-        "uk": "Виготовлений сумісний з майбутнім js-controller",
-        "zh-cn": "与今后控制的容忍"
       }
     },
     "title": "Text to speech",
