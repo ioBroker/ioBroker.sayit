@@ -359,6 +359,14 @@
               "label": "Cloud - Deutsch - Vicki"
             },
             {
+              "value": "de-DE_CLOUD_Male_Daniel",
+              "label": "Cloud - Deutsch - Daniel"
+            },
+            {
+              "value": "de-AT_CLOUD_Female_Hannah",
+              "label": "Cloud - Österreich - Hannah"
+            },
+            {
               "value": "en-US_CLOUD_Female",
               "label": "Cloud - en-US - Female - Salli"
             },
@@ -393,6 +401,10 @@
             {
               "value": "en-GB_CLOUD_Female_Emma",
               "label": "Cloud - en-GB - Female - Emma"
+            },
+            {
+              "value": "en-GB_CLOUD_Male_Arthur",
+              "label": "Cloud - en-GB - Male - Arthur"
             },
             {
               "value": "en-GB-WLS_CLOUD_Female",
@@ -621,6 +633,14 @@
             {
               "value": "de-DE_AP_Male",
               "label": "AWS Polly - Deutsch - Hans"
+            },
+            {
+              "value": "de-DE_AP_Male_Daniel",
+              "label": "AWS Polly - Deutsch - Daniel"
+            },
+            {
+              "value": "de-AT_AP_Female_Hannah",
+              "label": "AWS Polly - Österreich - Hannah"
             },
             {
               "value": "en-US_AP_Female",
