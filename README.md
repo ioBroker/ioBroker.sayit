@@ -267,12 +267,13 @@ Following values for engines are possible:
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### 3.0.4 (2023-04-17)
+### **WORK IN PROGRESS**
 * (bluefox) Corrected error with System player
 * (bluefox) Do not allow for chromecast to cache files.
 * (bluefox) Allowed to add cloud App-Key without running cloud adapter
 * (bluefox) Added austrian language
 * (bluefox) Added norwegian language
+* (klein0r) Used sendTo instead of setState in blockly
 
 ### 3.0.0 (2023-04-03)
 * (bluefox) Restored cloud engines. Warning: update cloud adapter to at least 4.4.0

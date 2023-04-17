@@ -32,8 +32,7 @@ Blockly.Words['sayit_log_debug']     = {'en': 'debug',                       'de
 Blockly.Words['sayit_log_warn']      = {'en': 'warning',                     'de': 'warning',                            'ru': 'warning'};
 Blockly.Words['sayit_log_error']     = {'en': 'error',                       'de': 'error',                              'ru': 'ошибка'};
 
-
-// this is copy of engines.js
+// this is copy of lib/engines.js
 const sayitEngines = {
     "en":       {name: "Google - English",         engine: "google",  params: []},
     "de":       {name: "Google - Deutsch",         engine: "google",  params: []},
@@ -234,36 +233,37 @@ Blockly.Sendto.blocks['sayit'] =
 
 Blockly.Blocks['sayit'] = {
     init: function() {
-        var options = [[Blockly.Translate('sayit_anyInstance'), 'all']];
+        const options = [];
         if (typeof main !== 'undefined' && main.instances) {
-            for (var i = 0; i < main.instances.length; i++) {
-                var m = main.instances[i].match(/^system.adapter.sayit.(\d+)$/);
+            for (let i = 0; i < main.instances.length; i++) {
+                const m = main.instances[i].match(/^system.adapter.sayit.(\d+)$/);
                 if (m) {
-                    var n = parseInt(m[1], 10);
+                    const n = parseInt(m[1], 10);
                     options.push(['sayit.' + n, '.' + n]);
                 }
             }
         }
 
-        if (options.length < 2) {
-            for (var u = 0; u <= 4; u++) {
-                options.push(['sayit.' + u, '.' + u]);
+        if (!options.length) {
+            for (let k = 0; k <= 4; k++) {
+                options.push(['sayit.' + k, '.' + k]);
             }
         }
+        options.unshift([Blockly.Translate('sayit_anyInstance'), '']);
 
         this.appendDummyInput('INSTANCE')
             .appendField(Blockly.Translate('sayit'))
             .appendField(new Blockly.FieldDropdown(options), 'INSTANCE');
 
-        var languages = [[Blockly.Translate('sayit_configured'), '']];
-        for (var l in sayitEngines) {
+        const languages = [[Blockly.Translate('sayit_configured'), '']];
+        for (const l in sayitEngines) {
             if (sayitEngines.hasOwnProperty(l)) languages.push([sayitEngines[l].name, l]);
         }
 
         this.appendDummyInput('LANGUAGE')
             .appendField(new Blockly.FieldDropdown(languages), 'LANGUAGE');
 
-        var input = this.appendValueInput('VOLUME')
+        const input = this.appendValueInput('VOLUME')
             .setCheck('Number')
             .appendField(Blockly.Translate('sayit_volume'));
         if (input.connection) input.connection._optional = true;
@@ -292,30 +292,20 @@ Blockly.Blocks['sayit'] = {
 };
 
 Blockly.JavaScript['sayit'] = function(block) {
-    var dropdown_instance = block.getFieldValue('INSTANCE');
-    var dropdown_language = block.getFieldValue('LANGUAGE');
-    var value_message = Blockly.JavaScript.valueToCode(block, 'MESSAGE', Blockly.JavaScript.ORDER_ATOMIC);
-    var value_volume  = Blockly.JavaScript.valueToCode(block, 'VOLUME', Blockly.JavaScript.ORDER_ATOMIC);
-    var logLevel = block.getFieldValue('LOG');
+    const language = block.getFieldValue('LANGUAGE');
+    const text = Blockly.JavaScript.valueToCode(block, 'MESSAGE', Blockly.JavaScript.ORDER_ATOMIC);
+    const volume = Blockly.JavaScript.valueToCode(block, 'VOLUME', Blockly.JavaScript.ORDER_ATOMIC);
+    const logLevel = block.getFieldValue('LOG');
 
-    var logText;
+    let logText = '';
     if (logLevel) {
-        logText = 'console.' + logLevel + '("sayIt' + (dropdown_language ? '[' + dropdown_language + ']' : '') + (value_volume ? '[Volume - ' + value_volume + ']' : '') + ': " + ' + value_message + ');\n'
-    } else {
-        logText = '';
+        logText = '\nconsole.' + logLevel + '("Executed sayit' + block.getFieldValue('INSTANCE') + ': ' + (volume ? '[Volume - ' + volume + ']' : '') + ': " + ' + text + ');\n';
     }
 
-    if (dropdown_instance === 'all') {
-        let output = "";
-        for (var i = 0; i < main.instances.length; i++) {
-            var m = main.instances[i].match(/^system.adapter.sayit.(\d+)$/);
-            if (m) {
-                var k = parseInt(m[1], 10);
-                output = output + 'setState("sayit.' + k + '.tts.text", "' + (dropdown_language ? dropdown_language + ';' : '') + (value_volume !== null && value_volume !== '' ? '" + ' + value_volume + ' + ";' : '') + '" + ' + value_message  + ');\n';
-            }
-        }
-        return output;
-    } else {
-        return 'setState("sayit' + dropdown_instance + '.tts.text", "' + (dropdown_language ? dropdown_language + ';' : '') + (value_volume !== null && value_volume !== '' ? '" + ' + value_volume + ' + ";' : '') + '" + ' + value_message  + ');\n' + logText;
-    }
+    const objText = [];
+    language && objText.push('language: "' + language + '"');
+    text && objText.push('text: ' + text);
+    volume && objText.push('volume: ' + volume);
+
+    return 'sendTo("sayit' + block.getFieldValue('INSTANCE') + '", "say", { ' + objText.join(', ') + ' });' + logText;
 };
