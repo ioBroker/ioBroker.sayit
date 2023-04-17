@@ -264,7 +264,7 @@ Following values for engines are possible:
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### **WORK IN PROGRESS**
+### 3.0.2 (2023-04-17)
 * (bluefox) Corrected error with System player
 * (bluefox) Do not allow for chromecast to cache files.
 

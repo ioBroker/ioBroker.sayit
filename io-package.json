@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "sayit",
-    "version": "3.0.1",
+    "version": "3.0.2",
     "news": {
+      "3.0.2": {
+        "en": "Corrected error with System player\nDo not allow for chromecast to cache files.",
+        "de": "Fehler behoben mit Systemplayer\nErlauben Sie nicht, dass Chromecast Dateien zwischenspeichern.",
+        "ru": "Исправлена ошибка с Системным игроком\nНе допускайте хромката к файлам кэша.",
+        "pt": "Erro correto com o jogador do sistema\nNão permita que o chromecast em cache arquivos.",
+        "nl": "Correctie fout met System speler\nSta niet toe dat chromecast naar cache bestanden gaat.",
+        "fr": "Erreur corrigée avec le lecteur système\nNe pas permettre de chromecast aux fichiers de cache.",
+        "it": "Errore corretto con il giocatore di sistema\nNon consentire per Chromecast a file di cache.",
+        "es": "Error corregido con el reproductor de sistema\nNo permita el cromocast a los archivos de caché.",
+        "pl": "Poprawiony błąd z graczem Systema\nNie pozwala na chromecast do plików podręcznych.",
+        "uk": "Виправлена помилка з плеєром системи\nНе дозволяйте хромувати файлам кешу.",
+        "zh-cn": "与系统参与者的更正错误\n不是允许用彩色图书写。."
+      },
       "3.0.1": {
         "en": "Corrected error with System player",
         "de": "Fehler behoben mit Systemplayer",
@@ -80,18 +93,6 @@
         "pl": "Umożliwiał się przyszłemu js-kontrolerowi",
         "uk": "Виготовлений сумісний з майбутнім js-controller",
         "zh-cn": "与今后控制的容忍"
-      },
-      "1.12.6": {
-        "en": "used setForeignBinaryState if possible",
-        "de": "wenn möglich setForeignBinaryState verwendet",
-        "ru": "использовал setForeignBinaryState, если это возможно",
-        "pt": "usado setForeignBinaryState se possível",
-        "nl": "gebruikte setForeignBinaryState indien mogelijk",
-        "fr": "utilisé setForeignBinaryState si possible",
-        "it": "usato setForeignBinaryState se possibile",
-        "es": "utilizado setForeignBinaryState si es posible",
-        "pl": "użyto setForeignBinaryState, jeśli to możliwe",
-        "zh-cn": "如果可能，使用 setForeignBinaryState"
       }
     },
     "title": "Text to speech",
