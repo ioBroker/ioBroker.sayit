@@ -51,5 +51,9 @@
   "Google home server": "Domowy serwer Google",
   "in % to playing volume": "w % do głośności odtwarzania",
   "optional - If player does not work": "opcjonalne - Jeśli odtwarzacz nie działa",
-  "Cloud App Key from iobroker.pro or iobroker.net": "Klucz aplikacji w chmurze z iobroker.pro lub iobroker.net"
+  "Cloud App Key from iobroker.pro or iobroker.net": "Klucz aplikacji w chmurze z iobroker.pro lub iobroker.net",
+  "Vis instances": "Vis instancji",
+  "vis.0 and vis-2.0": "vis.0 i vis-2.0",
+  "vis.0 (deprecated)": "vis.0 (przestarzałe)",
+  "vis-2.0 (New)": "vis-2.0 (nowy)"
 }

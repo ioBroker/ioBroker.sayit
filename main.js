@@ -601,32 +601,24 @@ async function start() {
         if (newConfig.type === 'system') {
             newConfig.systemCommand = newConfig.command;
             newConfig.systemPlayer = newConfig.player;
-        } else
-        if (newConfig.type === 'mp24ftp') {
+        } else if (newConfig.type === 'mp24ftp') {
             newConfig.mp24Server = newConfig.server;
             newConfig.ftpUser = newConfig.user;
             newConfig.ftpPort = newConfig.port;
             newConfig.ftpPassword = newConfig.pass;
-        } else
-        if (newConfig.type === 'mp24') {
+        } else if (newConfig.type === 'mp24') {
             newConfig.mp24Server = newConfig.server;
-        } else
-        if (newConfig.type === 'chromecast') {
+        } else if (newConfig.type === 'chromecast') {
             newConfig.chromecastDevice = newConfig.cDevice;
-        } else
-        if (newConfig.type === 'googleHome') {
+        } else if (newConfig.type === 'googleHome') {
             newConfig.googleHomeServer = newConfig.server;
-        } else
-        if (newConfig.type === 'sonos') {
+        } else if (newConfig.type === 'sonos') {
             newConfig.sonosDevice = newConfig.device;
-        } else
-        if (newConfig.type === 'browser') {
+        } else if (newConfig.type === 'browser') {
             newConfig.browserInstance = newConfig.instance;
-        } else
-        if (newConfig.type === 'mpd') {
+        } else if (newConfig.type === 'mpd') {
             newConfig.mpdInstance = newConfig.mpd_device;
-        } else
-        if (newConfig.type === 'heos') {
+        } else if (newConfig.type === 'heos') {
             newConfig.heosDevice = newConfig.heos_device;
         }
         newConfig.webInstance = newConfig.web;
@@ -686,6 +678,13 @@ async function start() {
         return;
     }
 
+    if (adapter.config.browserVis === undefined) {
+        const configObj = await adapter.getForeignObjectAsync(`system.adapter.${adapter.namespace}`);
+        configObj.native.browserVis = '';
+        await adapter.setForeignObjectAsync(configObj._id, configObj);
+        // wait for restart
+        return;
+    }
 
     const systemConfig = await adapter.getForeignObjectAsync('system.config');
     if (!adapter.config.engine) {

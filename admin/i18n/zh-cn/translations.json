@@ -51,5 +51,9 @@
   "Google home server": "谷歌家庭服务器",
   "in % to playing volume": "占播放音量的百分比",
   "optional - If player does not work": "可选 - 如果播放器不工作",
-  "Cloud App Key from iobroker.pro or iobroker.net": "来自 iobroker.pro 或 iobroker.net 的 Cloud App Key"
+  "Cloud App Key from iobroker.pro or iobroker.net": "来自 iobroker.pro 或 iobroker.net 的 Cloud App Key",
+  "Vis instances": "可见实例",
+  "vis.0 and vis-2.0": "vis.0 和 vis-2.0",
+  "vis.0 (deprecated)": "vis.0（已弃用）",
+  "vis-2.0 (New)": "vis-2.0（新）"
 }

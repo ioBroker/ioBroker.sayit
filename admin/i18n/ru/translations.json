@@ -51,5 +51,9 @@
   "Google home server": "домашний сервер гугл",
   "in % to playing volume": "в % к громкости воспроизведения",
   "optional - If player does not work": "необязательно - Если плеер не работает",
-  "Cloud App Key from iobroker.pro or iobroker.net": "Облачный App-Key от iobroker.pro или iobroker.net"
+  "Cloud App Key from iobroker.pro or iobroker.net": "Облачный App-Key от iobroker.pro или iobroker.net",
+  "Vis instances": "Экземпляры Vis",
+  "vis.0 and vis-2.0": "vis.0 и vis-2.0",
+  "vis.0 (deprecated)": "vis.0 (устарело)",
+  "vis-2.0 (New)": "vis-2.0 (новое)"
 }

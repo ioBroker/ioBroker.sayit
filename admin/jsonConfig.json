@@ -248,6 +248,29 @@
           "md": 3,
           "lg": 2
         },
+        "browserVis": {
+          "newLine": true,
+          "type": "select",
+          "label": "Vis instances",
+          "options": [
+            {
+              "value": "",
+              "label": "vis.0 and vis-2.0"
+            },
+            {
+              "value": "1",
+              "label": "vis.0 (deprecated)"
+            },
+            {
+              "value": "2",
+              "label": "vis-2.0 (New)"
+            }
+          ],
+          "hidden": "data.type !== 'browser'",
+          "sm": 6,
+          "md": 3,
+          "lg": 2
+        },
         "webInstance": {
           "newLine": true,
           "type": "instance",
