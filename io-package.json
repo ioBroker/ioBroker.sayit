@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "sayit",
-    "version": "3.0.5",
+    "version": "4.0.0",
     "news": {
+      "4.0.0": {
+        "en": "Breaking changes: A minimal node.js version is 16\nBrowser outputs now to vis(1) and vis-2",
+        "de": "Änderungsvorschläge: Eine minimale node.js Version ist 16\nBrowser-Ausgänge jetzt auf vis(1) und vis-2",
+        "ru": "Перерыв изменений: Минимальная версия node.js 16\nБраузер выходит сейчас на vis(1) и vis-2",
+        "pt": "Alterações de ruptura: Uma versão mínima node.js é 16\nSaídas de navegador agora para vis(1) e vis-2",
+        "nl": "Breaking changes: Een minimale node\nBrowser uitputs nu om (1) en vis-2",
+        "fr": "Changements de rupture: Une version minimale node.js est 16\nSorties de navigateur maintenant vers(1) et vis-2",
+        "it": "Cambiamenti di rottura: Una versione minimal node.js è 16\nRisultati del browser ora a vis(1) e vis-2",
+        "es": "Cambios de ruptura: Una versión mínima node.js es 16\nSalidas del navegador ahora a vis(1) y vis-2",
+        "pl": "Zmiany: Wersja minimalna jest 16\nBrowser wykonuje się do vis(1) i vis-2",
+        "uk": "Зміни прориву: Версія Mini node.js 16\nВиходи браузера тепер до вісь(1) і vis-2",
+        "zh-cn": "断然变化: 第16页。\n现收录产出"
+      },
       "3.0.5": {
         "en": "Corrected error with System player\nDo not allow for chromecast to cache files.\nAllowed to add cloud App-Key without running cloud adapter\nAdded austrian language\nAdded norwegian language\nUsed sendTo instead of setState in blockly",
         "de": "Fehler behoben mit Systemplayer\nErlauben Sie nicht, dass Chromecast Dateien zwischenspeichern.\nCloud App-Key ohne Cloud-Adapter hinzufügen\nSprache hinzufügen\nNorwegische Sprache\nAngemeldet An statt setState blockweise",

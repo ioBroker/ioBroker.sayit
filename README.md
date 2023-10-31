@@ -267,7 +267,7 @@ The following values for engines are possible:
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### **WORK IN PROGRESS**
+### 4.0.0 (2023-10-31)
 * (bluefox) Breaking changes: A minimal node.js version is 16
 * (bluefox) Browser outputs now to vis(1) and vis-2
 
