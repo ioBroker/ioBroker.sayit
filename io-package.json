@@ -93,7 +93,8 @@
       "it": "Sintesi vocale (Text to speech)",
       "es": "Texto a voz (Text to speech)",
       "pl": "Tekst na mowę (Text to speech)",
-      "zh-cn": "文字到语音"
+      "zh-cn": "文字到语音",
+      "uk": "Перетворення тексту на мовлення"
     },
     "desc": {
       "en": "Text to speech in a cloud or local. Runs on windows, linux and OSX. It can play mp3/wav too.",
@@ -105,12 +106,16 @@
       "it": "Sintesi vocale in un cloud o locale. Funziona su Windows, Linux e OSX. Può riprodurre anche mp3 / wav.",
       "es": "Texto a voz en una nube o local. Se ejecuta en Windows, Linux y OSX. Puede reproducir mp3 / wav también.",
       "pl": "Tekst na mowę w chmurze lub lokalnie. Działa w systemie Windows, Linux i OSX. Może również odtwarzać mp3 / wav.",
-      "zh-cn": "文字到语音在云端或局部的。 运行在windows、linux和OS x. 它可以发挥的mp3/声。"
+      "zh-cn": "文字到语音在云端或局部的。 运行在windows、linux和OS x. 它可以发挥的mp3/声。",
+      "uk": "Перетворення тексту в мовлення в хмарі або локально. Працює на Windows, Linux і OSX. Він також може відтворювати mp3/wav."
     },
     "authors": [
       "bluefox <dogafox@gmail.com>"
     ],
-    "license": "MIT",
+    "licenseInformation": {
+      "license": "MIT",
+      "type": "free"
+    },
     "platform": "Javascript/Node.js",
     "mode": "daemon",
     "readme": "https://github.com/ioBroker/ioBroker.sayit/blob/master/README.md",

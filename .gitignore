@@ -7,7 +7,6 @@ iob_npm.done
 /.project
 /nbproject
 .vscode
-package-lock.json
 *.tgz
 /sayit.0.say.mp3
 /gong.mp3
