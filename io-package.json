@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "sayit",
-    "version": "4.0.0",
+    "version": "4.0.1",
     "news": {
+      "4.0.1": {
+        "en": "Packages updated\nUsing the pre-calculated duration of the mp3 to wait long enough even for longer announcements",
+        "de": "Pakete aktualisiert\nMit der vorkalkulierten Dauer des mp3 lange genug warten, auch für längere Ankündigungen",
+        "ru": "Обновленные пакеты\nИспользование предварительно исчисленной продолжительности mp3, чтобы ждать достаточно долго даже для более длинных объявлений",
+        "pt": "Pacotes atualizados\nUsando a duração pré-calculada do mp3 para esperar o tempo suficiente mesmo para anúncios mais longos",
+        "nl": "Pakketten bijgewerkt\nMet behulp van de vooraf berekende duur van de mp3 te wachten lang genoeg zelfs voor langere aankondigingen",
+        "fr": "Mise à jour des paquets\nUtiliser la durée précalculée du mp3 pour attendre assez longtemps, même pour les annonces plus longues",
+        "it": "Pacchetti aggiornati\nUtilizzando la durata pre-calcolata del mp3 per aspettare abbastanza a lungo anche per annunci più lunghi",
+        "es": "Paquetes actualizados\nUsando la duración precalculada del mp3 para esperar lo suficiente incluso para anuncios más largos",
+        "pl": "Aktualizacja pakietów\nKorzystanie z wcześniej obliczonego czasu mp3 czekać wystarczająco długo nawet na dłuższe ogłoszenia",
+        "uk": "Пакети оновлені\nВикористання попередньо встановленої тривалості mp3, щоб довго чекати навіть для більш тривалого оголошення",
+        "zh-cn": "更新软件包\n使用 mp3 的预计算持续时间来等待足够长的时间, 甚至可以等待更长的通知"
+      },
       "4.0.0": {
         "en": "Breaking changes: A minimal node.js version is 16\nBrowser outputs now to vis(1) and vis-2",
         "de": "Änderungsvorschläge: Eine minimale node.js Version ist 16\nBrowser-Ausgänge jetzt auf vis(1) und vis-2",
