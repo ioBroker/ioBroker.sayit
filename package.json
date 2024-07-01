@@ -52,7 +52,7 @@
     "@alcalzone/release-script-plugin-license": "^3.7.0",
     "@iobroker/adapter-dev": "^1.2.0",
     "@iobroker/legacy-testing": "^1.0.12",
-    "mocha": "^10.4.0",
+    "mocha": "^10.5.2",
     "chai": "^4.4.1"
   },
   "bugs": {
