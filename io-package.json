@@ -3,19 +3,6 @@
     "name": "sayit",
     "version": "4.0.2",
     "news": {
-      "4.0.2": {
-        "en": "Packages updated\nCorrected playing in vis",
-        "de": "Pakete aktualisiert\nKorrigiertes Spielen in Vis",
-        "ru": "Обновленные пакеты\nИсправленная игра в vis",
-        "pt": "Pacotes atualizados\nJogo correto em vis",
-        "nl": "Pakketten bijgewerkt\nGecorrigeerd spelen in vis",
-        "fr": "Mise à jour des paquets\nCorrigé jouer dans vis",
-        "it": "Pacchetti aggiornati\nCorretto giocare in vis",
-        "es": "Paquetes actualizados\nCorregido jugando en vis",
-        "pl": "Aktualizacja pakietów\nPoprawione gry w vis",
-        "uk": "Пакети оновлені\nПравильна гра в віках",
-        "zh-cn": "更新软件包\n已校正播放相对"
-      },
       "4.0.1": {
         "en": "Packages updated\nUsing the pre-calculated duration of the mp3 to wait long enough even for longer announcements",
         "de": "Pakete aktualisiert\nMit der vorkalkulierten Dauer des mp3 lange genug warten, auch für längere Ankündigungen",
