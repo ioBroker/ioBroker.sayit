@@ -267,7 +267,7 @@ The following values for engines are possible:
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### **WORK IN PROGRESS**
+### 4.0.2 (2024-07-11)
 * (bluefox) Packages updated
 * (bluefox) Corrected playing in vis
 

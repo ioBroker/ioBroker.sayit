@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "sayit",
-    "version": "4.0.1",
+    "version": "4.0.2",
     "news": {
+      "4.0.2": {
+        "en": "Packages updated\nCorrected playing in vis",
+        "de": "Pakete aktualisiert\nKorrigiertes Spielen in Vis",
+        "ru": "Обновленные пакеты\nИсправленная игра в vis",
+        "pt": "Pacotes atualizados\nJogo correto em vis",
+        "nl": "Pakketten bijgewerkt\nGecorrigeerd spelen in vis",
+        "fr": "Mise à jour des paquets\nCorrigé jouer dans vis",
+        "it": "Pacchetti aggiornati\nCorretto giocare in vis",
+        "es": "Paquetes actualizados\nCorregido jugando en vis",
+        "pl": "Aktualizacja pakietów\nPoprawione gry w vis",
+        "uk": "Пакети оновлені\nПравильна гра в віках",
+        "zh-cn": "更新软件包\n已校正播放相对"
+      },
       "4.0.1": {
         "en": "Packages updated\nUsing the pre-calculated duration of the mp3 to wait long enough even for longer announcements",
         "de": "Pakete aktualisiert\nMit der vorkalkulierten Dauer des mp3 lange genug warten, auch für längere Ankündigungen",
@@ -80,19 +93,6 @@
         "pl": "Wsparcie Coqui TTS\nNazwy wszystkich cech konfiguracji",
         "uk": "Додано підтримку Coqui TTS\nПерейменувати всі атрибути конфігурації",
         "zh-cn": "增加对共同采购技术的支持\n重新命名所有组合的属性"
-      },
-      "2.0.0": {
-        "en": "Adapter was completely rewritten with async/await\nCould be buggy",
-        "de": "Adapter wurde komplett neu geschrieben mit async/await\nKönnte Buggy sein",
-        "ru": "Адаптер был полностью переписан с async/await\nМожет быть багги",
-        "pt": "Adapter foi completamente reescrito com async/await\nPode ser buggy",
-        "nl": "Adapter was volledig herschreven met async/a wacht\nKan insecten zijn",
-        "fr": "Adaptateur a été complètement réécrit avec async/await\nÇa pourrait être un buggy",
-        "it": "L'adattatore è stato completamente riscritto con asinc/await\nPotrebbe essere buggy",
-        "es": "Adaptador fue completamente reescrito con async/await\nPodría ser un buggy",
-        "pl": "Adapter został w całości przepisany z asynchronem/await/Adapter\nCould be buggy",
-        "uk": "Перехідник повністю переписався з асинхроном/відповіддю\nПомилки",
-        "zh-cn": "道歉完全用阿森克/瓦伊特写。\n走私"
       }
     },
     "title": "Text to speech",
