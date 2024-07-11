@@ -2,13 +2,13 @@
 /* jshint strict: false */
 /* jslint node: true */
 'use strict';
+const fs            = require('node:fs');
+const path          = require('node:path');
 const utils         = require('@iobroker/adapter-core'); // Get common adapter utils
 const engines       = require('./admin/engines.js');
 const Text2Speech   = require('./lib/text2speech');
 const Speech2Device = require('./lib/speech2device');
 const adapterName   = require('./package.json').name.split('.').pop();
-const fs            = require('fs');
-const path          = require('path');
 
 const sayitOptions  = engines.sayitOptions;
 
@@ -128,7 +128,7 @@ function processMessage(obj) {
 
                 browser.start();
             } catch (e) {
-                adapter.log.error(e);
+                adapter.log.debug(`Cannot browse mdns: ${e}`);
                 adapter.sendTo(obj.from, obj.command, null, obj.callback);
             }
         } else if (obj.callback && obj.command === 'browseChromecast') {
@@ -175,7 +175,7 @@ function processMessage(obj) {
                 adapter.sendTo(obj.from, obj.command, list, obj.callback);
             });
         } else if (obj.callback && obj.command === 'test') {
-            const language = (obj.message.engine || adapter.config.engine).substring(0, 2);
+            const language = (obj.message?.engine || adapter.config.engine).substring(0, 2);
             let text = 'Hello';
             if (language === 'de') {
                 text = 'Hallo';
@@ -255,7 +255,7 @@ function addToQueue(text, language, volume, onlyCache, testOptions) {
     // Extract language from "en;volume;Text to say"
     if (text.includes(';')) {
         const arr = text.split(';', 3);
-        // If language;text or volume;text
+        // If "language;text" or "volume;text"
         if (arr.length === 2) {
             // If number
             if (parseInt(arr[0]).toString() === arr[0].toString()) {
@@ -325,7 +325,7 @@ function addToQueue(text, language, volume, onlyCache, testOptions) {
 }
 
 function getCachedFileName(dir, text, fileExt) {
-    crypto = crypto || require('crypto');
+    crypto = crypto || require('node:crypto');
     return path.normalize(path.join(dir, `${crypto.createHash('md5').update(text).digest('hex')}.${fileExt}`));
 }
 

@@ -267,6 +267,10 @@ The following values for engines are possible:
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### **WORK IN PROGRESS**
+* (bluefox) Packages updated
+* (bluefox) Corrected playing in vis
+
 ### 4.0.1 (2024-05-25)
 * (bluefox) Packages updated
 * (neopholus) Using the pre-calculated duration of the mp3 to wait long enough even for longer announcements
