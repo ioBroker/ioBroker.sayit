@@ -267,9 +267,10 @@ The following values for engines are possible:
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### 4.0.2 (2024-07-11)
+### **WORK IN PROGRESS**
 * (bluefox) Packages updated
 * (bluefox) Corrected playing in vis
+* (bluefox) Corrected blockly
 
 ### 4.0.1 (2024-05-25)
 * (bluefox) Packages updated

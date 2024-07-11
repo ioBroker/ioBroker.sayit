@@ -102,7 +102,21 @@ function startAdapter(options) {
 
 function processMessage(obj) {
     if (obj) {
-        if (obj.command === 'stopInstance') {
+        if (obj.command === 'say') {
+            const text = obj.message.text;
+            const language = obj.message?.language;
+            const volume = obj.message?.volume;
+
+            if (obj.callback) {
+                const opts = {...obj.message};
+                opts.callback = error => {
+                    adapter.sendTo(obj.from, obj.command, {error, result: error ? undefined : 'Ok'}, obj.callback);
+                };
+                addToQueue(text, language, volume, null, opts);
+            } else {
+                addToQueue(text, language, volume);
+            }
+        } else if (obj.command === 'stopInstance') {
             stop(false, () =>
                 obj.callback && adapter.sendTo(obj.from, obj.command, null, obj.callback));
         } else if (obj.callback && obj.command === 'browseGoogleHome') {
