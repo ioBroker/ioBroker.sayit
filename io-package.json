@@ -137,7 +137,6 @@
     "supportStopInstance": true,
     "stopBeforeUpdate": true,
     "icon": "sayit.png",
-    "materialize": true,
     "adminUI": {
       "config": "json"
     },
