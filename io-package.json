@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "sayit",
-    "version": "4.0.4",
+    "version": "4.0.5",
     "news": {
+      "4.0.5": {
+        "en": "Packages updated\nCorrected playing in vis\nCorrected blockly\nCorrected upload of files",
+        "de": "Pakete aktualisiert\nKorrigiertes Spielen in Vis\nBlockiert korrigiert\nKorrigierter Upload von Dateien",
+        "ru": "Обновленные пакеты\nИсправленная игра в vis\nИсправлено блокно\nИсправленная загрузка файлов",
+        "pt": "Pacotes atualizados\nJogo correto em vis\nCorrigido em bloco\nUpload corrigido de arquivos",
+        "nl": "Pakketten bijgewerkt\nGecorrigeerd spelen in vis\nBloksgewijs gecorrigeerd\nGecorrigeerde upload van bestanden",
+        "fr": "Mise à jour des paquets\nCorrigé jouer dans vis\nCorrigé en bloc\nTéléchargement corrigé des fichiers",
+        "it": "Pacchetti aggiornati\nCorretto giocare in vis\nCorretto in blocco\nCaricamento corretto dei file",
+        "es": "Paquetes actualizados\nCorregido jugando en vis\nCorregido bloqueado\nCarga corregida de archivos",
+        "pl": "Aktualizacja pakietów\nPoprawione gry w vis\nPoprawione blokowane\nPoprawione przesyłanie plików",
+        "uk": "Пакети оновлені\nПравильна гра в віках\nВиправлено блоклі\nВиправлено завантаження файлів",
+        "zh-cn": "更新软件包\n已校正播放相对\n块状修正\n更正了文件的上传"
+      },
       "4.0.1": {
         "en": "Packages updated\nUsing the pre-calculated duration of the mp3 to wait long enough even for longer announcements",
         "de": "Pakete aktualisiert\nMit der vorkalkulierten Dauer des mp3 lange genug warten, auch für längere Ankündigungen",
