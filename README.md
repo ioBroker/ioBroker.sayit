@@ -267,6 +267,10 @@ The following values for engines are possible:
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### **WORK IN PROGRESS**
+* (mcm1957) Adapter requires admin v7 or newer now
+* (mcm1957) Adapter requires jas-controller 5 or newer now
+
 ### 4.0.5 (2024-07-12)
 * (bluefox) Packages updated
 * (bluefox) Corrected playing in vis
