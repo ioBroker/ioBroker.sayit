@@ -425,7 +425,7 @@ async function processTasks() {
                 }
 
                 if (!data) {
-                    // may be the file is from real FS
+                    // maybe the file is from real FS
                     if (fs.existsSync(text)) {
                         try {
                             data = fs.readFileSync(text);
@@ -446,7 +446,7 @@ async function processTasks() {
                         } else {
                             fileName = MP3FILE;
                         }
-                        fs.writeFileSync(fileName, data);
+                        fs.writeFileSync(fileName, data.file ? data.file : data);
                     } catch (e) {
                         adapter.log.error(`Cannot write file "${MP3FILE}": ${e.toString()}`);
                     }
@@ -547,7 +547,9 @@ async function uploadFile(file) {
 
     if (!data) {
         try {
-            await adapter.writeFileAsync(adapter.namespace, `tts.userfiles/${file}`, fs.readFileSync(path.join(`${__dirname}/mp3/`, file)));
+            data = fs.readFileSync(path.join(`${__dirname}/mp3/`, file));
+            adapter.log.debug(`Upload file: ${path.join(`${__dirname}/mp3/`, file)} (${data.length} bytes`);
+            await adapter.writeFileAsync(adapter.namespace, `tts.userfiles/${file}`, data);
         } catch (e) {
             adapter.log.error(`Cannot write file "${__dirname}/mp3/${file}": ${e.toString()}`);
         }
@@ -596,7 +598,7 @@ async function prepareAnnounceFiles(config) {
                 const data = await adapter.readFileAsync(adapter.namespace, `tts.userfiles/${fileName}`);
                 if (data) {
                     try {
-                        fs.writeFileSync(path.join(__dirname, fileName), data);
+                        fs.writeFileSync(path.join(__dirname, fileName), data.file ? data.file : data);
                         config.announce = path.join(__dirname, fileName);
                     } catch (e) {
                         adapter.log.error(`Cannot write file: ${e.toString()}`);
