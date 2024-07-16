@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "sayit",
-    "version": "4.0.5",
+    "version": "5.0.0",
     "news": {
+      "5.0.0": {
+        "en": "Adapter requires admin v7 or newer now\nAdapter requires jas-controller 5 or newer now\nAdded possibility to play directly from states: `sayit.0/tts.userfiles/gong.mp3`",
+        "de": "Adapter erfordert jetzt Admin v7 oder neuer\nAdapter erfordert jetzt Jas-Controller 5 oder neuer\nMöglichkeit, direkt aus Zuständen zu spielen: `sayit.0/tts.userfiles/gong.mp3`",
+        "ru": "Адаптер требует администратора v7 или новичка сейчас\nАдаптер требует jas-контроллер 5 или более новый сейчас\nДобавлена возможность играть непосредственно из государств: `sayit.0/tts.userfiles/gong.mp3`",
+        "pt": "Adapter requer admin v7 ou mais recente agora\nAdaptador requer jas-controller 5 ou mais recente agora\nAdicionado possibilidade de jogar diretamente de estados: `sayit.0/tts.userfiles/gong.mp3`",
+        "nl": "Adapter vereist admin v7 of nieuwer nu\nAdapter vereist jas-controller 5 of nieuwer nu\nToegevoegd mogelijkheid om direct te spelen vanuit staten: ",
+        "fr": "Adaptateur nécessite admin v7 ou plus récent maintenant\nAdaptateur nécessite jas-controller 5 ou plus récent maintenant\nAjout de la possibilité de jouer directement à partir des états: `sayit.0/tts.userfiles/gong.mp3`",
+        "it": "L'adattatore richiede ora admin v7 o più recente\nAdattatore richiede jas-controller 5 o più nuovo ora\nAggiunta possibilità di giocare direttamente dagli stati: `sayit.0/ttts.userfiles/gong.mp3`",
+        "es": "Adaptador requiere administración v7 o nuevo ahora\nAdaptador requiere jas-controller 5 o más nuevo ahora\nAñadido posibilidad de jugar directamente desde los estados: `sayit.0/tts.userfiles/gong.mp3`",
+        "pl": "Adapter wymaga admin v7 lub nowszych\nAdapter wymaga sterownika Jas- 5 lub nowszego teraz\nDodano możliwość gry bezpośrednio ze stanów: 'sayit.0 / tts.userfiles / gong.mp3'",
+        "uk": "Адаптер вимагає адміністратора v7 або новачка\nАдаптер вимагає jas-controller 5 або новіший зараз\n`sayit.0/tts.userfiles/gong.mp3`",
+        "zh-cn": "适配器需要管理员 v7 或者现在更新\n适配器需要JAS控制器 5或现在更新\n添加了直接从状态播放的可能性:`sayit.0/ts.userfiles/gong.mp3'"
+      },
       "4.0.5": {
         "en": "Packages updated\nCorrected playing in vis\nCorrected blockly\nCorrected upload of files",
         "de": "Pakete aktualisiert\nKorrigiertes Spielen in Vis\nBlockiert korrigiert\nKorrigierter Upload von Dateien",
@@ -80,19 +93,6 @@
         "pl": "Poprawione silniki z linkami stron internetowych",
         "uk": "Виправлені двигуни з веб-посиланням",
         "zh-cn": "连接网络的工程师"
-      },
-      "2.1.1": {
-        "en": "Added support for Coqui TTS\nRenamed all configuration attributes",
-        "de": "Unterstützung für Coqui TTS\nAlle Konfigurationsattribute umbenannt",
-        "ru": "Добавлена поддержка Coqui TTS\nПереименованные все атрибуты конфигурации",
-        "pt": "Adicionado suporte para Coqui TTS\nRenamed todos os atributos de configuração",
-        "nl": "Verleende steun voor Coqui TTS\nVertaling:",
-        "fr": "Ajout du soutien à Coqui TTS\nRenommé tous les attributs de configuration",
-        "it": "Aggiunto il supporto per Coqui TTS\nRinominare tutti gli attributi di configurazione",
-        "es": "Apoyo añadido para TTS Coqui\nRenombrado todos los atributos de configuración",
-        "pl": "Wsparcie Coqui TTS\nNazwy wszystkich cech konfiguracji",
-        "uk": "Додано підтримку Coqui TTS\nПерейменувати всі атрибути конфігурації",
-        "zh-cn": "增加对共同采购技术的支持\n重新命名所有组合的属性"
       }
     },
     "title": "Text to speech",

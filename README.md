@@ -267,7 +267,7 @@ The following values for engines are possible:
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### **WORK IN PROGRESS**
+### 5.0.0 (2024-07-16)
 * (mcm1957) Adapter requires admin v7 or newer now
 * (mcm1957) Adapter requires jas-controller 5 or newer now
 * (bluefox) Added possibility to play directly from states: `sayit.0/tts.userfiles/gong.mp3`
