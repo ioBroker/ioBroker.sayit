@@ -402,7 +402,7 @@ async function processTasks() {
 
     language = language || (testOptions && testOptions.engine) || adapter.config.engine;
 
-    // if no text => do not process
+    // if no text => does not process
     if (isGenerate && text.length && text2speech && speech2device) {
         // Check: may be it is a file from DB filesystem, like /vis.0/main/img/door-bell.mp3
         if (text[0] === '/') {
@@ -456,7 +456,7 @@ async function processTasks() {
 
         adapter.log.info(`saying: ${text}`);
 
-        // If text first must be generated, and it is not the same as last one
+        // If a text first must be generated, and it is different from the last one
         if (!fileName && isGenerate) {
             // do not cache if test options active, to test the voice generation too
             if (sayLastGeneratedText !== `[${language}]${text}` || testOptions) {
