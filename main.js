@@ -269,7 +269,7 @@ function mkpathSync(rootpath, dirpath) {
     }
 }
 
-function addToQueue(text, language, volume, onlyCache, testOptions) {
+async function addToQueue(text, language, volume, onlyCache, testOptions) {
     // Extract language from "en;volume;Text to say"
     if (text.includes(';')) {
         const arr = text.split(';', 3);
@@ -309,6 +309,16 @@ function addToQueue(text, language, volume, onlyCache, testOptions) {
     volume = parseInt(volume || adapter.config.volume, 10);
     if (Number.isNaN(volume)) {
         volume = undefined;
+    }
+    if (volume === undefined || volume === null) {
+        try {
+            const state = await adapter.getForeignStateAsync(`${adapter.namespace}.tts.volume`);
+            if (state && state.val) {
+                volume = state.val;
+            }
+        } catch (e) {
+            // ignore
+        }
     }
 
     let announce = testOptions && testOptions.announce !== undefined ? testOptions.announce : adapter.config.announce;
