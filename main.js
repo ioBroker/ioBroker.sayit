@@ -65,7 +65,8 @@ function startAdapter(options) {
                     state.val = state.val.toString();
                 }
 
-                addToQueue(state.val);
+                addToQueue(state.val)
+                    .catch(e => adapter.log.error('Cannot add to queue', e));
             } else if (id === `${adapter.namespace}.tts.cachetext`) {
                 if (typeof state.val !== 'string') {
                     if (state.val === null || state.val === undefined || state.val === '') {
@@ -74,7 +75,8 @@ function startAdapter(options) {
                     state.val = state.val.toString();
                 }
 
-                addToQueue(state.val, null, null, true);
+                addToQueue(state.val, null, null, true)
+                    .catch(e => adapter.log.error('Cannot add to queue', e));
             }
         }
     });
@@ -113,9 +115,11 @@ function processMessage(obj) {
                     opts.callback = error => {
                         adapter.sendTo(obj.from, obj.command, {error, result: error ? undefined : 'Ok'}, obj.callback);
                     };
-                    addToQueue(text, language, volume, null, opts);
+                    addToQueue(text, language, volume, null, opts)
+                        .catch(e => adapter.log.error('Cannot add to queue', e));
                 } else {
-                    addToQueue(text, language, volume);
+                    addToQueue(text, language, volume)
+                        .catch(e => adapter.log.error('Cannot add to queue', e));
                 }
             } else {
                 adapter.sendTo(obj.from, obj.command, {error : 'No text'}, obj.callback);
@@ -224,7 +228,8 @@ function processMessage(obj) {
                 };
             }
 
-            addToQueue(text, null, null, null, opts);
+            addToQueue(text, null, null, null, opts)
+                .catch(e => adapter.log.error('Cannot add to queue', e));
         }
     }
 }
@@ -269,7 +274,7 @@ function mkpathSync(rootpath, dirpath) {
     }
 }
 
-function addToQueue(text, language, volume, onlyCache, testOptions) {
+async function addToQueue(text, language, volume, onlyCache, testOptions) {
     // Extract language from "en;volume;Text to say"
     if (text.includes(';')) {
         const arr = text.split(';', 3);
@@ -309,6 +314,16 @@ function addToQueue(text, language, volume, onlyCache, testOptions) {
     volume = parseInt(volume || adapter.config.volume, 10);
     if (Number.isNaN(volume)) {
         volume = undefined;
+    }
+    if (volume === undefined || volume === null) {
+        try {
+            const state = await adapter.getForeignStateAsync(`${adapter.namespace}.tts.volume`);
+            if (state && state.val) {
+                volume = state.val;
+            }
+        } catch (e) {
+            // ignore
+        }
     }
 
     let announce = testOptions && testOptions.announce !== undefined ? testOptions.announce : adapter.config.announce;
