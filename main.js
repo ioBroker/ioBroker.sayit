@@ -2,15 +2,15 @@
 /* jshint strict: false */
 /* jslint node: true */
 'use strict';
-const fs            = require('node:fs');
-const path          = require('node:path');
-const utils         = require('@iobroker/adapter-core'); // Get common adapter utils
-const engines       = require('./admin/engines.js');
-const Text2Speech   = require('./lib/text2speech');
+const fs = require('node:fs');
+const path = require('node:path');
+const utils = require('@iobroker/adapter-core'); // Get common adapter utils
+const engines = require('./admin/engines.js');
+const Text2Speech = require('./lib/text2speech');
 const Speech2Device = require('./lib/speech2device');
-const adapterName   = require('./package.json').name.split('.').pop();
+const adapterName = require('./package.json').name.split('.').pop();
 
-const sayitOptions  = engines.sayitOptions;
+const sayitOptions = engines.sayitOptions;
 
 let dataDir = path.join(utils.getAbsoluteDefaultDataDir(), 'sayit');
 
@@ -30,10 +30,10 @@ const options = {
 };
 
 let sayLastGeneratedText = '';
-let lastSay              = null;
-let fileExt              = 'mp3';
-let text2speech          = null;
-let speech2device        = null;
+let lastSay = null;
+let fileExt = 'mp3';
+let text2speech = null;
+let speech2device = null;
 let MP3FILE;
 const tasks = [];
 let processing = false;
@@ -41,7 +41,7 @@ let helloCounter = 1;
 
 function startAdapter(options) {
     options = options || {};
-    Object.assign(options, {name: adapterName, unload: callback => stop(true, callback)});
+    Object.assign(options, { name: adapterName, unload: callback => stop(true, callback) });
     adapter = new utils.Adapter(options);
 
     adapter.on('stateChange', async (id, state) => {
@@ -65,8 +65,7 @@ function startAdapter(options) {
                     state.val = state.val.toString();
                 }
 
-                addToQueue(state.val)
-                    .catch(e => adapter.log.error('Cannot add to queue', e));
+                addToQueue(state.val).catch(e => adapter.log.error('Cannot add to queue', e));
             } else if (id === `${adapter.namespace}.tts.cachetext`) {
                 if (typeof state.val !== 'string') {
                     if (state.val === null || state.val === undefined || state.val === '') {
@@ -75,8 +74,7 @@ function startAdapter(options) {
                     state.val = state.val.toString();
                 }
 
-                addToQueue(state.val, null, null, true)
-                    .catch(e => adapter.log.error('Cannot add to queue', e));
+                addToQueue(state.val, null, null, true).catch(e => adapter.log.error('Cannot add to queue', e));
             }
         }
     });
@@ -111,22 +109,26 @@ function processMessage(obj) {
 
             if (text) {
                 if (obj.callback) {
-                    const opts = {...obj.message};
+                    const opts = { ...obj.message };
                     opts.callback = error => {
-                        adapter.sendTo(obj.from, obj.command, {error, result: error ? undefined : 'Ok'}, obj.callback);
+                        adapter.sendTo(
+                            obj.from,
+                            obj.command,
+                            { error, result: error ? undefined : 'Ok' },
+                            obj.callback,
+                        );
                     };
-                    addToQueue(text, language, volume, null, opts)
-                        .catch(e => adapter.log.error('Cannot add to queue', e));
+                    addToQueue(text, language, volume, null, opts).catch(e =>
+                        adapter.log.error('Cannot add to queue', e),
+                    );
                 } else {
-                    addToQueue(text, language, volume)
-                        .catch(e => adapter.log.error('Cannot add to queue', e));
+                    addToQueue(text, language, volume).catch(e => adapter.log.error('Cannot add to queue', e));
                 }
             } else {
-                adapter.sendTo(obj.from, obj.command, {error : 'No text'}, obj.callback);
+                adapter.sendTo(obj.from, obj.command, { error: 'No text' }, obj.callback);
             }
         } else if (obj.command === 'stopInstance') {
-            stop(false, () =>
-                obj.callback && adapter.sendTo(obj.from, obj.command, null, obj.callback));
+            stop(false, () => obj.callback && adapter.sendTo(obj.from, obj.command, null, obj.callback));
         } else if (obj.callback && obj.command === 'browseGoogleHome') {
             // look for chromecast devices
             try {
@@ -135,14 +137,19 @@ function processMessage(obj) {
                 let browser = mdns.createBrowser(mdns.tcp('googlecast'));
 
                 const result = [];
-                browser.on('serviceUp', service => result.push({name: service.name, ip: service.addresses[0]}));
+                browser.on('serviceUp', service => result.push({ name: service.name, ip: service.addresses[0] }));
                 browser.on('error', err => adapter.log.error(`Error on MDNS discovery: ${err}`));
                 processMessageTimeout = setTimeout(() => {
                     processMessageTimeout = null;
                     browser.stop();
                     browser = null;
                     if (obj.command === 'browseGoogleHome') {
-                        adapter.sendTo(obj.from, obj.command, result.map(s => ({label: `${s.name}[${s.ip}]`, value: s.ip})), obj.callback);
+                        adapter.sendTo(
+                            obj.from,
+                            obj.command,
+                            result.map(s => ({ label: `${s.name}[${s.ip}]`, value: s.ip })),
+                            obj.callback,
+                        );
                     } else {
                         adapter.sendTo(obj.from, obj.command, result, obj.callback);
                     }
@@ -154,22 +161,27 @@ function processMessage(obj) {
                 adapter.sendTo(obj.from, obj.command, null, obj.callback);
             }
         } else if (obj.callback && obj.command === 'browseChromecast') {
-            adapter.getObjectView('system', 'device', {startkey: 'chromecast.', endkey: 'chromecast.\u9999'}, (err, res) => {
-                const list = [];
-                if (!err && res) {
-                    for (let i = 0; i < res.rows.length; i++) {
-                        let name = res.rows[i].value && res.rows[i].value.common && res.rows[i].value.common.name;
-                        if (typeof name === 'object') {
-                            name = name[lang] || name.en;
-                        }
+            adapter.getObjectView(
+                'system',
+                'device',
+                { startkey: 'chromecast.', endkey: 'chromecast.\u9999' },
+                (err, res) => {
+                    const list = [];
+                    if (!err && res) {
+                        for (let i = 0; i < res.rows.length; i++) {
+                            let name = res.rows[i].value && res.rows[i].value.common && res.rows[i].value.common.name;
+                            if (typeof name === 'object') {
+                                name = name[lang] || name.en;
+                            }
 
-                        list.push({value: res.rows[i].id, label: `${name} [${res.rows[i].id}]`});
+                            list.push({ value: res.rows[i].id, label: `${name} [${res.rows[i].id}]` });
+                        }
                     }
-                }
-                adapter.sendTo(obj.from, obj.command, list, obj.callback);
-            });
+                    adapter.sendTo(obj.from, obj.command, list, obj.callback);
+                },
+            );
         } else if (obj.callback && obj.command === 'browseHeos') {
-            adapter.getObjectView('system', 'device', {startkey: 'heos.', endkey: 'heos.\u9999'}, (err, res) => {
+            adapter.getObjectView('system', 'device', { startkey: 'heos.', endkey: 'heos.\u9999' }, (err, res) => {
                 const list = [];
                 for (let i = 0; i < res.rows.length; i++) {
                     let name = res.rows[i].value && res.rows[i].value.common && res.rows[i].value.common.name;
@@ -177,13 +189,16 @@ function processMessage(obj) {
                         name = name[lang] || name.en;
                     }
                     if (res.rows[i].id.includes('.players.')) {
-                        list.push({value: res.rows[i].id, label: `${res.rows[i].id.replace(/^heos\.\d+\.players\./, '')} [${name}]`});
+                        list.push({
+                            value: res.rows[i].id,
+                            label: `${res.rows[i].id.replace(/^heos\.\d+\.players\./, '')} [${name}]`,
+                        });
                     }
                 }
                 adapter.sendTo(obj.from, obj.command, list, obj.callback);
             });
         } else if (obj.callback && obj.command === 'browseSonos') {
-            adapter.getObjectView('system', 'device', {startkey: 'sonos.', endkey: 'heos.\u9999'}, (err, res) => {
+            adapter.getObjectView('system', 'device', { startkey: 'sonos.', endkey: 'heos.\u9999' }, (err, res) => {
                 const list = [];
                 for (let i = 0; i < res.rows.length; i++) {
                     let name = res.rows[i].value && res.rows[i].value.common && res.rows[i].value.common.name;
@@ -191,7 +206,10 @@ function processMessage(obj) {
                         name = name[lang] || name.en;
                     }
                     if (res.rows[i].id.includes('.players.')) {
-                        list.push({value: res.rows[i].id, label: `${res.rows[i].id.replace(/^sonos\.\d+\.root\./, '')} [${name}]`});
+                        list.push({
+                            value: res.rows[i].id,
+                            label: `${res.rows[i].id.replace(/^sonos\.\d+\.root\./, '')} [${name}]`,
+                        });
                     }
                 }
                 adapter.sendTo(obj.from, obj.command, list, obj.callback);
@@ -221,15 +239,14 @@ function processMessage(obj) {
                 text = '你好';
             }
             text += ` ${helloCounter++}`;
-            const opts = {...obj.message};
+            const opts = { ...obj.message };
             if (obj.callback) {
                 opts.callback = error => {
-                    adapter.sendTo(obj.from, obj.command, {error, result: error ? undefined : 'Ok'}, obj.callback);
+                    adapter.sendTo(obj.from, obj.command, { error, result: error ? undefined : 'Ok' }, obj.callback);
                 };
             }
 
-            addToQueue(text, null, null, null, opts)
-                .catch(e => adapter.log.error('Cannot add to queue', e));
+            addToQueue(text, null, null, null, opts).catch(e => adapter.log.error('Cannot add to queue', e));
         }
     }
 }
@@ -243,14 +260,14 @@ function stop(unload, callback) {
 
     try {
         adapter && adapter.log && adapter.log.info && adapter.log.info('stopping...');
-    } catch (e) {
+    } catch {
         // ignore
     }
 
     typeof callback === 'function' && callback();
 
     if (!unload) {
-        setTimeout(() => adapter.terminate ? adapter.terminate() : process.exit(), 500);
+        setTimeout(() => (adapter.terminate ? adapter.terminate() : process.exit()), 500);
     }
 }
 
@@ -291,10 +308,10 @@ async function addToQueue(text, language, volume, onlyCache, testOptions) {
             // If language;volume;text or volume;language;text
             // If number
             if (parseInt(arr[0]).toString() === arr[0].toString()) {
-                volume   = arr[0].trim();
+                volume = arr[0].trim();
                 language = arr[1].trim();
             } else {
-                volume   = arr[1].trim();
+                volume = arr[1].trim();
                 language = arr[0].trim();
             }
             text = arr[2].trim();
@@ -321,29 +338,35 @@ async function addToQueue(text, language, volume, onlyCache, testOptions) {
             if (state && state.val) {
                 volume = state.val;
             }
-        } catch (e) {
+        } catch {
             // ignore
         }
     }
 
     let announce = testOptions && testOptions.announce !== undefined ? testOptions.announce : adapter.config.announce;
-    const annoTimeout = parseInt(testOptions && testOptions.annoTimeout !== undefined ? testOptions.annoTimeout : adapter.config.annoTimeout, 10);
+    const annoTimeout = parseInt(
+        testOptions && testOptions.annoTimeout !== undefined ? testOptions.annoTimeout : adapter.config.annoTimeout,
+        10,
+    );
 
-    const task = {text, language, volume, onlyCache, ts: Date.now(), combined, testOptions};
+    const task = { text, language, volume, onlyCache, ts: Date.now(), combined, testOptions };
 
     // If more time than 15 seconds till last text, add announcement
-    if (!onlyCache && announce && !tasks.length && (!lastSay || (Date.now() - lastSay > annoTimeout * 1000))) {
+    if (!onlyCache && announce && !tasks.length && (!lastSay || Date.now() - lastSay > annoTimeout * 1000)) {
         testOptions && prepareAnnounceFiles(testOptions);
-        const annoVolume = parseInt(testOptions && testOptions.annoVolume !== undefined ? testOptions.annoVolume : adapter.config.annoVolume, 10);
+        const annoVolume = parseInt(
+            testOptions && testOptions.annoVolume !== undefined ? testOptions.annoVolume : adapter.config.annoVolume,
+            10,
+        );
         announce = testOptions && testOptions.announce !== undefined ? testOptions.announce : adapter.config.announce;
 
         // place as first the announcement mp3
         tasks.push({
             text: announce,
             language,
-            volume: Math.round((volume || 70) / 100 * (parseInt(annoVolume, 10) || 50)),
+            volume: Math.round(((volume || 70) / 100) * (parseInt(annoVolume, 10) || 50)),
             ts: task.ts,
-            testOptions
+            testOptions,
         });
         // and then text
         tasks.push(task);
@@ -353,8 +376,7 @@ async function addToQueue(text, language, volume, onlyCache, testOptions) {
         tasks.push(task);
     }
 
-    processTasks()
-        .catch(() => {});
+    processTasks().catch(() => {});
 }
 
 function getCachedFileName(dir, text, fileExt) {
@@ -368,7 +390,10 @@ function isCached(cacheDir, text, fileExt, cacheExpiryDays) {
     if (fs.existsSync(md5filename)) {
         if (cacheExpiryDays) {
             const fileStat = fs.statSync(md5filename);
-            if (fileStat.ctime && (Date.now() - new Date(fileStat.ctime).getTime() > cacheExpiryDays * 1000 * 60 * 60 * 24)) {
+            if (
+                fileStat.ctime &&
+                Date.now() - new Date(fileStat.ctime).getTime() > cacheExpiryDays * 1000 * 60 * 60 * 24
+            ) {
                 this.adapter.log.info('Cached File expired, remove and re-generate');
                 fs.unlinkSync(md5filename);
                 return false;
@@ -385,7 +410,7 @@ async function processTasks() {
         return;
     }
     processing = true;
-    let {text, language, volume, onlyCache, testOptions} = tasks[0];
+    let { text, language, volume, onlyCache, testOptions } = tasks[0];
     let error;
 
     if (text[0] === '!') {
@@ -399,11 +424,10 @@ async function processTasks() {
             if (state && state.val) {
                 volume = state.val;
             }
-        } catch (e) {
+        } catch {
             // ignore
         }
     }
-
 
     volume = parseInt(volume || (testOptions && testOptions.volume) || adapter.config.volume, 10);
     if (Number.isNaN(volume)) {
@@ -435,7 +459,7 @@ async function processTasks() {
 
                 try {
                     data = await adapter.readFileAsync(_adapter, _path);
-                } catch (e) {
+                } catch {
                     // adapter.log.error(`Cache file does not exist "${text}": ${e.toString()}`);
                 }
 
@@ -476,7 +500,12 @@ async function processTasks() {
             // do not cache if test options active, to test the voice generation too
             if (sayLastGeneratedText !== `[${language}]${text}` || testOptions) {
                 if (adapter.config.cache && !testOptions) {
-                    let md5filename = isCached(options.cacheDir, `${language};${text}`, fileExt, adapter.config.cacheExpiryDays);
+                    let md5filename = isCached(
+                        options.cacheDir,
+                        `${language};${text}`,
+                        fileExt,
+                        adapter.config.cacheExpiryDays,
+                    );
                     if (md5filename) {
                         fileName = md5filename;
                     }
@@ -530,11 +559,14 @@ async function processTasks() {
     tasks.shift();
 
     if (tasks.length) {
-        timeoutRunning = setTimeout(() => {
-            timeoutRunning = null;
-            processing = false;
-            processTasks();
-        }, 100 + duration * 1000);
+        timeoutRunning = setTimeout(
+            () => {
+                timeoutRunning = null;
+                processing = false;
+                processTasks();
+            },
+            100 + duration * 1000,
+        );
     } else {
         processing = false;
     }
@@ -548,7 +580,7 @@ async function uploadFile(file) {
             // ignore not a file
             return;
         }
-    } catch (e) {
+    } catch {
         // ignore not a file
         return;
     }
@@ -556,7 +588,7 @@ async function uploadFile(file) {
     let data;
     try {
         data = await adapter.readFileAsync(adapter.namespace, `tts.userfiles/${file}`);
-    } catch (error) {
+    } catch {
         // ignore error
     }
 
@@ -577,7 +609,7 @@ async function uploadFiles() {
         let obj;
         try {
             obj = await adapter.getForeignObjectAsync(adapter.namespace);
-        } catch (e) {
+        } catch {
             // ignore
         }
 
@@ -602,8 +634,8 @@ async function uploadFiles() {
 async function prepareAnnounceFiles(config) {
     if (config.announce) {
         config.annoDuration = parseInt(config.annoDuration) || 0;
-        config.annoTimeout  = parseInt(config.annoTimeout)  || 15;
-        config.annoVolume   = parseInt(config.annoVolume)   || 70; // percent from actual volume
+        config.annoTimeout = parseInt(config.annoTimeout) || 15;
+        config.annoVolume = parseInt(config.annoVolume) || 70; // percent from actual volume
 
         // remove "tts.userfiles/" from file name
         const fileName = config.announce.split('/').pop();
@@ -780,7 +812,9 @@ async function start() {
                 try {
                     engine = fs.readFileSync(path.join(options.cacheDir, 'engine.txt')).toString();
                 } catch (e) {
-                    adapter.log.error(`Cannot read file "${path.join(options.cacheDir, 'engine.txt')}: ${e.toString()}`);
+                    adapter.log.error(
+                        `Cannot read file "${path.join(options.cacheDir, 'engine.txt')}: ${e.toString()}`,
+                    );
                 }
             }
             // If engine changed
@@ -788,19 +822,28 @@ async function start() {
                 // Delete all files in this directory
                 const files = fs.readdirSync(options.cacheDir);
                 for (let f = 0; f < files.length; f++) {
-                    if (files[f] === 'engine.txt') continue;
+                    if (files[f] === 'engine.txt') {
+                        continue;
+                    }
                     try {
-                        if (fs.existsSync(path.join(options.cacheDir, files[f])) && fs.lstatSync(path.join(options.cacheDir, files[f])).isDirectory()) {
+                        if (
+                            fs.existsSync(path.join(options.cacheDir, files[f])) &&
+                            fs.lstatSync(path.join(options.cacheDir, files[f])).isDirectory()
+                        ) {
                             fs.unlinkSync(path.join(options.cacheDir, files[f]));
                         }
                     } catch (e) {
-                        adapter.log.error(`Cannot remove cache file "${path.join(options.cacheDir, files[f])}: ${e.toString()}`);
+                        adapter.log.error(
+                            `Cannot remove cache file "${path.join(options.cacheDir, files[f])}: ${e.toString()}`,
+                        );
                     }
                 }
                 try {
                     fs.writeFileSync(path.join(options.cacheDir, 'engine.txt'), adapter.config.engine);
                 } catch (e) {
-                    adapter.log.error(`Cannot write file "${path.join(options.cacheDir, 'engine.txt')}: ${e.toString()}`);
+                    adapter.log.error(
+                        `Cannot write file "${path.join(options.cacheDir, 'engine.txt')}: ${e.toString()}`,
+                    );
                 }
             }
         }
@@ -810,11 +853,12 @@ async function start() {
     await adapter.setStateAsync('tts.playing', false, true);
 
     // calculate weblink for devices that require it
-    if ((adapter.config.type === 'sonos') ||
-        (adapter.config.type === 'heos') ||
-        (adapter.config.type === 'chromecast') ||
-        (adapter.config.type === 'mpd') ||
-        (adapter.config.type === 'googleHome')
+    if (
+        adapter.config.type === 'sonos' ||
+        adapter.config.type === 'heos' ||
+        adapter.config.type === 'chromecast' ||
+        adapter.config.type === 'mpd' ||
+        adapter.config.type === 'googleHome'
     ) {
         const obj = await adapter.getForeignObjectAsync(`system.adapter.${adapter.config.webInstance}`);
         options.webLink = getWebLink(obj, adapter.config.webServer, adapter.config.webInstance);
@@ -827,7 +871,7 @@ async function start() {
     let textState;
     try {
         textState = await adapter.getStateAsync('tts.text');
-    } catch (e) {
+    } catch {
         // ignore
     }
 
@@ -842,7 +886,7 @@ async function start() {
         options.isCached = isCached;
         options.getWebLink = getWebLink;
         options.MP3FILE = MP3FILE;
-        text2speech   = new Text2Speech(adapter, options);
+        text2speech = new Text2Speech(adapter, options);
         speech2device = new Speech2Device(adapter, options);
     } catch (e) {
         adapter.log.error(`Cannot initialize engines: ${e.toString()}`);
@@ -853,7 +897,7 @@ async function start() {
     let volumeState;
     try {
         volumeState = await adapter.getStateAsync('tts.volume');
-    } catch (e) {
+    } catch {
         // ignore
     }
 
@@ -880,14 +924,18 @@ function getWebLink(obj, webServer, webInstance) {
     if (obj && obj.native) {
         webLink = 'http';
         if (obj.native.auth) {
-            adapter.log.error(`Cannot use server "${obj._id}" with authentication for sonos/heos/chromecast. Select other or create another one.`);
+            adapter.log.error(
+                `Cannot use server "${obj._id}" with authentication for sonos/heos/chromecast. Select other or create another one.`,
+            );
         } else {
             if (obj.native.secure) {
                 webLink += 's';
             }
             webLink += '://';
             if (obj.native.bind === 'localhost' || obj.native.bind === '127.0.0.1') {
-                adapter.log.error(`Selected web server "${obj._id}" is only on local device available. Select other or create another one.`);
+                adapter.log.error(
+                    `Selected web server "${obj._id}" is only on local device available. Select other or create another one.`,
+                );
             } else {
                 if (obj.native.bind === '0.0.0.0') {
                     webLink += webServer || adapter.config.webServer;
@@ -899,7 +947,9 @@ function getWebLink(obj, webServer, webInstance) {
             webLink += `:${obj.native.port}`;
         }
     } else {
-        adapter.log.error(`Cannot read information about "${webInstance || adapter.config.webInstance}". No web server is active`);
+        adapter.log.error(
+            `Cannot read information about "${webInstance || adapter.config.webInstance}". No web server is active`,
+        );
     }
 
     return webLink;
@@ -908,17 +958,15 @@ function getWebLink(obj, webServer, webInstance) {
 async function main() {
     if (
         (process.argv && process.argv.includes('--install')) ||
-        (
-            (!process.argv || !process.argv.includes('--force')) && // If no arguments or no --force
+        ((!process.argv || !process.argv.includes('--force')) && // If no arguments or no --force
             (!adapter.common || !adapter.common.enabled) && // And adapter is not enabled
-            !process.argv.includes('--debug') // and not debug
-        )
+            !process.argv.includes('--debug')) // and not debug
     ) {
         adapter.log.info('Install process. Upload files and stop.');
         // Check if files exists in data storage
         await uploadFiles();
         if (adapter.stop) {
-            adapter.stop()
+            adapter.stop();
         } else {
             process.exit();
         }
