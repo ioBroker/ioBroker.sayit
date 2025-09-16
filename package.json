@@ -47,33 +47,37 @@
     "mp3-duration": "^1.1.0"
   },
   "devDependencies": {
+    "typescript": "^5.9.2",
     "@alcalzone/release-script": "^3.8.0",
     "@alcalzone/release-script-plugin-iobroker": "^3.7.2",
     "@alcalzone/release-script-plugin-license": "^3.7.0",
     "@iobroker/adapter-dev": "^1.4.0",
     "@iobroker/eslint-config": "^2.0.2",
     "@iobroker/legacy-testing": "^2.0.2",
-    "mocha": "^11.7.2",
-    "chai": "^4.5.0"
+    "@types/jsftp": "^2.1.5",
+    "@types/mdns": "^0.0.38",
+    "chai": "^4.5.0",
+    "mocha": "^11.7.2"
   },
   "bugs": {
     "url": "https://github.com/ioBroker/ioBroker.sayit/issues"
   },
-  "main": "main.js",
+  "main": "build/main.js",
   "files": [
     "admin/",
     "cmdmp3/",
-    "lib/",
+    "build/",
     "mp3/",
     "nircmd/",
     "say/",
     "io-package.json",
-    "LICENSE",
-    "main.js"
+    "LICENSE"
   ],
   "scripts": {
     "test": "node node_modules/mocha/bin/mocha --exit",
-    "install": "node main.js --install",
+    "build": "tsc -p tsconfig.build.json",
+    "prepublishOnly": "npm run build",
+    "install": "node build/main.js --install",
     "release": "release-script",
     "release-patch": "release-script patch --yes",
     "release-minor": "release-script minor --yes",

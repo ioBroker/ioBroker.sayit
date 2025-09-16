@@ -1,1079 +1,1079 @@
 {
-  "type": "tabs",
-  "i18n": true,
-  "items": {
-    "_player": {
-      "type": "panel",
-      "label": "Player",
-      "items": {
-        "type": {
-          "type": "select",
-          "noTranslation": true,
-          "label": "Type",
-          "options": [
-            {
-              "value": "browser",
-              "label": "Browser"
-            },
-            {
-              "value": "mp24ftp",
-              "label": "MediaPlayer24+FTP"
-            },
-            {
-              "value": "mp24",
-              "label": "MediaPlayer24"
-            },
-            {
-              "value": "system",
-              "label": "System"
-            },
-            {
-              "value": "windows",
-              "label": "Windows default"
-            },
-            {
-              "value": "sonos",
-              "label": "Sonos"
-            },
-            {
-              "value": "heos",
-              "label": "Heos"
-            },
-            {
-              "value": "chromecast",
-              "label": "Chromecast"
-            },
-            {
-              "value": "mpd",
-              "label": "MPD"
-            },
-            {
-              "value": "googleHome",
-              "label": "Google Home"
+    "type": "tabs",
+    "i18n": true,
+    "items": {
+        "_player": {
+            "type": "panel",
+            "label": "Player",
+            "items": {
+                "type": {
+                    "type": "select",
+                    "noTranslation": true,
+                    "label": "Type",
+                    "options": [
+                        {
+                            "value": "browser",
+                            "label": "Browser"
+                        },
+                        {
+                            "value": "mp24ftp",
+                            "label": "MediaPlayer24+FTP"
+                        },
+                        {
+                            "value": "mp24",
+                            "label": "MediaPlayer24"
+                        },
+                        {
+                            "value": "system",
+                            "label": "System"
+                        },
+                        {
+                            "value": "windows",
+                            "label": "Windows default"
+                        },
+                        {
+                            "value": "sonos",
+                            "label": "Sonos"
+                        },
+                        {
+                            "value": "heos",
+                            "label": "Heos"
+                        },
+                        {
+                            "value": "chromecast",
+                            "label": "Chromecast"
+                        },
+                        {
+                            "value": "mpd",
+                            "label": "MPD"
+                        },
+                        {
+                            "value": "googleHome",
+                            "label": "Google Home"
+                        }
+                    ],
+                    "sm": 12,
+                    "md": 6,
+                    "lg": 4
+                },
+                "systemCommand": {
+                    "newLine": true,
+                    "type": "text",
+                    "label": "System command",
+                    "hidden": "data.type !== 'system'",
+                    "help": "optional - If player does not work",
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 2
+                },
+                "systemPlayer": {
+                    "type": "select",
+                    "label": "Linux player",
+                    "hidden": "data.type !== 'system' || data.command",
+                    "noTranslation": true,
+                    "options": [
+                        {
+                            "value": "mpg321",
+                            "label": "mpg321"
+                        },
+                        {
+                            "value": "omxplayer",
+                            "label": "omxplayer"
+                        },
+                        {
+                            "value": "mplayer",
+                            "label": "mplayer"
+                        }
+                    ],
+                    "help": "Ignore for non linux OS",
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 2
+                },
+                "announce": {
+                    "newLine": true,
+                    "type": "fileSelector",
+                    "fileTypes": "audio",
+                    "pattern": "tts.userfiles/*.mp3",
+                    "objectID": "sayit.%INSTANCE%",
+                    "hidden": "data.type === 'googleHome'",
+                    "noTranslation": true,
+                    "upload": "tts.userfiles/",
+                    "sm": 12,
+                    "md": 6,
+                    "lg": 4
+                },
+                "annoTimeout": {
+                    "newLine": true,
+                    "type": "number",
+                    "label": "Announce timeout",
+                    "help": "in seconds",
+                    "hidden": "(data.type !== 'mp24' && data.type !== 'windows') || !data.announce",
+                    "min": 0,
+                    "max": 1000,
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 2
+                },
+                "annoDuration": {
+                    "type": "number",
+                    "label": "Announce duration",
+                    "min": 0,
+                    "max": 99,
+                    "help": "in seconds",
+                    "hidden": "(data.type !== 'mp24' && data.type !== 'windows') || !data.announce",
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 2
+                },
+                "annoVolume": {
+                    "type": "number",
+                    "label": "Announce volume",
+                    "min": 0,
+                    "max": 100,
+                    "help": "in % to playing volume",
+                    "hidden": "(data.type !== 'mp24' && data.type !== 'windows') || !data.announce",
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 2
+                },
+                "cache": {
+                    "newLine": true,
+                    "type": "checkbox",
+                    "label": "Cache",
+                    "help": "Cache generated files",
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 2
+                },
+                "cacheExpiryDays": {
+                    "type": "number",
+                    "min": 0,
+                    "max": 1000,
+                    "label": "Cache-Expiry",
+                    "help": "in days",
+                    "hidden": "!data.cache",
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 2
+                },
+                "chromecastDevice": {
+                    "newLine": true,
+                    "type": "selectSendTo",
+                    "label": "Device",
+                    "command": "browseChromecast",
+                    "noTranslation": true,
+                    "hidden": "data.type !== 'chromecast'",
+                    "sm": 12,
+                    "md": 6,
+                    "lg": 4
+                },
+                "googleHomeServer": {
+                    "newLine": true,
+                    "type": "autocompleteSendTo",
+                    "command": "browseGoogleHome",
+                    "label": "Google home server",
+                    "hidden": "data.type !== 'googleHome'",
+                    "sm": 12,
+                    "md": 6,
+                    "lg": 4
+                },
+                "mp24Server": {
+                    "newLine": true,
+                    "type": "text",
+                    "label": "Server IP Address",
+                    "hidden": "data.type !== 'mp24ftp' && data.type !== 'mp24'",
+                    "sm": 12,
+                    "md": 6,
+                    "lg": 4
+                },
+                "ftpPort": {
+                    "newLine": true,
+                    "type": "number",
+                    "label": "FTP Port",
+                    "hidden": "data.type !== 'mp24ftp'",
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 2
+                },
+                "ftpUser": {
+                    "type": "text",
+                    "label": "FTP User",
+                    "hidden": "data.type !== 'mp24ftp'",
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 2
+                },
+                "ftpPassword": {
+                    "type": "password",
+                    "label": "FTP Password",
+                    "hidden": "data.type !== 'mp24ftp'",
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 2
+                },
+                "sonosDevice": {
+                    "type": "selectSendTo",
+                    "label": "Device",
+                    "hidden": "data.type !== 'sonos'",
+                    "command": "browseSonos",
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 2
+                },
+                "heosDevice": {
+                    "type": "selectSendTo",
+                    "label": "Device",
+                    "hidden": "data.type !== 'heos'",
+                    "command": "browseHeos",
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 2
+                },
+                "mpdInstance": {
+                    "type": "instance",
+                    "label": "Device",
+                    "hidden": "data.type !== 'mpd'",
+                    "adapter": "mpd",
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 2
+                },
+                "browserInstance": {
+                    "newLine": true,
+                    "type": "text",
+                    "label": "Browser instance",
+                    "hidden": "data.type !== 'browser'",
+                    "sm": 6,
+                    "md": 3,
+                    "lg": 2
+                },
+                "browserVis": {
+                    "newLine": true,
+                    "type": "select",
+                    "label": "Vis instances",
+                    "options": [
+                        {
+                            "value": "",
+                            "label": "vis.0 and vis-2.0"
+                        },
+                        {
+                            "value": "1",
+                            "label": "vis.0 (deprecated)"
+                        },
+                        {
+                            "value": "2",
+                            "label": "vis-2.0 (New)"
+                        }
+                    ],
+                    "hidden": "data.type !== 'browser'",
+                    "sm": 6,
+                    "md": 3,
+                    "lg": 2
+                },
+                "webInstance": {
+                    "newLine": true,
+                    "type": "instance",
+                    "adapter": "web",
+                    "label": "Web instance",
+                    "hidden": "data.type !== 'sonos' && data.type !== 'heos' && data.type !== 'chromecast' && data.type !== 'mpd' && data.type !== 'googleHome'",
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 2
+                },
+                "webServer": {
+                    "type": "ip",
+                    "label": "Web server IP",
+                    "hidden": "data.type !== 'sonos' && data.type !== 'heos' && data.type !== 'chromecast' && data.type !== 'mpd' && data.type !== 'googleHome'",
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 2
+                },
+                "_test": {
+                    "newLine": true,
+                    "variant": "contained",
+                    "type": "sendTo",
+                    "label": "Test",
+                    "command": "test",
+                    "jsonData": "${JSON.stringify(data)}",
+                    "icon": "send"
+                }
             }
-          ],
-          "sm": 12,
-          "md": 6,
-          "lg": 4
         },
-        "systemCommand": {
-          "newLine": true,
-          "type": "text",
-          "label": "System command",
-          "hidden": "data.type !== 'system'",
-          "help": "optional - If player does not work",
-          "sm": 6,
-          "md": 4,
-          "lg": 2
-        },
-        "systemPlayer": {
-          "type": "select",
-          "label": "Linux player",
-          "hidden": "data.type !== 'system' || data.command",
-          "noTranslation": true,
-          "options": [
-            {
-              "value": "mpg321",
-              "label": "mpg321"
-            },
-            {
-              "value": "omxplayer",
-              "label": "omxplayer"
-            },
-            {
-              "value": "mplayer",
-              "label": "mplayer"
+        "_engine": {
+            "type": "panel",
+            "label": "Engine",
+            "items": {
+                "engine": {
+                    "type": "select",
+                    "noTranslation": true,
+                    "label": "Language",
+                    "options": [
+                        {
+                            "value": "en",
+                            "label": "Google - English"
+                        },
+                        {
+                            "value": "de",
+                            "label": "Google - Deutsch"
+                        },
+                        {
+                            "value": "pl",
+                            "label": "Google - Polski"
+                        },
+                        {
+                            "value": "uk",
+                            "label": "Google - Ukrainian"
+                        },
+                        {
+                            "value": "ru",
+                            "label": "Google - Русский"
+                        },
+                        {
+                            "value": "it",
+                            "label": "Google - Italiano"
+                        },
+                        {
+                            "value": "pt",
+                            "label": "Google - Português"
+                        },
+                        {
+                            "value": "es",
+                            "label": "Google - Espaniol"
+                        },
+                        {
+                            "value": "fr",
+                            "label": "Google - Français"
+                        },
+                        {
+                            "value": "nl",
+                            "label": "Google - Nederlands"
+                        },
+                        {
+                            "value": "zh-CN",
+                            "label": "Google - 简体中文"
+                        },
+                        {
+                            "value": "ru_YA",
+                            "label": "Yandex - Русский"
+                        },
+                        {
+                            "value": "ru_YA_CLOUD",
+                            "label": "Yandex Cloud - Русский"
+                        },
+                        {
+                            "value": "ru-RU_CLOUD_Female",
+                            "label": "Cloud - Русский - Татьяна"
+                        },
+                        {
+                            "value": "ru-RU_CLOUD_Male",
+                            "label": "Cloud - Русский - Максим"
+                        },
+                        {
+                            "value": "de-DE_CLOUD_Female",
+                            "label": "Cloud - Deutsch - Marlene"
+                        },
+                        {
+                            "value": "de-DE_CLOUD_Male",
+                            "label": "Cloud - Deutsch - Hans"
+                        },
+                        {
+                            "value": "de-DE_CLOUD_Female_Vicki",
+                            "label": "Cloud - Deutsch - Vicki"
+                        },
+                        {
+                            "value": "de-DE_CLOUD_Male_Daniel",
+                            "label": "Cloud - Deutsch - Daniel"
+                        },
+                        {
+                            "value": "de-AT_CLOUD_Female_Hannah",
+                            "label": "Cloud - Österreich - Hannah"
+                        },
+                        {
+                            "value": "en-US_CLOUD_Female",
+                            "label": "Cloud - en-US - Female - Salli"
+                        },
+                        {
+                            "value": "en-US_CLOUD_Male",
+                            "label": "Cloud - en-US - Male - Joey"
+                        },
+                        {
+                            "value": "da-DK_CLOUD_Female",
+                            "label": "Cloud - da-DK - Female - Naja"
+                        },
+                        {
+                            "value": "da-DK_CLOUD_Male",
+                            "label": "Cloud - da-DK - Male - Mads"
+                        },
+                        {
+                            "value": "en-AU_CLOUD_Female",
+                            "label": "Cloud - en-AU - Female - Nicole"
+                        },
+                        {
+                            "value": "en-AU_CLOUD_Male",
+                            "label": "Cloud - en-AU - Male - Russell"
+                        },
+                        {
+                            "value": "en-GB_CLOUD_Female_Amy",
+                            "label": "Cloud - en-GB - Female - Amy"
+                        },
+                        {
+                            "value": "en-GB_CLOUD_Male",
+                            "label": "Cloud - en-GB - Male - Brian"
+                        },
+                        {
+                            "value": "en-GB_CLOUD_Female_Emma",
+                            "label": "Cloud - en-GB - Female - Emma"
+                        },
+                        {
+                            "value": "en-GB_CLOUD_Male_Arthur",
+                            "label": "Cloud - en-GB - Male - Arthur"
+                        },
+                        {
+                            "value": "en-GB-WLS_CLOUD_Female",
+                            "label": "Cloud - en-GB-WLS - Female - Gwyneth"
+                        },
+                        {
+                            "value": "en-GB-WLS_CLOUD_Male",
+                            "label": "Cloud - en-GB-WLS - Male - Geraint"
+                        },
+                        {
+                            "value": "cy-GB_CLOUD_Female",
+                            "label": "Cloud - cy-GB - Female - Gwyneth"
+                        },
+                        {
+                            "value": "cy-GB_CLOUD_Male",
+                            "label": "Cloud - cy-GB - Male - Geraint"
+                        },
+                        {
+                            "value": "en-IN_CLOUD_Female",
+                            "label": "Cloud - en-IN - Female - Raveena"
+                        },
+                        {
+                            "value": "en-US_CLOUD_Male_Chipmunk",
+                            "label": "Cloud - en-US - Male - Chipmunk"
+                        },
+                        {
+                            "value": "en-US_CLOUD_Male_Eric",
+                            "label": "Cloud - en-US - Male - Eric"
+                        },
+                        {
+                            "value": "en-US_CLOUD_Female_Ivy",
+                            "label": "Cloud - en-US - Female - Ivy"
+                        },
+                        {
+                            "value": "en-US_CLOUD_Female_Jennifer",
+                            "label": "Cloud - en-US - Female - Jennifer"
+                        },
+                        {
+                            "value": "en-US_CLOUD_Male_Justin",
+                            "label": "Cloud - en-US - Male - Justin"
+                        },
+                        {
+                            "value": "en-US_CLOUD_Female_Kendra",
+                            "label": "Cloud - en-US - Female - Kendra"
+                        },
+                        {
+                            "value": "en-US_CLOUD_Female_Kimberly",
+                            "label": "Cloud - en-US - Female - Kimberly"
+                        },
+                        {
+                            "value": "es-ES_CLOUD_Female",
+                            "label": "Cloud - es-ES - Female - Conchita"
+                        },
+                        {
+                            "value": "es-ES_CLOUD_Male",
+                            "label": "Cloud - es-ES - Male - Enrique"
+                        },
+                        {
+                            "value": "es-US_CLOUD_Female",
+                            "label": "Cloud - es-US - Female - Penelope"
+                        },
+                        {
+                            "value": "es-US_CLOUD_Male",
+                            "label": "Cloud - es-US - Male - Miguel"
+                        },
+                        {
+                            "value": "fr-CA_CLOUD_Female",
+                            "label": "Cloud - fr-CA - Female - Chantal"
+                        },
+                        {
+                            "value": "fr-FR_CLOUD_Female",
+                            "label": "Cloud - fr-FR - Female - Celine"
+                        },
+                        {
+                            "value": "fr-FR_CLOUD_Male",
+                            "label": "Cloud - fr-FR - Male - Mathieu"
+                        },
+                        {
+                            "value": "is-IS_CLOUD_Female",
+                            "label": "Cloud - is-IS - Female - Dora"
+                        },
+                        {
+                            "value": "is-IS_CLOUD_Male",
+                            "label": "Cloud - is-IS - Male - Karl"
+                        },
+                        {
+                            "value": "it-IT_CLOUD_Female",
+                            "label": "Cloud - it-IT - Female - Carla"
+                        },
+                        {
+                            "value": "it-IT_CLOUD_Male",
+                            "label": "Cloud - it-IT - Male - Giorgio"
+                        },
+                        {
+                            "value": "nb-NO_CLOUD_Female",
+                            "label": "Cloud - nb-NO - Female - Liv"
+                        },
+                        {
+                            "value": "nl-NL_CLOUD_Female",
+                            "label": "Cloud - nl-NL - Female - Lotte"
+                        },
+                        {
+                            "value": "nl-NL_CLOUD_Male",
+                            "label": "Cloud - nl-NL - Male - Ruben"
+                        },
+                        {
+                            "value": "pl-PL_CLOUD_Female_Agnieszka",
+                            "label": "Cloud - pl-PL - Female - Agnieszka"
+                        },
+                        {
+                            "value": "pl-PL_CLOUD_Male_Jacek",
+                            "label": "Cloud - pl-PL - Male - Jacek"
+                        },
+                        {
+                            "value": "pl-PL_CLOUD_Female_Ewa",
+                            "label": "Cloud - pl-PL - Female - Ewa"
+                        },
+                        {
+                            "value": "pl-PL_CLOUD_Male_Jan",
+                            "label": "Cloud - pl-PL - Male - Jan"
+                        },
+                        {
+                            "value": "pl-PL_CLOUD_Female",
+                            "label": "Cloud - pl-PL - Female - Maja"
+                        },
+                        {
+                            "value": "pt-BR_CLOUD_Female",
+                            "label": "Cloud - pt-BR - Female - Vitoria"
+                        },
+                        {
+                            "value": "pt-BR_CLOUD_Male",
+                            "label": "Cloud - pt-BR - Male - Ricardo"
+                        },
+                        {
+                            "value": "pt-BR_CLOUD_Female_Camila",
+                            "label": "Cloud - pt-BR - Female - Camila"
+                        },
+                        {
+                            "value": "pt-PT_CLOUD_Male",
+                            "label": "Cloud - pt-PT - Male - Cristiano"
+                        },
+                        {
+                            "value": "pt-PT_CLOUD_Female",
+                            "label": "Cloud - pt-PT - Female - Ines"
+                        },
+                        {
+                            "value": "ro-RO_CLOUD_Female",
+                            "label": "Cloud - ro-RO - Female - Carmen"
+                        },
+                        {
+                            "value": "sv-SE_CLOUD_Female",
+                            "label": "Cloud - sv-SE - Female - Astrid"
+                        },
+                        {
+                            "value": "tr-TR_CLOUD_Female",
+                            "label": "Cloud - tr-TR - Female - Filiz"
+                        },
+                        {
+                            "value": "ko-KR_CLOUD_Female",
+                            "label": "Cloud - ko-KR - Female - Seoyeon"
+                        },
+                        {
+                            "value": "no-NO_CLOUD_Female_Liv",
+                            "label": "Cloud - no-NO - Female - Liv"
+                        },
+                        {
+                            "value": "no-NO_CLOUD_Female_Ida",
+                            "label": "Cloud - no-NO - Female - Ida"
+                        },
+                        {
+                            "value": "en-US",
+                            "label": "PicoTTS - Englisch US"
+                        },
+                        {
+                            "value": "en-GB",
+                            "label": "PicoTTS - Englisch GB"
+                        },
+                        {
+                            "value": "de-DE",
+                            "label": "PicoTTS - Deutsch"
+                        },
+                        {
+                            "value": "it-IT",
+                            "label": "PicoTTS - Italiano"
+                        },
+                        {
+                            "value": "es-ES",
+                            "label": "PicoTTS - Espaniol"
+                        },
+                        {
+                            "value": "fr-FR",
+                            "label": "PicoTTS - Français"
+                        },
+                        {
+                            "value": "en_CoquiTTS",
+                            "label": "CoquiTTS - English"
+                        },
+                        {
+                            "value": "es_CoquiTTS",
+                            "label": "CoquiTTS - Espaniol"
+                        },
+                        {
+                            "value": "fr_CoquiTTS",
+                            "label": "CoquiTTS - Français"
+                        },
+                        {
+                            "value": "de_CoquiTTS",
+                            "label": "CoquiTTS - Deutsch"
+                        },
+                        {
+                            "value": "nl_CoquiTTS",
+                            "label": "CoquiTTS - Dutch"
+                        },
+                        {
+                            "value": "ja_CoquiTTS",
+                            "label": "CoquiTTS - Japan"
+                        },
+                        {
+                            "value": "ru-RU_AP_Female",
+                            "label": "AWS Polly - Русский - Татьяна"
+                        },
+                        {
+                            "value": "ru-RU_AP_Male",
+                            "label": "AWS Polly - Русский - Максим"
+                        },
+                        {
+                            "value": "de-DE_AP_Female",
+                            "label": "AWS Polly - Deutsch - Marlene"
+                        },
+                        {
+                            "value": "de-DE_AP_Female_Vicki",
+                            "label": "AWS Polly - Deutsch - Vicki"
+                        },
+                        {
+                            "value": "de-DE_AP_Male",
+                            "label": "AWS Polly - Deutsch - Hans"
+                        },
+                        {
+                            "value": "de-DE_AP_Male_Daniel",
+                            "label": "AWS Polly - Deutsch - Daniel"
+                        },
+                        {
+                            "value": "de-AT_AP_Female_Hannah",
+                            "label": "AWS Polly - Österreich - Hannah"
+                        },
+                        {
+                            "value": "en-US_AP_Female",
+                            "label": "AWS Polly - en-US - Female - Salli"
+                        },
+                        {
+                            "value": "en-US_AP_Male",
+                            "label": "AWS Polly - en-US - Male - Joey"
+                        },
+                        {
+                            "value": "da-DK_AP_Female",
+                            "label": "AWS Polly - da-DK - Female - Naja"
+                        },
+                        {
+                            "value": "da-DK_AP_Male",
+                            "label": "AWS Polly - da-DK - Male - Mads"
+                        },
+                        {
+                            "value": "en-AU_AP_Female",
+                            "label": "AWS Polly - en-AU - Female - Nicole"
+                        },
+                        {
+                            "value": "en-AU_AP_Male",
+                            "label": "AWS Polly - en-AU - Male - Russell"
+                        },
+                        {
+                            "value": "en-GB_AP_Female_Amy",
+                            "label": "AWS Polly - en-GB - Female - Amy"
+                        },
+                        {
+                            "value": "en-GB_AP_Male",
+                            "label": "AWS Polly - en-GB - Male - Brian"
+                        },
+                        {
+                            "value": "en-GB_AP_Female_Emma",
+                            "label": "AWS Polly - en-GB - Female - Emma"
+                        },
+                        {
+                            "value": "en-GB-WLS_AP_Female",
+                            "label": "AWS Polly - en-GB-WLS - Female - Gwyneth"
+                        },
+                        {
+                            "value": "en-GB-WLS_AP_Male",
+                            "label": "AWS Polly - en-GB-WLS - Male - Geraint"
+                        },
+                        {
+                            "value": "cy-GB_AP_Female",
+                            "label": "AWS Polly - cy-GB - Female - Gwyneth"
+                        },
+                        {
+                            "value": "cy-GB_AP_Male",
+                            "label": "AWS Polly - cy-GB - Male - Geraint"
+                        },
+                        {
+                            "value": "en-IN_AP_Female",
+                            "label": "AWS Polly - en-IN - Female - Raveena"
+                        },
+                        {
+                            "value": "en-US_AP_Male_Chipmunk",
+                            "label": "AWS Polly - en-US - Male - Chipmunk"
+                        },
+                        {
+                            "value": "en-US_AP_Male_Eric",
+                            "label": "AWS Polly - en-US - Male - Eric"
+                        },
+                        {
+                            "value": "en-US_AP_Female_Ivy",
+                            "label": "AWS Polly - en-US - Female - Ivy"
+                        },
+                        {
+                            "value": "en-US_AP_Female_Jennifer",
+                            "label": "AWS Polly - en-US - Female - Jennifer"
+                        },
+                        {
+                            "value": "en-US_AP_Male_Justin",
+                            "label": "AWS Polly - en-US - Male - Justin"
+                        },
+                        {
+                            "value": "en-US_AP_Female_Kendra",
+                            "label": "AWS Polly - en-US - Female - Kendra"
+                        },
+                        {
+                            "value": "en-US_AP_Female_Kimberly",
+                            "label": "AWS Polly - en-US - Female - Kimberly"
+                        },
+                        {
+                            "value": "es-ES_AP_Female",
+                            "label": "AWS Polly - es-ES - Female - Conchita"
+                        },
+                        {
+                            "value": "es-ES_AP_Male",
+                            "label": "AWS Polly - es-ES - Male - Enrique"
+                        },
+                        {
+                            "value": "es-US_AP_Female",
+                            "label": "AWS Polly - es-US - Female - Penelope"
+                        },
+                        {
+                            "value": "es-US_AP_Male",
+                            "label": "AWS Polly - es-US - Male - Miguel"
+                        },
+                        {
+                            "value": "fr-CA_AP_Female",
+                            "label": "AWS Polly - fr-CA - Female - Chantal"
+                        },
+                        {
+                            "value": "fr-FR_AP_Female",
+                            "label": "AWS Polly - fr-FR - Female - Celine"
+                        },
+                        {
+                            "value": "fr-FR_AP_Male",
+                            "label": "AWS Polly - fr-FR - Male - Mathieu"
+                        },
+                        {
+                            "value": "is-IS_AP_Female",
+                            "label": "AWS Polly - is-IS - Female - Dora"
+                        },
+                        {
+                            "value": "is-IS_AP_Male",
+                            "label": "AWS Polly - is-IS - Male - Karl"
+                        },
+                        {
+                            "value": "it-IT_AP_Female",
+                            "label": "AWS Polly - it-IT - Female - Carla"
+                        },
+                        {
+                            "value": "it-IT_AP_Male",
+                            "label": "AWS Polly - it-IT - Male - Giorgio"
+                        },
+                        {
+                            "value": "nb-NO_AP_Female",
+                            "label": "AWS Polly - nb-NO - Female - Liv"
+                        },
+                        {
+                            "value": "nl-NL_AP_Female",
+                            "label": "AWS Polly - nl-NL - Female - Lotte"
+                        },
+                        {
+                            "value": "nl-NL_AP_Male",
+                            "label": "AWS Polly - nl-NL - Male - Ruben"
+                        },
+                        {
+                            "value": "pl-PL_AP_Female_Agnieszka",
+                            "label": "AWS Polly - pl-PL - Female - Agnieszka"
+                        },
+                        {
+                            "value": "pl-PL_AP_Male_Jacek",
+                            "label": "AWS Polly - pl-PL - Male - Jacek"
+                        },
+                        {
+                            "value": "pl-PL_AP_Female_Ewa",
+                            "label": "AWS Polly - pl-PL - Female - Ewa"
+                        },
+                        {
+                            "value": "pl-PL_AP_Male_Jan",
+                            "label": "AWS Polly - pl-PL - Male - Jan"
+                        },
+                        {
+                            "value": "pl-PL_AP_Female",
+                            "label": "AWS Polly - pl-PL - Female - Maja"
+                        },
+                        {
+                            "value": "pt-BR_AP_Female",
+                            "label": "AWS Polly - pt-BR - Female - Vitoria"
+                        },
+                        {
+                            "value": "pt-BR_AP_Male",
+                            "label": "AWS Polly - pt-BR - Male - Ricardo"
+                        },
+                        {
+                            "value": "pt-PT_AP_Male",
+                            "label": "AWS Polly - pt-PT - Male - Cristiano"
+                        },
+                        {
+                            "value": "pt-PT_AP_Female",
+                            "label": "AWS Polly - pt-PT - Female - Ines"
+                        },
+                        {
+                            "value": "ro-RO_AP_Female",
+                            "label": "AWS Polly - ro-RO - Female - Carmen"
+                        },
+                        {
+                            "value": "sv-SE_AP_Female",
+                            "label": "AWS Polly - sv-SE - Female - Astrid"
+                        },
+                        {
+                            "value": "tr-TR_AP_Female",
+                            "label": "AWS Polly - tr-TR - Female - Filiz"
+                        },
+                        {
+                            "value": "ko-KR_AP_Female",
+                            "label": "AWS Polly - ko-KR - Female - Seoyeon"
+                        },
+                        {
+                            "value": "no-NO_AP_Female_Liv",
+                            "label": "AWS Polly - no-NO - Female - Liv"
+                        },
+                        {
+                            "value": "no-NO_AP_Female_Ida",
+                            "label": "AWS Polly - no-NO - Female - Ida"
+                        }
+                    ],
+                    "sm": 12,
+                    "md": 6,
+                    "lg": 4
+                },
+                "yandexKey": {
+                    "newLine": true,
+                    "type": "text",
+                    "hidden": "data.engine != 'ru_YA' && data.engine != 'ru_YA_CLOUD'",
+                    "label": "API Key",
+                    "sm": 12,
+                    "md": 6,
+                    "lg": 4
+                },
+                "yandexCloudVoice": {
+                    "newLine": true,
+                    "type": "select",
+                    "label": "Voice",
+                    "hidden": "data.engine != 'ru_YA_CLOUD'",
+                    "noTranslation": true,
+                    "options": [
+                        { "value": "alyss", "label": "alyss" },
+                        { "value": "oksana", "label": "oksana" },
+                        { "value": "jane", "label": "jane" },
+                        { "value": "zahar", "label": "zahar" },
+                        { "value": "nick", "label": "nick" },
+                        { "value": "ermil", "label": "ermil" },
+                        { "value": "alena", "label": "alena Premium" },
+                        { "value": "filipp", "label": "filipp Premium" }
+                    ],
+                    "sm": 12,
+                    "md": 6,
+                    "lg": 4
+                },
+                "yandexVoice": {
+                    "newLine": true,
+                    "type": "select",
+                    "label": "Voice",
+                    "hidden": "data.engine != 'ru_YA'",
+                    "noTranslation": true,
+                    "options": [
+                        { "value": "jane", "label": "jane" },
+                        { "value": "zahar", "label": "zahar" }
+                    ],
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 2
+                },
+                "yandexEmotion": {
+                    "type": "select",
+                    "hidden": "data.engine != 'ru_YA' && data.engine != 'ru_YA_CLOUD'",
+                    "label": "Emotion",
+                    "noTranslation": true,
+                    "options": [
+                        { "value": "none", "label": "None" },
+                        { "value": "good", "label": "Good" },
+                        { "value": "neutral", "label": "Neutral" },
+                        { "value": "evil", "label": "Evil" },
+                        { "value": "mixed", "label": "Mixed" }
+                    ],
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 2
+                },
+                "yandexDrunk": {
+                    "newLine": true,
+                    "type": "checkbox",
+                    "label": "Drunk",
+                    "hidden": "data.engine != 'ru_YA'",
+                    "sm": 4,
+                    "md": 2
+                },
+                "yandexIll": {
+                    "type": "checkbox",
+                    "hidden": "data.engine != 'ru_YA'",
+                    "label": "Ill",
+                    "sm": 4,
+                    "md": 2
+                },
+                "yandexRobot": {
+                    "type": "checkbox",
+                    "hidden": "data.engine != 'ru_YA'",
+                    "label": "Robot",
+                    "sm": 4,
+                    "md": 2
+                },
+                "yandexFolderID": {
+                    "type": "text",
+                    "hidden": "data.engine != 'ru_YA_CLOUD'",
+                    "label": "Folder ID",
+                    "sm": 12,
+                    "md": 3
+                },
+                "awsAccessKey": {
+                    "newLine": true,
+                    "type": "text",
+                    "label": "Access Key",
+                    "hidden": "!data.engine || !data.engine.includes('_AP_')",
+                    "sm": 6,
+                    "md": 3,
+                    "lg": 2
+                },
+                "awsSecretKey": {
+                    "type": "password",
+                    "label": "Secret Key",
+                    "hidden": "!data.engine || !data.engine.includes('_AP_')",
+                    "sm": 6,
+                    "md": 3,
+                    "lg": 2
+                },
+                "awsRegion": {
+                    "type": "text",
+                    "label": "AWS Region",
+                    "hidden": "!data.engine || !data.engine.includes('_AP_')",
+                    "sm": 6,
+                    "md": 3,
+                    "lg": 1
+                },
+                "cloudAppKey": {
+                    "newLine": true,
+                    "type": "text",
+                    "label": "Cloud App Key from iobroker.pro or iobroker.net",
+                    "sm": 12,
+                    "md": 6,
+                    "lg": 4,
+                    "hidden": "!data.engine || !data.engine.includes('_CLOUD_') || data.cloudInstance"
+                },
+                "cloudInstance": {
+                    "newLine": true,
+                    "type": "instance",
+                    "adapter": "cloud",
+                    "label": "Cloud instance",
+                    "hidden": "!data.engine || !data.engine.includes('_CLOUD_') || data.cloudAppKey",
+                    "sm": 12,
+                    "md": 6,
+                    "lg": 4
+                },
+                "coquiVocoder": {
+                    "newLine": true,
+                    "type": "select",
+                    "label": "Cloud instance",
+                    "hidden": "!data.engine || !data.engine.includes('CoquiTTS')",
+                    "options": [
+                        {
+                            "label": "default",
+                            "value": "default"
+                        },
+                        {
+                            "label": "ek1 wavegrad",
+                            "value": "ek1 wavegrad"
+                        },
+                        {
+                            "label": "kokoro hifigan_v1",
+                            "value": "kokoro hifigan_v1"
+                        },
+                        {
+                            "label": "libri-tts fullband-melgan",
+                            "value": "libri-tts fullband-melgan"
+                        },
+                        {
+                            "label": "libri-tts wavegrad",
+                            "value": "libri-tts wavegrad"
+                        },
+                        {
+                            "label": "ljspeech hifigan_v2",
+                            "value": "ljspeech hifigan_v2"
+                        },
+                        {
+                            "label": "ljspeech multiband-melgan",
+                            "value": "ljspeech multiband-melgan"
+                        },
+                        {
+                            "label": "ljspeech univnet",
+                            "value": "ljspeech univnet"
+                        },
+                        {
+                            "label": "mai parallel-wavegan",
+                            "value": "mai parallel-wavegan"
+                        },
+                        {
+                            "label": "sam hifigan_v2",
+                            "value": "sam hifigan_v2"
+                        },
+                        {
+                            "label": "thorsten fullband-melgan",
+                            "value": "thorsten fullband-melgan"
+                        },
+                        {
+                            "label": "thorsten wavegrad",
+                            "value": "thorsten wavegrad"
+                        },
+                        {
+                            "label": "vctk hifigan_v2",
+                            "value": "vctk hifigan_v2"
+                        }
+                    ],
+                    "sm": 12,
+                    "md": 4,
+                    "lg": 2
+                }
             }
-          ],
-          "help": "Ignore for non linux OS",
-          "sm": 6,
-          "md": 4,
-          "lg": 2
-        },
-        "announce": {
-          "newLine": true,
-          "type": "fileSelector",
-          "fileTypes": "audio",
-          "pattern": "tts.userfiles/*.mp3",
-          "objectID": "sayit.%INSTANCE%",
-          "hidden": "data.type === 'googleHome'",
-          "noTranslation": true,
-          "upload": "tts.userfiles/",
-          "sm": 12,
-          "md": 6,
-          "lg": 4
-        },
-        "annoTimeout": {
-          "newLine": true,
-          "type": "number",
-          "label": "Announce timeout",
-          "help": "in seconds",
-          "hidden": "(data.type !== 'mp24' && data.type !== 'windows') || !data.announce",
-          "min": 0,
-          "max": 1000,
-          "sm": 6,
-          "md": 4,
-          "lg": 2
-        },
-        "annoDuration": {
-          "type": "number",
-          "label": "Announce duration",
-          "min": 0,
-          "max": 99,
-          "help": "in seconds",
-          "hidden": "(data.type !== 'mp24' && data.type !== 'windows') || !data.announce",
-          "sm": 6,
-          "md": 4,
-          "lg": 2
-        },
-        "annoVolume": {
-          "type": "number",
-          "label": "Announce volume",
-          "min": 0,
-          "max": 100,
-          "help": "in % to playing volume",
-          "hidden": "(data.type !== 'mp24' && data.type !== 'windows') || !data.announce",
-          "sm": 6,
-          "md": 4,
-          "lg": 2
-        },
-        "cache": {
-          "newLine": true,
-          "type": "checkbox",
-          "label": "Cache",
-          "help": "Cache generated files",
-          "sm": 6,
-          "md": 4,
-          "lg": 2
-        },
-        "cacheExpiryDays": {
-          "type": "number",
-          "min": 0,
-          "max": 1000,
-          "label": "Cache-Expiry",
-          "help": "in days",
-          "hidden": "!data.cache",
-          "sm": 6,
-          "md": 4,
-          "lg": 2
-        },
-        "chromecastDevice": {
-          "newLine": true,
-          "type": "selectSendTo",
-          "label": "Device",
-          "command": "browseChromecast",
-          "noTranslation": true,
-          "hidden": "data.type !== 'chromecast'",
-          "sm": 12,
-          "md": 6,
-          "lg": 4
-        },
-        "googleHomeServer": {
-          "newLine": true,
-          "type": "autocompleteSendTo",
-          "command": "browseGoogleHome",
-          "label": "Google home server",
-          "hidden": "data.type !== 'googleHome'",
-          "sm": 12,
-          "md": 6,
-          "lg": 4
-        },
-        "mp24Server": {
-          "newLine": true,
-          "type": "text",
-          "label": "Server IP Address",
-          "hidden": "data.type !== 'mp24ftp' && data.type !== 'mp24'",
-          "sm": 12,
-          "md": 6,
-          "lg": 4
-        },
-        "ftpPort": {
-          "newLine": true,
-          "type": "number",
-          "label": "FTP Port",
-          "hidden": "data.type !== 'mp24ftp'",
-          "sm": 6,
-          "md": 4,
-          "lg": 2
-        },
-        "ftpUser": {
-          "type": "text",
-          "label": "FTP User",
-          "hidden": "data.type !== 'mp24ftp'",
-          "sm": 6,
-          "md": 4,
-          "lg": 2
-        },
-        "ftpPassword": {
-          "type": "password",
-          "label": "FTP Password",
-          "hidden": "data.type !== 'mp24ftp'",
-          "sm": 6,
-          "md": 4,
-          "lg": 2
-        },
-        "sonosDevice": {
-          "type": "selectSendTo",
-          "label": "Device",
-          "hidden": "data.type !== 'sonos'",
-          "command": "browseSonos",
-          "sm": 6,
-          "md": 4,
-          "lg": 2
-        },
-        "heosDevice": {
-          "type": "selectSendTo",
-          "label": "Device",
-          "hidden": "data.type !== 'heos'",
-          "command": "browseHeos",
-          "sm": 6,
-          "md": 4,
-          "lg": 2
-        },
-        "mpdInstance": {
-          "type": "instance",
-          "label": "Device",
-          "hidden": "data.type !== 'mpd'",
-          "adapter": "mpd",
-          "sm": 6,
-          "md": 4,
-          "lg": 2
-        },
-        "browserInstance": {
-          "newLine": true,
-          "type": "text",
-          "label": "Browser instance",
-          "hidden": "data.type !== 'browser'",
-          "sm": 6,
-          "md": 3,
-          "lg": 2
-        },
-        "browserVis": {
-          "newLine": true,
-          "type": "select",
-          "label": "Vis instances",
-          "options": [
-            {
-              "value": "",
-              "label": "vis.0 and vis-2.0"
-            },
-            {
-              "value": "1",
-              "label": "vis.0 (deprecated)"
-            },
-            {
-              "value": "2",
-              "label": "vis-2.0 (New)"
-            }
-          ],
-          "hidden": "data.type !== 'browser'",
-          "sm": 6,
-          "md": 3,
-          "lg": 2
-        },
-        "webInstance": {
-          "newLine": true,
-          "type": "instance",
-          "adapter": "web",
-          "label": "Web instance",
-          "hidden": "data.type !== 'sonos' && data.type !== 'heos' && data.type !== 'chromecast' && data.type !== 'mpd' && data.type !== 'googleHome'",
-          "sm": 6,
-          "md": 4,
-          "lg": 2
-        },
-        "webServer": {
-          "type": "ip",
-          "label": "Web server IP",
-          "hidden": "data.type !== 'sonos' && data.type !== 'heos' && data.type !== 'chromecast' && data.type !== 'mpd' && data.type !== 'googleHome'",
-          "sm": 6,
-          "md": 4,
-          "lg": 2
-        },
-        "_test": {
-          "newLine": true,
-          "variant": "contained",
-          "type": "sendTo",
-          "label": "Test",
-          "command": "test",
-          "jsonData": "${JSON.stringify(data)}",
-          "icon": "send"
         }
-      }
-    },
-    "_engine": {
-      "type": "panel",
-      "label": "Engine",
-      "items": {
-        "engine": {
-          "type": "select",
-          "noTranslation": true,
-          "label": "Language",
-          "options": [
-            {
-              "value": "en",
-              "label": "Google - English"
-            },
-            {
-              "value": "de",
-              "label": "Google - Deutsch"
-            },
-            {
-              "value": "pl",
-              "label": "Google - Polski"
-            },
-            {
-              "value": "uk",
-              "label": "Google - Ukrainian"
-            },
-            {
-              "value": "ru",
-              "label": "Google - Русский"
-            },
-            {
-              "value": "it",
-              "label": "Google - Italiano"
-            },
-            {
-              "value": "pt",
-              "label": "Google - Português"
-            },
-            {
-              "value": "es",
-              "label": "Google - Espaniol"
-            },
-            {
-              "value": "fr",
-              "label": "Google - Français"
-            },
-            {
-              "value": "nl",
-              "label": "Google - Nederlands"
-            },
-            {
-              "value": "zh-CN",
-              "label": "Google - 简体中文"
-            },
-            {
-              "value": "ru_YA",
-              "label": "Yandex - Русский"
-            },
-            {
-              "value": "ru_YA_CLOUD",
-              "label": "Yandex Cloud - Русский"
-            },
-            {
-              "value": "ru-RU_CLOUD_Female",
-              "label": "Cloud - Русский - Татьяна"
-            },
-            {
-              "value": "ru-RU_CLOUD_Male",
-              "label": "Cloud - Русский - Максим"
-            },
-            {
-              "value": "de-DE_CLOUD_Female",
-              "label": "Cloud - Deutsch - Marlene"
-            },
-            {
-              "value": "de-DE_CLOUD_Male",
-              "label": "Cloud - Deutsch - Hans"
-            },
-            {
-              "value": "de-DE_CLOUD_Female_Vicki",
-              "label": "Cloud - Deutsch - Vicki"
-            },
-            {
-              "value": "de-DE_CLOUD_Male_Daniel",
-              "label": "Cloud - Deutsch - Daniel"
-            },
-            {
-              "value": "de-AT_CLOUD_Female_Hannah",
-              "label": "Cloud - Österreich - Hannah"
-            },
-            {
-              "value": "en-US_CLOUD_Female",
-              "label": "Cloud - en-US - Female - Salli"
-            },
-            {
-              "value": "en-US_CLOUD_Male",
-              "label": "Cloud - en-US - Male - Joey"
-            },
-            {
-              "value": "da-DK_CLOUD_Female",
-              "label": "Cloud - da-DK - Female - Naja"
-            },
-            {
-              "value": "da-DK_CLOUD_Male",
-              "label": "Cloud - da-DK - Male - Mads"
-            },
-            {
-              "value": "en-AU_CLOUD_Female",
-              "label": "Cloud - en-AU - Female - Nicole"
-            },
-            {
-              "value": "en-AU_CLOUD_Male",
-              "label": "Cloud - en-AU - Male - Russell"
-            },
-            {
-              "value": "en-GB_CLOUD_Female_Amy",
-              "label": "Cloud - en-GB - Female - Amy"
-            },
-            {
-              "value": "en-GB_CLOUD_Male",
-              "label": "Cloud - en-GB - Male - Brian"
-            },
-            {
-              "value": "en-GB_CLOUD_Female_Emma",
-              "label": "Cloud - en-GB - Female - Emma"
-            },
-            {
-              "value": "en-GB_CLOUD_Male_Arthur",
-              "label": "Cloud - en-GB - Male - Arthur"
-            },
-            {
-              "value": "en-GB-WLS_CLOUD_Female",
-              "label": "Cloud - en-GB-WLS - Female - Gwyneth"
-            },
-            {
-              "value": "en-GB-WLS_CLOUD_Male",
-              "label": "Cloud - en-GB-WLS - Male - Geraint"
-            },
-            {
-              "value": "cy-GB_CLOUD_Female",
-              "label": "Cloud - cy-GB - Female - Gwyneth"
-            },
-            {
-              "value": "cy-GB_CLOUD_Male",
-              "label": "Cloud - cy-GB - Male - Geraint"
-            },
-            {
-              "value": "en-IN_CLOUD_Female",
-              "label": "Cloud - en-IN - Female - Raveena"
-            },
-            {
-              "value": "en-US_CLOUD_Male_Chipmunk",
-              "label": "Cloud - en-US - Male - Chipmunk"
-            },
-            {
-              "value": "en-US_CLOUD_Male_Eric",
-              "label": "Cloud - en-US - Male - Eric"
-            },
-            {
-              "value": "en-US_CLOUD_Female_Ivy",
-              "label": "Cloud - en-US - Female - Ivy"
-            },
-            {
-              "value": "en-US_CLOUD_Female_Jennifer",
-              "label": "Cloud - en-US - Female - Jennifer"
-            },
-            {
-              "value": "en-US_CLOUD_Male_Justin",
-              "label": "Cloud - en-US - Male - Justin"
-            },
-            {
-              "value": "en-US_CLOUD_Female_Kendra",
-              "label": "Cloud - en-US - Female - Kendra"
-            },
-            {
-              "value": "en-US_CLOUD_Female_Kimberly",
-              "label": "Cloud - en-US - Female - Kimberly"
-            },
-            {
-              "value": "es-ES_CLOUD_Female",
-              "label": "Cloud - es-ES - Female - Conchita"
-            },
-            {
-              "value": "es-ES_CLOUD_Male",
-              "label": "Cloud - es-ES - Male - Enrique"
-            },
-            {
-              "value": "es-US_CLOUD_Female",
-              "label": "Cloud - es-US - Female - Penelope"
-            },
-            {
-              "value": "es-US_CLOUD_Male",
-              "label": "Cloud - es-US - Male - Miguel"
-            },
-            {
-              "value": "fr-CA_CLOUD_Female",
-              "label": "Cloud - fr-CA - Female - Chantal"
-            },
-            {
-              "value": "fr-FR_CLOUD_Female",
-              "label": "Cloud - fr-FR - Female - Celine"
-            },
-            {
-              "value": "fr-FR_CLOUD_Male",
-              "label": "Cloud - fr-FR - Male - Mathieu"
-            },
-            {
-              "value": "is-IS_CLOUD_Female",
-              "label": "Cloud - is-IS - Female - Dora"
-            },
-            {
-              "value": "is-IS_CLOUD_Male",
-              "label": "Cloud - is-IS - Male - Karl"
-            },
-            {
-              "value": "it-IT_CLOUD_Female",
-              "label": "Cloud - it-IT - Female - Carla"
-            },
-            {
-              "value": "it-IT_CLOUD_Male",
-              "label": "Cloud - it-IT - Male - Giorgio"
-            },
-            {
-              "value": "nb-NO_CLOUD_Female",
-              "label": "Cloud - nb-NO - Female - Liv"
-            },
-            {
-              "value": "nl-NL_CLOUD_Female",
-              "label": "Cloud - nl-NL - Female - Lotte"
-            },
-            {
-              "value": "nl-NL_CLOUD_Male",
-              "label": "Cloud - nl-NL - Male - Ruben"
-            },
-            {
-              "value": "pl-PL_CLOUD_Female_Agnieszka",
-              "label": "Cloud - pl-PL - Female - Agnieszka"
-            },
-            {
-              "value": "pl-PL_CLOUD_Male_Jacek",
-              "label": "Cloud - pl-PL - Male - Jacek"
-            },
-            {
-              "value": "pl-PL_CLOUD_Female_Ewa",
-              "label": "Cloud - pl-PL - Female - Ewa"
-            },
-            {
-              "value": "pl-PL_CLOUD_Male_Jan",
-              "label": "Cloud - pl-PL - Male - Jan"
-            },
-            {
-              "value": "pl-PL_CLOUD_Female",
-              "label": "Cloud - pl-PL - Female - Maja"
-            },
-            {
-              "value": "pt-BR_CLOUD_Female",
-              "label": "Cloud - pt-BR - Female - Vitoria"
-            },
-            {
-              "value": "pt-BR_CLOUD_Male",
-              "label": "Cloud - pt-BR - Male - Ricardo"
-            },
-            {
-              "value": "pt-BR_CLOUD_Female_Camila",
-              "label": "Cloud - pt-BR - Female - Camila"
-            },
-            {
-              "value": "pt-PT_CLOUD_Male",
-              "label": "Cloud - pt-PT - Male - Cristiano"
-            },
-            {
-              "value": "pt-PT_CLOUD_Female",
-              "label": "Cloud - pt-PT - Female - Ines"
-            },
-            {
-              "value": "ro-RO_CLOUD_Female",
-              "label": "Cloud - ro-RO - Female - Carmen"
-            },
-            {
-              "value": "sv-SE_CLOUD_Female",
-              "label": "Cloud - sv-SE - Female - Astrid"
-            },
-            {
-              "value": "tr-TR_CLOUD_Female",
-              "label": "Cloud - tr-TR - Female - Filiz"
-            },
-            {
-              "value": "ko-KR_CLOUD_Female",
-              "label": "Cloud - ko-KR - Female - Seoyeon"
-            },
-            {
-              "value": "no-NO_CLOUD_Female_Liv",
-              "label": "Cloud - no-NO - Female - Liv"
-            },
-            {
-              "value": "no-NO_CLOUD_Female_Ida",
-              "label": "Cloud - no-NO - Female - Ida"
-            },
-            {
-              "value": "en-US",
-              "label": "PicoTTS - Englisch US"
-            },
-            {
-              "value": "en-GB",
-              "label": "PicoTTS - Englisch GB"
-            },
-            {
-              "value": "de-DE",
-              "label": "PicoTTS - Deutsch"
-            },
-            {
-              "value": "it-IT",
-              "label": "PicoTTS - Italiano"
-            },
-            {
-              "value": "es-ES",
-              "label": "PicoTTS - Espaniol"
-            },
-            {
-              "value": "fr-FR",
-              "label": "PicoTTS - Français"
-            },
-            {
-              "value": "en_CoquiTTS",
-              "label": "CoquiTTS - English"
-            },
-            {
-              "value": "es_CoquiTTS",
-              "label": "CoquiTTS - Espaniol"
-            },
-            {
-              "value": "fr_CoquiTTS",
-              "label": "CoquiTTS - Français"
-            },
-            {
-              "value": "de_CoquiTTS",
-              "label": "CoquiTTS - Deutsch"
-            },
-            {
-              "value": "nl_CoquiTTS",
-              "label": "CoquiTTS - Dutch"
-            },
-            {
-              "value": "ja_CoquiTTS",
-              "label": "CoquiTTS - Japan"
-            },
-            {
-              "value": "ru-RU_AP_Female",
-              "label": "AWS Polly - Русский - Татьяна"
-            },
-            {
-              "value": "ru-RU_AP_Male",
-              "label": "AWS Polly - Русский - Максим"
-            },
-            {
-              "value": "de-DE_AP_Female",
-              "label": "AWS Polly - Deutsch - Marlene"
-            },
-            {
-              "value": "de-DE_AP_Female_Vicki",
-              "label": "AWS Polly - Deutsch - Vicki"
-            },
-            {
-              "value": "de-DE_AP_Male",
-              "label": "AWS Polly - Deutsch - Hans"
-            },
-            {
-              "value": "de-DE_AP_Male_Daniel",
-              "label": "AWS Polly - Deutsch - Daniel"
-            },
-            {
-              "value": "de-AT_AP_Female_Hannah",
-              "label": "AWS Polly - Österreich - Hannah"
-            },
-            {
-              "value": "en-US_AP_Female",
-              "label": "AWS Polly - en-US - Female - Salli"
-            },
-            {
-              "value": "en-US_AP_Male",
-              "label": "AWS Polly - en-US - Male - Joey"
-            },
-            {
-              "value": "da-DK_AP_Female",
-              "label": "AWS Polly - da-DK - Female - Naja"
-            },
-            {
-              "value": "da-DK_AP_Male",
-              "label": "AWS Polly - da-DK - Male - Mads"
-            },
-            {
-              "value": "en-AU_AP_Female",
-              "label": "AWS Polly - en-AU - Female - Nicole"
-            },
-            {
-              "value": "en-AU_AP_Male",
-              "label": "AWS Polly - en-AU - Male - Russell"
-            },
-            {
-              "value": "en-GB_AP_Female_Amy",
-              "label": "AWS Polly - en-GB - Female - Amy"
-            },
-            {
-              "value": "en-GB_AP_Male",
-              "label": "AWS Polly - en-GB - Male - Brian"
-            },
-            {
-              "value": "en-GB_AP_Female_Emma",
-              "label": "AWS Polly - en-GB - Female - Emma"
-            },
-            {
-              "value": "en-GB-WLS_AP_Female",
-              "label": "AWS Polly - en-GB-WLS - Female - Gwyneth"
-            },
-            {
-              "value": "en-GB-WLS_AP_Male",
-              "label": "AWS Polly - en-GB-WLS - Male - Geraint"
-            },
-            {
-              "value": "cy-GB_AP_Female",
-              "label": "AWS Polly - cy-GB - Female - Gwyneth"
-            },
-            {
-              "value": "cy-GB_AP_Male",
-              "label": "AWS Polly - cy-GB - Male - Geraint"
-            },
-            {
-              "value": "en-IN_AP_Female",
-              "label": "AWS Polly - en-IN - Female - Raveena"
-            },
-            {
-              "value": "en-US_AP_Male_Chipmunk",
-              "label": "AWS Polly - en-US - Male - Chipmunk"
-            },
-            {
-              "value": "en-US_AP_Male_Eric",
-              "label": "AWS Polly - en-US - Male - Eric"
-            },
-            {
-              "value": "en-US_AP_Female_Ivy",
-              "label": "AWS Polly - en-US - Female - Ivy"
-            },
-            {
-              "value": "en-US_AP_Female_Jennifer",
-              "label": "AWS Polly - en-US - Female - Jennifer"
-            },
-            {
-              "value": "en-US_AP_Male_Justin",
-              "label": "AWS Polly - en-US - Male - Justin"
-            },
-            {
-              "value": "en-US_AP_Female_Kendra",
-              "label": "AWS Polly - en-US - Female - Kendra"
-            },
-            {
-              "value": "en-US_AP_Female_Kimberly",
-              "label": "AWS Polly - en-US - Female - Kimberly"
-            },
-            {
-              "value": "es-ES_AP_Female",
-              "label": "AWS Polly - es-ES - Female - Conchita"
-            },
-            {
-              "value": "es-ES_AP_Male",
-              "label": "AWS Polly - es-ES - Male - Enrique"
-            },
-            {
-              "value": "es-US_AP_Female",
-              "label": "AWS Polly - es-US - Female - Penelope"
-            },
-            {
-              "value": "es-US_AP_Male",
-              "label": "AWS Polly - es-US - Male - Miguel"
-            },
-            {
-              "value": "fr-CA_AP_Female",
-              "label": "AWS Polly - fr-CA - Female - Chantal"
-            },
-            {
-              "value": "fr-FR_AP_Female",
-              "label": "AWS Polly - fr-FR - Female - Celine"
-            },
-            {
-              "value": "fr-FR_AP_Male",
-              "label": "AWS Polly - fr-FR - Male - Mathieu"
-            },
-            {
-              "value": "is-IS_AP_Female",
-              "label": "AWS Polly - is-IS - Female - Dora"
-            },
-            {
-              "value": "is-IS_AP_Male",
-              "label": "AWS Polly - is-IS - Male - Karl"
-            },
-            {
-              "value": "it-IT_AP_Female",
-              "label": "AWS Polly - it-IT - Female - Carla"
-            },
-            {
-              "value": "it-IT_AP_Male",
-              "label": "AWS Polly - it-IT - Male - Giorgio"
-            },
-            {
-              "value": "nb-NO_AP_Female",
-              "label": "AWS Polly - nb-NO - Female - Liv"
-            },
-            {
-              "value": "nl-NL_AP_Female",
-              "label": "AWS Polly - nl-NL - Female - Lotte"
-            },
-            {
-              "value": "nl-NL_AP_Male",
-              "label": "AWS Polly - nl-NL - Male - Ruben"
-            },
-            {
-              "value": "pl-PL_AP_Female_Agnieszka",
-              "label": "AWS Polly - pl-PL - Female - Agnieszka"
-            },
-            {
-              "value": "pl-PL_AP_Male_Jacek",
-              "label": "AWS Polly - pl-PL - Male - Jacek"
-            },
-            {
-              "value": "pl-PL_AP_Female_Ewa",
-              "label": "AWS Polly - pl-PL - Female - Ewa"
-            },
-            {
-              "value": "pl-PL_AP_Male_Jan",
-              "label": "AWS Polly - pl-PL - Male - Jan"
-            },
-            {
-              "value": "pl-PL_AP_Female",
-              "label": "AWS Polly - pl-PL - Female - Maja"
-            },
-            {
-              "value": "pt-BR_AP_Female",
-              "label": "AWS Polly - pt-BR - Female - Vitoria"
-            },
-            {
-              "value": "pt-BR_AP_Male",
-              "label": "AWS Polly - pt-BR - Male - Ricardo"
-            },
-            {
-              "value": "pt-PT_AP_Male",
-              "label": "AWS Polly - pt-PT - Male - Cristiano"
-            },
-            {
-              "value": "pt-PT_AP_Female",
-              "label": "AWS Polly - pt-PT - Female - Ines"
-            },
-            {
-              "value": "ro-RO_AP_Female",
-              "label": "AWS Polly - ro-RO - Female - Carmen"
-            },
-            {
-              "value": "sv-SE_AP_Female",
-              "label": "AWS Polly - sv-SE - Female - Astrid"
-            },
-            {
-              "value": "tr-TR_AP_Female",
-              "label": "AWS Polly - tr-TR - Female - Filiz"
-            },
-            {
-              "value": "ko-KR_AP_Female",
-              "label": "AWS Polly - ko-KR - Female - Seoyeon"
-            },
-            {
-              "value": "no-NO_AP_Female_Liv",
-              "label": "AWS Polly - no-NO - Female - Liv"
-            },
-            {
-              "value": "no-NO_AP_Female_Ida",
-              "label": "AWS Polly - no-NO - Female - Ida"
-            }
-          ],
-          "sm": 12,
-          "md": 6,
-          "lg": 4
-        },
-        "yandexKey": {
-          "newLine": true,
-          "type": "text",
-          "hidden": "data.engine != 'ru_YA' && data.engine != 'ru_YA_CLOUD'",
-          "label": "API Key",
-          "sm": 12,
-          "md": 6,
-          "lg": 4
-        },
-        "yandexCloudVoice": {
-          "newLine": true,
-          "type": "select",
-          "label": "Voice",
-          "hidden": "data.engine != 'ru_YA_CLOUD'",
-          "noTranslation": true,
-          "options": [
-              {"value": "alyss", "label": "alyss"},
-              {"value": "oksana", "label": "oksana"},
-              {"value": "jane", "label": "jane"},
-              {"value": "zahar", "label": "zahar"},
-              {"value": "nick", "label": "nick"},
-              {"value": "ermil", "label": "ermil"},
-              {"value": "alena", "label": "alena Premium"},
-              {"value": "filipp", "label": "filipp Premium"}
-          ],
-          "sm": 12,
-          "md": 6,
-          "lg": 4
-        },
-        "yandexVoice": {
-          "newLine": true,
-          "type": "select",
-          "label": "Voice",
-          "hidden": "data.engine != 'ru_YA'",
-          "noTranslation": true,
-          "options": [
-            {"value": "jane", "label": "jane"},
-            {"value": "zahar", "label": "zahar"}
-          ],
-          "sm": 6,
-          "md": 4,
-          "lg": 2
-        },
-        "yandexEmotion": {
-          "type": "select",
-          "hidden": "data.engine != 'ru_YA' && data.engine != 'ru_YA_CLOUD'",
-          "label": "Emotion",
-          "noTranslation": true,
-          "options": [
-            {"value": "none", "label": "None"},
-            {"value": "good", "label": "Good"},
-            {"value": "neutral", "label": "Neutral"},
-            {"value": "evil", "label": "Evil"},
-            {"value": "mixed", "label": "Mixed"}
-          ],
-          "sm": 6,
-          "md": 4,
-          "lg": 2
-        },
-        "yandexDrunk": {
-          "newLine": true,
-          "type": "checkbox",
-          "label": "Drunk",
-          "hidden": "data.engine != 'ru_YA'",
-          "sm": 4,
-          "md": 2
-        },
-        "yandexIll": {
-          "type": "checkbox",
-          "hidden": "data.engine != 'ru_YA'",
-          "label": "Ill",
-          "sm": 4,
-          "md": 2
-        },
-        "yandexRobot": {
-          "type": "checkbox",
-          "hidden": "data.engine != 'ru_YA'",
-          "label": "Robot",
-          "sm": 4,
-          "md": 2
-        },
-        "yandexFolderID": {
-          "type": "text",
-          "hidden": "data.engine != 'ru_YA_CLOUD'",
-          "label": "Folder ID",
-          "sm": 12,
-          "md": 3
-        },
-        "awsAccessKey": {
-          "newLine": true,
-          "type": "text",
-          "label": "Access Key",
-          "hidden": "!data.engine || !data.engine.includes('_AP_')",
-          "sm": 6,
-          "md": 3,
-          "lg": 2
-        },
-        "awsSecretKey": {
-          "type": "password",
-          "label": "Secret Key",
-          "hidden": "!data.engine || !data.engine.includes('_AP_')",
-          "sm": 6,
-          "md": 3,
-          "lg": 2
-        },
-        "awsRegion": {
-          "type": "text",
-          "label": "AWS Region",
-          "hidden": "!data.engine || !data.engine.includes('_AP_')",
-          "sm": 6,
-          "md": 3,
-          "lg": 1
-        },
-        "cloudAppKey": {
-          "newLine": true,
-          "type": "text",
-          "label": "Cloud App Key from iobroker.pro or iobroker.net",
-          "sm": 12,
-          "md": 6,
-          "lg": 4,
-          "hidden": "!data.engine || !data.engine.includes('_CLOUD_') || data.cloudInstance"
-        },
-        "cloudInstance": {
-          "newLine": true,
-          "type": "instance",
-          "adapter": "cloud",
-          "label": "Cloud instance",
-          "hidden": "!data.engine || !data.engine.includes('_CLOUD_') || data.cloudAppKey",
-          "sm": 12,
-          "md": 6,
-          "lg": 4
-        },
-        "coquiVocoder": {
-          "newLine": true,
-          "type": "select",
-          "label": "Cloud instance",
-          "hidden": "!data.engine || !data.engine.includes('CoquiTTS')",
-          "options": [
-              {
-                "label": "default",
-                "value": "default"
-              },
-              {
-                "label": "ek1 wavegrad",
-                "value": "ek1 wavegrad"
-              },
-              {
-                "label": "kokoro hifigan_v1",
-                "value": "kokoro hifigan_v1"
-              },
-              {
-                "label": "libri-tts fullband-melgan",
-                "value": "libri-tts fullband-melgan"
-              },
-              {
-                "label": "libri-tts wavegrad",
-                "value": "libri-tts wavegrad"
-              },
-              {
-                "label": "ljspeech hifigan_v2",
-                "value": "ljspeech hifigan_v2"
-              },
-              {
-                "label": "ljspeech multiband-melgan",
-                "value": "ljspeech multiband-melgan"
-              },
-              {
-                "label": "ljspeech univnet",
-                "value": "ljspeech univnet"
-              },
-              {
-                "label": "mai parallel-wavegan",
-                "value": "mai parallel-wavegan"
-              },
-              {
-                "label": "sam hifigan_v2",
-                "value": "sam hifigan_v2"
-              },
-              {
-                "label": "thorsten fullband-melgan",
-                "value": "thorsten fullband-melgan"
-              },
-              {
-                "label": "thorsten wavegrad",
-                "value": "thorsten wavegrad"
-              },
-              {
-                "label": "vctk hifigan_v2",
-                "value": "vctk hifigan_v2"
-              }
-          ],
-          "sm": 12,
-          "md": 4,
-          "lg": 2
-        }
-      }
     }
-  }
 }
