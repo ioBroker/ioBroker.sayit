@@ -37,7 +37,9 @@ jobs:
 
 
       - name: Install Dependencies
-        run: npm ci
+        run: |
+          npm ci
+          npm run build
 
 #      - name: Perform a type check
 #        run: npm run check:ts
@@ -68,7 +70,9 @@ jobs:
           node-version: ${{ matrix.node-version }}
 
       - name: Install Dependencies
-        run: npm ci
+        run: |
+          npm ci
+          npm run build
 
       - name: Run local tests
         run: npm test
@@ -116,7 +120,9 @@ jobs:
           echo "::set-output name=BODY::$BODY"
 
       - name: Install Dependencies
-        run: npm ci
+        run: |
+          npm ci
+          npm run build
 
 #      - name: Create a clean build
 #        run: npm run build
