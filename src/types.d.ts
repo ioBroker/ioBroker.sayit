@@ -72,6 +72,7 @@ type EngineType =
     | 'it-IT'
     | 'es-ES'
     | 'fr-FR'
+    | 'ru-RU'
     | 'en_CoquiTTS'
     | 'es_CoquiTTS'
     | 'fr_CoquiTTS'
