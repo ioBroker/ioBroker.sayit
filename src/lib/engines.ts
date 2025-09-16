@@ -1,4 +1,4 @@
-// DONT Forget to update sayitEngines in blockly.js (If you change this table)
+// DON'T Forget to update sayitEngines in blockly.js (If you change this table)
 
 import type { VoiceId } from '@aws-sdk/client-polly';
 
@@ -6,7 +6,6 @@ const sayitEngines: {
     [engine: string]: {
         name: string;
         engine: 'google' | 'yandex' | 'yandexCloud' | 'cloud' | 'PicoTTS' | 'CoquiTTS' | 'polly';
-        params: string[];
         voice?: string[];
         emotion?: string[];
         gender?: 'Female' | 'Male';
@@ -16,29 +15,27 @@ const sayitEngines: {
         neural?: boolean;
     };
 } = {
-    en: { name: 'Google - English', engine: 'google', params: [] },
-    de: { name: 'Google - Deutsch', engine: 'google', params: [] },
-    pl: { name: 'Google - Polski', engine: 'google', params: [] },
-    uk: { name: 'Google - Ukrainian', engine: 'google', params: [] },
-    ru: { name: 'Google - Русский', engine: 'google', params: [] },
-    it: { name: 'Google - Italiano', engine: 'google', params: [] },
-    pt: { name: 'Google - Português', engine: 'google', params: [] },
-    es: { name: 'Google - Espaniol', engine: 'google', params: [] },
-    fr: { name: 'Google - Français', engine: 'google', params: [] },
-    nl: { name: 'Google - Nederlands', engine: 'google', params: [] },
-    'zh-CN': { name: 'Google - 简体中文', engine: 'google', params: [] },
+    en: { name: 'Google - English', engine: 'google' },
+    de: { name: 'Google - Deutsch', engine: 'google' },
+    pl: { name: 'Google - Polski', engine: 'google' },
+    uk: { name: 'Google - Ukrainian', engine: 'google' },
+    ru: { name: 'Google - Русский', engine: 'google' },
+    it: { name: 'Google - Italiano', engine: 'google' },
+    pt: { name: 'Google - Português', engine: 'google' },
+    es: { name: 'Google - Espaniol', engine: 'google' },
+    fr: { name: 'Google - Français', engine: 'google' },
+    nl: { name: 'Google - Nederlands', engine: 'google' },
+    'zh-CN': { name: 'Google - 简体中文', engine: 'google' },
 
     ru_YA: {
         name: 'Yandex - Русский',
         engine: 'yandex',
-        params: ['key', 'voice', 'emotion', 'ill', 'drunk', 'robot'],
         voice: ['jane', 'zahar'],
         emotion: ['none', 'good', 'neutral', 'evil', 'mixed'],
     },
     ru_YA_CLOUD: {
         name: 'Yandex Cloud - Русский',
         engine: 'yandexCloud',
-        params: ['key', 'folderID', 'voice', 'emotion'],
         voice: ['alyss', 'oksana', 'jane', 'zahar', 'nick', 'ermil', 'alena Premium', 'filipp Premium'],
         emotion: ['good', 'neutral', 'evil'],
     },
@@ -46,7 +43,6 @@ const sayitEngines: {
     'ru-RU_CLOUD_Female': {
         gender: 'Female',
         engine: 'cloud',
-        params: ['cloud'],
         language: 'ru-RU',
         ename: 'Tatyana',
         ssml: true,
@@ -55,7 +51,6 @@ const sayitEngines: {
     'ru-RU_CLOUD_Male': {
         gender: 'Male',
         engine: 'cloud',
-        params: ['cloud'],
         language: 'ru-RU',
         ename: 'Maxim',
         ssml: true,
@@ -65,7 +60,6 @@ const sayitEngines: {
     'de-DE_CLOUD_Female': {
         gender: 'Female',
         engine: 'cloud',
-        params: ['cloud'],
         language: 'de-DE',
         ename: 'Marlene',
         ssml: true,
@@ -74,7 +68,6 @@ const sayitEngines: {
     'de-DE_CLOUD_Male': {
         gender: 'Male',
         engine: 'cloud',
-        params: ['cloud'],
         language: 'de-DE',
         ename: 'Hans',
         ssml: true,
@@ -83,7 +76,6 @@ const sayitEngines: {
     'de-DE_CLOUD_Female_Vicki': {
         gender: 'Female',
         engine: 'cloud',
-        params: ['cloud'],
         language: 'de-DE',
         ename: 'Vicki',
         ssml: true,
@@ -93,7 +85,6 @@ const sayitEngines: {
     'de-DE_CLOUD_Male_Daniel': {
         gender: 'Male',
         engine: 'cloud',
-        params: ['cloud'],
         language: 'de-DE',
         ename: 'Daniel',
         ssml: true,
@@ -104,7 +95,6 @@ const sayitEngines: {
     'de-AT_CLOUD_Female_Hannah': {
         gender: 'Female',
         engine: 'cloud',
-        params: ['cloud'],
         language: 'de-AT',
         ename: 'Hannah',
         ssml: true,
@@ -115,7 +105,6 @@ const sayitEngines: {
     'en-US_CLOUD_Female': {
         gender: 'Female',
         engine: 'cloud',
-        params: ['cloud'],
         language: 'en-US',
         ename: 'Salli',
         ssml: true,
@@ -124,7 +113,6 @@ const sayitEngines: {
     'en-US_CLOUD_Male': {
         gender: 'Male',
         engine: 'cloud',
-        params: ['cloud'],
         language: 'en-US',
         ename: 'Joey',
         ssml: true,
@@ -134,7 +122,6 @@ const sayitEngines: {
     'da-DK_CLOUD_Female': {
         gender: 'Female',
         engine: 'cloud',
-        params: ['cloud'],
         language: 'da-DK',
         ename: 'Naja',
         ssml: true,
@@ -143,7 +130,6 @@ const sayitEngines: {
     'da-DK_CLOUD_Male': {
         gender: 'Male',
         engine: 'cloud',
-        params: ['cloud'],
         language: 'da-DK',
         ename: 'Mads',
         ssml: true,
@@ -153,7 +139,6 @@ const sayitEngines: {
     'en-AU_CLOUD_Female': {
         gender: 'Female',
         engine: 'cloud',
-        params: ['cloud'],
         language: 'en-AU',
         ename: 'Nicole',
         ssml: true,
@@ -162,7 +147,6 @@ const sayitEngines: {
     'en-AU_CLOUD_Male': {
         gender: 'Male',
         engine: 'cloud',
-        params: ['cloud'],
         language: 'en-AU',
         ename: 'Russell',
         ssml: true,
@@ -172,7 +156,6 @@ const sayitEngines: {
     'en-GB_CLOUD_Female_Amy': {
         gender: 'Female',
         engine: 'cloud',
-        params: ['cloud'],
         language: 'en-GB',
         ename: 'Amy',
         ssml: true,
@@ -182,7 +165,6 @@ const sayitEngines: {
     'en-GB_CLOUD_Male': {
         gender: 'Male',
         engine: 'cloud',
-        params: ['cloud'],
         language: 'en-GB',
         ename: 'Brian',
         ssml: true,
@@ -192,7 +174,6 @@ const sayitEngines: {
     'en-GB_CLOUD_Female_Emma': {
         gender: 'Female',
         engine: 'cloud',
-        params: ['cloud'],
         language: 'en-GB',
         ename: 'Emma',
         ssml: true,
@@ -202,7 +183,6 @@ const sayitEngines: {
     'en-GB_CLOUD_Male_Arthur': {
         gender: 'Male',
         engine: 'cloud',
-        params: ['cloud'],
         language: 'en-GB',
         ename: 'Arthur',
         ssml: true,
@@ -213,7 +193,6 @@ const sayitEngines: {
     'en-GB-WLS_CLOUD_Female': {
         gender: 'Female',
         engine: 'cloud',
-        params: ['cloud'],
         language: 'en-GB-WLS',
         ename: 'Gwyneth',
         ssml: true,
@@ -222,7 +201,6 @@ const sayitEngines: {
     'en-GB-WLS_CLOUD_Male': {
         gender: 'Male',
         engine: 'cloud',
-        params: ['cloud'],
         language: 'en-GB-WLS',
         ename: 'Geraint',
         ssml: true,
@@ -232,7 +210,6 @@ const sayitEngines: {
     'cy-GB_CLOUD_Female': {
         gender: 'Female',
         engine: 'cloud',
-        params: ['cloud'],
         language: 'cy-GB',
         ename: 'Gwyneth',
         ssml: true,
@@ -241,7 +218,6 @@ const sayitEngines: {
     'cy-GB_CLOUD_Male': {
         gender: 'Male',
         engine: 'cloud',
-        params: ['cloud'],
         language: 'cy-GB',
         ename: 'Geraint',
         ssml: true,
@@ -251,7 +227,6 @@ const sayitEngines: {
     'en-IN_CLOUD_Female': {
         gender: 'Female',
         engine: 'cloud',
-        params: ['cloud'],
         language: 'en-IN',
         ename: 'Raveena',
         ssml: true,
@@ -261,7 +236,6 @@ const sayitEngines: {
     'en-US_CLOUD_Female_Ivy': {
         gender: 'Female',
         engine: 'cloud',
-        params: ['cloud'],
         language: 'en-US',
         ename: 'Ivy',
         ssml: true,
@@ -270,7 +244,6 @@ const sayitEngines: {
     'en-US_CLOUD_Male_Justin': {
         gender: 'Male',
         engine: 'cloud',
-        params: ['cloud'],
         language: 'en-US',
         ename: 'Justin',
         ssml: true,
@@ -279,7 +252,6 @@ const sayitEngines: {
     'en-US_CLOUD_Female_Kendra': {
         gender: 'Female',
         engine: 'cloud',
-        params: ['cloud'],
         language: 'en-US',
         ename: 'Kendra',
         ssml: true,
@@ -288,7 +260,6 @@ const sayitEngines: {
     'en-US_CLOUD_Female_Kimberly': {
         gender: 'Female',
         engine: 'cloud',
-        params: ['cloud'],
         language: 'en-US',
         ename: 'Kimberly',
         ssml: true,
@@ -298,7 +269,6 @@ const sayitEngines: {
     'es-ES_CLOUD_Female': {
         gender: 'Female',
         engine: 'cloud',
-        params: ['cloud'],
         language: 'es-ES',
         ename: 'Conchita',
         ssml: true,
@@ -307,7 +277,6 @@ const sayitEngines: {
     'es-ES_CLOUD_Male': {
         gender: 'Male',
         engine: 'cloud',
-        params: ['cloud'],
         language: 'es-ES',
         ename: 'Enrique',
         ssml: true,
@@ -317,7 +286,6 @@ const sayitEngines: {
     'es-US_CLOUD_Female': {
         gender: 'Female',
         engine: 'cloud',
-        params: ['cloud'],
         language: 'es-US',
         ename: 'Penelope',
         ssml: true,
@@ -326,7 +294,6 @@ const sayitEngines: {
     'es-US_CLOUD_Male': {
         gender: 'Male',
         engine: 'cloud',
-        params: ['cloud'],
         language: 'es-US',
         ename: 'Miguel',
         ssml: true,
@@ -336,7 +303,6 @@ const sayitEngines: {
     'fr-CA_CLOUD_Female': {
         gender: 'Female',
         engine: 'cloud',
-        params: ['cloud'],
         language: 'fr-CA',
         ename: 'Chantal',
         ssml: true,
@@ -345,7 +311,6 @@ const sayitEngines: {
     'fr-FR_CLOUD_Female': {
         gender: 'Female',
         engine: 'cloud',
-        params: ['cloud'],
         language: 'fr-FR',
         ename: 'Celine',
         ssml: true,
@@ -354,7 +319,6 @@ const sayitEngines: {
     'fr-FR_CLOUD_Male': {
         gender: 'Male',
         engine: 'cloud',
-        params: ['cloud'],
         language: 'fr-FR',
         ename: 'Mathieu',
         ssml: true,
@@ -364,7 +328,6 @@ const sayitEngines: {
     'is-IS_CLOUD_Female': {
         gender: 'Female',
         engine: 'cloud',
-        params: ['cloud'],
         language: 'is-IS',
         ename: 'Dora',
         ssml: true,
@@ -373,7 +336,6 @@ const sayitEngines: {
     'is-IS_CLOUD_Male': {
         gender: 'Male',
         engine: 'cloud',
-        params: ['cloud'],
         language: 'is-IS',
         ename: 'Karl',
         ssml: true,
@@ -383,7 +345,6 @@ const sayitEngines: {
     'it-IT_CLOUD_Female': {
         gender: 'Female',
         engine: 'cloud',
-        params: ['cloud'],
         language: 'it-IT',
         ename: 'Carla',
         ssml: true,
@@ -392,7 +353,6 @@ const sayitEngines: {
     'it-IT_CLOUD_Male': {
         gender: 'Male',
         engine: 'cloud',
-        params: ['cloud'],
         language: 'it-IT',
         ename: 'Giorgio',
         ssml: true,
@@ -402,7 +362,6 @@ const sayitEngines: {
     'no-NO_CLOUD_Female': {
         gender: 'Female',
         engine: 'cloud',
-        params: ['cloud'],
         language: 'nb-NO',
         ename: 'Liv',
         ssml: true,
@@ -411,7 +370,6 @@ const sayitEngines: {
     'no-NO_CLOUD_Female_Ida': {
         gender: 'Female',
         engine: 'cloud',
-        params: ['cloud'],
         language: 'no-NO',
         ename: 'Ida',
         ssml: true,
@@ -422,7 +380,6 @@ const sayitEngines: {
     'nl-NL_CLOUD_Female': {
         gender: 'Female',
         engine: 'cloud',
-        params: ['cloud'],
         language: 'nl-NL',
         ename: 'Lotte',
         ssml: true,
@@ -431,7 +388,6 @@ const sayitEngines: {
     'nl-NL_CLOUD_Male': {
         gender: 'Male',
         engine: 'cloud',
-        params: ['cloud'],
         language: 'nl-NL',
         ename: 'Ruben',
         ssml: true,
@@ -441,7 +397,6 @@ const sayitEngines: {
     'pl-PL_CLOUD_Male_Jacek': {
         gender: 'Male',
         engine: 'cloud',
-        params: ['cloud'],
         language: 'pl-PL',
         ename: 'Jacek',
         ssml: true,
@@ -450,7 +405,6 @@ const sayitEngines: {
     'pl-PL_CLOUD_Female_Ewa': {
         gender: 'Female',
         engine: 'cloud',
-        params: ['cloud'],
         language: 'pl-PL',
         ename: 'Ewa',
         ssml: true,
@@ -459,7 +413,6 @@ const sayitEngines: {
     'pl-PL_CLOUD_Male_Jan': {
         gender: 'Male',
         engine: 'cloud',
-        params: ['cloud'],
         language: 'pl-PL',
         ename: 'Jan',
         ssml: true,
@@ -468,7 +421,6 @@ const sayitEngines: {
     'pl-PL_CLOUD_Female': {
         gender: 'Female',
         engine: 'cloud',
-        params: ['cloud'],
         language: 'pl-PL',
         ename: 'Maja',
         ssml: true,
@@ -478,7 +430,6 @@ const sayitEngines: {
     'pt-BR_CLOUD_Female': {
         gender: 'Female',
         engine: 'cloud',
-        params: ['cloud'],
         language: 'pt-BR',
         ename: 'Vitoria',
         ssml: true,
@@ -487,7 +438,6 @@ const sayitEngines: {
     'pt-BR_CLOUD_Male': {
         gender: 'Male',
         engine: 'cloud',
-        params: ['cloud'],
         language: 'pt-BR',
         ename: 'Ricardo',
         ssml: true,
@@ -496,7 +446,6 @@ const sayitEngines: {
     'pt-BR_CLOUD_Female_Camila': {
         gender: 'Female',
         engine: 'cloud',
-        params: ['cloud'],
         language: 'pt-BR',
         ename: 'Camila',
         ssml: true,
@@ -505,7 +454,6 @@ const sayitEngines: {
     'pt-PT_CLOUD_Male': {
         gender: 'Male',
         engine: 'cloud',
-        params: ['cloud'],
         language: 'pt-PT',
         ename: 'Cristiano',
         ssml: true,
@@ -514,7 +462,6 @@ const sayitEngines: {
     'pt-PT_CLOUD_Female': {
         gender: 'Female',
         engine: 'cloud',
-        params: ['cloud'],
         language: 'pt-PT',
         ename: 'Ines',
         ssml: true,
@@ -524,7 +471,6 @@ const sayitEngines: {
     'ro-RO_CLOUD_Female': {
         gender: 'Female',
         engine: 'cloud',
-        params: ['cloud'],
         language: 'ro-RO',
         ename: 'Carmen',
         ssml: true,
@@ -533,7 +479,6 @@ const sayitEngines: {
     'sv-SE_CLOUD_Female': {
         gender: 'Female',
         engine: 'cloud',
-        params: ['cloud'],
         language: 'sv-SE',
         ename: 'Astrid',
         ssml: true,
@@ -542,7 +487,6 @@ const sayitEngines: {
     'tr-TR_CLOUD_Female': {
         gender: 'Female',
         engine: 'cloud',
-        params: ['cloud'],
         language: 'tr-TR',
         ename: 'Filiz',
         ssml: true,
@@ -551,31 +495,29 @@ const sayitEngines: {
     'ko-KR_CLOUD_Female': {
         gender: 'Female',
         engine: 'cloud',
-        params: ['cloud'],
         language: 'ko-KR',
         ename: 'Seoyeon',
         ssml: true,
         name: 'Cloud - ko-KR - Female - Seoyeon',
     },
 
-    'en-US': { name: 'PicoTTS - Englisch US', engine: 'PicoTTS', params: [] },
-    'en-GB': { name: 'PicoTTS - Englisch GB', engine: 'PicoTTS', params: [] },
-    'de-DE': { name: 'PicoTTS - Deutsch', engine: 'PicoTTS', params: [] },
-    'it-IT': { name: 'PicoTTS - Italiano', engine: 'PicoTTS', params: [] },
-    'es-ES': { name: 'PicoTTS - Espaniol', engine: 'PicoTTS', params: [] },
-    'fr-FR': { name: 'PicoTTS - Français', engine: 'PicoTTS', params: [] },
+    'en-US': { name: 'PicoTTS - Englisch US', engine: 'PicoTTS' },
+    'en-GB': { name: 'PicoTTS - Englisch GB', engine: 'PicoTTS' },
+    'de-DE': { name: 'PicoTTS - Deutsch', engine: 'PicoTTS' },
+    'it-IT': { name: 'PicoTTS - Italiano', engine: 'PicoTTS' },
+    'es-ES': { name: 'PicoTTS - Espaniol', engine: 'PicoTTS' },
+    'fr-FR': { name: 'PicoTTS - Français', engine: 'PicoTTS' },
 
-    en_CoquiTTS: { name: 'CoquiTTS - English', engine: 'CoquiTTS', params: [] },
-    es_CoquiTTS: { name: 'CoquiTTS - Espaniol', engine: 'CoquiTTS', params: [] },
-    fr_CoquiTTS: { name: 'CoquiTTS - Français', engine: 'CoquiTTS', params: [] },
-    de_CoquiTTS: { name: 'CoquiTTS - Deutsch', engine: 'CoquiTTS', params: [] },
-    nl_CoquiTTS: { name: 'CoquiTTS - Dutch', engine: 'CoquiTTS', params: [] },
-    ja_CoquiTTS: { name: 'CoquiTTS - Japan', engine: 'CoquiTTS', params: [] },
+    en_CoquiTTS: { name: 'CoquiTTS - English', engine: 'CoquiTTS' },
+    es_CoquiTTS: { name: 'CoquiTTS - Espaniol', engine: 'CoquiTTS' },
+    fr_CoquiTTS: { name: 'CoquiTTS - Français', engine: 'CoquiTTS' },
+    de_CoquiTTS: { name: 'CoquiTTS - Deutsch', engine: 'CoquiTTS' },
+    nl_CoquiTTS: { name: 'CoquiTTS - Dutch', engine: 'CoquiTTS' },
+    ja_CoquiTTS: { name: 'CoquiTTS - Japan', engine: 'CoquiTTS' },
 
     'ru-RU_AP_Female': {
         gender: 'Female',
         engine: 'polly',
-        params: ['awsAccessKey', 'awsSecretKey', 'awsRegion'],
         language: 'ru-RU',
         ename: 'Tatyana',
         ssml: true,
@@ -584,7 +526,6 @@ const sayitEngines: {
     'ru-RU_AP_Male': {
         gender: 'Male',
         engine: 'polly',
-        params: ['awsAccessKey', 'awsSecretKey', 'awsRegion'],
         language: 'ru-RU',
         ename: 'Maxim',
         ssml: true,
@@ -594,7 +535,6 @@ const sayitEngines: {
     'de-DE_AP_Female': {
         gender: 'Female',
         engine: 'polly',
-        params: ['awsAccessKey', 'awsSecretKey', 'awsRegion'],
         language: 'de-DE',
         ename: 'Marlene',
         ssml: true,
@@ -603,7 +543,6 @@ const sayitEngines: {
     'de-DE_AP_Female_Vicki': {
         gender: 'Female',
         engine: 'polly',
-        params: ['awsAccessKey', 'awsSecretKey', 'awsRegion'],
         language: 'de-DE',
         ename: 'Vicki',
         ssml: true,
@@ -613,7 +552,6 @@ const sayitEngines: {
     'de-DE_AP_Male': {
         gender: 'Male',
         engine: 'polly',
-        params: ['awsAccessKey', 'awsSecretKey', 'awsRegion'],
         language: 'de-DE',
         ename: 'Hans',
         ssml: true,
@@ -622,7 +560,6 @@ const sayitEngines: {
     'de-DE_AP_Male_Daniel': {
         gender: 'Male',
         engine: 'polly',
-        params: ['awsAccessKey', 'awsSecretKey', 'awsRegion'],
         language: 'de-DE',
         ename: 'Daniel',
         ssml: true,
@@ -633,7 +570,6 @@ const sayitEngines: {
     'de-AT_AP_Female_Hannah': {
         gender: 'Female',
         engine: 'polly',
-        params: ['awsAccessKey', 'awsSecretKey', 'awsRegion'],
         language: 'de-AT',
         ename: 'Hannah',
         ssml: true,
@@ -644,7 +580,6 @@ const sayitEngines: {
     'en-US_AP_Female': {
         gender: 'Female',
         engine: 'polly',
-        params: ['awsAccessKey', 'awsSecretKey', 'awsRegion'],
         language: 'en-US',
         ename: 'Salli',
         ssml: true,
@@ -653,7 +588,6 @@ const sayitEngines: {
     'en-US_AP_Male': {
         gender: 'Male',
         engine: 'polly',
-        params: ['awsAccessKey', 'awsSecretKey', 'awsRegion'],
         language: 'en-US',
         ename: 'Joey',
         ssml: true,
@@ -663,7 +597,6 @@ const sayitEngines: {
     'da-DK_AP_Female': {
         gender: 'Female',
         engine: 'polly',
-        params: ['awsAccessKey', 'awsSecretKey', 'awsRegion'],
         language: 'da-DK',
         ename: 'Naja',
         ssml: true,
@@ -672,7 +605,6 @@ const sayitEngines: {
     'da-DK_AP_Male': {
         gender: 'Male',
         engine: 'polly',
-        params: ['awsAccessKey', 'awsSecretKey', 'awsRegion'],
         language: 'da-DK',
         ename: 'Mads',
         ssml: true,
@@ -682,7 +614,6 @@ const sayitEngines: {
     'en-AU_AP_Female': {
         gender: 'Female',
         engine: 'polly',
-        params: ['awsAccessKey', 'awsSecretKey', 'awsRegion'],
         language: 'en-AU',
         ename: 'Nicole',
         ssml: true,
@@ -691,7 +622,6 @@ const sayitEngines: {
     'en-AU_AP_Male': {
         gender: 'Male',
         engine: 'polly',
-        params: ['awsAccessKey', 'awsSecretKey', 'awsRegion'],
         language: 'en-AU',
         ename: 'Russell',
         ssml: true,
@@ -701,7 +631,6 @@ const sayitEngines: {
     'en-GB_AP_Female_Amy': {
         gender: 'Female',
         engine: 'polly',
-        params: ['awsAccessKey', 'awsSecretKey', 'awsRegion'],
         language: 'en-GB',
         ename: 'Amy',
         ssml: true,
@@ -711,7 +640,6 @@ const sayitEngines: {
     'en-GB_AP_Male': {
         gender: 'Male',
         engine: 'polly',
-        params: ['awsAccessKey', 'awsSecretKey', 'awsRegion'],
         language: 'en-GB',
         ename: 'Brian',
         ssml: true,
@@ -721,7 +649,6 @@ const sayitEngines: {
     'en-GB_AP_Female_Emma': {
         gender: 'Female',
         engine: 'polly',
-        params: ['awsAccessKey', 'awsSecretKey', 'awsRegion'],
         language: 'en-GB',
         ename: 'Emma',
         ssml: true,
@@ -731,7 +658,6 @@ const sayitEngines: {
     'en-GB_AP_Male_Arthur': {
         gender: 'Male',
         engine: 'polly',
-        params: ['awsAccessKey', 'awsSecretKey', 'awsRegion'],
         language: 'en-GB',
         ename: 'Arthur',
         ssml: true,
@@ -742,7 +668,6 @@ const sayitEngines: {
     'en-GB-WLS_AP_Female': {
         gender: 'Female',
         engine: 'polly',
-        params: ['awsAccessKey', 'awsSecretKey', 'awsRegion'],
         language: 'en-GB-WLS',
         ename: 'Gwyneth',
         ssml: true,
@@ -751,7 +676,6 @@ const sayitEngines: {
     'en-GB-WLS_AP_Male': {
         gender: 'Male',
         engine: 'polly',
-        params: ['awsAccessKey', 'awsSecretKey', 'awsRegion'],
         language: 'en-GB-WLS',
         ename: 'Geraint',
         ssml: true,
@@ -761,7 +685,6 @@ const sayitEngines: {
     'cy-GB_AP_Female': {
         gender: 'Female',
         engine: 'polly',
-        params: ['awsAccessKey', 'awsSecretKey', 'awsRegion'],
         language: 'cy-GB',
         ename: 'Gwyneth',
         ssml: true,
@@ -770,7 +693,6 @@ const sayitEngines: {
     'cy-GB_AP_Male': {
         gender: 'Male',
         engine: 'polly',
-        params: ['awsAccessKey', 'awsSecretKey', 'awsRegion'],
         language: 'cy-GB',
         ename: 'Geraint',
         ssml: true,
@@ -780,7 +702,6 @@ const sayitEngines: {
     'en-IN_AP_Female': {
         gender: 'Female',
         engine: 'polly',
-        params: ['awsAccessKey', 'awsSecretKey', 'awsRegion'],
         language: 'en-IN',
         ename: 'Raveena',
         ssml: true,
@@ -790,7 +711,6 @@ const sayitEngines: {
     'en-US_AP_Female_Ivy': {
         gender: 'Female',
         engine: 'polly',
-        params: ['awsAccessKey', 'awsSecretKey', 'awsRegion'],
         language: 'en-US',
         ename: 'Ivy',
         ssml: true,
@@ -799,7 +719,6 @@ const sayitEngines: {
     'en-US_AP_Male_Justin': {
         gender: 'Male',
         engine: 'polly',
-        params: ['awsAccessKey', 'awsSecretKey', 'awsRegion'],
         language: 'en-US',
         ename: 'Justin',
         ssml: true,
@@ -808,7 +727,6 @@ const sayitEngines: {
     'en-US_AP_Female_Kendra': {
         gender: 'Female',
         engine: 'polly',
-        params: ['awsAccessKey', 'awsSecretKey', 'awsRegion'],
         language: 'en-US',
         ename: 'Kendra',
         ssml: true,
@@ -817,7 +735,6 @@ const sayitEngines: {
     'en-US_AP_Female_Kimberly': {
         gender: 'Female',
         engine: 'polly',
-        params: ['awsAccessKey', 'awsSecretKey', 'awsRegion'],
         language: 'en-US',
         ename: 'Kimberly',
         ssml: true,
@@ -827,7 +744,6 @@ const sayitEngines: {
     'es-ES_AP_Female': {
         gender: 'Female',
         engine: 'polly',
-        params: ['awsAccessKey', 'awsSecretKey', 'awsRegion'],
         language: 'es-ES',
         ename: 'Conchita',
         ssml: true,
@@ -836,7 +752,6 @@ const sayitEngines: {
     'es-ES_AP_Male': {
         gender: 'Male',
         engine: 'polly',
-        params: ['awsAccessKey', 'awsSecretKey', 'awsRegion'],
         language: 'es-ES',
         ename: 'Enrique',
         ssml: true,
@@ -845,7 +760,6 @@ const sayitEngines: {
     'es-US_AP_Female': {
         gender: 'Female',
         engine: 'polly',
-        params: ['awsAccessKey', 'awsSecretKey', 'awsRegion'],
         language: 'es-US',
         ename: 'Penelope',
         ssml: true,
@@ -854,7 +768,6 @@ const sayitEngines: {
     'es-US_AP_Male': {
         gender: 'Male',
         engine: 'polly',
-        params: ['awsAccessKey', 'awsSecretKey', 'awsRegion'],
         language: 'es-US',
         ename: 'Miguel',
         ssml: true,
@@ -863,7 +776,6 @@ const sayitEngines: {
     'fr-CA_AP_Female': {
         gender: 'Female',
         engine: 'polly',
-        params: ['awsAccessKey', 'awsSecretKey', 'awsRegion'],
         language: 'fr-CA',
         ename: 'Chantal',
         ssml: true,
@@ -872,7 +784,6 @@ const sayitEngines: {
     'fr-FR_AP_Female': {
         gender: 'Female',
         engine: 'polly',
-        params: ['awsAccessKey', 'awsSecretKey', 'awsRegion'],
         language: 'fr-FR',
         ename: 'Celine',
         ssml: true,
@@ -881,7 +792,6 @@ const sayitEngines: {
     'fr-FR_AP_Male': {
         gender: 'Male',
         engine: 'polly',
-        params: ['awsAccessKey', 'awsSecretKey', 'awsRegion'],
         language: 'fr-FR',
         ename: 'Mathieu',
         ssml: true,
@@ -890,7 +800,6 @@ const sayitEngines: {
     'is-IS_AP_Female': {
         gender: 'Female',
         engine: 'polly',
-        params: ['awsAccessKey', 'awsSecretKey', 'awsRegion'],
         language: 'is-IS',
         ename: 'Dora',
         ssml: true,
@@ -899,7 +808,6 @@ const sayitEngines: {
     'is-IS_AP_Male': {
         gender: 'Male',
         engine: 'polly',
-        params: ['awsAccessKey', 'awsSecretKey', 'awsRegion'],
         language: 'is-IS',
         ename: 'Karl',
         ssml: true,
@@ -908,7 +816,6 @@ const sayitEngines: {
     'it-IT_AP_Female': {
         gender: 'Female',
         engine: 'polly',
-        params: ['awsAccessKey', 'awsSecretKey', 'awsRegion'],
         language: 'it-IT',
         ename: 'Carla',
         ssml: true,
@@ -917,7 +824,6 @@ const sayitEngines: {
     'it-IT_AP_Male': {
         gender: 'Male',
         engine: 'polly',
-        params: ['awsAccessKey', 'awsSecretKey', 'awsRegion'],
         language: 'it-IT',
         ename: 'Giorgio',
         ssml: true,
@@ -926,7 +832,6 @@ const sayitEngines: {
     'no-NO_AP_Female': {
         gender: 'Female',
         engine: 'polly',
-        params: ['awsAccessKey', 'awsSecretKey', 'awsRegion'],
         language: 'no-NO',
         ename: 'Liv',
         ssml: true,
@@ -935,7 +840,6 @@ const sayitEngines: {
     'no-NO_AP_Female_Ida': {
         gender: 'Female',
         engine: 'polly',
-        params: ['awsAccessKey', 'awsSecretKey', 'awsRegion'],
         language: 'no-NO',
         ename: 'Ida',
         ssml: true,
@@ -945,7 +849,6 @@ const sayitEngines: {
     'nl-NL_AP_Female': {
         gender: 'Female',
         engine: 'polly',
-        params: ['awsAccessKey', 'awsSecretKey', 'awsRegion'],
         language: 'nl-NL',
         ename: 'Lotte',
         ssml: true,
@@ -954,7 +857,6 @@ const sayitEngines: {
     'nl-NL_AP_Male': {
         gender: 'Male',
         engine: 'polly',
-        params: ['awsAccessKey', 'awsSecretKey', 'awsRegion'],
         language: 'nl-NL',
         ename: 'Ruben',
         ssml: true,
@@ -963,7 +865,6 @@ const sayitEngines: {
     'pl-PL_AP_Male_Jacek': {
         gender: 'Male',
         engine: 'polly',
-        params: ['awsAccessKey', 'awsSecretKey', 'awsRegion'],
         language: 'pl-PL',
         ename: 'Jacek',
         ssml: true,
@@ -972,7 +873,6 @@ const sayitEngines: {
     'pl-PL_AP_Female_Ewa': {
         gender: 'Female',
         engine: 'polly',
-        params: ['awsAccessKey', 'awsSecretKey', 'awsRegion'],
         language: 'pl-PL',
         ename: 'Ewa',
         ssml: true,
@@ -981,7 +881,6 @@ const sayitEngines: {
     'pl-PL_AP_Male_Jan': {
         gender: 'Male',
         engine: 'polly',
-        params: ['awsAccessKey', 'awsSecretKey', 'awsRegion'],
         language: 'pl-PL',
         ename: 'Jan',
         ssml: true,
@@ -990,7 +889,6 @@ const sayitEngines: {
     'pl-PL_AP_Female': {
         gender: 'Female',
         engine: 'polly',
-        params: ['awsAccessKey', 'awsSecretKey', 'awsRegion'],
         language: 'pl-PL',
         ename: 'Maja',
         ssml: true,
@@ -999,7 +897,6 @@ const sayitEngines: {
     'pt-BR_AP_Female': {
         gender: 'Female',
         engine: 'polly',
-        params: ['awsAccessKey', 'awsSecretKey', 'awsRegion'],
         language: 'pt-BR',
         ename: 'Vitoria',
         ssml: true,
@@ -1008,7 +905,6 @@ const sayitEngines: {
     'pt-BR_AP_Male': {
         gender: 'Male',
         engine: 'polly',
-        params: ['awsAccessKey', 'awsSecretKey', 'awsRegion'],
         language: 'pt-BR',
         ename: 'Ricardo',
         ssml: true,
@@ -1017,7 +913,6 @@ const sayitEngines: {
     'pt-PT_AP_Male': {
         gender: 'Male',
         engine: 'polly',
-        params: ['awsAccessKey', 'awsSecretKey', 'awsRegion'],
         language: 'pt-PT',
         ename: 'Cristiano',
         ssml: true,
@@ -1026,7 +921,6 @@ const sayitEngines: {
     'pt-PT_AP_Female': {
         gender: 'Female',
         engine: 'polly',
-        params: ['awsAccessKey', 'awsSecretKey', 'awsRegion'],
         language: 'pt-PT',
         ename: 'Ines',
         ssml: true,
@@ -1035,7 +929,6 @@ const sayitEngines: {
     'ro-RO_AP_Female': {
         gender: 'Female',
         engine: 'polly',
-        params: ['awsAccessKey', 'awsSecretKey', 'awsRegion'],
         language: 'ro-RO',
         ename: 'Carmen',
         ssml: true,
@@ -1044,7 +937,6 @@ const sayitEngines: {
     'sv-SE_AP_Female': {
         gender: 'Female',
         engine: 'polly',
-        params: ['awsAccessKey', 'awsSecretKey', 'awsRegion'],
         language: 'sv-SE',
         ename: 'Astrid',
         ssml: true,
@@ -1053,7 +945,6 @@ const sayitEngines: {
     'tr-TR_AP_Female': {
         gender: 'Female',
         engine: 'polly',
-        params: ['awsAccessKey', 'awsSecretKey', 'awsRegion'],
         language: 'tr-TR',
         ename: 'Filiz',
         ssml: true,
@@ -1062,7 +953,6 @@ const sayitEngines: {
     'ko-KR_AP_Female': {
         gender: 'Female',
         engine: 'polly',
-        params: ['awsAccessKey', 'awsSecretKey', 'awsRegion'],
         language: 'ko-KR',
         ename: 'Seoyeon',
         ssml: true,
@@ -1073,7 +963,6 @@ const sayitEngines: {
 const sayitOptions: {
     [type: string]: {
         name: string;
-        params: string[];
         mp3Required: boolean;
         checkLength: boolean;
         server: boolean;
@@ -1082,7 +971,6 @@ const sayitOptions: {
 } = {
     browser: {
         name: 'Browser',
-        params: ['engine', 'cache', 'instance'],
         mp3Required: true,
         checkLength: true,
         server: true,
@@ -1090,7 +978,6 @@ const sayitOptions: {
     },
     mp24ftp: {
         name: 'MediaPlayer24+FTP',
-        params: ['engine', 'cache', 'server', 'port', 'user', 'pass'],
         mp3Required: true,
         checkLength: true,
         server: false,
@@ -1098,7 +985,6 @@ const sayitOptions: {
     },
     mp24: {
         name: 'MediaPlayer24',
-        params: ['server'],
         mp3Required: false,
         checkLength: true,
         server: false,
@@ -1106,7 +992,6 @@ const sayitOptions: {
     },
     system: {
         name: 'System',
-        params: ['engine', 'cache'],
         mp3Required: true,
         checkLength: false,
         server: false,
@@ -1114,7 +999,6 @@ const sayitOptions: {
     },
     windows: {
         name: 'Windows default',
-        params: [],
         mp3Required: false,
         checkLength: true,
         server: false,
@@ -1122,7 +1006,6 @@ const sayitOptions: {
     },
     sonos: {
         name: 'Sonos',
-        params: ['engine', 'cache', 'device', 'web', 'webServer'],
         mp3Required: true,
         checkLength: true,
         server: true,
@@ -1130,7 +1013,6 @@ const sayitOptions: {
     },
     heos: {
         name: 'Heos',
-        params: ['engine', 'cache', 'heos_device', 'web', 'webServer'],
         mp3Required: true,
         checkLength: true,
         server: true,
@@ -1138,7 +1020,6 @@ const sayitOptions: {
     },
     chromecast: {
         name: 'Chromecast',
-        params: ['engine', 'cache', 'cDevice', 'web', 'webServer'],
         mp3Required: true,
         checkLength: true,
         server: true,
@@ -1146,7 +1027,6 @@ const sayitOptions: {
     },
     mpd: {
         name: 'MPD',
-        params: ['engine', 'cache', 'mpd_device', 'web', 'webServer'],
         mp3Required: true,
         checkLength: true,
         server: true,
@@ -1154,7 +1034,6 @@ const sayitOptions: {
     },
     googleHome: {
         name: 'Google Home',
-        params: ['engine', 'cache', 'server', 'web', 'webServer'],
         mp3Required: true,
         checkLength: true,
         server: true,
