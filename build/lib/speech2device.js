@@ -668,7 +668,6 @@ class Speech2Device {
         this.adapter.log.error(`Unknown play type: ${type}`);
         return false;
     }
-    static sayItIsPlayFile = _a.isPlayFile;
 }
 _a = Speech2Device;
 exports.default = Speech2Device;

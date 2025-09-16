@@ -11,7 +11,6 @@ const engines_1 = require("./lib/engines");
 const text2speech_1 = __importDefault(require("./lib/text2speech"));
 const speech2device_1 = __importDefault(require("./lib/speech2device"));
 const adapter_core_1 = require("@iobroker/adapter-core");
-process.on('SIGINT', stop);
 class SayItAdapter extends adapter_core_1.Adapter {
     dataDir = (0, node_path_1.join)((0, adapter_core_1.getAbsoluteDefaultDataDir)(), 'sayit');
     processMessageTimeout = null;
@@ -81,6 +80,7 @@ class SayItAdapter extends adapter_core_1.Adapter {
             },
             unload: (callback) => this.stopInstance(true, callback),
         });
+        process.on('SIGINT', this.stopInstance);
     }
     async browseMdns(obj) {
         try {
@@ -241,7 +241,7 @@ class SayItAdapter extends adapter_core_1.Adapter {
             }
         }
     }
-    stopInstance(unload, callback) {
+    stopInstance = (unload, callback) => {
         if (this.processMessageTimeout) {
             clearTimeout(this.processMessageTimeout);
             this.processMessageTimeout = null;
@@ -262,7 +262,7 @@ class SayItAdapter extends adapter_core_1.Adapter {
         if (!unload) {
             setTimeout(() => (this.terminate ? this.terminate() : process.exit()), 500);
         }
-    }
+    };
     static mkpathSync(rootPath, dirPath) {
         // Remove filename
         const dirPathArr = dirPath.split('/');
@@ -792,7 +792,8 @@ class SayItAdapter extends adapter_core_1.Adapter {
             // Create cache directory, if it does not exist
             if (!(0, node_fs_1.existsSync)(this.cacheDir)) {
                 try {
-                    SayItAdapter.mkpathSync(`${__dirname}/`, this.cacheDir);
+                    (0, node_fs_1.mkdirSync)(this.cacheDir, { recursive: true });
+                    this.log.info(`Cache directory "${this.cacheDir}" created`);
                 }
                 catch (e) {
                     this.log.error(`Cannot create "${this.cacheDir}": ${e.message}`);

@@ -16,8 +16,6 @@ import Speech2Device from './lib/speech2device';
 import { Adapter, type AdapterOptions, getAbsoluteDefaultDataDir } from '@iobroker/adapter-core';
 import type { EngineType, SayItAdapterConfig, SayItDeviceProps, SayItProps } from './types';
 
-process.on('SIGINT', stop);
-
 interface Service {
     addresses: string[];
     flags: number;
@@ -140,6 +138,7 @@ export class SayItAdapter extends Adapter {
             },
             unload: (callback: () => void): void => this.stopInstance(true, callback),
         });
+        process.on('SIGINT', this.stopInstance);
     }
 
     async browseMdns(obj: ioBroker.Message): Promise<void> {
@@ -310,7 +309,7 @@ export class SayItAdapter extends Adapter {
         }
     }
 
-    stopInstance(unload?: boolean, callback?: () => void): void {
+    stopInstance = (unload?: boolean, callback?: () => void): void => {
         if (this.processMessageTimeout) {
             clearTimeout(this.processMessageTimeout);
             this.processMessageTimeout = null;
@@ -334,7 +333,7 @@ export class SayItAdapter extends Adapter {
         if (!unload) {
             setTimeout(() => (this.terminate ? this.terminate() : process.exit()), 500);
         }
-    }
+    };
 
     static mkpathSync(rootPath: string, dirPath: string): void {
         // Remove filename
@@ -913,7 +912,8 @@ export class SayItAdapter extends Adapter {
             // Create cache directory, if it does not exist
             if (!existsSync(this.cacheDir)) {
                 try {
-                    SayItAdapter.mkpathSync(`${__dirname}/`, this.cacheDir);
+                    mkdirSync(this.cacheDir, { recursive: true });
+                    this.log.info(`Cache directory "${this.cacheDir}" created`);
                 } catch (e) {
                     this.log.error(`Cannot create "${this.cacheDir}": ${e.message}`);
                 }

@@ -750,6 +750,4 @@ export default class Speech2Device {
         this.adapter.log.error(`Unknown play type: ${type as string}`);
         return false;
     }
-
-    static sayItIsPlayFile = Speech2Device.isPlayFile;
 }
