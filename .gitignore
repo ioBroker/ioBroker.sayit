@@ -10,4 +10,4 @@ iob_npm.done
 *.tgz
 /sayit.0.say.mp3
 /gong.mp3
-/build/
+.commitinfo
