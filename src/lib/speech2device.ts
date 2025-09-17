@@ -237,7 +237,9 @@ export default class Speech2Device {
     }
 
     async #sayItSonos(props: SayItDeviceProps): Promise<boolean> {
-        props.volume ||= this.options.sayLastVolume;
+        props.volume ||= props.testOptions?.volume
+            ? parseInt(props.testOptions.volume as string, 10)
+            : this.options.sayLastVolume;
         const result = await this.#uploadToStates(props.text);
 
         const webLink = await this.#getWebLink(props.testOptions);
@@ -261,7 +263,9 @@ export default class Speech2Device {
     }
 
     async #sayItHeos(props: SayItDeviceProps): Promise<boolean> {
-        props.volume ||= this.options.sayLastVolume;
+        props.volume ||= props.testOptions?.volume
+            ? parseInt(props.testOptions.volume as string, 10)
+            : this.options.sayLastVolume;
 
         const result = await this.#uploadToStates(props.text);
 
@@ -285,7 +289,9 @@ export default class Speech2Device {
     }
 
     async #sayItMpd(props: SayItDeviceProps): Promise<boolean> {
-        props.volume ||= this.options.sayLastVolume;
+        props.volume ||= props.testOptions?.volume
+            ? parseInt(props.testOptions.volume as string, 10)
+            : this.options.sayLastVolume;
 
         const result = await this.#uploadToStates(props.text);
         const webLink = await this.#getWebLink(props.testOptions);
@@ -308,7 +314,9 @@ export default class Speech2Device {
     }
 
     async #sayItChromecast(props: SayItDeviceProps): Promise<boolean> {
-        props.volume ||= this.options.sayLastVolume;
+        props.volume ||= props.testOptions?.volume
+            ? parseInt(props.testOptions.volume as string, 10)
+            : this.options.sayLastVolume;
 
         const result = await this.#uploadToStates(props.text);
 

@@ -186,6 +186,7 @@ export class SayItAdapter extends Adapter {
             const sonosDevice = obj.message?.sonosDevice as string;
             const heosDevice = obj.message?.heosDevice as string;
             const mpdInstance = obj.message?.mpdInstance as `${string}.${number}`;
+            const chromecastDevice = obj.message?.chromecastDevice as string;
 
             if (text) {
                 if (obj.callback) {
@@ -209,6 +210,7 @@ export class SayItAdapter extends Adapter {
                             heosDevice,
                             mpdInstance,
                             browserInstance,
+                            chromecastDevice,
                         },
                     }).catch(e => this.log.error(`Cannot add to queue ${e.toString()}`));
                 }
