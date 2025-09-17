@@ -179,9 +179,9 @@ export class SayItAdapter extends Adapter {
     processMessage(obj: ioBroker.Message): void {
         if (obj) {
             if (obj.command === 'say') {
-                const text = obj.message?.text;
-                const language = obj.message?.language;
-                const volume = obj.message?.volume;
+                const text: string | undefined = obj.message?.text as string;
+                const language: EngineType | undefined = obj.message?.language as EngineType;
+                const volume = obj.message?.volume ? parseInt(obj.message.volume as string, 10) : undefined;
 
                 if (text) {
                     if (obj.callback) {
@@ -387,7 +387,7 @@ export class SayItAdapter extends Adapter {
 
         // Workaround for double text
         // find all similar texts with interval less han 500 ms
-        const combined = [props.text, props.language, props.volume].filter(t => t).join(';');
+        const combined = [props.text, props.language || '', props.volume || ''].filter(t => t).join(';');
         if (this.tasks.find(task => task.combined === combined && Date.now() - task.ts < 500)) {
             // ignore it
             return;
