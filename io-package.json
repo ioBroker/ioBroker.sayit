@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "sayit",
-    "version": "5.0.0",
+    "version": "5.1.0",
     "news": {
+      "5.1.0": {
+        "en": "Adapter was rewritten with TypeScript\nUpdated Polly voices list\nAdded option to send sonos device as parameter in sendTo command",
+        "de": "Adapter wurde mit TypeScript neu geschrieben.\nAktualisierte Liste der Polly-Stimmen\nHinzufügen der Option, ein Sonos-Gerät als Parameter im sendTo-Befehl zu übermitteln.",
+        "ru": "Адаптер был переписан с использованием TypeScript.\nОбновлен список голосов Polly\nДобавлена опция отправки устройства Sonos в качестве параметра в команде sendTo.",
+        "pt": "O adaptador foi reescrito com TypeScript\nLista de vozes do Polly atualizada\nAdicionada a opção de enviar dispositivo Sonos como parâmetro no comando sendTo",
+        "nl": "Adapter is herschreven met TypeScript\nBijgewerkte lijst met Polly stemmen\nOptie toegevoegd om een Sonos-apparaat als parameter te verzenden in het sendTo-commando.",
+        "fr": "L'adaptateur a été réécrit en TypeScript\nListe des voix de Polly mise à jour\nAjout de l'option d'envoyer un appareil Sonos en tant que paramètre dans la commande sendTo",
+        "it": "L'adattatore è stato riscritto in TypeScript\nAggiornata la lista delle voci di Polly\nAggiunta opzione per inviare il dispositivo Sonos come parametro nel comando sendTo.",
+        "es": "El adaptador fue reescrito con TypeScript\nLista de voces de Polly actualizada\nAgregada la opción de enviar un dispositivo Sonos como parámetro en el comando sendTo.",
+        "pl": "Adapter został przepisany z użyciem TypeScript.\nZaktualizowana lista głosów Polly\nDodano opcję przesyłania urządzenia Sonos jako parametru w poleceniu sendTo.",
+        "uk": "Адаптер був переписаний з TypeScript.\nОновлений список голосів Polly\nДодано опцію надсилання пристрою Sonos як параметра у команді sendTo.",
+        "zh-cn": "适配器使用TypeScript进行了重写\n更新了 Polly 语音列表\n添加了在sendTo命令中作为参数发送Sonos设备的选项"
+      },
       "5.0.0": {
         "en": "Adapter requires admin v7 or newer now\nAdapter requires jas-controller 5 or newer now\nAdded possibility to play directly from states: `sayit.0/tts.userfiles/gong.mp3`",
         "de": "Adapter erfordert jetzt Admin v7 oder neuer\nAdapter erfordert jetzt Jas-Controller 5 oder neuer\nMöglichkeit, direkt aus Zuständen zu spielen: `sayit.0/tts.userfiles/gong.mp3`",
@@ -80,19 +93,6 @@
         "pl": "Restored cloud engine (ang.). Warning: aktualizacja adapteru chmur do przynajmniej 4.4\nZmiany: Wersja minimalna jest 14",
         "uk": "Відновлення хмарних двигунів. Попередження: оновлення хмарного адаптера до принаймні 4.4.0\nЗміни прориву: Minimal node.js версія 14",
         "zh-cn": "恢复云雾器。 警告:更新云雾剂,至少4.4.0\n断然变化: 米切尔·诺贝尔版本为14。"
-      },
-      "2.1.2": {
-        "en": "Corrected engines with web-link",
-        "de": "Korrigierte Motoren mit Weblink",
-        "ru": "Правильные двигатели с web-ссылка",
-        "pt": "Motores corrigidos com web-link",
-        "nl": "Vertaling:",
-        "fr": "Moteurs corrigés avec web-link",
-        "it": "Motori corretti con web-link",
-        "es": "Motores corregidos con enlace web",
-        "pl": "Poprawione silniki z linkami stron internetowych",
-        "uk": "Виправлені двигуни з веб-посиланням",
-        "zh-cn": "连接网络的工程师"
       }
     },
     "title": "Text to speech",
