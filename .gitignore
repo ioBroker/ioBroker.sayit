@@ -9,5 +9,5 @@ iob_npm.done
 .vscode
 *.tgz
 /sayit.0.say.mp3
-/gong.mp3
 .commitinfo
+/build/*.mp3
