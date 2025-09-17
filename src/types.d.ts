@@ -229,7 +229,7 @@ export interface SayItAdapterConfig {
 export type TestOptions = {
     type: SayItAdapterConfig['type'];
     engine: EngineType;
-    browserInstance?: `${string}.${number}`;
+    browserInstance?: string;
     browserVis?: '' | '1' | '2';
     sonosDevice?: string;
     webServer?: string;

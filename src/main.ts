@@ -14,7 +14,7 @@ import { sayitOptions } from './lib/engines';
 import Text2Speech from './lib/text2speech';
 import Speech2Device from './lib/speech2device';
 import { Adapter, type AdapterOptions, getAbsoluteDefaultDataDir } from '@iobroker/adapter-core';
-import type { EngineType, SayItAdapterConfig, SayItDeviceProps, SayItProps } from './types';
+import type { EngineType, SayItAdapterConfig, SayItDeviceProps, SayItProps, TestOptions } from './types';
 
 interface Service {
     addresses: string[];
@@ -86,7 +86,7 @@ export class SayItAdapter extends Adapter {
             ...options,
             name: 'sayit',
             ready: () => this.main(),
-            message: (obj: ioBroker.Message) => this.processMessage(obj),
+            message: (obj: ioBroker.Message) => obj && this.processMessage(obj),
             stateChange: (id, state) => {
                 if (state && !state.ack) {
                     if (id === `${this.namespace}.tts.clearQueue`) {
@@ -177,135 +177,144 @@ export class SayItAdapter extends Adapter {
     }
 
     processMessage(obj: ioBroker.Message): void {
-        if (obj) {
-            if (obj.command === 'say') {
-                const text: string | undefined = obj.message?.text as string;
-                const language: EngineType | undefined = obj.message?.language as EngineType;
-                const volume = obj.message?.volume ? parseInt(obj.message.volume as string, 10) : undefined;
+        if (obj.command === 'say') {
+            const text: string | undefined = obj.message?.text as string;
+            const language: EngineType | undefined = obj.message?.language as EngineType;
+            const volume = obj.message?.volume ? parseInt(obj.message.volume as string, 10) : undefined;
+            const browserVis = obj.message?.browserVis as '' | '1' | '2';
+            const browserInstance = obj.message?.browserInstance as string;
+            const sonosDevice = obj.message?.sonosDevice as string;
+            const heosDevice = obj.message?.heosDevice as string;
+            const mpdInstance = obj.message?.mpdInstance as `${string}.${number}`;
 
-                if (text) {
-                    if (obj.callback) {
-                        const testOptions = { ...obj.message };
-                        testOptions.callback = (error?: string): void => {
-                            this.sendTo(
-                                obj.from,
-                                obj.command,
-                                { error, result: error ? undefined : 'Ok' },
-                                obj.callback,
-                            );
-                        };
-                        this.addToQueue({ text, language, volume, testOptions }).catch(e =>
-                            this.log.error(`Cannot add to queue ${e}`),
-                        );
-                    } else {
-                        this.addToQueue({ text, language, volume }).catch(e =>
-                            this.log.error(`Cannot add to queue ${e.toString()}`),
-                        );
-                    }
-                } else {
-                    this.sendTo(obj.from, obj.command, { error: 'No text' }, obj.callback);
-                }
-            } else if (obj.command === 'stopInstance') {
-                this.stopInstance(false, () => {
-                    if (obj.callback) {
-                        this.sendTo(obj.from, obj.command, null, obj.callback);
-                    }
-                });
-            } else if (obj.callback && obj.command === 'browseGoogleHome') {
-                this.browseMdns(obj).catch(e => {
-                    this.log.debug(`Cannot browse mdns: ${e}`);
-                    if (obj.callback) {
-                        this.sendTo(obj.from, obj.command, null, obj.callback);
-                    }
-                });
-            } else if (obj.callback && obj.command === 'browseChromecast') {
-                this.getObjectView(
-                    'system',
-                    'device',
-                    { startkey: 'chromecast.', endkey: 'chromecast.\u9999' },
-                    (err, res) => {
-                        const list: { value: string; label: string }[] = [];
-                        if (!err && res) {
-                            res.rows.forEach(row => {
-                                let name = row.value?.common?.name;
-                                if (typeof name === 'object') {
-                                    name = name[this.lang] || name.en;
-                                }
-
-                                list.push({ value: row.id, label: `${name} [${row.id}]` });
-                            });
-                        }
-                        this.sendTo(obj.from, obj.command, list, obj.callback);
-                    },
-                );
-            } else if (obj.callback && obj.command === 'browseHeos') {
-                this.getObjectView('system', 'device', { startkey: 'heos.', endkey: 'heos.\u9999' }, (err, res) => {
-                    const list: { value: string; label: string }[] = [];
-                    res?.rows.forEach(row => {
-                        let name = row.value?.common?.name;
-                        if (typeof name === 'object') {
-                            name = name[this.lang] || name.en;
-                        }
-                        if (row.id.includes('.players.')) {
-                            list.push({
-                                value: row.id,
-                                label: `${row.id.replace(/^heos\.\d+\.players\./, '')} [${name}]`,
-                            });
-                        }
-                    });
-                    this.sendTo(obj.from, obj.command, list, obj.callback);
-                });
-            } else if (obj.callback && obj.command === 'browseSonos') {
-                this.getObjectView('system', 'device', { startkey: 'sonos.', endkey: 'heos.\u9999' }, (err, res) => {
-                    const list: { value: string; label: string }[] = [];
-                    res?.rows.forEach(row => {
-                        let name = row.value?.common?.name;
-                        if (typeof name === 'object') {
-                            name = name[this.lang] || name.en;
-                        }
-                        if (row.id.includes('.players.')) {
-                            list.push({
-                                value: row.id,
-                                label: `${row.id.replace(/^sonos\.\d+\.root\./, '')} [${name}]`,
-                            });
-                        }
-                    });
-                    this.sendTo(obj.from, obj.command, list, obj.callback);
-                });
-            } else if (obj.callback && obj.command === 'test') {
-                const language = (obj.message?.engine || this.config.engine).substring(0, 2);
-                let text = 'Hello';
-                if (language === 'de') {
-                    text = 'Hallo';
-                } else if (language === 'pl') {
-                    text = 'Cześć';
-                } else if (language === 'uk') {
-                    text = 'Привіт';
-                } else if (language === 'ru') {
-                    text = 'Привет';
-                } else if (language === 'it') {
-                    text = 'Ciao';
-                } else if (language === 'pt') {
-                    text = 'Olá';
-                } else if (language === 'es') {
-                    text = 'Hola';
-                } else if (language === 'fr') {
-                    text = 'Bonjour';
-                } else if (language === 'nl') {
-                    text = 'Hallo';
-                } else if (language === 'zh') {
-                    text = '你好';
-                }
-                text += ` ${this.helloCounter++}`;
-                const testOptions = { ...obj.message };
+            if (text) {
                 if (obj.callback) {
+                    const testOptions: TestOptions = { ...obj.message };
                     testOptions.callback = (error?: string): void => {
                         this.sendTo(obj.from, obj.command, { error, result: error ? undefined : 'Ok' }, obj.callback);
                     };
+                    this.addToQueue({ text, language, volume, testOptions }).catch(e =>
+                        this.log.error(`Cannot add to queue ${e}`),
+                    );
+                } else {
+                    this.addToQueue({
+                        text,
+                        language,
+                        volume,
+                        testOptions: {
+                            engine: language,
+                            type: this.config.type,
+                            browserVis,
+                            sonosDevice,
+                            heosDevice,
+                            mpdInstance,
+                            browserInstance,
+                        },
+                    }).catch(e => this.log.error(`Cannot add to queue ${e.toString()}`));
                 }
-
-                this.addToQueue({ text, testOptions }).catch(e => this.log.error(`Cannot add to queue ${e}`));
+            } else {
+                this.sendTo(obj.from, obj.command, { error: 'No text' }, obj.callback);
             }
+        } else if (obj.command === 'stopInstance') {
+            this.stopInstance(false, () => {
+                if (obj.callback) {
+                    this.sendTo(obj.from, obj.command, null, obj.callback);
+                }
+            });
+        } else if (obj.callback && obj.command === 'browseGoogleHome') {
+            this.browseMdns(obj).catch(e => {
+                this.log.debug(`Cannot browse mdns: ${e}`);
+                if (obj.callback) {
+                    this.sendTo(obj.from, obj.command, null, obj.callback);
+                }
+            });
+        } else if (obj.callback && obj.command === 'browseChromecast') {
+            this.getObjectView(
+                'system',
+                'device',
+                { startkey: 'chromecast.', endkey: 'chromecast.\u9999' },
+                (err, res) => {
+                    const list: { value: string; label: string }[] = [];
+                    if (!err && res) {
+                        res.rows.forEach(row => {
+                            let name = row.value?.common?.name;
+                            if (typeof name === 'object') {
+                                name = name[this.lang] || name.en;
+                            }
+
+                            list.push({ value: row.id, label: `${name} [${row.id}]` });
+                        });
+                    }
+                    this.sendTo(obj.from, obj.command, list, obj.callback);
+                },
+            );
+        } else if (obj.callback && obj.command === 'browseHeos') {
+            this.getObjectView('system', 'device', { startkey: 'heos.', endkey: 'heos.\u9999' }, (err, res) => {
+                const list: { value: string; label: string }[] = [];
+                res?.rows.forEach(row => {
+                    let name = row.value?.common?.name;
+                    if (typeof name === 'object') {
+                        name = name[this.lang] || name.en;
+                    }
+                    if (row.id.includes('.players.')) {
+                        list.push({
+                            value: row.id,
+                            label: `${row.id.replace(/^heos\.\d+\.players\./, '')} [${name}]`,
+                        });
+                    }
+                });
+                this.sendTo(obj.from, obj.command, list, obj.callback);
+            });
+        } else if (obj.callback && obj.command === 'browseSonos') {
+            this.getObjectView('system', 'device', { startkey: 'sonos.', endkey: 'heos.\u9999' }, (err, res) => {
+                const list: { value: string; label: string }[] = [];
+                res?.rows.forEach(row => {
+                    let name = row.value?.common?.name;
+                    if (typeof name === 'object') {
+                        name = name[this.lang] || name.en;
+                    }
+                    if (row.id.includes('.players.')) {
+                        list.push({
+                            value: row.id,
+                            label: `${row.id.replace(/^sonos\.\d+\.root\./, '')} [${name}]`,
+                        });
+                    }
+                });
+                this.sendTo(obj.from, obj.command, list, obj.callback);
+            });
+        } else if (obj.callback && obj.command === 'test') {
+            const language = (obj.message?.engine || this.config.engine).substring(0, 2);
+            let text = 'Hello';
+            if (language === 'de') {
+                text = 'Hallo';
+            } else if (language === 'pl') {
+                text = 'Cześć';
+            } else if (language === 'uk') {
+                text = 'Привіт';
+            } else if (language === 'ru') {
+                text = 'Привет';
+            } else if (language === 'it') {
+                text = 'Ciao';
+            } else if (language === 'pt') {
+                text = 'Olá';
+            } else if (language === 'es') {
+                text = 'Hola';
+            } else if (language === 'fr') {
+                text = 'Bonjour';
+            } else if (language === 'nl') {
+                text = 'Hallo';
+            } else if (language === 'zh') {
+                text = '你好';
+            }
+            text += ` ${this.helloCounter++}`;
+            const testOptions = { ...obj.message };
+            if (obj.callback) {
+                testOptions.callback = (error?: string): void => {
+                    this.sendTo(obj.from, obj.command, { error, result: error ? undefined : 'Ok' }, obj.callback);
+                };
+            }
+
+            this.addToQueue({ text, testOptions }).catch(e => this.log.error(`Cannot add to queue ${e}`));
         }
     }
 
