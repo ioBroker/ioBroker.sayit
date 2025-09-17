@@ -4,7 +4,6 @@ const setup = require('@iobroker/legacy-testing');
 let objects = null;
 let states = null;
 let onStateChanged = null;
-let sendToID = 1;
 
 const adapterShortName = setup.adapterName.substring(setup.adapterName.indexOf('.') + 1);
 const runningMode = require('../io-package.json').common.mode;
