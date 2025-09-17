@@ -122,6 +122,7 @@
       "zh-cn": "文字到语音在云端或局部的。 运行在windows、linux和OS x. 它可以发挥的mp3/声。",
       "uk": "Перетворення тексту в мовлення в хмарі або локально. Працює на Windows, Linux і OSX. Він також може відтворювати mp3/wav."
     },
+    "nogit": true,
     "authors": [
       "bluefox <dogafox@gmail.com>"
     ],
