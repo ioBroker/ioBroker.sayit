@@ -107,6 +107,17 @@ To install omxplayer write `sudo apt-get install omxplayer` or write `sudo apt-g
 
 **Note:** The default announce selection will be possible only after the start of the instance.
 
+With `sendTo` you can send more different parameters, like `sonosDevice` or `browserInstance`:
+```javascript
+sendTo('sayit.0', 'say', {
+    text: 'Hello',
+    sonosDevice: 'Wohnzimmer', // optional, if not defined, the device from configuration will be used
+    engine: 'Google-de', // optional, if not defined, the device from configuration will be used
+    type: 'sonos', // optional, if not defined, the device from configuration will be used
+    volume: 20, // optional, if not defined, the device from configuration will be used
+});
+```
+
 ### Priorities
 To immediately pronounce the text despite the queued texts, you have two possibilities:
 - place "!" as a first character in text, so this text will be pronounced immediately after the current one.
