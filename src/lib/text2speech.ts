@@ -219,7 +219,7 @@ export default class Text2Speech {
         const yandexDrunk =
             props.testOptions?.yandexDrunk !== undefined
                 ? props.testOptions?.yandexDrunk
-                : this.#config.yandexDrunk || this.#config.yandexDrunk;
+                : this.#config.yandexDrunk;
         const yandexIll =
             props.testOptions?.yandexIll !== undefined
                 ? props.testOptions?.yandexIll
