@@ -57,7 +57,7 @@
     "@types/jsftp": "^2.1.5",
     "@types/mdns": "^0.0.38",
     "chai": "^4.5.0",
-    "mocha": "^11.7.3"
+    "mocha": "^11.7.4"
   },
   "bugs": {
     "url": "https://github.com/ioBroker/ioBroker.sayit/issues"
