@@ -43,7 +43,7 @@
     "@aws-sdk/client-polly": "^3.888.0",
     "@iobroker/adapter-core": "^3.3.2",
     "google-tts-api": "^2.0.2",
-    "axios": "^1.12.2",
+    "axios": "^1.13.2",
     "mp3-duration": "^1.1.0"
   },
   "devDependencies": {
