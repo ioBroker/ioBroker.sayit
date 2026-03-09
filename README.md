@@ -278,6 +278,9 @@ The following values for engines are possible:
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+
+### **WORK IN PROGRESS**
+- (iobroker-bot) Adapter requires node.js >= 20 now.
 ### 5.1.0 (2025-09-17)
 * (bluefox) Adapter was rewritten with TypeScript
 * (bluefox) Updated Polly voices list
