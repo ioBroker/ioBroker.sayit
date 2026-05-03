@@ -553,6 +553,8 @@ Changed type of top-level object to "meta" in order to comply with js-controller
 ### 0.0.1 (2015-02-06)
 * (bluefox) initial commit
 
+[Older changelogs can be found there](CHANGELOG_OLD.md)
+
 ## License
 
 The MIT License (MIT)
