@@ -278,6 +278,10 @@ The following values for engines are possible:
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+
+### **WORK IN PROGRESS**
+- (ioBroker-Bot) Adapter requires js-controller >= 6.0.11 now.
+
 ### 5.1.0 (2025-09-17)
 * (bluefox) Adapter was rewritten with TypeScript
 * (bluefox) Updated Polly voices list
