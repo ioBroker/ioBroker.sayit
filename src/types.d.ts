@@ -172,44 +172,60 @@ type EngineType =
     | 'sk-SK_AP_Female_Laura'
     | 'fi-FI_AP_Female_Suvi';
 
+/**
+ * Configuration of the adapter instance.
+ * The default values are defined in the "native" section of io-package.json.
+ */
 export interface SayItAdapterConfig {
+    /** Type of the output device */
     type:
-        | 'system'
-        | 'mp24ftp'
-        | 'mp24'
-        | 'chromecast'
-        | 'googleHome'
-        | 'sonos'
-        | 'browser'
-        | 'mpd'
-        | 'heos'
-        | 'windows';
+        'system' | 'mp24ftp' | 'mp24' | 'chromecast' | 'googleHome' | 'sonos' | 'browser' | 'mpd' | 'heos' | 'windows';
+    /** Own play command for the type "system". "%s" will be replaced by the file name */
     systemCommand: string;
+    /** Player used for the type "system" on linux: "mpg321", "omxplayer" or "mplayer" */
     systemPlayer: string;
+    /** Store the generated files on the disk */
     cache: boolean;
+    /** Delete cached files after this number of days. 0 - never delete */
     cacheExpiryDays: number;
+    /** Cache directory. Relative paths are relative to the adapter directory */
     cacheDir: string;
+    /** Engine (voice) used for the text generation */
     engine: EngineType;
+    /** ID of the sonos device, like "sonos.0.root.192_168_1_1" */
     sonosDevice: string;
+    /** ID of the HEOS player, like "heos.0.players.123456" */
     heosDevice: string;
+    /** Instance of the MPD adapter, like "mpd.0" */
     mpdInstance: string;
+    /** IP address of the google home device */
     googleHomeServer: string;
+    /** ID of the chromecast device, like "chromecast.0.MyDevice" */
     chromecastDevice: string;
+    /** IP address of the android device with the MediaPlayer24 app */
     mp24Server: string;
     ftpPort: number | string;
     ftpUser: string;
     ftpPassword: string;
+    /** Name of the browser instance for vis or "FFFFFFFF" for all instances */
     browserInstance: string;
+    /** Which vis version must be controlled: "" - both, "1" - vis, "2" - vis-2 */
     browserVis: '' | '1' | '2';
+    /** Instance of the web adapter, like "web.0" */
     webInstance: `${string}.${number}`;
+    /** IP address of the web server. Used if the web adapter is bound to 0.0.0.0 */
     webServer: string;
+    /** Name of the announcement file in the "tts.userfiles" storage */
     announce: string;
+    /** Time in seconds after the last text, when the announcement must be played again */
     annoTimeout: number | string;
+    /** Duration of the announcement in seconds. 0 - detect automatically */
     annoDuration: number | string;
+    /** Volume of the announcement in percent of the actual volume */
     annoVolume: number | string;
     cloudAppKey: string;
+    /** Instance of the cloud adapter, like "cloud.0" */
     cloudInstance: string;
-    yandexEffectVoice: string;
     yandexKey: string;
     yandexEmotion: string;
     yandexFolderID: string;
@@ -221,8 +237,11 @@ export interface SayItAdapterConfig {
     awsAccessKey: string;
     awsSecretKey: string;
     awsRegion: string;
+    /** True if the configuration was already converted from version 1 to version 2 */
     convertedV1toV2: boolean;
+    /** Model and vocoder for CoquiTTS, like "ljspeech univnet" */
     coquiVocoder: string;
+    /** Fixed volume in percent. If empty, the value of the state "tts.volume" will be used */
     volume: number | string;
 }
 

@@ -5,16 +5,23 @@ import { sayitEngines } from './engines';
 import { URLSearchParams } from 'node:url';
 import { PollyClient, SynthesizeSpeechCommand, type SynthesizeSpeechCommandInput } from '@aws-sdk/client-polly';
 import axios from 'axios';
-import { exec } from 'node:child_process';
+import { spawn } from 'node:child_process';
+import { dirname, join } from 'node:path';
 import { getAudioBase64 } from 'google-tts-api';
 import type { EngineType, SayItAdapterConfig, SayItProps } from '../types';
+
+/** Maximal length of a text that could be requested at once from the google translate API */
+const GOOGLE_MAX_TEXT_LENGTH = 70;
 
 export default class Text2Speech {
     #adapter: ioBroker.Adapter;
     #addToQueue: (props: SayItProps) => Promise<void>;
     #getCachedFileName: (text: string) => string;
     #isCached: (text: string) => string | false;
+    /** Absolute name of the file, where the generated speech will be stored */
     #MP3FILE: string;
+    /** Absolute name of the temporary wav file, used by the local engines (PicoTTS, CoquiTTS) */
+    #WAVFILE: string;
     #polly: PollyClient | null;
     #config: SayItAdapterConfig;
 
@@ -33,10 +40,17 @@ export default class Text2Speech {
         this.#isCached = options.isCached;
 
         this.#MP3FILE = options.MP3FILE;
+        this.#WAVFILE = join(dirname(options.MP3FILE), 'say.wav');
         this.#polly = null;
         this.#config = adapter.config as SayItAdapterConfig;
     }
 
+    /**
+     * Try to read a file from the ioBroker file storage, like "sayit.0/tts.userfiles/gong.mp3"
+     *
+     * @param fileName Name of the file in the ioBroker file storage
+     * @returns Content of the file or null if it is not a file in the ioBroker file storage
+     */
     async #getFileInStates(fileName: string): Promise<Buffer | string | null> {
         if (fileName.match(/^\/?[-_\w]+\.\d+\//)) {
             if (fileName.startsWith('/')) {
@@ -58,72 +72,136 @@ export default class Text2Speech {
         return null;
     }
 
+    /**
+     * Split a long text into parts, which are not longer than "max" characters.
+     * The text will be split by the punctuation marks and, if that is not enough, by the words.
+     *
+     * @param text Text to split
+     * @param max Maximal length of one part. Default is 70 characters
+     * @returns Array with the parts of the text
+     */
     static splitText(text: string, max?: number): string[] {
-        max ||= 70;
-        if (text.length > max) {
-            const parts = text.split(/,|.|;|:/);
-            const result = [];
-            for (let p = 0; p < parts.length; p++) {
-                if (parts[p].length < max) {
-                    result.push(parts[p]);
-                    continue;
-                }
+        max ||= GOOGLE_MAX_TEXT_LENGTH;
+        if (text.length <= max) {
+            return [text];
+        }
 
-                const _parts = parts[p].split(' ');
-                let i = 0;
-                for (let w = 0; w < _parts.length; w++) {
-                    if (_parts[i] && `${result[i] || ''} ${_parts[w]}`.length > max) {
-                        i++;
+        const result: string[] = [];
+        let current = '';
+
+        /** Store the collected text as one part */
+        const flush = (): void => {
+            if (current) {
+                result.push(current);
+                current = '';
+            }
+        };
+
+        /** Add a word or a sentence to the current part or start a new part if it does not fit anymore */
+        const append = (part: string): void => {
+            if (!part) {
+                return;
+            }
+            if (!current) {
+                current = part;
+            } else if (`${current} ${part}`.length <= max) {
+                current += ` ${part}`;
+            } else {
+                flush();
+                current = part;
+            }
+        };
+
+        // Split by the punctuation marks first
+        const sentences = text
+            .split(/[,.;:]/)
+            .map(sentence => sentence.trim())
+            .filter(sentence => sentence);
+
+        for (const sentence of sentences) {
+            if (sentence.length <= max) {
+                append(sentence);
+                continue;
+            }
+            // The sentence is too long, so split it by words
+            for (const word of sentence.split(/\s+/)) {
+                if (word.length > max) {
+                    // A single word is longer than the maximal length, so it must be cut
+                    flush();
+                    for (let i = 0; i < word.length; i += max) {
+                        result.push(word.substring(i, i + max));
                     }
-                    if (!result[i]) {
-                        result.push(_parts[w]);
-                    } else {
-                        result[i] += ` ${_parts[w]}`;
-                    }
+                } else {
+                    append(word);
                 }
             }
-            return result;
         }
-        return [text];
+        flush();
+
+        return result.length ? result : [text];
     }
 
+    /**
+     * Copy the generated file into the cache directory
+     *
+     * @param text Text that was generated
+     * @param language Engine that was used for the generation
+     * @param md5filename Name of the cache file
+     */
     #cacheFile(text: string, language: EngineType, md5filename: string): void {
-        if (this.#config.cache) {
+        if (!this.#config.cache) {
+            return;
+        }
+        try {
             const stat = fs.statSync(this.#MP3FILE);
             if (stat.size < 100) {
                 this.#adapter.log.warn(`Received file is too short: ${fs.readFileSync(this.#MP3FILE).toString()}`);
-            } else {
-                this.#adapter.log.debug(`Caching File ${md5filename} for "${language};${text}" now`);
-                try {
-                    fs.copyFileSync(this.#MP3FILE, md5filename);
-                } catch (error) {
-                    this.#adapter.log.error(error);
-                }
+                return;
             }
+        } catch (error) {
+            this.#adapter.log.error(`Cannot read generated file "${this.#MP3FILE}": ${error.toString()}`);
+            return;
+        }
+
+        this.#adapter.log.debug(`Caching File ${md5filename} for "${language};${text}" now`);
+        try {
+            fs.copyFileSync(this.#MP3FILE, md5filename);
+        } catch (error) {
+            this.#adapter.log.error(`Cannot cache file "${md5filename}": ${error.toString()}`);
         }
     }
 
-    async #exec(cmd: string, args?: string[], cwd?: string): Promise<void> {
+    /**
+     * Execute an external program and wait till it is finished.
+     * The arguments are given as an array, so no shell is involved and the text cannot break the command line.
+     *
+     * @param cmd Name of the executable
+     * @param args Arguments of the executable
+     */
+    async #spawn(cmd: string, args: string[]): Promise<void> {
         return new Promise<void>((resolve: null | (() => void), reject: null | ((error: Error) => void)) => {
             try {
-                const _cmd = `${cmd}${args?.length ? ` ${args.join(' ')}` : ''}`;
-                this.#adapter.log.debug(`Execute ${cmd} ${args?.length ? args.join(' ') : ''}`);
-                const ls = exec(_cmd, { cwd }, code => {
-                    if (!code) {
-                        resolve?.();
-                    } else {
-                        reject?.(new Error(`Exit code: ${code.code}`));
-                    }
+                this.#adapter.log.debug(`Execute ${cmd} ${args.join(' ')}`);
+                const ls = spawn(cmd, args);
+
+                ls.on('error', e => {
+                    reject?.(new Error(`Cannot execute "${cmd}": ${e.toString()}`));
                     reject = null;
                     resolve = null;
                 });
 
-                ls.on('error', e =>
-                    this.#adapter.log.error(`sayIt.play: there was an error while playing the file: ${e.toString()}`),
-                );
+                ls.stdout.on('data', data => this.#adapter.log.debug(`stdout: ${data}`));
+                ls.stderr.on('data', data => this.#adapter.log.debug(`stderr: ${data}`));
 
-                ls.stdout?.on('data', data => this.#adapter.log.debug(`stdout: ${data}`));
-                ls.stderr?.on('data', data => this.#adapter.log.error(`stderr: ${data}`));
+                ls.on('close', code => {
+                    if (!code) {
+                        resolve?.();
+                    } else {
+                        reject?.(new Error(`Exit code: ${code}`));
+                    }
+                    reject = null;
+                    resolve = null;
+                });
             } catch (e) {
                 reject?.(e as Error);
                 reject = null;
@@ -132,12 +210,19 @@ export default class Text2Speech {
         });
     }
 
+    /**
+     * Generate the mp3 file with the free google translate API
+     *
+     * @param props Text, language and options of the task
+     */
     async #sayItGetSpeechGoogle(props: SayItProps): Promise<void> {
         if (!props.text.length) {
             throw new Error('No text to speak');
         }
 
-        if (props.text.length > 70) {
+        if (props.text.length > GOOGLE_MAX_TEXT_LENGTH) {
+            // The google API accepts only short texts, so the text must be split
+            // and the rest of the parts must be said one after another
             const parts = Text2Speech.splitText(props.text);
             try {
                 for (let t = 1; t < parts.length; t++) {
@@ -147,7 +232,7 @@ export default class Text2Speech {
                     });
                 }
             } catch (error) {
-                console.error('Cannot add to queue', error);
+                this.#adapter.log.error(`Cannot add to queue: ${error.toString()}`);
             }
             props.text = parts[0];
         }
@@ -168,10 +253,15 @@ export default class Text2Speech {
         } else if (buf.toString().includes('302 Moved')) {
             throw new Error(`https://translate.google.com\nCannot get file: ${buf.toString()}`);
         } else {
-            fs.writeFileSync(this.#MP3FILE, buf as any, 'binary');
+            fs.writeFileSync(this.#MP3FILE, buf);
         }
     }
 
+    /**
+     * Generate the ogg file with the Yandex cloud API
+     *
+     * @param props Text, language and options of the task
+     */
     async #sayItGetSpeechYandexCloud(props: SayItProps): Promise<void> {
         if (props.language === 'ru' || props.language === 'ru_YA' || props.language === 'ru_YA_CLOUD') {
             props.language = 'ru-RU';
@@ -203,6 +293,11 @@ export default class Text2Speech {
         fs.writeFileSync(this.#MP3FILE, response.data, 'binary');
     }
 
+    /**
+     * Generate the mp3 file with the (old) Yandex API
+     *
+     * @param props Text, language and options of the task
+     */
     async #sayItGetSpeechYandex(props: SayItProps): Promise<void> {
         if (props.language === 'ru' || props.language === 'ru_YA') {
             props.language = 'ru-RU';
@@ -217,19 +312,13 @@ export default class Text2Speech {
         const yandexKey = props.testOptions?.yandexKey || this.#config.yandexKey;
         const yandexEmotion = props.testOptions?.yandexEmotion || this.#config.yandexEmotion;
         const yandexDrunk =
-            props.testOptions?.yandexDrunk !== undefined
-                ? props.testOptions?.yandexDrunk
-                : this.#config.yandexDrunk;
+            props.testOptions?.yandexDrunk !== undefined ? props.testOptions.yandexDrunk : this.#config.yandexDrunk;
         const yandexIll =
-            props.testOptions?.yandexIll !== undefined
-                ? props.testOptions?.yandexIll
-                : this.#config.yandexIll || this.#config.yandexIll;
+            props.testOptions?.yandexIll !== undefined ? props.testOptions.yandexIll : this.#config.yandexIll;
         const yandexRobot =
-            props.testOptions?.yandexRobot !== undefined
-                ? props.testOptions?.yandexRobot
-                : this.#config.yandexRobot || this.#config.yandexRobot;
+            props.testOptions?.yandexRobot !== undefined ? props.testOptions.yandexRobot : this.#config.yandexRobot;
 
-        let url = `https://tts.voicetech.yandex.net/generate?lang=${props.language}&format=mp3&speaker=${yandexVoice}&key=${yandexKey}&text=${encodeURI(props.text.trim())}`;
+        let url = `https://tts.voicetech.yandex.net/generate?lang=${props.language}&format=mp3&speaker=${yandexVoice}&key=${yandexKey}&text=${encodeURIComponent(props.text.trim())}`;
 
         if (yandexEmotion && yandexEmotion !== 'none') {
             url += `&emotion=${yandexEmotion}`;
@@ -250,6 +339,11 @@ export default class Text2Speech {
         fs.writeFileSync(this.#MP3FILE, response.data, 'binary');
     }
 
+    /**
+     * Generate the mp3 file directly with the AWS Polly API
+     *
+     * @param props Text, language and options of the task
+     */
     async #sayItGetSpeechPolly(props: SayItProps): Promise<void> {
         let _polly;
         if (props.testOptions) {
@@ -280,12 +374,14 @@ export default class Text2Speech {
             type = 'ssml';
         }
 
+        const engine = this.#getEngine(props.language);
+
         const pParams: SynthesizeSpeechCommandInput = {
             OutputFormat: 'mp3',
             Text: props.text,
-            TextType: type || 'text',
-            VoiceId: sayitEngines[props.language].ename || 'Marlene',
-            Engine: sayitEngines[props.language].neural ? 'neural' : undefined,
+            TextType: type,
+            VoiceId: engine.ename || 'Marlene',
+            Engine: engine.neural ? 'neural' : undefined,
         };
         const command = new SynthesizeSpeechCommand(pParams);
 
@@ -296,58 +392,79 @@ export default class Text2Speech {
         if (!byteArray?.length) {
             throw new Error('No data received');
         } else {
-            fs.writeFileSync(this.#MP3FILE, Buffer.from(byteArray) as any, 'binary');
+            fs.writeFileSync(this.#MP3FILE, Buffer.from(byteArray));
         }
     }
 
+    /**
+     * Generate the mp3 file with the locally installed CoquiTTS (tts) and convert it with "lame" to mp3
+     *
+     * @param props Text, language and options of the task
+     */
     async #sayItGetSpeechCoquiTTS(props: SayItProps): Promise<void> {
         props.language = props.language.substring(0, 2) as EngineType;
-        let cmd;
         const coquiVocoder = props.testOptions?.coquiVocoder || this.#config.coquiVocoder;
+        if (!coquiVocoder) {
+            throw new Error('No CoquiTTS model defined');
+        }
+
+        const args = ['--text', `. ${props.text} .`];
+
         if (coquiVocoder === 'default') {
-            cmd = `tts --text ". ${props.text} ." --model_name  tts_models/${props.language}/${coquiVocoder.replace(' ', '/')} --out_path ${__dirname}/say.wav`;
+            args.push('--model_name', `tts_models/${props.language}/${coquiVocoder.replace(' ', '/')}`);
         } else {
             let language: string = props.language;
             if (coquiVocoder === 'libri-tts wavegrad' || coquiVocoder === 'libri-tts fullband-melgan') {
                 language = 'universal';
             }
-            cmd = `tts --text ". ${props.text} ." --model_name  tts_models/${language}/${coquiVocoder.replace(' ', '/')} --vocoder_name vocoder_models/${language}/${coquiVocoder.replace(' ', '/')} --out_path ${__dirname}/say.wav`;
+            args.push('--model_name', `tts_models/${language}/${coquiVocoder.replace(' ', '/')}`);
+            args.push('--vocoder_name', `vocoder_models/${language}/${coquiVocoder.replace(' ', '/')}`);
         }
+        args.push('--out_path', this.#WAVFILE);
+
         try {
-            await this.#exec(cmd);
+            await this.#spawn('tts', args);
         } catch (e) {
             throw new Error(`Cannot create (coqui) "say.wav": ${e}`);
         }
         try {
-            await this.#exec(`lame ${__dirname}/say.wav ${this.#MP3FILE}`);
+            await this.#spawn('lame', [this.#WAVFILE, this.#MP3FILE]);
         } catch (e) {
             throw new Error(`Cannot create (lame) "say.mp3": ${e}`);
         }
     }
 
+    /**
+     * Send a message to another instance and wait for the answer
+     *
+     * @param adapter Name of the instance, like "cloud.0"
+     * @param command Command of the message
+     * @param message Payload of the message
+     * @param timeout Timeout in ms. Default is 5000 ms
+     * @returns Answer of the instance
+     */
     #sendToPromise(adapter: string, command: string, message: any, timeout?: number): Promise<{ base64?: string }> {
         return this.#adapter.getForeignStateAsync(`system.adapter.${adapter}.alive`).then(state => {
             if (!state || !state.val) {
-                return Promise.reject(new Error(`Instance "${adapter}" is not running)`));
+                return Promise.reject(new Error(`Instance "${adapter}" is not running`));
             }
 
             return new Promise<{ base64?: string }>((resolve, reject) => {
                 let timer: NodeJS.Timeout | null = setTimeout(() => {
                     timer = null;
-                    reject(new Error(`Timeout (${timeout} ms) by sendTo "${adapter}"`));
+                    reject(new Error(`Timeout (${timeout || 5000} ms) by sendTo "${adapter}"`));
                 }, timeout || 5000);
 
                 this.#adapter.sendTo(adapter, command, message, response => {
                     const typedResponse = response as { error?: string; base64?: string };
                     if (timer) {
-                        if (timer) {
-                            clearTimeout(timer);
-                            timer = null;
-                        }
-                        if (typedResponse.error) {
+                        clearTimeout(timer);
+                        timer = null;
+
+                        if (typedResponse?.error) {
                             reject(new Error(typedResponse.error));
                         } else {
-                            resolve(typedResponse);
+                            resolve(typedResponse || {});
                         }
                     }
                 });
@@ -355,6 +472,25 @@ export default class Text2Speech {
         });
     }
 
+    /**
+     * Read the definition of the given engine
+     *
+     * @param language Name of the engine, like "de-DE_AP_Female"
+     * @returns Definition of the engine
+     */
+    #getEngine(language: EngineType): (typeof sayitEngines)[string] {
+        const engine = sayitEngines[language];
+        if (!engine) {
+            throw new Error(`Unknown engine: ${language as string}`);
+        }
+        return engine;
+    }
+
+    /**
+     * Generate the mp3 file with the AWS Polly API over the ioBroker cloud (iobroker.net/iobroker.pro)
+     *
+     * @param props Text, language and options of the task
+     */
     async #sayItGetSpeechCloud(props: SayItProps): Promise<void> {
         let type: 'text' | 'ssml' = 'text';
         if (props.text.match(/<[-+\w\s'"=]+>/)) {
@@ -366,6 +502,7 @@ export default class Text2Speech {
 
         const apiKey = props.testOptions?.cloudAppKey || this.#config.cloudAppKey;
         const cloudInstance = props.testOptions?.cloudInstance || this.#config.cloudInstance;
+        const engine = this.#getEngine(props.language);
         let response: { base64?: string } = {};
         if (apiKey) {
             let cloudUrl;
@@ -374,8 +511,8 @@ export default class Text2Speech {
                 text: props.text,
                 apiKey,
                 textType: type,
-                voiceId: sayitEngines[props.language].ename,
-                engine: sayitEngines[props.language].neural ? 'neural' : undefined,
+                voiceId: engine.ename,
+                engine: engine.neural ? 'neural' : undefined,
             };
 
             if (apiKey.startsWith('@pro_')) {
@@ -402,9 +539,9 @@ export default class Text2Speech {
                 'tts',
                 {
                     text: props.text,
-                    voiceId: sayitEngines[props.language].ename,
+                    voiceId: engine.ename,
                     textType: type,
-                    engine: sayitEngines[props.language].neural ? 'neural' : undefined,
+                    engine: engine.neural ? 'neural' : undefined,
                 },
                 10000,
             );
@@ -415,22 +552,35 @@ export default class Text2Speech {
         if (!response.base64) {
             throw new Error('No data received');
         }
-        fs.writeFileSync(this.#MP3FILE, Buffer.from(response.base64, 'base64') as any, 'binary');
+        fs.writeFileSync(this.#MP3FILE, Buffer.from(response.base64, 'base64'));
     }
 
+    /**
+     * Generate the mp3 file with the locally installed PicoTTS and convert it with "lame" to mp3
+     *
+     * @param text Text to say
+     * @param language Language of the text, like "de-DE"
+     */
     async #sayItGetSpeechPicoTTS(text: string, language: EngineType): Promise<void> {
         try {
-            await this.#exec(`pico2wave -l ${language} -w ${__dirname}/say.wav "${text}"`);
+            await this.#spawn('pico2wave', ['-l', language, '-w', this.#WAVFILE, text]);
         } catch (e) {
             throw new Error(`Cannot create (pico2wave) "say.wav": ${e}`);
         }
         try {
-            await this.#exec(`lame ${__dirname}/say.wav ${this.#MP3FILE}`);
+            await this.#spawn('lame', [this.#WAVFILE, this.#MP3FILE]);
         } catch (e) {
             throw new Error(`Cannot create (lame) "say.mp3": ${e}`);
         }
     }
 
+    /**
+     * Detect the play duration of the given file in seconds.
+     * If the duration cannot be detected, it will be estimated from the file size.
+     *
+     * @param fileName Name of the file on the disk or in the ioBroker file storage
+     * @returns Duration in seconds
+     */
     async getDuration(fileName: string): Promise<number | null> {
         // create a new parser from a node ReadStream
         if (fileName === this.#config.announce && this.#config.annoDuration) {
@@ -465,6 +615,7 @@ export default class Text2Speech {
                 return 0;
             }
         }
+        // Maybe the file is stored in the ioBroker file storage
         const data = await this.#getFileInStates(fileName);
 
         if (data) {
@@ -472,31 +623,26 @@ export default class Text2Speech {
                 return new Promise(resolve =>
                     mp3Duration(data, (err: Error | null, duration?: number) => {
                         if (err || duration === undefined) {
-                            try {
-                                const stat = fs.statSync(fileName);
-                                const size = stat.size;
-                                resolve(Math.ceil(size / 4096));
-                            } catch {
-                                this.#adapter.log.warn(`Cannot read length of file ${fileName}`);
-                                resolve(0);
-                            }
+                            // Estimate the duration from the size of the file
+                            resolve(Math.ceil(data.length / 4096));
                         } else {
                             resolve(Math.ceil(duration));
                         }
                     }),
                 );
             }
-            try {
-                const size = data.length;
-                return Math.ceil(size / 4096);
-            } catch {
-                this.#adapter.log.warn(`Cannot read length of file ${fileName}`);
-                return 0;
-            }
+            return Math.ceil(data.length / 4096);
         }
         return 0;
     }
 
+    /**
+     * Generate the speech file for the given text.
+     * If the caching is enabled, the file will be stored in the cache directory.
+     *
+     * @param props Text, language and options of the task
+     * @returns Name of the generated (or cached) file
+     */
     async sayItGetSpeech(props: SayItProps): Promise<string> {
         if (this.#config.cache && !props.testOptions) {
             const md5filename = this.#isCached(`${props.language};${props.text}`);
@@ -504,10 +650,10 @@ export default class Text2Speech {
             if (md5filename) {
                 return md5filename;
             }
-            this.#adapter.log.debug(`Cache File ${md5filename} for "${props.language};${props.text}" not found`);
+            this.#adapter.log.debug(`Cache file for "${props.language};${props.text}" not found`);
         }
 
-        if (sayitEngines[props.language] && sayitEngines[props.language].engine) {
+        if (sayitEngines[props.language]?.engine) {
             if (!sayitEngines[props.language].ssml) {
                 // remove SSML
                 props.text = props.text.replace(/<\/?[-+\w\s'"=]+>/g, '');
