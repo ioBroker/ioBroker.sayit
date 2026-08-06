@@ -278,7 +278,7 @@ The following values for engines are possible:
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### 5.2.2 (2026-08-06)
+### **WORK IN PROGRESS**
 * (@GermanBluefox) Corrected the upload of the announcement mp3 files and the location of the cache directory
 * (@GermanBluefox) Corrected the splitting of long texts for the google engine
 * (@GermanBluefox) Corrected the detection of sonos devices in the configuration dialog
