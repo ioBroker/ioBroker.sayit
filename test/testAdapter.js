@@ -1,4 +1,4 @@
-const expect = require('chai').expect;
+const assert = require('node:assert');
 const setup = require('@iobroker/legacy-testing');
 
 let objects = null;
@@ -57,9 +57,9 @@ describe(`Test ${adapterShortName} adapter`, function () {
 
     it(`Test ${adapterShortName} instance object: it must exists`, function (done) {
         objects.getObject(`system.adapter.${adapterShortName}.0`, function (err, obj) {
-            expect(err).to.be.null;
-            expect(obj).to.be.an('object');
-            expect(obj).not.to.be.null;
+            assert.strictEqual(err, null, `Cannot read the instance object: ${err}`);
+            assert.ok(obj, `Object system.adapter.${adapterShortName}.0 not found`);
+            assert.strictEqual(typeof obj, 'object', `Object system.adapter.${adapterShortName}.0 is not an object`);
             done();
         });
     });
@@ -69,7 +69,7 @@ describe(`Test ${adapterShortName} adapter`, function () {
         checkConnectionOfAdapter(res => {
             res && console.log(res);
             if (runningMode === 'daemon') {
-                expect(res).not.to.be.equal('Cannot check connection');
+                assert.notStrictEqual(res, 'Cannot check connection', 'Adapter is not alive');
             } else {
                 //??
             }
