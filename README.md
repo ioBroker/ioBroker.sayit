@@ -289,7 +289,7 @@ A request is limited to 10000 characters, so longer texts are split and said one
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### **WORK IN PROGRESS**
+### 5.3.0 (2026-08-13)
 * (@GermanBluefox) Added freetts.org as a new TTS engine with more than 400 voices. An API key is required
 * (@GermanBluefox) The engine is selected in two steps now: first the provider and then the voice
 * (@GermanBluefox) The words of the Blockly block are translated into all 11 languages now

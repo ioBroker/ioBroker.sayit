@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "sayit",
-    "version": "5.2.4",
+    "version": "5.3.0",
     "news": {
+      "5.3.0": {
+        "en": "Added freetts.org as a new TTS engine with more than 400 voices. An API key is required\nThe engine is selected in two steps now: first the provider and then the voice\nThe words of the Blockly block are translated into all 11 languages now\nBlockly block migrated to TypeScript and the generated code is unchanged",
+        "de": "freetts.org wurde als neue TTS-Engine mit über 400 Stimmen hinzugefügt. Ein API-Schlüssel ist erforderlich.\nDie Auswahl des Senders erfolgt nun in zwei Schritten: zuerst der Anbieter und dann die Stimme.\nDie Wörter des Blockly-Blocks sind jetzt in alle 11 Sprachen übersetzt.\nDer Blockly-Block wurde auf TypeScript migriert, der generierte Code bleibt jedoch unverändert.",
+        "ru": "Добавлен freetts.org в качестве нового движка преобразования текста в речь с более чем 400 голосами. Требуется ключ API.\nТеперь выбор движка происходит в два этапа: сначала провайдер, а затем голосовой канал.\nСлова, содержащиеся в блоке Blockly, теперь переведены на все 11 языков.\nБлок Blockly переведён на TypeScript, при этом сгенерированный код остался без изменений.",
+        "pt": "Adicionamos o freetts.org como um novo mecanismo de TTS com mais de 400 vozes. É necessária uma chave de API.\nO mecanismo de busca agora é selecionado em duas etapas: primeiro o provedor e depois a voz.\nAs palavras do bloco Blockly agora estão traduzidas para todos os 11 idiomas.\nO Blockly Block migrou para TypeScript e o código gerado permanece inalterado.",
+        "nl": "Freetts.org is toegevoegd als nieuwe TTS-engine met meer dan 400 stemmen. Een API-sleutel is vereist.\nDe keuze voor de engine verloopt nu in twee stappen: eerst de provider en vervolgens de spraak.\nDe woorden van het Blockly-blok zijn nu in alle 11 talen vertaald.\nHet Blockly-blok is gemigreerd naar TypeScript en de gegenereerde code is ongewijzigd gebleven.",
+        "fr": "Ajout de freetts.org comme nouveau moteur de synthèse vocale avec plus de 400 voix. Une clé API est requise.\nLe moteur est désormais sélectionné en deux étapes : d’abord le fournisseur, puis la voix.\nLes mots du bloc Blockly sont désormais traduits dans les 11 langues.\nLe bloc Blockly a été migré vers TypeScript et le code généré reste inchangé.",
+        "it": "È stato aggiunto freetts.org come nuovo motore TTS con oltre 400 voci. È necessaria una chiave API.\nIl motore viene ora selezionato in due fasi: prima il fornitore e poi la voce\nLe parole del blocco Blockly sono ora tradotte in tutte le 11 lingue\nBlockly è stato migrato a TypeScript e il codice generato è rimasto invariato.",
+        "es": "Se ha añadido freetts.org como nuevo motor de síntesis de voz con más de 400 voces. Se requiere una clave API.\nEl motor se selecciona ahora en dos pasos: primero el proveedor y luego la voz.\nLas palabras del bloque Blockly ahora están traducidas a los 11 idiomas.\nEl bloque de Blockly se migró a TypeScript y el código generado no sufrió cambios.",
+        "pl": "Dodano freetts.org jako nowy silnik TTS z ponad 400 głosami. Wymagany jest klucz API.\nWybór silnika odbywa się teraz w dwóch etapach: najpierw wybieramy dostawcę, a potem operatora głosowego.\nSłowa bloku Blockly są teraz tłumaczone na wszystkie 11 języków\nBlok Blockly został przeniesiony do TypeScript, a wygenerowany kod pozostał niezmieniony",
+        "uk": "Додано freetts.org як новий механізм синтезу мовлення з більш ніж 400 голосами. Потрібен ключ API.\nТепер вибір двигуна відбувається у два кроки: спочатку постачальник, а потім голосовий сервіс.\nСлова блоку Blockly тепер перекладені всіма 11 мовами.\nБлоковий код перенесено до TypeScript, а згенерований код не змінився.",
+        "zh-cn": "新增 freetts.org 作为新的 TTS 引擎，提供 400 多种语音。需要 API 密钥。\n现在引擎的选择分两步进行：首先是提供商，然后是语音引擎。\nBlockly模块的文字现在已被翻译成所有11种语言。\nBlockly 代码块已迁移到 TypeScript，生成的代码保持不变。"
+      },
       "5.2.4": {
         "en": "Corrected the upload of the announcement mp3 files and the location of the cache directory\nCorrected the splitting of long texts for the google engine\nCorrected the detection of sonos devices in the configuration dialog\nCached files will be deleted again if the engine was changed\nThe queue does not block anymore if an error occurs by processing of a task\nTexts with semicolons will not be interpreted as \"language;volume;text\" anymore\nThe local engines (PicoTTS, CoquiTTS) and the windows player are called without shell now\nCorrected the default settings of a new instance",
         "de": "Der Upload der Ankündigungs-MP3-Dateien und der Speicherort des Cache-Verzeichnisses wurden korrigiert.\nDie Aufteilung langer Texte für die Google-Suchmaschine wurde korrigiert.\nDie Erkennung von Sonos-Geräten im Konfigurationsdialog wurde korrigiert.\nZwischengespeicherte Dateien werden erneut gelöscht, wenn die Engine geändert wurde.\nDie Warteschlange blockiert nicht mehr, wenn bei der Verarbeitung einer Aufgabe ein Fehler auftritt.\nTexte mit Semikolons werden nicht mehr als \"Sprache;Volumen;Text\" interpretiert.\nDie lokalen Engines (PicoTTS, CoquiTTS) und der Windows-Player werden jetzt ohne Shell aufgerufen.\nDie Standardeinstellungen einer neuen Instanz wurden korrigiert.",
@@ -80,19 +93,6 @@
         "pl": "Zmiany: Wersja minimalna jest 16\nBrowser wykonuje się do vis(1) i vis-2",
         "uk": "Зміни прориву: Версія Mini node.js 16\nВиходи браузера тепер до вісь(1) і vis-2",
         "zh-cn": "断然变化: 第16页。\n现收录产出"
-      },
-      "3.0.5": {
-        "en": "Corrected error with System player\nDo not allow for chromecast to cache files.\nAllowed to add cloud App-Key without running cloud adapter\nAdded austrian language\nAdded norwegian language\nUsed sendTo instead of setState in blockly",
-        "de": "Fehler behoben mit Systemplayer\nErlauben Sie nicht, dass Chromecast Dateien zwischenspeichern.\nCloud App-Key ohne Cloud-Adapter hinzufügen\nSprache hinzufügen\nNorwegische Sprache\nAngemeldet An statt setState blockweise",
-        "ru": "Исправлена ошибка с Системным игроком\nНе допускайте хромката к файлам кэша.\nДопускается добавление облачного App-Key без запуска облачного адаптера\nДобавлен австрийский язык\nДобавлен норвежский язык\nИспользованный отправить Вместо setState в блокно",
-        "pt": "Erro correto com o jogador do sistema\nNão permita que o chromecast em cache arquivos.\nPermite adicionar Cloud App-Key sem executar o adaptador de nuvem\nAdicionado idioma austriano\nLíngua norwegian adicionada\nEnviado Para em vez de setState em blockly",
-        "nl": "Correctie fout met System speler\nSta niet toe dat chromecast naar cache bestanden gaat.\nWolken toevoegen App-Key zonder wolken adapter\nAustrian taal\n_\nVerzonden In plaats van te settelen in blok",
-        "fr": "Erreur corrigée avec le lecteur système\nNe pas permettre de chromecast aux fichiers de cache.\nPermet d'ajouter nuage App-Key sans adaptateur cloud\nAjout de la langue austrienne\nAjout de la langue norvégienne\nExpéditeur utilisé Au lieu de définir l'Etat en bloc",
-        "it": "Errore corretto con il giocatore di sistema\nNon consentire per Chromecast a file di cache.\nConsentito di aggiungere cloud App-Key senza l'adattatore cloud in esecuzione\nAggiunto lingua austriana\nAggiunto lingua norvegese\nInviato usato Al posto di setState in blocco",
-        "es": "Error corregido con el reproductor de sistema\nNo permita el cromocast a los archivos de caché.\nPermitido añadir nube App-Key sin adaptador de nube\nIdioma austriano añadido\nIdioma noruego\nEnvío usado En lugar de establecer el Estado en bloque",
-        "pl": "Poprawiony błąd z graczem Systema\nNie pozwala na chromecast do plików podręcznych.\nAllowe dodają do chmury App-Key bez uruchamiania adaptacji chmur\nJęzyk austrowany\nJęzyk norweski\nPrzesłać Zamiast tego, zamiast sprostać",
-        "uk": "Виправлена помилка з плеєром системи\nНе дозволяйте хромувати файлам кешу.\nДодайте хмарний App-Key без запуску хмарного адаптера\nДодана аустрія мова\nДодана нівезька мова\nВикористовується відправка замість setState в блоклі",
-        "zh-cn": "与系统参与者的更正错误\n不是允许用彩色图书写。.\n允许增加云雾剂,不带云雾剂。\n增加使用费语\n增 语\n使用寄送 而不是阻挠国家"
       }
     },
     "title": "Text to speech",
