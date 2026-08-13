@@ -14,8 +14,8 @@ import { sayitEngines } from '../src/lib/engines';
 // classic script and `Blockly.Words` must be filled before the block is registered - there is no moment
 // at which the files could be fetched. They are kept apart from `admin/i18n`, so that only the words of
 // the block end up in the bundle and not all labels of the configuration dialog.
-// `npm run translate` keeps both directories up to date. They live under `admin/`, because
-// translate-adapter only discovers existing language files inside that directory.
+// `npm run translate` keeps both directories up to date - `-b` takes any number of base files from
+// any directory, so they can stay next to the source that imports them.
 import de from './i18n/de.json';
 import en from './i18n/en.json';
 import es from './i18n/es.json';

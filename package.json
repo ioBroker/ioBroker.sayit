@@ -86,7 +86,7 @@
     "release-patch": "release-script patch --yes",
     "release-minor": "release-script minor --yes",
     "release-major": "release-script major --yes",
-    "translate": "translate-adapter -b admin/i18n/en.json -b admin/i18n-blockly/en.json",
+    "translate": "translate-adapter -b admin/i18n/en.json -b src-blockly/i18n/en.json",
     "npm": "npm install --ignore-scripts",
     "update-packages": "npx -y npm-check-updates --upgrade"
   },
