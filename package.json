@@ -57,7 +57,7 @@
     "@types/mdns": "^0.0.38",
     "blockly": "^13.2.1",
     "esbuild": "^0.28.1",
-    "typescript": "~6.0.3"
+    "typescript": "~7.0.2"
   },
   "bugs": {
     "url": "https://github.com/ioBroker/ioBroker.sayit/issues"
