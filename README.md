@@ -47,6 +47,10 @@ Online:
 - Yandex: Russian
   To use Yandex voices you must request the API key here: [https://tech.yandex.ru/speechkit/cloud/doc/dg/concepts/About-docpage/](https://tech.yandex.ru/speechkit/cloud/doc/dg/concepts/About-docpage/).  [This service will be disabled 1st of Jan 2019 and replaced by Yandex.cloud]
   To use Yandex.cloud you should register here: [https://cloud.yandex.ru/], install SpeechKIT API in the Cloud and get Auth Token and Folder ID as described in API instructions.
+- FreeTTS: more than 400 voices in more than 75 languages, provided by [https://freetts.org](https://freetts.org).
+  The language is not selected by the engine, but by the voice, e.g. `de-DE-KatjaNeural`.
+  An API key is required, because [https://freetts.org](https://freetts.org) only allows programmatic access with a key.
+  You can get one on the [pricing page](https://freetts.org/pricing) of the service.
 - Cloud: To use Cloud voices you need configured and running `cloud` adapter or enter app-key directly in settings
 - Amazon Web Services Polly:
   To use AWS Polly voices, you need to create an access key and secret key [here](https://console.aws.amazon.com/iam/home). The Amazon documentation can you find [here](http://docs.aws.amazon.com/general/latest/gr/managing-aws-access-keys.html).
@@ -138,6 +142,13 @@ The following values for engines are possible:
 - **nl** - Nederlands
 - **zh-CN** - 简体中文
 - **pt** - Português
+
+#### FreeTTS
+- **freeTTS** - the voice, the speed and the pitch are taken from the instance configuration
+
+The language is a part of the voice, so only one engine name exists. The voice, e.g. `de-DE-KatjaNeural`,
+is selected in the configuration dialog and the list of all available voices is read from the service.
+The free API key is limited to 1000 characters per request, so longer texts are split and said one after another.
 
 #### Yandex
 - **ru_YA:Yandex** - Русский
@@ -278,6 +289,9 @@ The following values for engines are possible:
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### **WORK IN PROGRESS**
+* (@GermanBluefox) Added freetts.org as a new TTS engine with more than 400 voices
+
 ### 5.2.4 (2026-08-07)
 * (@GermanBluefox) Corrected the upload of the announcement mp3 files and the location of the cache directory
 * (@GermanBluefox) Corrected the splitting of long texts for the google engine

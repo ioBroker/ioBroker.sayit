@@ -14,6 +14,9 @@ const sayitEngines = {
     fr: { name: 'Google - Français', engine: 'google' },
     nl: { name: 'Google - Nederlands', engine: 'google' },
     'zh-CN': { name: 'Google - 简体中文', engine: 'google' },
+    // freetts.org offers more than 400 voices in more than 75 languages.
+    // The language is not selected here, but by the voice (option "freettsVoice"), like "de-DE-KatjaNeural"
+    freeTTS: { name: 'FreeTTS', engine: 'freeTTS' },
     ru_YA: {
         name: 'Yandex - Русский',
         engine: 'yandex',

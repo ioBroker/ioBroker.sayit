@@ -10,6 +10,7 @@ type EngineType =
     | 'fr'
     | 'nl'
     | 'zh-CN'
+    | 'freeTTS'
     | 'ru_YA'
     | 'ru_YA_CLOUD'
     | 'ru-RU_CLOUD_Female'
@@ -237,6 +238,14 @@ export interface SayItAdapterConfig {
     awsAccessKey: string;
     awsSecretKey: string;
     awsRegion: string;
+    /** API key for freetts.org. Programmatic access is only possible with a key */
+    freettsApiKey: string;
+    /** Voice of freetts.org, like "de-DE-KatjaNeural". It defines the language too */
+    freettsVoice: string;
+    /** Speaking rate for freetts.org in percent. Allowed range: -50 .. +100 */
+    freettsRate: number | string;
+    /** Pitch for freetts.org in Hz. Allowed range: -20 .. +20 */
+    freettsPitch: number | string;
     /** True if the configuration was already converted from version 1 to version 2 */
     convertedV1toV2: boolean;
     /** Model and vocoder for CoquiTTS, like "ljspeech univnet" */
@@ -274,6 +283,10 @@ export type TestOptions = {
     awsAccessKey?: string;
     awsSecretKey?: string;
     awsRegion?: string;
+    freettsApiKey?: string;
+    freettsVoice?: string;
+    freettsRate?: number | string;
+    freettsPitch?: number | string;
     coquiVocoder?: string;
     cloudAppKey?: string;
     cloudInstance?: string;

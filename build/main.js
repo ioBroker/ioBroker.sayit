@@ -115,6 +115,16 @@ class SayItAdapter extends adapter_core_1.Adapter {
         return this.adapterDir || (0, node_path_1.normalize)((0, node_path_1.join)(__dirname, '..'));
     }
     /**
+     * Description of the currently configured voice. As soon as it changes, all cached files are invalid.
+     * The FreeTTS engine has no own language, so the voice must be a part of it too.
+     */
+    get cacheSignature() {
+        if (this.config.engine === 'freeTTS') {
+            return `freeTTS;${this.config.freettsVoice};${this.config.freettsRate};${this.config.freettsPitch}`;
+        }
+        return this.config.engine;
+    }
+    /**
      * Search for google cast devices (chromecast, google home) in the local network via mDNS
      * and answer the message with the found devices.
      *
@@ -259,8 +269,20 @@ class SayItAdapter extends adapter_core_1.Adapter {
                 this.sendTo(obj.from, obj.command, list, obj.callback);
             });
         }
+        else if (obj.callback && obj.command === 'getFreeTtsVoices') {
+            text2speech_1.default.getFreeTtsVoices()
+                .then(voices => this.sendTo(obj.from, obj.command, voices, obj.callback))
+                .catch(e => {
+                this.log.warn(`Cannot read the voices from freetts.org: ${e.toString()}`);
+                this.sendTo(obj.from, obj.command, [], obj.callback);
+            });
+        }
         else if (obj.callback && obj.command === 'test') {
-            const language = (obj.message?.engine || this.config.engine || 'en').substring(0, 2);
+            const engine = obj.message?.engine || this.config.engine || 'en';
+            // The FreeTTS engine has no own language. It is defined by the voice, like "de-DE-KatjaNeural"
+            const language = (engine === 'freeTTS'
+                ? obj.message?.freettsVoice || this.config.freettsVoice || 'en'
+                : engine).substring(0, 2);
             let text = 'Hello';
             if (language === 'de') {
                 text = 'Hallo';
@@ -363,8 +385,9 @@ class SayItAdapter extends adapter_core_1.Adapter {
                 const trimmed = part.trim();
                 return !!trimmed && parseInt(trimmed, 10).toString() === trimmed;
             };
-            /** Returns true if the given part looks like an engine name, like "de", "zh-CN" or "ru_YA_CLOUD" */
-            const isEngine = (part) => /^[a-z]{2}([-_][\w-]+)*$/i.test(part.trim());
+            /** Returns true if the given part looks like an engine name, like "de", "zh-CN", "ru_YA_CLOUD" or "freeTTS" */
+            const isEngine = (part) => Object.prototype.hasOwnProperty.call(engines_1.sayitEngines, part.trim()) ||
+                /^[a-z]{2}([-_][\w-]+)*$/i.test(part.trim());
             const arr3 = SayItAdapter.splitWithRest(props.text, ';', 3);
             const arr2 = SayItAdapter.splitWithRest(props.text, ';', 2);
             if (arr3.length === 3 && isVolume(arr3[0]) && isEngine(arr3[1])) {
@@ -955,7 +978,7 @@ class SayItAdapter extends adapter_core_1.Adapter {
                     }
                 }
                 // If engine changed, all cached files are invalid
-                if (engine !== this.config.engine) {
+                if (engine !== this.cacheSignature) {
                     // Delete all files in this directory
                     const files = (0, node_fs_1.readdirSync)(this.cacheDir);
                     for (let f = 0; f < files.length; f++) {
@@ -973,7 +996,7 @@ class SayItAdapter extends adapter_core_1.Adapter {
                         }
                     }
                     try {
-                        (0, node_fs_1.writeFileSync)((0, node_path_1.join)(this.cacheDir, 'engine.txt'), this.config.engine);
+                        (0, node_fs_1.writeFileSync)((0, node_path_1.join)(this.cacheDir, 'engine.txt'), this.cacheSignature);
                     }
                     catch (e) {
                         this.log.error(`Cannot write file "${(0, node_path_1.join)(this.cacheDir, 'engine.txt')}": ${e.toString()}`);

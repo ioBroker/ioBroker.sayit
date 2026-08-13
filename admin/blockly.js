@@ -46,6 +46,8 @@ const sayitEngines = {
     nl: { name: 'Google - Nederlands', engine: 'google' },
     'zh-CN': { name: 'Google - 简体中文', engine: 'google' },
 
+    freeTTS: { name: 'FreeTTS', engine: 'freeTTS' },
+
     ru_YA: {
         name: 'Yandex - Русский',
         engine: 'yandex',

@@ -10,7 +10,7 @@ import {
 } from 'node:fs';
 import { normalize, join } from 'node:path';
 import { createHash } from 'node:crypto';
-import { sayitOptions } from './lib/engines';
+import { sayitEngines, sayitOptions } from './lib/engines';
 import Text2Speech from './lib/text2speech';
 import Speech2Device from './lib/speech2device';
 import { Adapter, type AdapterOptions, getAbsoluteDefaultDataDir } from '@iobroker/adapter-core';
@@ -187,6 +187,17 @@ export class SayItAdapter extends Adapter {
     }
 
     /**
+     * Description of the currently configured voice. As soon as it changes, all cached files are invalid.
+     * The FreeTTS engine has no own language, so the voice must be a part of it too.
+     */
+    private get cacheSignature(): string {
+        if (this.config.engine === 'freeTTS') {
+            return `freeTTS;${this.config.freettsVoice};${this.config.freettsRate};${this.config.freettsPitch}`;
+        }
+        return this.config.engine;
+    }
+
+    /**
      * Search for google cast devices (chromecast, google home) in the local network via mDNS
      * and answer the message with the found devices.
      *
@@ -340,8 +351,21 @@ export class SayItAdapter extends Adapter {
                 });
                 this.sendTo(obj.from, obj.command, list, obj.callback);
             });
+        } else if (obj.callback && obj.command === 'getFreeTtsVoices') {
+            Text2Speech.getFreeTtsVoices()
+                .then(voices => this.sendTo(obj.from, obj.command, voices, obj.callback))
+                .catch(e => {
+                    this.log.warn(`Cannot read the voices from freetts.org: ${e.toString()}`);
+                    this.sendTo(obj.from, obj.command, [], obj.callback);
+                });
         } else if (obj.callback && obj.command === 'test') {
-            const language = ((obj.message?.engine as string) || this.config.engine || 'en').substring(0, 2);
+            const engine = (obj.message?.engine as string) || this.config.engine || 'en';
+            // The FreeTTS engine has no own language. It is defined by the voice, like "de-DE-KatjaNeural"
+            const language = (
+                engine === 'freeTTS'
+                    ? (obj.message?.freettsVoice as string) || this.config.freettsVoice || 'en'
+                    : engine
+            ).substring(0, 2);
             let text = 'Hello';
             if (language === 'de') {
                 text = 'Hallo';
@@ -445,8 +469,10 @@ export class SayItAdapter extends Adapter {
                 const trimmed = part.trim();
                 return !!trimmed && parseInt(trimmed, 10).toString() === trimmed;
             };
-            /** Returns true if the given part looks like an engine name, like "de", "zh-CN" or "ru_YA_CLOUD" */
-            const isEngine = (part: string): boolean => /^[a-z]{2}([-_][\w-]+)*$/i.test(part.trim());
+            /** Returns true if the given part looks like an engine name, like "de", "zh-CN", "ru_YA_CLOUD" or "freeTTS" */
+            const isEngine = (part: string): boolean =>
+                Object.prototype.hasOwnProperty.call(sayitEngines, part.trim()) ||
+                /^[a-z]{2}([-_][\w-]+)*$/i.test(part.trim());
 
             const arr3 = SayItAdapter.splitWithRest(props.text, ';', 3);
             const arr2 = SayItAdapter.splitWithRest(props.text, ';', 2);
@@ -1074,7 +1100,7 @@ export class SayItAdapter extends Adapter {
                     }
                 }
                 // If engine changed, all cached files are invalid
-                if (engine !== this.config.engine) {
+                if (engine !== this.cacheSignature) {
                     // Delete all files in this directory
                     const files = readdirSync(this.cacheDir);
                     for (let f = 0; f < files.length; f++) {
@@ -1091,7 +1117,7 @@ export class SayItAdapter extends Adapter {
                         }
                     }
                     try {
-                        writeFileSync(join(this.cacheDir, 'engine.txt'), this.config.engine);
+                        writeFileSync(join(this.cacheDir, 'engine.txt'), this.cacheSignature);
                     } catch (e) {
                         this.log.error(`Cannot write file "${join(this.cacheDir, 'engine.txt')}": ${e.toString()}`);
                     }

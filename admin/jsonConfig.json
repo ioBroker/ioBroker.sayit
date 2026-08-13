@@ -354,6 +354,10 @@
                             "value": "zh-CN"
                         },
                         {
+                            "label": "FreeTTS (freetts.org)",
+                            "value": "freeTTS"
+                        },
+                        {
                             "label": "Yandex - Русский",
                             "value": "ru_YA"
                         },
@@ -997,6 +1001,51 @@
                     "sm": 12,
                     "md": 6,
                     "lg": 4
+                },
+                "freettsApiKey": {
+                    "newLine": true,
+                    "type": "password",
+                    "label": "API Key",
+                    "help": "freetts_key_help",
+                    "hidden": "data.engine != 'freeTTS'",
+                    "sm": 12,
+                    "md": 6,
+                    "lg": 4
+                },
+                "freettsVoice": {
+                    "newLine": true,
+                    "type": "selectSendTo",
+                    "command": "getFreeTtsVoices",
+                    "label": "Voice",
+                    "noTranslation": true,
+                    "manual": true,
+                    "hidden": "data.engine != 'freeTTS'",
+                    "sm": 12,
+                    "md": 6,
+                    "lg": 4
+                },
+                "freettsRate": {
+                    "newLine": true,
+                    "type": "number",
+                    "label": "Rate",
+                    "help": "in %",
+                    "min": -50,
+                    "max": 100,
+                    "hidden": "data.engine != 'freeTTS'",
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 2
+                },
+                "freettsPitch": {
+                    "type": "number",
+                    "label": "Pitch",
+                    "help": "in Hz",
+                    "min": -20,
+                    "max": 20,
+                    "hidden": "data.engine != 'freeTTS'",
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 2
                 },
                 "yandexKey": {
                     "newLine": true,

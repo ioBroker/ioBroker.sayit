@@ -13,6 +13,13 @@ import type { EngineType, SayItAdapterConfig, SayItProps } from '../types';
 /** Maximal length of a text that could be requested at once from the google translate API */
 const GOOGLE_MAX_TEXT_LENGTH = 70;
 
+/** Base address of the freetts.org service */
+const FREETTS_URL = 'https://freetts.org';
+/** Maximal length of a text that could be requested at once from freetts.org with a free API key */
+const FREETTS_MAX_TEXT_LENGTH = 1000;
+/** Voice used by freetts.org if nothing is configured */
+const FREETTS_DEFAULT_VOICE = 'en-US-JennyNeural';
+
 export default class Text2Speech {
     #adapter: ioBroker.Adapter;
     #addToQueue: (props: SayItProps) => Promise<void>;
@@ -255,6 +262,156 @@ export default class Text2Speech {
         } else {
             fs.writeFileSync(this.#MP3FILE, buf);
         }
+    }
+
+    /**
+     * Read the list of the voices offered by freetts.org.
+     * Used by the configuration dialog to fill the voice selector.
+     *
+     * @returns List of the voices, sorted by the language name
+     */
+    static async getFreeTtsVoices(): Promise<{ value: string; label: string }[]> {
+        const response = await axios.get<{ ShortName: string; Gender: string; Locale: string; LocaleName: string }[]>(
+            `${FREETTS_URL}/api/voices`,
+            { timeout: 15000 },
+        );
+
+        if (!Array.isArray(response.data)) {
+            throw new Error('Unexpected answer from freetts.org');
+        }
+
+        return response.data
+            .map(voice => ({
+                value: voice.ShortName,
+                // "de-DE-KatjaNeural" => "German (Germany) - Katja (Female)"
+                label: `${voice.LocaleName} - ${voice.ShortName.replace(`${voice.Locale}-`, '').replace(/Neural$/, '')} (${voice.Gender})`,
+            }))
+            .sort((a, b) => (a.label > b.label ? 1 : a.label < b.label ? -1 : 0));
+    }
+
+    /**
+     * Generate the mp3 file with the freetts.org API.
+     * The language is defined by the voice, like "de-DE-KatjaNeural".
+     *
+     * @param props Text, language and options of the task
+     */
+    async #sayItGetSpeechFreeTTS(props: SayItProps): Promise<void> {
+        if (!props.text.length) {
+            throw new Error('No text to speak');
+        }
+
+        if (props.text.length > FREETTS_MAX_TEXT_LENGTH) {
+            // freetts.org accepts only a limited number of characters at once, so the text must be split
+            // and the rest of the parts must be said one after another
+            const parts = Text2Speech.splitText(props.text, FREETTS_MAX_TEXT_LENGTH);
+            try {
+                for (let t = 1; t < parts.length; t++) {
+                    await this.#addToQueue({
+                        ...props,
+                        text: parts[t],
+                    });
+                }
+            } catch (error) {
+                this.#adapter.log.error(`Cannot add to queue: ${error.toString()}`);
+            }
+            props.text = parts[0];
+        }
+
+        const apiKey = props.testOptions?.freettsApiKey || this.#config.freettsApiKey;
+        if (!apiKey) {
+            throw new Error(
+                `No freetts.org API key defined. Get one on ${FREETTS_URL} and enter it in the configuration.`,
+            );
+        }
+
+        const voice = props.testOptions?.freettsVoice || this.#config.freettsVoice || FREETTS_DEFAULT_VOICE;
+        const rate = Text2Speech.#formatFreeTtsValue(props.testOptions?.freettsRate ?? this.#config.freettsRate, '%');
+        const pitch = Text2Speech.#formatFreeTtsValue(
+            props.testOptions?.freettsPitch ?? this.#config.freettsPitch,
+            'Hz',
+        );
+
+        let response;
+        try {
+            response = await axios.post(
+                `${FREETTS_URL}/api/v1/tts`,
+                { text: props.text, voice, rate, pitch },
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-api-key': apiKey,
+                    },
+                    responseType: 'arraybuffer',
+                    timeout: 30000,
+                },
+            );
+        } catch (error) {
+            throw new Error(`Cannot generate speech on freetts.org: ${Text2Speech.#getAxiosError(error)}`);
+        }
+
+        let buffer: Buffer;
+
+        if ((response.headers['content-type'] || '').toString().startsWith('audio/')) {
+            // The API answered with the mp3 file directly
+            buffer = Buffer.from(response.data);
+        } else {
+            // The API answered with {"file_id": "..."} and the mp3 must be downloaded in a second step
+            let answer: { file_id?: string };
+            const text = Buffer.from(response.data).toString('utf8');
+            try {
+                answer = JSON.parse(text);
+            } catch {
+                throw new Error(`Unexpected answer from freetts.org: ${text.substring(0, 200)}`);
+            }
+            if (!answer?.file_id) {
+                throw new Error(`No file ID received from freetts.org: ${text.substring(0, 200)}`);
+            }
+
+            try {
+                const audio = await axios.get(`${FREETTS_URL}/api/audio/${answer.file_id}`, {
+                    headers: { 'x-api-key': apiKey },
+                    responseType: 'arraybuffer',
+                    timeout: 30000,
+                });
+                buffer = Buffer.from(audio.data);
+            } catch (error) {
+                throw new Error(`Cannot download speech from freetts.org: ${Text2Speech.#getAxiosError(error)}`);
+            }
+        }
+
+        if (buffer.length < 100) {
+            throw new Error('Cannot get file: received file is too short');
+        }
+        fs.writeFileSync(this.#MP3FILE, buffer);
+    }
+
+    /**
+     * Format the rate or the pitch in the notation expected by freetts.org, like "+10%" or "-5Hz".
+     * Already formatted values are accepted too.
+     *
+     * @param value Value from the configuration
+     * @param unit Unit expected by the API
+     * @returns Value with sign and unit
+     */
+    static #formatFreeTtsValue(value: number | string | undefined, unit: '%' | 'Hz'): string {
+        const num = parseInt(value as string, 10) || 0;
+        return `${num >= 0 ? '+' : ''}${num}${unit}`;
+    }
+
+    /**
+     * Extract a readable message from an axios error.
+     * The body of an error answer is a buffer, because the requests are done with "responseType: arraybuffer".
+     *
+     * @param error Error thrown by axios
+     * @returns Text of the error
+     */
+    static #getAxiosError(error: any): string {
+        const data = error?.response?.data;
+        if (data) {
+            const text = Buffer.isBuffer(data) ? data.toString('utf8') : JSON.stringify(data);
+            return `${error.response.status} - ${text.substring(0, 200)}`;
+        }
+        return error?.message || error?.toString();
     }
 
     /**
@@ -675,6 +832,8 @@ export default class Text2Speech {
                 await this.#sayItGetSpeechCloud(props);
             } else if (engine === 'PicoTTS') {
                 await this.#sayItGetSpeechPicoTTS(props.text, props.language);
+            } else if (engine === 'freeTTS') {
+                await this.#sayItGetSpeechFreeTTS(props);
             } else {
                 throw new Error(`Engine ${engine as string} not yet supported.`);
             }

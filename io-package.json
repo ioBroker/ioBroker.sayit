@@ -210,6 +210,10 @@
     "awsSecretKey": "",
     "awsRegion": "",
     "coquiVocoder": "default",
+    "freettsApiKey": "",
+    "freettsVoice": "en-US-JennyNeural",
+    "freettsRate": 0,
+    "freettsPitch": 0,
     "convertedV1toV2": false
   },
   "instanceObjects": [
