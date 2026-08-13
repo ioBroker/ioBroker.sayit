@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "sayit",
-    "version": "5.3.0",
+    "version": "5.3.1",
     "news": {
+      "5.3.1": {
+        "en": "Added the button \"Test text generation\" to the \"Engine\" tab, so the selected engine can be tested with an own text\nTest generations do not overwrite the cached files anymore\nAdapter requires node.js >= 22 and js-controller >= 6.0.11 now\nOlder changelog entries were moved to CHANGELOG_OLD.md\nUpdated the dependabot and auto-merge configuration",
+        "de": "Dem Tab „Engine“ wurde die Schaltfläche „Testtextgenerierung“ hinzugefügt, sodass die ausgewählte Engine mit einem eigenen Text getestet werden kann.\nTestgenerationen überschreiben die zwischengespeicherten Dateien nicht mehr.\nDer Adapter benötigt jetzt Node.js >= 22 und js-controller >= 6.0.11.\nÄltere Changelog-Einträge wurden nach CHANGELOG_OLD.md verschoben.\nDie Dependabot- und Auto-Merge-Konfiguration wurde aktualisiert.",
+        "ru": "Добавлена кнопка «Проверить генерацию текста» на вкладку «Движок», чтобы выбранный движок можно было протестировать с помощью собственного текста.\nПри генерации тестов кэшированные файлы больше не перезаписываются.\nДля работы адаптера требуется Node.js версии >= 22 и js-controller версии >= 6.0.11.\nБолее старые записи в журнале изменений были перемещены в файл CHANGELOG_OLD.md.\nОбновлены конфигурации dependabot и automerge.",
+        "pt": "Adicionamos o botão \"Testar geração de texto\" à aba \"Mecanismo\", para que o mecanismo selecionado possa ser testado com um texto próprio.\nAs gerações de teste não sobrescrevem mais os arquivos em cache.\nO adaptador agora requer node.js >= 22 e js-controller >= 6.0.11.\nAs entradas mais antigas do changelog foram movidas para CHANGELOG_OLD.md\nAtualizei a configuração do Dependabot e do Auto-Merge.",
+        "nl": "De knop \"Test tekstgeneratie\" is toegevoegd aan het tabblad \"Engine\", zodat de geselecteerde engine met een eigen tekst kan worden getest.\nTestgeneraties overschrijven de in de cache opgeslagen bestanden niet meer.\nDe adapter vereist nu Node.js >= 22 en js-controller >= 6.0.11.\nOudere changelog-items zijn verplaatst naar CHANGELOG_OLD.md\nDe configuratie van Dependabot en Automerge is bijgewerkt.",
+        "fr": "Ajout du bouton « Tester la génération de texte » à l’onglet « Moteur », permettant ainsi de tester le moteur sélectionné avec un texte personnalisé.\nLes générations de test n'écrasent plus les fichiers mis en cache.\nL'adaptateur requiert désormais Node.js >= 22 et js-controller >= 6.0.11.\nLes anciennes entrées du journal des modifications ont été déplacées vers CHANGELOG_OLD.md\nMise à jour de la configuration de dependabot et de fusion automatique",
+        "it": "È stato aggiunto il pulsante \"Generazione testo di prova\" alla scheda \"Motore\", in modo che il motore selezionato possa essere testato con un testo personalizzato.\nLe generazioni di test non sovrascrivono più i file memorizzati nella cache.\nL'adattatore richiede Node.js >= 22 e js-controller >= 6.0.11.\nLe voci più vecchie del registro delle modifiche sono state spostate nel file CHANGELOG_OLD.md\nConfigurazione di Dependabot e Auto-Merge aggiornata.",
+        "es": "Se agregó el botón \"Probar generación de texto\" a la pestaña \"Motor\", para que el motor seleccionado pueda probarse con un texto propio.\nLas generaciones de prueba ya no sobrescriben los archivos en caché.\nEl adaptador ahora requiere node.js >= 22 y js-controller >= 6.0.11.\nLas entradas más antiguas del registro de cambios se trasladaron a CHANGELOG_OLD.md.\nSe actualizó la configuración de dependabot y auto-merge.",
+        "pl": "Dodano przycisk „Testuj generowanie tekstu” do zakładki „Silnik”, dzięki czemu wybrany silnik można przetestować przy użyciu własnego tekstu\nGeneracje testów nie nadpisują już plików w pamięci podręcznej\nAdapter wymaga teraz node.js >= 22 i js-controller >= 6.0.11\nStarsze wpisy w dzienniku zmian zostały przeniesione do pliku CHANGELOG_OLD.md\nZaktualizowano konfigurację Devidabota i automatycznego scalania",
+        "uk": "Додано кнопку \"Тестування генерації тексту\" на вкладку \"Двигун\", щоб вибраний движок можна було протестувати з власним текстом\nГенерації тестів більше не перезаписують кешовані файли\nАдаптер тепер вимагає node.js >= 22 та js-controller >= 6.0.11\nСтаріші записи журналу змін було перенесено до CHANGELOG_OLD.md\nОновлено конфігурацію dependabot та автоматичного об'єднання.",
+        "zh-cn": "在“引擎”选项卡中添加了“测试文本生成”按钮，以便可以使用自定义文本测试所选引擎。\n测试生成不再覆盖缓存文件\n适配器现在需要 node.js >= 22 和 js-controller >= 6.0.11。\n较早的变更日志条目已移至 CHANGELOG_OLD.md 文件。\n更新了 Dependabot 和自动合并配置"
+      },
       "5.3.0": {
         "en": "Added freetts.org as a new TTS engine with more than 400 voices. An API key is required\nThe engine is selected in two steps now: first the provider and then the voice\nThe words of the Blockly block are translated into all 11 languages now\nBlockly block migrated to TypeScript and the generated code is unchanged",
         "de": "freetts.org wurde als neue TTS-Engine mit über 400 Stimmen hinzugefügt. Ein API-Schlüssel ist erforderlich.\nDie Auswahl des Senders erfolgt nun in zwei Schritten: zuerst der Anbieter und dann die Stimme.\nDie Wörter des Blockly-Blocks sind jetzt in alle 11 Sprachen übersetzt.\nDer Blockly-Block wurde auf TypeScript migriert, der generierte Code bleibt jedoch unverändert.",
@@ -80,19 +93,6 @@
         "pl": "Aktualizacja pakietów\nKorzystanie z wcześniej obliczonego czasu mp3 czekać wystarczająco długo nawet na dłuższe ogłoszenia",
         "uk": "Пакети оновлені\nВикористання попередньо встановленої тривалості mp3, щоб довго чекати навіть для більш тривалого оголошення",
         "zh-cn": "更新软件包\n使用 mp3 的预计算持续时间来等待足够长的时间, 甚至可以等待更长的通知"
-      },
-      "4.0.0": {
-        "en": "Breaking changes: A minimal node.js version is 16\nBrowser outputs now to vis(1) and vis-2",
-        "de": "Änderungsvorschläge: Eine minimale node.js Version ist 16\nBrowser-Ausgänge jetzt auf vis(1) und vis-2",
-        "ru": "Перерыв изменений: Минимальная версия node.js 16\nБраузер выходит сейчас на vis(1) и vis-2",
-        "pt": "Alterações de ruptura: Uma versão mínima node.js é 16\nSaídas de navegador agora para vis(1) e vis-2",
-        "nl": "Breaking changes: Een minimale node\nBrowser uitputs nu om (1) en vis-2",
-        "fr": "Changements de rupture: Une version minimale node.js est 16\nSorties de navigateur maintenant vers(1) et vis-2",
-        "it": "Cambiamenti di rottura: Una versione minimal node.js è 16\nRisultati del browser ora a vis(1) e vis-2",
-        "es": "Cambios de ruptura: Una versión mínima node.js es 16\nSalidas del navegador ahora a vis(1) y vis-2",
-        "pl": "Zmiany: Wersja minimalna jest 16\nBrowser wykonuje się do vis(1) i vis-2",
-        "uk": "Зміни прориву: Версія Mini node.js 16\nВиходи браузера тепер до вісь(1) і vis-2",
-        "zh-cn": "断然变化: 第16页。\n现收录产出"
       }
     },
     "titleLang": {

@@ -249,3 +249,16 @@ Changed type of top-level object to "meta" in order to comply with js-controller
 
 ### 0.0.1 (2015-02-06)
 * (bluefox) initial commit
+## 4.0.5 (2024-07-12)
+* (bluefox) Packages updated
+* (bluefox) Corrected playing in vis
+* (bluefox) Corrected blockly
+* (bluefox) Corrected upload of files
+
+## 4.0.1 (2024-05-25)
+* (bluefox) Packages updated
+* (neopholus) Using the pre-calculated duration of the mp3 to wait long enough even for longer announcements
+
+## 4.0.0 (2023-10-31)
+* (bluefox) Breaking changes: A minimal node.js version is 16
+* (bluefox) Browser outputs now to vis(1) and vis-2

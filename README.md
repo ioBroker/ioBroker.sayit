@@ -302,7 +302,7 @@ A request is limited to 10000 characters, so longer texts are split and said one
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### **WORK IN PROGRESS**
+### 5.3.1 (2026-08-13)
 * (@GermanBluefox) Added the button "Test text generation" to the "Engine" tab, so the selected engine can be tested with an own text
 * (@GermanBluefox) Test generations do not overwrite the cached files anymore
 * (@GermanBluefox) Adapter requires node.js >= 22 and js-controller >= 6.0.11 now
@@ -334,20 +334,6 @@ A request is limited to 10000 characters, so longer texts are split and said one
 * (mcm1957) Adapter requires admin v7 or newer now
 * (mcm1957) Adapter requires jas-controller 5 or newer now
 * (bluefox) Added possibility to play directly from states: `sayit.0/tts.userfiles/gong.mp3`
-
-### 4.0.5 (2024-07-12)
-* (bluefox) Packages updated
-* (bluefox) Corrected playing in vis
-* (bluefox) Corrected blockly
-* (bluefox) Corrected upload of files
-
-### 4.0.1 (2024-05-25)
-* (bluefox) Packages updated
-* (neopholus) Using the pre-calculated duration of the mp3 to wait long enough even for longer announcements
-
-### 4.0.0 (2023-10-31)
-* (bluefox) Breaking changes: A minimal node.js version is 16
-* (bluefox) Browser outputs now to vis(1) and vis-2
 
 [Older changelogs can be found there](CHANGELOG_OLD.md)
 
