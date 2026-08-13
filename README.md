@@ -63,6 +63,19 @@ Offline:
 - Coqui TTS: English, German, Spanish, French, Dutch, Japanese, Chinese;
   For instructions how to use go to the [official documentation](https://tts.readthedocs.io/en/latest/index.html)
 
+### Test of the text generation
+With the button `Test text generation` on the tab `Engine` you can check if the selected engine is configured properly.
+
+The field `Test text` is prefilled with a test sentence in the language of the selected engine and can be changed
+as desired. If the field is empty, the same sentence will be used. The text will be generated with the settings
+of the dialog, so they must not be saved before the test.
+
+The text will be only generated and not played, so the test works even if no player is available.
+The dialog shows the size and the duration of the generated file and tries to open it in a new browser tab,
+so you can listen to it. For that the browser must allow pop-ups for the ioBroker admin.
+
+To test the generation **and** the playback together, use the button `Test` on the tab `Player`.
+
 ### Cloud and Amazon Web Services Polly text formatting
 You can format your text with [Speech Synthesis Markup Language](http://docs.aws.amazon.com/polly/latest/dg/ssml.html).
 
@@ -290,6 +303,8 @@ A request is limited to 10000 characters, so longer texts are split and said one
 -->
 ## Changelog
 ### **WORK IN PROGRESS**
+* (@GermanBluefox) Added the button "Test text generation" to the "Engine" tab, so the selected engine can be tested with an own text
+* (@GermanBluefox) Test generations do not overwrite the cached files anymore
 * (@GermanBluefox) Adapter requires node.js >= 22 and js-controller >= 6.0.11 now
 * (@GermanBluefox) Older changelog entries were moved to CHANGELOG_OLD.md
 * (@GermanBluefox) Updated the dependabot and auto-merge configuration

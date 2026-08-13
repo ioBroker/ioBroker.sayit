@@ -71,6 +71,24 @@ class Text2Speech {
         return null;
     }
     /**
+     * Maximal number of characters, that could be requested at once from the given engine.
+     * Longer texts must be split, because the engines answer with an error or with a truncated text.
+     *
+     * @param engine Name of the engine, like "de-DE_AP_Female"
+     * @returns Maximal length of one request or 0 if the engine has no limit
+     */
+    static getMaxTextLength(engine) {
+        // Unknown engines are generated with google (see "sayItGetSpeech")
+        const type = engines_1.sayitEngines[engine]?.engine || 'google';
+        if (type === 'google') {
+            return GOOGLE_MAX_TEXT_LENGTH;
+        }
+        if (type === 'freeTTS') {
+            return FREETTS_MAX_TEXT_LENGTH;
+        }
+        return 0;
+    }
+    /**
      * Split a long text into parts, which are not longer than "max" characters.
      * The text will be split by the punctuation marks and, if that is not enough, by the words.
      *
@@ -786,7 +804,9 @@ class Text2Speech {
             // fallback to google
             await this.#sayItGetSpeechGoogle(props);
         }
-        if (this.#config.cache) {
+        // The test files are generated with the settings of the configuration dialog and not with the
+        // saved ones, so they must not be stored in the cache of the saved configuration
+        if (this.#config.cache && !props.testOptions) {
             this.#cacheFile(props.text, props.language, this.#getCachedFileName(`${props.language};${props.text}`));
         }
         return this.#MP3FILE;

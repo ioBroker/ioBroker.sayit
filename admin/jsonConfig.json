@@ -1436,6 +1436,34 @@
                     "sm": 12,
                     "md": 4,
                     "lg": 2
+                },
+                "_testText": {
+                    "newLine": true,
+                    "type": "text",
+                    "label": "Test text",
+                    "help": "test_text_help",
+                    "defaultFunc": "({ de: 'Hallo, das ist ein Test der Sprachausgabe.', ru: 'Привет, это проверка синтеза речи.', uk: 'Привіт, це перевірка синтезу мовлення.', pl: 'Cześć, to jest test syntezy mowy.', it: 'Ciao, questo è un test della sintesi vocale.', pt: 'Olá, este é um teste da síntese de voz.', es: 'Hola, esta es una prueba de la síntesis de voz.', fr: 'Bonjour, ceci est un test de la synthèse vocale.', nl: 'Hallo, dit is een test van de spraakuitvoer.', zh: '你好，这是一次语音合成测试。' })[(data.engine === 'freeTTS' ? data.freettsVoice || 'en' : data.engine || 'en').substring(0, 2)] || 'Hello, this is a test of the speech output.'",
+                    "minRows": 2,
+                    "maxRows": 5,
+                    "sm": 12,
+                    "md": 8,
+                    "lg": 6
+                },
+                "_testGenerate": {
+                    "newLine": true,
+                    "type": "sendTo",
+                    "variant": "contained",
+                    "label": "Test text generation",
+                    "tooltip": "test_generate_tooltip",
+                    "command": "testGenerate",
+                    "jsonData": "${JSON.stringify(data)}",
+                    "icon": "send",
+                    "showProcess": true,
+                    "openUrl": true,
+                    "timeout": 120000,
+                    "sm": 12,
+                    "md": 4,
+                    "lg": 3
                 }
             }
         }

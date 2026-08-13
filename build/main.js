@@ -11,6 +11,51 @@ const engines_1 = require("./lib/engines");
 const text2speech_1 = __importDefault(require("./lib/text2speech"));
 const speech2device_1 = __importDefault(require("./lib/speech2device"));
 const adapter_core_1 = require("@iobroker/adapter-core");
+/** Greeting used by the "Test" button of the "Player" tab */
+const HELLO_TEXTS = {
+    en: 'Hello',
+    de: 'Hallo',
+    pl: 'Cześć',
+    uk: 'Привіт',
+    ru: 'Привет',
+    it: 'Ciao',
+    pt: 'Olá',
+    es: 'Hola',
+    fr: 'Bonjour',
+    nl: 'Hallo',
+    zh: '你好',
+};
+/**
+ * Text used by the "Test text generation" button of the "Engine" tab, if the user cleared the text field.
+ * The same texts are offered by the configuration dialog as default value (see "_testText" in jsonConfig.json).
+ */
+const TEST_TEXTS = {
+    en: 'Hello, this is a test of the speech output.',
+    de: 'Hallo, das ist ein Test der Sprachausgabe.',
+    pl: 'Cześć, to jest test syntezy mowy.',
+    uk: 'Привіт, це перевірка синтезу мовлення.',
+    ru: 'Привет, это проверка синтеза речи.',
+    it: 'Ciao, questo è un test della sintesi vocale.',
+    pt: 'Olá, este é um teste da síntese de voz.',
+    es: 'Hola, esta es una prueba de la síntesis de voz.',
+    fr: 'Bonjour, ceci est un test de la synthèse vocale.',
+    nl: 'Hallo, dit is een test van de spraakuitvoer.',
+    zh: '你好，这是一次语音合成测试。',
+};
+/** Answer of the "testGenerate" command in the language of the ioBroker installation */
+const GENERATED_TEXTS = {
+    en: 'The text was generated successfully.',
+    de: 'Der Text wurde erfolgreich generiert.',
+    ru: 'Текст успешно сгенерирован.',
+    pt: 'O texto foi gerado com sucesso.',
+    nl: 'De tekst is met succes gegenereerd.',
+    fr: 'Le texte a été généré avec succès.',
+    it: 'Il testo è stato generato con successo.',
+    es: 'El texto se ha generado correctamente.',
+    pl: 'Tekst został pomyślnie wygenerowany.',
+    uk: 'Текст успішно згенеровано.',
+    'zh-cn': '文本已成功生成。',
+};
 class SayItAdapter extends adapter_core_1.Adapter {
     dataDir = (0, node_path_1.join)((0, adapter_core_1.getAbsoluteDefaultDataDir)(), 'sayit');
     /** Timer of the mDNS discovery */
@@ -158,6 +203,116 @@ class SayItAdapter extends adapter_core_1.Adapter {
         }
     }
     /**
+     * Two-letter language of the given engine
+     *
+     * @param engine Engine (voice) that will be used for the generation
+     * @param freettsVoice Voice of freetts.org, because the FreeTTS engine has no own language
+     * @returns Language, like "de"
+     */
+    getEngineLanguage(engine, freettsVoice) {
+        // The FreeTTS engine has no own language. It is defined by the voice, like "de-DE-KatjaNeural"
+        return (engine === 'freeTTS' ? freettsVoice || this.config.freettsVoice || 'en' : engine).substring(0, 2);
+    }
+    /**
+     * Short greeting in the language of the given engine. Used by the "Test" button of the "Player" tab.
+     *
+     * @param engine Engine (voice) that will be used for the generation
+     * @param freettsVoice Voice of freetts.org, because the FreeTTS engine has no own language
+     * @returns Greeting, like "Hallo"
+     */
+    getHelloText(engine, freettsVoice) {
+        return HELLO_TEXTS[this.getEngineLanguage(engine, freettsVoice)] || HELLO_TEXTS.en;
+    }
+    /**
+     * Sentence in the language of the given engine. Used by the "Test text generation" button
+     * of the "Engine" tab if the user cleared the text field.
+     *
+     * @param engine Engine (voice) that will be used for the generation
+     * @param freettsVoice Voice of freetts.org, because the FreeTTS engine has no own language
+     * @returns Test sentence, like "Hallo, das ist ein Test der Sprachausgabe."
+     */
+    getTestText(engine, freettsVoice) {
+        return TEST_TEXTS[this.getEngineLanguage(engine, freettsVoice)] || TEST_TEXTS.en;
+    }
+    /**
+     * Store the generated test file in the ioBroker file storage, so the user can listen to it in the browser.
+     *
+     * @param audio Content of the generated file
+     * @param engine Engine that was used for the generation. Only the Yandex cloud delivers ogg files
+     * @param origin URL of the admin, like "http://192.168.1.1:8081"
+     * @returns Duration of the file in seconds and the URL, where it could be played
+     */
+    async storeTestFile(audio, engine, origin) {
+        const file = `tts.test.${engine === 'ru_YA_CLOUD' ? 'ogg' : 'mp3'}`;
+        try {
+            await this.writeFileAsync(this.namespace, file, audio);
+        }
+        catch (e) {
+            this.log.warn(`Cannot store the generated test file: ${e.toString()}`);
+            return { duration: 0 };
+        }
+        return {
+            duration: (await this.text2speech?.getDuration(`${this.namespace}/${file}`)) || 0,
+            // The admin delivers all files of the ioBroker storage under "/files/"
+            url: origin ? `${origin.replace(/\/$/, '')}/files/${this.namespace}/${file}?ts=${Date.now()}` : undefined,
+        };
+    }
+    /**
+     * Generate the speech file for the given text with the settings of the configuration dialog,
+     * but do not play it. Used by the "Test text generation" button to check if the selected
+     * engine is configured properly, even if no player is available.
+     *
+     * @param obj Message object with the command "testGenerate"
+     */
+    async testGenerate(obj) {
+        if (!this.text2speech) {
+            this.sendTo(obj.from, obj.command, { error: 'Adapter is not ready yet' }, obj.callback);
+            return;
+        }
+        const testOptions = { ...obj.message };
+        const engine = testOptions.engine || this.config.engine || 'en';
+        const text = (obj.message?._testText || '').trim() || this.getTestText(engine, testOptions.freettsVoice);
+        // Some engines accept only a limited number of characters at once. Normally the rest of the text is
+        // added to the queue and played part by part, but the test must only generate and never play something,
+        // so the text is split here and every part is generated one after another.
+        const maxLength = text2speech_1.default.getMaxTextLength(engine);
+        const parts = maxLength ? text2speech_1.default.splitText(text, maxLength) : [text];
+        const started = Date.now();
+        const audio = [];
+        try {
+            for (const part of parts) {
+                const fileName = await this.text2speech.sayItGetSpeech({
+                    type: testOptions.type || this.config.type,
+                    text: part,
+                    language: engine,
+                    testOptions,
+                });
+                audio.push((0, node_fs_1.readFileSync)(fileName));
+            }
+        }
+        catch (e) {
+            this.log.error(`Cannot generate speech file: ${e}`);
+            this.sendTo(obj.from, obj.command, { error: `Cannot generate speech file: ${e}` }, obj.callback);
+            return;
+        }
+        // The file was generated with the settings of the dialog and not with the saved ones,
+        // so it must not be reused for the next text
+        this.sayLastGeneratedText = '';
+        const elapsed = Date.now() - started;
+        const generated = Buffer.concat(audio);
+        const { duration, url } = await this.storeTestFile(generated, engine, obj.message?._origin);
+        this.sendTo(obj.from, obj.command, {
+            result: [
+                GENERATED_TEXTS[this.lang] || GENERATED_TEXTS.en,
+                '',
+                `"${text.length > 100 ? `${text.substring(0, 100)}…` : text}"`,
+                engine === 'freeTTS' ? `freeTTS: ${testOptions.freettsVoice || this.config.freettsVoice}` : engine,
+                `${Math.round(generated.length / 100) / 10} kB · ${duration} s · ${elapsed} ms`,
+            ].join('\n'),
+            openUrl: url,
+        }, obj.callback);
+    }
+    /**
      * Process a message sent by another adapter or by the admin configuration dialog
      *
      * @param obj Message object
@@ -282,42 +437,7 @@ class SayItAdapter extends adapter_core_1.Adapter {
         }
         else if (obj.callback && obj.command === 'test') {
             const engine = obj.message?.engine || this.config.engine || 'en';
-            // The FreeTTS engine has no own language. It is defined by the voice, like "de-DE-KatjaNeural"
-            const language = (engine === 'freeTTS'
-                ? obj.message?.freettsVoice || this.config.freettsVoice || 'en'
-                : engine).substring(0, 2);
-            let text = 'Hello';
-            if (language === 'de') {
-                text = 'Hallo';
-            }
-            else if (language === 'pl') {
-                text = 'Cześć';
-            }
-            else if (language === 'uk') {
-                text = 'Привіт';
-            }
-            else if (language === 'ru') {
-                text = 'Привет';
-            }
-            else if (language === 'it') {
-                text = 'Ciao';
-            }
-            else if (language === 'pt') {
-                text = 'Olá';
-            }
-            else if (language === 'es') {
-                text = 'Hola';
-            }
-            else if (language === 'fr') {
-                text = 'Bonjour';
-            }
-            else if (language === 'nl') {
-                text = 'Hallo';
-            }
-            else if (language === 'zh') {
-                text = '你好';
-            }
-            text += ` ${this.helloCounter++}`;
+            const text = `${this.getHelloText(engine, obj.message?.freettsVoice)} ${this.helloCounter++}`;
             const testOptions = { ...obj.message };
             if (obj.callback) {
                 testOptions.callback = (error) => {
@@ -325,6 +445,12 @@ class SayItAdapter extends adapter_core_1.Adapter {
                 };
             }
             this.addToQueue({ text, testOptions }).catch(e => this.log.error(`Cannot add to queue ${e}`));
+        }
+        else if (obj.callback && obj.command === 'testGenerate') {
+            this.testGenerate(obj).catch(e => {
+                this.log.error(`Cannot generate the test text: ${e}`);
+                this.sendTo(obj.from, obj.command, { error: `Cannot generate speech file: ${e}` }, obj.callback);
+            });
         }
     }
     /**
