@@ -95,7 +95,6 @@
         "zh-cn": "断然变化: 第16页。\n现收录产出"
       }
     },
-    "title": "Text to speech",
     "titleLang": {
       "en": "Text to speech",
       "de": "Text zu Sprache",
@@ -161,7 +160,7 @@
     },
     "dependencies": [
       {
-        "js-controller": ">=5.0.19"
+        "js-controller": ">=6.0.11"
       }
     ],
     "globalDependencies": [
