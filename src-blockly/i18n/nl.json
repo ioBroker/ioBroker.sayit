@@ -1,0 +1,14 @@
+{
+    "sayit": "tekst zeggen",
+    "sayit_anyInstance": "alle instanties",
+    "sayit_configured": "geconfigureerd",
+    "sayit_log": "log-niveau",
+    "sayit_log_debug": "debuggen",
+    "sayit_log_error": "fout",
+    "sayit_log_info": "informatie",
+    "sayit_log_none": "geen",
+    "sayit_log_warn": "waarschuwing",
+    "sayit_message": "bericht",
+    "sayit_tooltip": "Tekst naar spraak",
+    "sayit_volume": "volume (optioneel)"
+}

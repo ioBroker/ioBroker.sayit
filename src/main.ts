@@ -352,7 +352,12 @@ export class SayItAdapter extends Adapter {
                 this.sendTo(obj.from, obj.command, list, obj.callback);
             });
         } else if (obj.callback && obj.command === 'getFreeTtsVoices') {
-            Text2Speech.getFreeTtsVoices()
+            // The "Signature" voices of freetts.org need a PRO API key, so they are only offered if one is
+            // set. The dialog reports its current state, so a key that is entered but not yet saved counts too.
+            const withPro =
+                obj.message?.hasApiKey === undefined ? !!this.config.freettsApiKey : !!obj.message.hasApiKey;
+
+            Text2Speech.getFreeTtsVoices(withPro)
                 .then(voices => this.sendTo(obj.from, obj.command, voices, obj.callback))
                 .catch(e => {
                     this.log.warn(`Cannot read the voices from freetts.org: ${e.toString()}`);

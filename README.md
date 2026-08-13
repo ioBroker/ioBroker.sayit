@@ -49,8 +49,8 @@ Online:
   To use Yandex.cloud you should register here: [https://cloud.yandex.ru/], install SpeechKIT API in the Cloud and get Auth Token and Folder ID as described in API instructions.
 - FreeTTS: more than 400 voices in more than 75 languages, provided by [https://freetts.org](https://freetts.org).
   The language is not selected by the engine, but by the voice, e.g. `de-DE-KatjaNeural`.
-  An API key is required, because [https://freetts.org](https://freetts.org) only allows programmatic access with a key.
-  You can get one on the [pricing page](https://freetts.org/pricing) of the service.
+  An API key from the [pricing page](https://freetts.org/pricing) is required. The free tier of the service
+  appends a spoken "generated with freeTTS.org" to every text, so it cannot be used for announcements.
 - Cloud: To use Cloud voices you need configured and running `cloud` adapter or enter app-key directly in settings
 - Amazon Web Services Polly:
   To use AWS Polly voices, you need to create an access key and secret key [here](https://console.aws.amazon.com/iam/home). The Amazon documentation can you find [here](http://docs.aws.amazon.com/general/latest/gr/managing-aws-access-keys.html).
@@ -148,7 +148,7 @@ The following values for engines are possible:
 
 The language is a part of the voice, so only one engine name exists. The voice, e.g. `de-DE-KatjaNeural`,
 is selected in the configuration dialog and the list of all available voices is read from the service.
-The free API key is limited to 1000 characters per request, so longer texts are split and said one after another.
+A request is limited to 10000 characters, so longer texts are split and said one after another.
 
 #### Yandex
 - **ru_YA:Yandex** - Русский
@@ -290,11 +290,14 @@ The free API key is limited to 1000 characters per request, so longer texts are 
 -->
 ## Changelog
 ### **WORK IN PROGRESS**
-* (@GermanBluefox) Added freetts.org as a new TTS engine with more than 400 voices
+* (@GermanBluefox) Added freetts.org as a new TTS engine with more than 400 voices. An API key is required
+* (@GermanBluefox) The engine is selected in two steps now: first the provider and then the voice
+* (@GermanBluefox) The words of the Blockly block are translated into all 11 languages now
+* (@GermanBluefox) Blockly block migrated to TypeScript and the generated code is unchanged
 
 ### 5.2.4 (2026-08-07)
 * (@GermanBluefox) Corrected the upload of the announcement mp3 files and the location of the cache directory
-* (@GermanBluefox) Corrected the splitting of long texts for the google engine
+* (@GermanBluefox) Corrected the splitting of long texts for the Google engine
 * (@GermanBluefox) Corrected the detection of sonos devices in the configuration dialog
 * (@GermanBluefox) Cached files will be deleted again if the engine was changed
 * (@GermanBluefox) The queue does not block anymore if an error occurs by processing of a task

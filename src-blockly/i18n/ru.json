@@ -1,0 +1,14 @@
+{
+    "sayit": "произнести",
+    "sayit_anyInstance": "На все драйвера",
+    "sayit_configured": "настроенный",
+    "sayit_log": "Протокол",
+    "sayit_log_debug": "debug",
+    "sayit_log_error": "ошибка",
+    "sayit_log_info": "инфо",
+    "sayit_log_none": "нет",
+    "sayit_log_warn": "warning",
+    "sayit_message": "сообщение",
+    "sayit_tooltip": "Произнести сообщение",
+    "sayit_volume": "громкость (не обяз.)"
+}

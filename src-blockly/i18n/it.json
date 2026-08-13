@@ -1,0 +1,14 @@
+{
+    "sayit": "dire testo",
+    "sayit_anyInstance": "tutte le istanze",
+    "sayit_configured": "configurato",
+    "sayit_log": "livello di registro",
+    "sayit_log_debug": "eseguire il debug",
+    "sayit_log_error": "errore",
+    "sayit_log_info": "informazioni",
+    "sayit_log_none": "nessuno",
+    "sayit_log_warn": "avvertimento",
+    "sayit_message": "messaggio",
+    "sayit_tooltip": "Dal testo alla voce",
+    "sayit_volume": "volume (facoltativo)"
+}

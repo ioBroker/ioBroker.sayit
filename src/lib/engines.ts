@@ -1,4 +1,5 @@
-// DON'T Forget to update sayitEngines in blockly.js (If you change this table)
+// The Blockly block builds its language dropdown from this table (see src-blockly/blockly.ts),
+// so a change here reaches the editor as soon as `npm run build:blockly` has run.
 
 import type { VoiceId } from '@aws-sdk/client-polly';
 

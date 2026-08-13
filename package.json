@@ -55,6 +55,8 @@
     "@iobroker/legacy-testing": "^3.0.0",
     "@types/jsftp": "^2.1.5",
     "@types/mdns": "^0.0.38",
+    "blockly": "^13.2.1",
+    "esbuild": "^0.25.0",
     "typescript": "~6.0.3"
   },
   "bugs": {
@@ -76,14 +78,15 @@
     "lint": "eslint -c eslint.config.mjs",
     "test:package": "mocha test/testPackageFiles.js --exit",
     "test:integration": "mocha test/testAdapter.js --exit",
-    "build": "tsc -p tsconfig.build.json",
+    "build": "tsc -p tsconfig.build.json && npm run build:blockly",
+    "build:blockly": "tsc -p src-blockly/tsconfig.json && node src-blockly/build.mjs",
     "prepublishOnly": "npm run build",
     "install": "node build/main.js --install",
     "release": "release-script",
     "release-patch": "release-script patch --yes",
     "release-minor": "release-script minor --yes",
     "release-major": "release-script major --yes",
-    "translate": "translate-adapter",
+    "translate": "translate-adapter -b admin/i18n/en.json -b admin/i18n-blockly/en.json",
     "npm": "npm install --ignore-scripts",
     "update-packages": "npx -y npm-check-updates --upgrade"
   },

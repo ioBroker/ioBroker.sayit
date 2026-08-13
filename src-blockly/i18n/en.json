@@ -1,0 +1,14 @@
+{
+    "sayit": "say text",
+    "sayit_anyInstance": "all instances",
+    "sayit_configured": "configured",
+    "sayit_log": "log level",
+    "sayit_log_debug": "debug",
+    "sayit_log_error": "error",
+    "sayit_log_info": "info",
+    "sayit_log_none": "none",
+    "sayit_log_warn": "warning",
+    "sayit_message": "message",
+    "sayit_tooltip": "Text to speech",
+    "sayit_volume": "volume (optional)"
+}

@@ -193,6 +193,11 @@ export interface SayItAdapterConfig {
     cacheDir: string;
     /** Engine (voice) used for the text generation */
     engine: EngineType;
+    /**
+     * Provider of the engine, like "google" or "polly". Used only by the configuration dialog to filter
+     * the list of the engines and never read by the adapter. If it is missing, it is derived from "engine".
+     */
+    engineProvider?: string;
     /** ID of the sonos device, like "sonos.0.root.192_168_1_1" */
     sonosDevice: string;
     /** ID of the HEOS player, like "heos.0.players.123456" */

@@ -18,8 +18,8 @@ const google_tts_api_1 = require("google-tts-api");
 const GOOGLE_MAX_TEXT_LENGTH = 70;
 /** Base address of the freetts.org service */
 const FREETTS_URL = 'https://freetts.org';
-/** Maximal length of a text that could be requested at once from freetts.org with a free API key */
-const FREETTS_MAX_TEXT_LENGTH = 1000;
+/** Maximal length of a text that could be requested at once from freetts.org with a PRO API key */
+const FREETTS_MAX_TEXT_LENGTH = 10000;
 /** Voice used by freetts.org if nothing is configured */
 const FREETTS_DEFAULT_VOICE = 'en-US-JennyNeural';
 class Text2Speech {
@@ -251,18 +251,26 @@ class Text2Speech {
      * Read the list of the voices offered by freetts.org.
      * Used by the configuration dialog to fill the voice selector.
      *
+     * @param withPro True to offer the "Signature" voices too. Without an API key they cannot be used,
+     * so they are left out by default
      * @returns List of the voices, sorted by the language name
      */
-    static async getFreeTtsVoices() {
+    static async getFreeTtsVoices(withPro) {
         const response = await axios_1.default.get(`${FREETTS_URL}/api/voices`, { timeout: 15000 });
         if (!Array.isArray(response.data)) {
             throw new Error('Unexpected answer from freetts.org');
         }
         return response.data
+            .filter(voice => withPro || voice.SuggestedCodec)
             .map(voice => ({
             value: voice.ShortName,
-            // "de-DE-KatjaNeural" => "German (Germany) - Katja (Female)"
-            label: `${voice.LocaleName} - ${voice.ShortName.replace(`${voice.Locale}-`, '').replace(/Neural$/, '')} (${voice.Gender})`,
+            // "de-DE-KatjaNeural" => "German (Germany) - Katja (Female)".
+            // Only the voices with a codec are free. The others are the "Signature" voices of the
+            // service, which have no language name and are answered with "402 - hd_voice_required"
+            // without a PRO API key.
+            // The language prefix is removed by pattern and not with "Locale", because a few voices
+            // are offered under a different locale than the one in their name ("ar-SA" / "ar-XA-…")
+            label: `${voice.LocaleName || voice.Locale} - ${voice.ShortName.replace(/^[a-z]{2,3}-[A-Za-z]{2,4}-/, '').replace(/Neural$/, '')} (${voice.Gender})${voice.SuggestedCodec ? '' : ' [PRO]'}`,
         }))
             .sort((a, b) => (a.label > b.label ? 1 : a.label < b.label ? -1 : 0));
     }
@@ -293,20 +301,20 @@ class Text2Speech {
             }
             props.text = parts[0];
         }
+        // The free tier of freetts.org appends a spoken "generated with freeTTS.org" to every text,
+        // which makes it useless here, so only the endpoint for the programmatic access is used
         const apiKey = props.testOptions?.freettsApiKey || this.#config.freettsApiKey;
         if (!apiKey) {
-            throw new Error(`No freetts.org API key defined. Get one on ${FREETTS_URL} and enter it in the configuration.`);
+            throw new Error(`No freetts.org API key defined. Get one on ${FREETTS_URL}/pricing.`);
         }
+        const headers = { 'Content-Type': 'application/json', 'x-api-key': apiKey };
         const voice = props.testOptions?.freettsVoice || this.#config.freettsVoice || FREETTS_DEFAULT_VOICE;
         const rate = _a.#formatFreeTtsValue(props.testOptions?.freettsRate ?? this.#config.freettsRate, '%');
         const pitch = _a.#formatFreeTtsValue(props.testOptions?.freettsPitch ?? this.#config.freettsPitch, 'Hz');
         let response;
         try {
             response = await axios_1.default.post(`${FREETTS_URL}/api/v1/tts`, { text: props.text, voice, rate, pitch }, {
-                headers: {
-                    'Content-Type': 'application/json',
-                    'x-api-key': apiKey,
-                },
+                headers,
                 responseType: 'arraybuffer',
                 timeout: 30000,
             });
@@ -334,7 +342,7 @@ class Text2Speech {
             }
             try {
                 const audio = await axios_1.default.get(`${FREETTS_URL}/api/audio/${answer.file_id}`, {
-                    headers: { 'x-api-key': apiKey },
+                    headers,
                     responseType: 'arraybuffer',
                     timeout: 30000,
                 });

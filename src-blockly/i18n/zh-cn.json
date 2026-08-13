@@ -1,0 +1,14 @@
+{
+    "sayit": "说文字",
+    "sayit_anyInstance": "所有实例",
+    "sayit_configured": "配置好的",
+    "sayit_log": "日志级别",
+    "sayit_log_debug": "调试",
+    "sayit_log_error": "错误",
+    "sayit_log_info": "信息",
+    "sayit_log_none": "没有任何",
+    "sayit_log_warn": "警告",
+    "sayit_message": "信息",
+    "sayit_tooltip": "文字转语音",
+    "sayit_volume": "体积（可选）"
+}

@@ -1,0 +1,14 @@
+{
+    "sayit": "powiedz tekst",
+    "sayit_anyInstance": "wszystkie przypadki",
+    "sayit_configured": "skonfigurowany",
+    "sayit_log": "poziom dziennika",
+    "sayit_log_debug": "odpluskwić",
+    "sayit_log_error": "błąd",
+    "sayit_log_info": "informacje",
+    "sayit_log_none": "nic",
+    "sayit_log_warn": "ostrzeżenie",
+    "sayit_message": "wiadomość",
+    "sayit_tooltip": "Tekst na mowę",
+    "sayit_volume": "głośność (opcjonalnie)"
+}

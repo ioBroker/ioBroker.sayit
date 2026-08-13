@@ -1,0 +1,14 @@
+{
+    "sayit": "сказати текст",
+    "sayit_anyInstance": "всі екземпляри",
+    "sayit_configured": "налаштовано",
+    "sayit_log": "рівень журналу",
+    "sayit_log_debug": "налагоджувати",
+    "sayit_log_error": "помилка",
+    "sayit_log_info": "інформація",
+    "sayit_log_none": "немає",
+    "sayit_log_warn": "УВАГА",
+    "sayit_message": "повідомлення",
+    "sayit_tooltip": "Перетворення тексту на мовлення",
+    "sayit_volume": "обсяг (необов'язково)"
+}

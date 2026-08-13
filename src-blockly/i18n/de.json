@@ -1,0 +1,14 @@
+{
+    "sayit": "aussprechen",
+    "sayit_anyInstance": "Alle Instanzen",
+    "sayit_configured": "Standard",
+    "sayit_log": "Loglevel",
+    "sayit_log_debug": "debug",
+    "sayit_log_error": "error",
+    "sayit_log_info": "info",
+    "sayit_log_none": "keins",
+    "sayit_log_warn": "warning",
+    "sayit_message": "Meldung",
+    "sayit_tooltip": "Text zu Sprache",
+    "sayit_volume": "Lautstärke (optional)"
+}

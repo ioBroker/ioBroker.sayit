@@ -1,0 +1,14 @@
+{
+    "sayit": "dire un texte",
+    "sayit_anyInstance": "toutes les instances",
+    "sayit_configured": "configuré",
+    "sayit_log": "niveau de journalisation",
+    "sayit_log_debug": "déboguer",
+    "sayit_log_error": "erreur",
+    "sayit_log_info": "infos",
+    "sayit_log_none": "aucun",
+    "sayit_log_warn": "avertissement",
+    "sayit_message": "message",
+    "sayit_tooltip": "Synthèse vocale",
+    "sayit_volume": "volume (facultatif)"
+}

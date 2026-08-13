@@ -304,698 +304,890 @@
             "type": "panel",
             "label": "Engine",
             "items": {
+                "engineProvider": {
+                    "type": "select",
+                    "noTranslation": true,
+                    "label": "Provider",
+                    "defaultFunc": "!data.engine ? 'google' : data.engine === 'freeTTS' ? 'freeTTS' : data.engine.startsWith('ru_YA') ? 'yandex' : data.engine.includes('_AP_') ? 'polly' : data.engine.includes('_CLOUD_') ? 'cloud' : data.engine.includes('CoquiTTS') ? 'CoquiTTS' : data.engine.includes('-') && data.engine !== 'zh-CN' ? 'PicoTTS' : 'google'",
+                    "options": [
+                        { "value": "google", "label": "Google" },
+                        { "value": "freeTTS", "label": "FreeTTS (freetts.org)" },
+                        { "value": "yandex", "label": "Yandex" },
+                        { "value": "cloud", "label": "ioBroker Cloud" },
+                        { "value": "PicoTTS", "label": "PicoTTS (offline)" },
+                        { "value": "CoquiTTS", "label": "Coqui TTS (offline)" },
+                        { "value": "polly", "label": "AWS Polly" }
+                    ],
+                    "sm": 12,
+                    "md": 6,
+                    "lg": 4
+                },
                 "engine": {
+                    "newLine": true,
                     "type": "select",
                     "noTranslation": true,
                     "label": "Language",
+                    "debug": true,
                     "options": [
                         {
                             "label": "Google - English",
-                            "value": "en"
+                            "value": "en",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'google' && data.engine !== 'en'"
                         },
                         {
                             "label": "Google - Deutsch",
-                            "value": "de"
+                            "value": "de",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'google' && data.engine !== 'de'"
                         },
                         {
                             "label": "Google - Polski",
-                            "value": "pl"
+                            "value": "pl",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'google' && data.engine !== 'pl'"
                         },
                         {
                             "label": "Google - Ukrainian",
-                            "value": "uk"
+                            "value": "uk",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'google' && data.engine !== 'uk'"
                         },
                         {
                             "label": "Google - Русский",
-                            "value": "ru"
+                            "value": "ru",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'google' && data.engine !== 'ru'"
                         },
                         {
                             "label": "Google - Italiano",
-                            "value": "it"
+                            "value": "it",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'google' && data.engine !== 'it'"
                         },
                         {
                             "label": "Google - Português",
-                            "value": "pt"
+                            "value": "pt",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'google' && data.engine !== 'pt'"
                         },
                         {
                             "label": "Google - Espaniol",
-                            "value": "es"
+                            "value": "es",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'google' && data.engine !== 'es'"
                         },
                         {
                             "label": "Google - Français",
-                            "value": "fr"
+                            "value": "fr",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'google' && data.engine !== 'fr'"
                         },
                         {
                             "label": "Google - Nederlands",
-                            "value": "nl"
+                            "value": "nl",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'google' && data.engine !== 'nl'"
                         },
                         {
                             "label": "Google - 简体中文",
-                            "value": "zh-CN"
+                            "value": "zh-CN",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'google' && data.engine !== 'zh-CN'"
                         },
                         {
                             "label": "FreeTTS (freetts.org)",
-                            "value": "freeTTS"
+                            "value": "freeTTS",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'freeTTS' && data.engine !== 'freeTTS'"
                         },
                         {
                             "label": "Yandex - Русский",
-                            "value": "ru_YA"
+                            "value": "ru_YA",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'yandex' && data.engine !== 'ru_YA'"
                         },
                         {
                             "label": "Yandex Cloud - Русский",
-                            "value": "ru_YA_CLOUD"
+                            "value": "ru_YA_CLOUD",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'yandex' && data.engine !== 'ru_YA_CLOUD'"
                         },
                         {
                             "label": "Cloud - Русский - Татьяна",
-                            "value": "ru-RU_CLOUD_Female"
+                            "value": "ru-RU_CLOUD_Female",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'cloud' && data.engine !== 'ru-RU_CLOUD_Female'"
                         },
                         {
                             "label": "Cloud - Русский - Максим",
-                            "value": "ru-RU_CLOUD_Male"
+                            "value": "ru-RU_CLOUD_Male",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'cloud' && data.engine !== 'ru-RU_CLOUD_Male'"
                         },
                         {
                             "label": "Cloud - Deutsch - Marlene",
-                            "value": "de-DE_CLOUD_Female"
+                            "value": "de-DE_CLOUD_Female",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'cloud' && data.engine !== 'de-DE_CLOUD_Female'"
                         },
                         {
                             "label": "Cloud - Deutsch - Hans",
-                            "value": "de-DE_CLOUD_Male"
+                            "value": "de-DE_CLOUD_Male",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'cloud' && data.engine !== 'de-DE_CLOUD_Male'"
                         },
                         {
                             "label": "Cloud - Deutsch - Vicki",
-                            "value": "de-DE_CLOUD_Female_Vicki"
+                            "value": "de-DE_CLOUD_Female_Vicki",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'cloud' && data.engine !== 'de-DE_CLOUD_Female_Vicki'"
                         },
                         {
                             "label": "Cloud - Deutsch - Daniel",
-                            "value": "de-DE_CLOUD_Male_Daniel"
+                            "value": "de-DE_CLOUD_Male_Daniel",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'cloud' && data.engine !== 'de-DE_CLOUD_Male_Daniel'"
                         },
                         {
                             "label": "Cloud - Österreich - Hannah",
-                            "value": "de-AT_CLOUD_Female_Hannah"
+                            "value": "de-AT_CLOUD_Female_Hannah",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'cloud' && data.engine !== 'de-AT_CLOUD_Female_Hannah'"
                         },
                         {
                             "label": "Cloud - en-US - Female - Salli",
-                            "value": "en-US_CLOUD_Female"
+                            "value": "en-US_CLOUD_Female",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'cloud' && data.engine !== 'en-US_CLOUD_Female'"
                         },
                         {
                             "label": "Cloud - en-US - Male - Joey",
-                            "value": "en-US_CLOUD_Male"
+                            "value": "en-US_CLOUD_Male",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'cloud' && data.engine !== 'en-US_CLOUD_Male'"
                         },
                         {
                             "label": "Cloud - da-DK - Female - Naja",
-                            "value": "da-DK_CLOUD_Female"
+                            "value": "da-DK_CLOUD_Female",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'cloud' && data.engine !== 'da-DK_CLOUD_Female'"
                         },
                         {
                             "label": "Cloud - da-DK - Male - Mads",
-                            "value": "da-DK_CLOUD_Male"
+                            "value": "da-DK_CLOUD_Male",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'cloud' && data.engine !== 'da-DK_CLOUD_Male'"
                         },
                         {
                             "label": "Cloud - en-AU - Female - Nicole",
-                            "value": "en-AU_CLOUD_Female"
+                            "value": "en-AU_CLOUD_Female",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'cloud' && data.engine !== 'en-AU_CLOUD_Female'"
                         },
                         {
                             "label": "Cloud - en-AU - Male - Russell",
-                            "value": "en-AU_CLOUD_Male"
+                            "value": "en-AU_CLOUD_Male",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'cloud' && data.engine !== 'en-AU_CLOUD_Male'"
                         },
                         {
                             "label": "Cloud - en-GB - Female - Amy",
-                            "value": "en-GB_CLOUD_Female_Amy"
+                            "value": "en-GB_CLOUD_Female_Amy",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'cloud' && data.engine !== 'en-GB_CLOUD_Female_Amy'"
                         },
                         {
                             "label": "Cloud - en-GB - Male - Brian",
-                            "value": "en-GB_CLOUD_Male"
+                            "value": "en-GB_CLOUD_Male",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'cloud' && data.engine !== 'en-GB_CLOUD_Male'"
                         },
                         {
                             "label": "Cloud - en-GB - Female - Emma",
-                            "value": "en-GB_CLOUD_Female_Emma"
+                            "value": "en-GB_CLOUD_Female_Emma",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'cloud' && data.engine !== 'en-GB_CLOUD_Female_Emma'"
                         },
                         {
                             "label": "Cloud - en-GB - Male - Arthur",
-                            "value": "en-GB_CLOUD_Male_Arthur"
+                            "value": "en-GB_CLOUD_Male_Arthur",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'cloud' && data.engine !== 'en-GB_CLOUD_Male_Arthur'"
                         },
                         {
                             "label": "Cloud - en-GB-WLS - Female - Gwyneth",
-                            "value": "en-GB-WLS_CLOUD_Female"
+                            "value": "en-GB-WLS_CLOUD_Female",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'cloud' && data.engine !== 'en-GB-WLS_CLOUD_Female'"
                         },
                         {
                             "label": "Cloud - en-GB-WLS - Male - Geraint",
-                            "value": "en-GB-WLS_CLOUD_Male"
+                            "value": "en-GB-WLS_CLOUD_Male",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'cloud' && data.engine !== 'en-GB-WLS_CLOUD_Male'"
                         },
                         {
                             "label": "Cloud - cy-GB - Female - Gwyneth",
-                            "value": "cy-GB_CLOUD_Female"
+                            "value": "cy-GB_CLOUD_Female",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'cloud' && data.engine !== 'cy-GB_CLOUD_Female'"
                         },
                         {
                             "label": "Cloud - cy-GB - Male - Geraint",
-                            "value": "cy-GB_CLOUD_Male"
+                            "value": "cy-GB_CLOUD_Male",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'cloud' && data.engine !== 'cy-GB_CLOUD_Male'"
                         },
                         {
                             "label": "Cloud - en-IN - Female - Raveena",
-                            "value": "en-IN_CLOUD_Female"
+                            "value": "en-IN_CLOUD_Female",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'cloud' && data.engine !== 'en-IN_CLOUD_Female'"
                         },
                         {
                             "label": "Cloud - en-US - Female - Ivy",
-                            "value": "en-US_CLOUD_Female_Ivy"
+                            "value": "en-US_CLOUD_Female_Ivy",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'cloud' && data.engine !== 'en-US_CLOUD_Female_Ivy'"
                         },
                         {
                             "label": "Cloud - en-US - Male - Justin",
-                            "value": "en-US_CLOUD_Male_Justin"
+                            "value": "en-US_CLOUD_Male_Justin",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'cloud' && data.engine !== 'en-US_CLOUD_Male_Justin'"
                         },
                         {
                             "label": "Cloud - en-US - Female - Kendra",
-                            "value": "en-US_CLOUD_Female_Kendra"
+                            "value": "en-US_CLOUD_Female_Kendra",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'cloud' && data.engine !== 'en-US_CLOUD_Female_Kendra'"
                         },
                         {
                             "label": "Cloud - en-US - Female - Kimberly",
-                            "value": "en-US_CLOUD_Female_Kimberly"
+                            "value": "en-US_CLOUD_Female_Kimberly",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'cloud' && data.engine !== 'en-US_CLOUD_Female_Kimberly'"
                         },
                         {
                             "label": "Cloud - es-ES - Female - Conchita",
-                            "value": "es-ES_CLOUD_Female"
+                            "value": "es-ES_CLOUD_Female",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'cloud' && data.engine !== 'es-ES_CLOUD_Female'"
                         },
                         {
                             "label": "Cloud - es-ES - Male - Enrique",
-                            "value": "es-ES_CLOUD_Male"
+                            "value": "es-ES_CLOUD_Male",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'cloud' && data.engine !== 'es-ES_CLOUD_Male'"
                         },
                         {
                             "label": "Cloud - es-US - Female - Penelope",
-                            "value": "es-US_CLOUD_Female"
+                            "value": "es-US_CLOUD_Female",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'cloud' && data.engine !== 'es-US_CLOUD_Female'"
                         },
                         {
                             "label": "Cloud - es-US - Male - Miguel",
-                            "value": "es-US_CLOUD_Male"
+                            "value": "es-US_CLOUD_Male",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'cloud' && data.engine !== 'es-US_CLOUD_Male'"
                         },
                         {
                             "label": "Cloud - fr-CA - Female - Chantal",
-                            "value": "fr-CA_CLOUD_Female"
+                            "value": "fr-CA_CLOUD_Female",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'cloud' && data.engine !== 'fr-CA_CLOUD_Female'"
                         },
                         {
                             "label": "Cloud - fr-FR - Female - Celine",
-                            "value": "fr-FR_CLOUD_Female"
+                            "value": "fr-FR_CLOUD_Female",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'cloud' && data.engine !== 'fr-FR_CLOUD_Female'"
                         },
                         {
                             "label": "Cloud - fr-FR - Male - Mathieu",
-                            "value": "fr-FR_CLOUD_Male"
+                            "value": "fr-FR_CLOUD_Male",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'cloud' && data.engine !== 'fr-FR_CLOUD_Male'"
                         },
                         {
                             "label": "Cloud - is-IS - Female - Dora",
-                            "value": "is-IS_CLOUD_Female"
+                            "value": "is-IS_CLOUD_Female",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'cloud' && data.engine !== 'is-IS_CLOUD_Female'"
                         },
                         {
                             "label": "Cloud - is-IS - Male - Karl",
-                            "value": "is-IS_CLOUD_Male"
+                            "value": "is-IS_CLOUD_Male",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'cloud' && data.engine !== 'is-IS_CLOUD_Male'"
                         },
                         {
                             "label": "Cloud - it-IT - Female - Carla",
-                            "value": "it-IT_CLOUD_Female"
+                            "value": "it-IT_CLOUD_Female",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'cloud' && data.engine !== 'it-IT_CLOUD_Female'"
                         },
                         {
                             "label": "Cloud - it-IT - Male - Giorgio",
-                            "value": "it-IT_CLOUD_Male"
+                            "value": "it-IT_CLOUD_Male",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'cloud' && data.engine !== 'it-IT_CLOUD_Male'"
                         },
                         {
                             "label": "Cloud - nb-NO - Female - Liv",
-                            "value": "no-NO_CLOUD_Female"
+                            "value": "no-NO_CLOUD_Female",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'cloud' && data.engine !== 'no-NO_CLOUD_Female'"
                         },
                         {
                             "label": "Cloud - no-NO - Female - Ida",
-                            "value": "no-NO_CLOUD_Female_Ida"
+                            "value": "no-NO_CLOUD_Female_Ida",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'cloud' && data.engine !== 'no-NO_CLOUD_Female_Ida'"
                         },
                         {
                             "label": "Cloud - nl-NL - Female - Lotte",
-                            "value": "nl-NL_CLOUD_Female"
+                            "value": "nl-NL_CLOUD_Female",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'cloud' && data.engine !== 'nl-NL_CLOUD_Female'"
                         },
                         {
                             "label": "Cloud - nl-NL - Male - Ruben",
-                            "value": "nl-NL_CLOUD_Male"
+                            "value": "nl-NL_CLOUD_Male",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'cloud' && data.engine !== 'nl-NL_CLOUD_Male'"
                         },
                         {
                             "label": "Cloud - pl-PL - Male - Jacek",
-                            "value": "pl-PL_CLOUD_Male_Jacek"
+                            "value": "pl-PL_CLOUD_Male_Jacek",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'cloud' && data.engine !== 'pl-PL_CLOUD_Male_Jacek'"
                         },
                         {
                             "label": "Cloud - pl-PL - Female - Ewa",
-                            "value": "pl-PL_CLOUD_Female_Ewa"
+                            "value": "pl-PL_CLOUD_Female_Ewa",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'cloud' && data.engine !== 'pl-PL_CLOUD_Female_Ewa'"
                         },
                         {
                             "label": "Cloud - pl-PL - Male - Jan",
-                            "value": "pl-PL_CLOUD_Male_Jan"
+                            "value": "pl-PL_CLOUD_Male_Jan",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'cloud' && data.engine !== 'pl-PL_CLOUD_Male_Jan'"
                         },
                         {
                             "label": "Cloud - pl-PL - Female - Maja",
-                            "value": "pl-PL_CLOUD_Female"
+                            "value": "pl-PL_CLOUD_Female",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'cloud' && data.engine !== 'pl-PL_CLOUD_Female'"
                         },
                         {
                             "label": "Cloud - pt-BR - Female - Vitoria",
-                            "value": "pt-BR_CLOUD_Female"
+                            "value": "pt-BR_CLOUD_Female",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'cloud' && data.engine !== 'pt-BR_CLOUD_Female'"
                         },
                         {
                             "label": "Cloud - pt-BR - Male - Ricardo",
-                            "value": "pt-BR_CLOUD_Male"
+                            "value": "pt-BR_CLOUD_Male",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'cloud' && data.engine !== 'pt-BR_CLOUD_Male'"
                         },
                         {
                             "label": "Cloud - pt-BR - Female - Camila",
-                            "value": "pt-BR_CLOUD_Female_Camila"
+                            "value": "pt-BR_CLOUD_Female_Camila",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'cloud' && data.engine !== 'pt-BR_CLOUD_Female_Camila'"
                         },
                         {
                             "label": "Cloud - pt-PT - Male - Cristiano",
-                            "value": "pt-PT_CLOUD_Male"
+                            "value": "pt-PT_CLOUD_Male",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'cloud' && data.engine !== 'pt-PT_CLOUD_Male'"
                         },
                         {
                             "label": "Cloud - pt-PT - Female - Ines",
-                            "value": "pt-PT_CLOUD_Female"
+                            "value": "pt-PT_CLOUD_Female",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'cloud' && data.engine !== 'pt-PT_CLOUD_Female'"
                         },
                         {
                             "label": "Cloud - ro-RO - Female - Carmen",
-                            "value": "ro-RO_CLOUD_Female"
+                            "value": "ro-RO_CLOUD_Female",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'cloud' && data.engine !== 'ro-RO_CLOUD_Female'"
                         },
                         {
                             "label": "Cloud - sv-SE - Female - Astrid",
-                            "value": "sv-SE_CLOUD_Female"
+                            "value": "sv-SE_CLOUD_Female",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'cloud' && data.engine !== 'sv-SE_CLOUD_Female'"
                         },
                         {
                             "label": "Cloud - tr-TR - Female - Filiz",
-                            "value": "tr-TR_CLOUD_Female"
+                            "value": "tr-TR_CLOUD_Female",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'cloud' && data.engine !== 'tr-TR_CLOUD_Female'"
                         },
                         {
                             "label": "Cloud - ko-KR - Female - Seoyeon",
-                            "value": "ko-KR_CLOUD_Female"
+                            "value": "ko-KR_CLOUD_Female",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'cloud' && data.engine !== 'ko-KR_CLOUD_Female'"
                         },
                         {
                             "label": "PicoTTS - Englisch US",
-                            "value": "en-US"
+                            "value": "en-US",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'PicoTTS' && data.engine !== 'en-US'"
                         },
                         {
                             "label": "PicoTTS - Englisch GB",
-                            "value": "en-GB"
+                            "value": "en-GB",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'PicoTTS' && data.engine !== 'en-GB'"
                         },
                         {
                             "label": "PicoTTS - Deutsch",
-                            "value": "de-DE"
+                            "value": "de-DE",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'PicoTTS' && data.engine !== 'de-DE'"
                         },
                         {
                             "label": "PicoTTS - Italiano",
-                            "value": "it-IT"
+                            "value": "it-IT",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'PicoTTS' && data.engine !== 'it-IT'"
                         },
                         {
                             "label": "PicoTTS - Espaniol",
-                            "value": "es-ES"
+                            "value": "es-ES",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'PicoTTS' && data.engine !== 'es-ES'"
                         },
                         {
                             "label": "PicoTTS - Français",
-                            "value": "fr-FR"
+                            "value": "fr-FR",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'PicoTTS' && data.engine !== 'fr-FR'"
                         },
                         {
                             "label": "CoquiTTS - English",
-                            "value": "en_CoquiTTS"
+                            "value": "en_CoquiTTS",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'CoquiTTS' && data.engine !== 'en_CoquiTTS'"
                         },
                         {
                             "label": "CoquiTTS - Espaniol",
-                            "value": "es_CoquiTTS"
+                            "value": "es_CoquiTTS",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'CoquiTTS' && data.engine !== 'es_CoquiTTS'"
                         },
                         {
                             "label": "CoquiTTS - Français",
-                            "value": "fr_CoquiTTS"
+                            "value": "fr_CoquiTTS",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'CoquiTTS' && data.engine !== 'fr_CoquiTTS'"
                         },
                         {
                             "label": "CoquiTTS - Deutsch",
-                            "value": "de_CoquiTTS"
+                            "value": "de_CoquiTTS",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'CoquiTTS' && data.engine !== 'de_CoquiTTS'"
                         },
                         {
                             "label": "CoquiTTS - Dutch",
-                            "value": "nl_CoquiTTS"
+                            "value": "nl_CoquiTTS",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'CoquiTTS' && data.engine !== 'nl_CoquiTTS'"
                         },
                         {
                             "label": "CoquiTTS - Japan",
-                            "value": "ja_CoquiTTS"
+                            "value": "ja_CoquiTTS",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'CoquiTTS' && data.engine !== 'ja_CoquiTTS'"
                         },
                         {
                             "label": "AWS Polly - Русский - Татьяна",
-                            "value": "ru-RU_AP_Female"
+                            "value": "ru-RU_AP_Female",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'ru-RU_AP_Female'"
                         },
                         {
                             "label": "AWS Polly - Русский - Максим",
-                            "value": "ru-RU_AP_Male"
+                            "value": "ru-RU_AP_Male",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'ru-RU_AP_Male'"
                         },
                         {
                             "label": "AWS Polly - Deutsch - Marlene",
-                            "value": "de-DE_AP_Female"
+                            "value": "de-DE_AP_Female",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'de-DE_AP_Female'"
                         },
                         {
                             "label": "AWS Polly - Deutsch - Vicki",
-                            "value": "de-DE_AP_Female_Vicki"
+                            "value": "de-DE_AP_Female_Vicki",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'de-DE_AP_Female_Vicki'"
                         },
                         {
                             "label": "AWS Polly - Deutsch - Hans",
-                            "value": "de-DE_AP_Male"
+                            "value": "de-DE_AP_Male",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'de-DE_AP_Male'"
                         },
                         {
                             "label": "AWS Polly - Deutsch - Daniel",
-                            "value": "de-DE_AP_Male_Daniel"
+                            "value": "de-DE_AP_Male_Daniel",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'de-DE_AP_Male_Daniel'"
                         },
                         {
                             "label": "AWS Polly - Österreich - Hannah",
-                            "value": "de-AT_AP_Female_Hannah"
+                            "value": "de-AT_AP_Female_Hannah",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'de-AT_AP_Female_Hannah'"
                         },
                         {
                             "label": "AWS Polly - en-US - Female - Salli",
-                            "value": "en-US_AP_Female"
+                            "value": "en-US_AP_Female",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'en-US_AP_Female'"
                         },
                         {
                             "label": "AWS Polly - en-US - Male - Joey",
-                            "value": "en-US_AP_Male"
+                            "value": "en-US_AP_Male",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'en-US_AP_Male'"
                         },
                         {
                             "label": "AWS Polly - da-DK - Female - Naja",
-                            "value": "da-DK_AP_Female"
+                            "value": "da-DK_AP_Female",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'da-DK_AP_Female'"
                         },
                         {
                             "label": "AWS Polly - da-DK - Male - Mads",
-                            "value": "da-DK_AP_Male"
+                            "value": "da-DK_AP_Male",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'da-DK_AP_Male'"
                         },
                         {
                             "label": "AWS Polly - en-AU - Female - Nicole",
-                            "value": "en-AU_AP_Female"
+                            "value": "en-AU_AP_Female",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'en-AU_AP_Female'"
                         },
                         {
                             "label": "AWS Polly - en-AU - Male - Russell",
-                            "value": "en-AU_AP_Male"
+                            "value": "en-AU_AP_Male",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'en-AU_AP_Male'"
                         },
                         {
                             "label": "AWS Polly - en-GB - Female - Amy",
-                            "value": "en-GB_AP_Female_Amy"
+                            "value": "en-GB_AP_Female_Amy",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'en-GB_AP_Female_Amy'"
                         },
                         {
                             "label": "AWS Polly - en-GB - Male - Brian",
-                            "value": "en-GB_AP_Male"
+                            "value": "en-GB_AP_Male",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'en-GB_AP_Male'"
                         },
                         {
                             "label": "AWS Polly - en-GB - Female - Emma",
-                            "value": "en-GB_AP_Female_Emma"
+                            "value": "en-GB_AP_Female_Emma",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'en-GB_AP_Female_Emma'"
                         },
                         {
                             "label": "AWS Polly - en-GB - Male - Arthur",
-                            "value": "en-GB_AP_Male_Arthur"
+                            "value": "en-GB_AP_Male_Arthur",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'en-GB_AP_Male_Arthur'"
                         },
                         {
                             "label": "AWS Polly - en-GB-WLS - Female - Gwyneth",
-                            "value": "en-GB-WLS_AP_Female"
+                            "value": "en-GB-WLS_AP_Female",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'en-GB-WLS_AP_Female'"
                         },
                         {
                             "label": "AWS Polly - en-GB-WLS - Male - Geraint",
-                            "value": "en-GB-WLS_AP_Male"
+                            "value": "en-GB-WLS_AP_Male",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'en-GB-WLS_AP_Male'"
                         },
                         {
                             "label": "AWS Polly - cy-GB - Female - Gwyneth",
-                            "value": "cy-GB_AP_Female"
+                            "value": "cy-GB_AP_Female",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'cy-GB_AP_Female'"
                         },
                         {
                             "label": "AWS Polly - cy-GB - Male - Geraint",
-                            "value": "cy-GB_AP_Male"
+                            "value": "cy-GB_AP_Male",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'cy-GB_AP_Male'"
                         },
                         {
                             "label": "AWS Polly - en-IN - Female - Raveena",
-                            "value": "en-IN_AP_Female"
+                            "value": "en-IN_AP_Female",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'en-IN_AP_Female'"
                         },
                         {
                             "label": "AWS Polly - en-US - Female - Ivy",
-                            "value": "en-US_AP_Female_Ivy"
+                            "value": "en-US_AP_Female_Ivy",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'en-US_AP_Female_Ivy'"
                         },
                         {
                             "label": "AWS Polly - en-US - Male - Justin",
-                            "value": "en-US_AP_Male_Justin"
+                            "value": "en-US_AP_Male_Justin",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'en-US_AP_Male_Justin'"
                         },
                         {
                             "label": "AWS Polly - en-US - Female - Kendra",
-                            "value": "en-US_AP_Female_Kendra"
+                            "value": "en-US_AP_Female_Kendra",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'en-US_AP_Female_Kendra'"
                         },
                         {
                             "label": "AWS Polly - en-US - Female - Kimberly",
-                            "value": "en-US_AP_Female_Kimberly"
+                            "value": "en-US_AP_Female_Kimberly",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'en-US_AP_Female_Kimberly'"
                         },
                         {
                             "label": "AWS Polly - es-ES - Female - Conchita",
-                            "value": "es-ES_AP_Female"
+                            "value": "es-ES_AP_Female",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'es-ES_AP_Female'"
                         },
                         {
                             "label": "AWS Polly - es-ES - Male - Enrique",
-                            "value": "es-ES_AP_Male"
+                            "value": "es-ES_AP_Male",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'es-ES_AP_Male'"
                         },
                         {
                             "label": "AWS Polly - es-US - Female - Penelope",
-                            "value": "es-US_AP_Female"
+                            "value": "es-US_AP_Female",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'es-US_AP_Female'"
                         },
                         {
                             "label": "AWS Polly - es-US - Male - Miguel",
-                            "value": "es-US_AP_Male"
+                            "value": "es-US_AP_Male",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'es-US_AP_Male'"
                         },
                         {
                             "label": "AWS Polly - fr-CA - Female - Chantal",
-                            "value": "fr-CA_AP_Female"
+                            "value": "fr-CA_AP_Female",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'fr-CA_AP_Female'"
                         },
                         {
                             "label": "AWS Polly - fr-FR - Female - Celine",
-                            "value": "fr-FR_AP_Female"
+                            "value": "fr-FR_AP_Female",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'fr-FR_AP_Female'"
                         },
                         {
                             "label": "AWS Polly - fr-FR - Male - Mathieu",
-                            "value": "fr-FR_AP_Male"
+                            "value": "fr-FR_AP_Male",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'fr-FR_AP_Male'"
                         },
                         {
                             "label": "AWS Polly - is-IS - Female - Dora",
-                            "value": "is-IS_AP_Female"
+                            "value": "is-IS_AP_Female",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'is-IS_AP_Female'"
                         },
                         {
                             "label": "AWS Polly - is-IS - Male - Karl",
-                            "value": "is-IS_AP_Male"
+                            "value": "is-IS_AP_Male",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'is-IS_AP_Male'"
                         },
                         {
                             "label": "AWS Polly - it-IT - Female - Carla",
-                            "value": "it-IT_AP_Female"
+                            "value": "it-IT_AP_Female",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'it-IT_AP_Female'"
                         },
                         {
                             "label": "AWS Polly - it-IT - Male - Giorgio",
-                            "value": "it-IT_AP_Male"
+                            "value": "it-IT_AP_Male",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'it-IT_AP_Male'"
                         },
                         {
                             "label": "AWS Polly - no-NO - Female - Liv",
-                            "value": "no-NO_AP_Female"
+                            "value": "no-NO_AP_Female",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'no-NO_AP_Female'"
                         },
                         {
                             "label": "AWS Polly - no-NO - Female - Ida",
-                            "value": "no-NO_AP_Female_Ida"
+                            "value": "no-NO_AP_Female_Ida",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'no-NO_AP_Female_Ida'"
                         },
                         {
                             "label": "AWS Polly - nl-NL - Female - Lotte",
-                            "value": "nl-NL_AP_Female"
+                            "value": "nl-NL_AP_Female",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'nl-NL_AP_Female'"
                         },
                         {
                             "label": "AWS Polly - nl-NL - Male - Ruben",
-                            "value": "nl-NL_AP_Male"
+                            "value": "nl-NL_AP_Male",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'nl-NL_AP_Male'"
                         },
                         {
                             "label": "AWS Polly - pl-PL - Male - Jacek",
-                            "value": "pl-PL_AP_Male_Jacek"
+                            "value": "pl-PL_AP_Male_Jacek",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'pl-PL_AP_Male_Jacek'"
                         },
                         {
                             "label": "AWS Polly - pl-PL - Female - Ewa",
-                            "value": "pl-PL_AP_Female_Ewa"
+                            "value": "pl-PL_AP_Female_Ewa",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'pl-PL_AP_Female_Ewa'"
                         },
                         {
                             "label": "AWS Polly - pl-PL - Male - Jan",
-                            "value": "pl-PL_AP_Male_Jan"
+                            "value": "pl-PL_AP_Male_Jan",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'pl-PL_AP_Male_Jan'"
                         },
                         {
                             "label": "AWS Polly - pl-PL - Female - Maja",
-                            "value": "pl-PL_AP_Female"
+                            "value": "pl-PL_AP_Female",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'pl-PL_AP_Female'"
                         },
                         {
                             "label": "AWS Polly - pt-BR - Female - Vitoria",
-                            "value": "pt-BR_AP_Female"
+                            "value": "pt-BR_AP_Female",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'pt-BR_AP_Female'"
                         },
                         {
                             "label": "AWS Polly - pt-BR - Male - Ricardo",
-                            "value": "pt-BR_AP_Male"
+                            "value": "pt-BR_AP_Male",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'pt-BR_AP_Male'"
                         },
                         {
                             "label": "AWS Polly - pt-PT - Male - Cristiano",
-                            "value": "pt-PT_AP_Male"
+                            "value": "pt-PT_AP_Male",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'pt-PT_AP_Male'"
                         },
                         {
                             "label": "AWS Polly - pt-PT - Female - Ines",
-                            "value": "pt-PT_AP_Female"
+                            "value": "pt-PT_AP_Female",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'pt-PT_AP_Female'"
                         },
                         {
                             "label": "AWS Polly - ro-RO - Female - Carmen",
-                            "value": "ro-RO_AP_Female"
+                            "value": "ro-RO_AP_Female",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'ro-RO_AP_Female'"
                         },
                         {
                             "label": "AWS Polly - sv-SE - Female - Astrid",
-                            "value": "sv-SE_AP_Female"
+                            "value": "sv-SE_AP_Female",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'sv-SE_AP_Female'"
                         },
                         {
                             "label": "AWS Polly - tr-TR - Female - Filiz",
-                            "value": "tr-TR_AP_Female"
+                            "value": "tr-TR_AP_Female",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'tr-TR_AP_Female'"
                         },
                         {
                             "label": "AWS Polly - ko-KR - Female - Seoyeon",
-                            "value": "ko-KR_AP_Female"
+                            "value": "ko-KR_AP_Female",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'ko-KR_AP_Female'"
                         },
                         {
                             "label": "AWS Polly - en-US - Female - Joanna",
-                            "value": "en-US_AP_Female_Joanna"
+                            "value": "en-US_AP_Female_Joanna",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'en-US_AP_Female_Joanna'"
                         },
                         {
                             "label": "AWS Polly - en-US - Male - Kevin",
-                            "value": "en-US_AP_Male_Kevin"
+                            "value": "en-US_AP_Male_Kevin",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'en-US_AP_Male_Kevin'"
                         },
                         {
                             "label": "AWS Polly - en-US - Male - Matthew",
-                            "value": "en-US_AP_Male_Matthew"
+                            "value": "en-US_AP_Male_Matthew",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'en-US_AP_Male_Matthew'"
                         },
                         {
                             "label": "AWS Polly - en-US - Female - Ruth",
-                            "value": "en-US_AP_Female_Ruth"
+                            "value": "en-US_AP_Female_Ruth",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'en-US_AP_Female_Ruth'"
                         },
                         {
                             "label": "AWS Polly - en-US - Male - Stephen",
-                            "value": "en-US_AP_Male_Stephen"
+                            "value": "en-US_AP_Male_Stephen",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'en-US_AP_Male_Stephen'"
                         },
                         {
                             "label": "AWS Polly - en-AU - Female - Olivia",
-                            "value": "en-AU_AP_Female_Olivia"
+                            "value": "en-AU_AP_Female_Olivia",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'en-AU_AP_Female_Olivia'"
                         },
                         {
                             "label": "AWS Polly - en-IE - Female - Niamh",
-                            "value": "en-IE_AP_Female_Niamh"
+                            "value": "en-IE_AP_Female_Niamh",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'en-IE_AP_Female_Niamh'"
                         },
                         {
                             "label": "AWS Polly - en-NZ - Female - Aria",
-                            "value": "en-NZ_AP_Female_Aria"
+                            "value": "en-NZ_AP_Female_Aria",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'en-NZ_AP_Female_Aria'"
                         },
                         {
                             "label": "AWS Polly - en-ZA - Female - Ayanda",
-                            "value": "en-ZA_AP_Female_Ayanda"
+                            "value": "en-ZA_AP_Female_Ayanda",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'en-ZA_AP_Female_Ayanda'"
                         },
                         {
                             "label": "AWS Polly - fr-FR - Female - Lea",
-                            "value": "fr-FR_AP_Female_Lea"
+                            "value": "fr-FR_AP_Female_Lea",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'fr-FR_AP_Female_Lea'"
                         },
                         {
                             "label": "AWS Polly - fr-FR - Male - Remi",
-                            "value": "fr-FR_AP_Male_Remi"
+                            "value": "fr-FR_AP_Male_Remi",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'fr-FR_AP_Male_Remi'"
                         },
                         {
                             "label": "AWS Polly - fr-CA - Female - Gabrielle",
-                            "value": "fr-CA_AP_Female_Gabrielle"
+                            "value": "fr-CA_AP_Female_Gabrielle",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'fr-CA_AP_Female_Gabrielle'"
                         },
                         {
                             "label": "AWS Polly - fr-CA - Male - Liam",
-                            "value": "fr-CA_AP_Male_Liam"
+                            "value": "fr-CA_AP_Male_Liam",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'fr-CA_AP_Male_Liam'"
                         },
                         {
                             "label": "AWS Polly - fr-BE - Female - Isabelle",
-                            "value": "fr-BE_AP_Female_Isabelle"
+                            "value": "fr-BE_AP_Female_Isabelle",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'fr-BE_AP_Female_Isabelle'"
                         },
                         {
                             "label": "AWS Polly - es-ES - Female - Lucia",
-                            "value": "es-ES_AP_Female_Lucia"
+                            "value": "es-ES_AP_Female_Lucia",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'es-ES_AP_Female_Lucia'"
                         },
                         {
                             "label": "AWS Polly - es-ES - Male - Sergio",
-                            "value": "es-ES_AP_Male_Sergio"
+                            "value": "es-ES_AP_Male_Sergio",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'es-ES_AP_Male_Sergio'"
                         },
                         {
                             "label": "AWS Polly - es-US - Female - Lupe",
-                            "value": "es-US_AP_Female_Lupe"
+                            "value": "es-US_AP_Female_Lupe",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'es-US_AP_Female_Lupe'"
                         },
                         {
                             "label": "AWS Polly - es-MX - Male - Andres",
-                            "value": "es-MX_AP_Male_Andres"
+                            "value": "es-MX_AP_Male_Andres",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'es-MX_AP_Male_Andres'"
                         },
                         {
                             "label": "AWS Polly - es-MX - Female - Mia",
-                            "value": "es-MX_AP_Female_Mia"
+                            "value": "es-MX_AP_Female_Mia",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'es-MX_AP_Female_Mia'"
                         },
                         {
                             "label": "AWS Polly - it-IT - Female - Bianca",
-                            "value": "it-IT_AP_Female_Bianca"
+                            "value": "it-IT_AP_Female_Bianca",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'it-IT_AP_Female_Bianca'"
                         },
                         {
                             "label": "AWS Polly - it-IT - Male - Adriano",
-                            "value": "it-IT_AP_Male_Adriano"
+                            "value": "it-IT_AP_Male_Adriano",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'it-IT_AP_Male_Adriano'"
                         },
                         {
                             "label": "AWS Polly - pt-BR - Female - Camila",
-                            "value": "pt-BR_AP_Female_Camila"
+                            "value": "pt-BR_AP_Female_Camila",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'pt-BR_AP_Female_Camila'"
                         },
                         {
                             "label": "AWS Polly - pt-BR - Male - Thiago",
-                            "value": "pt-BR_AP_Male_Thiago"
+                            "value": "pt-BR_AP_Male_Thiago",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'pt-BR_AP_Male_Thiago'"
                         },
                         {
                             "label": "AWS Polly - nl-BE - Female - Lisa",
-                            "value": "nl-BE_AP_Female_Lisa"
+                            "value": "nl-BE_AP_Female_Lisa",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'nl-BE_AP_Female_Lisa'"
                         },
                         {
                             "label": "AWS Polly - pl-PL - Female - Ola",
-                            "value": "pl-PL_AP_Female_Ola"
+                            "value": "pl-PL_AP_Female_Ola",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'pl-PL_AP_Female_Ola'"
                         },
                         {
                             "label": "AWS Polly - da-DK - Female - Sofie",
-                            "value": "da-DK_AP_Female_Sofie"
+                            "value": "da-DK_AP_Female_Sofie",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'da-DK_AP_Female_Sofie'"
                         },
                         {
                             "label": "AWS Polly - sv-SE - Female - Elin",
-                            "value": "sv-SE_AP_Female_Elin"
+                            "value": "sv-SE_AP_Female_Elin",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'sv-SE_AP_Female_Elin'"
                         },
                         {
                             "label": "AWS Polly - ja-JP - Female - Mizuki",
-                            "value": "ja-JP_AP_Female_Mizuki"
+                            "value": "ja-JP_AP_Female_Mizuki",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'ja-JP_AP_Female_Mizuki'"
                         },
                         {
                             "label": "AWS Polly - ja-JP - Male - Takumi",
-                            "value": "ja-JP_AP_Male_Takumi"
+                            "value": "ja-JP_AP_Male_Takumi",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'ja-JP_AP_Male_Takumi'"
                         },
                         {
                             "label": "AWS Polly - ja-JP - Female - Tomoko",
-                            "value": "ja-JP_AP_Female_Tomoko"
+                            "value": "ja-JP_AP_Female_Tomoko",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'ja-JP_AP_Female_Tomoko'"
                         },
                         {
                             "label": "AWS Polly - ja-JP - Female - Kazuha",
-                            "value": "ja-JP_AP_Female_Kazuha"
+                            "value": "ja-JP_AP_Female_Kazuha",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'ja-JP_AP_Female_Kazuha'"
                         },
                         {
                             "label": "AWS Polly - zh-CN - Female - Zhiyu",
-                            "value": "zh-CN_AP_Female_Zhiyu"
+                            "value": "zh-CN_AP_Female_Zhiyu",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'zh-CN_AP_Female_Zhiyu'"
                         },
                         {
                             "label": "AWS Polly - hi-IN - Female - Aditi",
-                            "value": "hi-IN_AP_Female_Aditi"
+                            "value": "hi-IN_AP_Female_Aditi",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'hi-IN_AP_Female_Aditi'"
                         },
                         {
                             "label": "AWS Polly - hi-IN - Female - Kajal",
-                            "value": "hi-IN_AP_Female_Kajal"
+                            "value": "hi-IN_AP_Female_Kajal",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'hi-IN_AP_Female_Kajal'"
                         },
                         {
                             "label": "AWS Polly - ar-XL - Male - Zayd",
-                            "value": "ar-XL_AP_Male_Zayd"
+                            "value": "ar-XL_AP_Male_Zayd",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'ar-XL_AP_Male_Zayd'"
                         },
                         {
                             "label": "AWS Polly - ar-XL - Female - Hala",
-                            "value": "ar-XL_AP_Female_Hala"
+                            "value": "ar-XL_AP_Female_Hala",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'ar-XL_AP_Female_Hala'"
                         },
                         {
                             "label": "AWS Polly - ca-ES - Female - Arlet",
-                            "value": "ca-ES_AP_Female_Arlet"
+                            "value": "ca-ES_AP_Female_Arlet",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'ca-ES_AP_Female_Arlet'"
                         },
                         {
                             "label": "AWS Polly - sk-SK - Female - Laura",
-                            "value": "sk-SK_AP_Female_Laura"
+                            "value": "sk-SK_AP_Female_Laura",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'sk-SK_AP_Female_Laura'"
                         },
                         {
                             "label": "AWS Polly - fi-FI - Female - Suvi",
-                            "value": "fi-FI_AP_Female_Suvi"
+                            "value": "fi-FI_AP_Female_Suvi",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'fi-FI_AP_Female_Suvi'"
                         }
                     ],
                     "sm": 12,
@@ -1007,6 +1199,7 @@
                     "type": "password",
                     "label": "API Key",
                     "help": "freetts_key_help",
+                    "helpLink": "https://freetts.org/pricing",
                     "hidden": "data.engine != 'freeTTS'",
                     "sm": 12,
                     "md": 6,
@@ -1016,6 +1209,8 @@
                     "newLine": true,
                     "type": "selectSendTo",
                     "command": "getFreeTtsVoices",
+                    "jsonData": "{\"hasApiKey\": ${!!data.freettsApiKey}}",
+                    "alsoDependsOn": ["freettsApiKey"],
                     "label": "Voice",
                     "noTranslation": true,
                     "manual": true,
