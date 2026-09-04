@@ -56,7 +56,7 @@
     "@types/jsftp": "^2.1.5",
     "@types/mdns": "^0.0.38",
     "blockly": "^13.2.1",
-    "esbuild": "^0.28.1",
+    "esbuild": "^0.28.2",
     "typescript": "~6.0.3"
   },
   "bugs": {
