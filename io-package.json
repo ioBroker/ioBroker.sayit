@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "sayit",
-    "version": "5.3.1",
+    "version": "5.3.2",
     "news": {
+      "5.3.2": {
+        "en": "Removed the \"install\" script and `process.exit()` for compact mode\nPasswords and API keys are now protected from reading by non-admin users",
+        "de": "Install-Skript und process.exit () für Kompaktmodus entfernt\nPasswörter und API-Keys sind jetzt für Nicht-Admins lesbar",
+        "ru": "Удалены скрипт «install» и `process.exit () `для компактного режима\nПароли и ключи API теперь защищены от чтения пользователями, не являющимися администраторами",
+        "pt": "Removido o script “install” e o `process.exit () `no modo compacto\nSenhas e chaves de API agora não podem ser lidas por administradores",
+        "nl": "Het „install” -script en `process.exit () `voor de compacte modus verwijderd\nWachtwoorden en API-sleutels zijn nu beschermd tegen lezen door gebruikers die geen beheerder zijn",
+        "fr": "Le script « install » et « process.exit () » ont été supprimés en mode compact\nLes mots de passe et les clés API ne peuvent plus être lus par des non-administrateurs",
+        "it": "Rimossi lo script «install» e `process.exit () `in modalità compatta\nLe password e le chiavi API sono ora protette da utenti non admin",
+        "es": "Se quitaron el guion «install» y `process.exit () `para el modo compacto\nLos usuarios que no son administradores ahora pueden leer contraseñas y claves de API",
+        "pl": "Usunięto skrypt „install” i `process.exit () `dla trybu kompaktowego\nHasła i klucze API są teraz chronione przed odczytem przez użytkowników niebędących administratorem",
+        "uk": "Вилучено скрипт «install» і `process.exit () `для компактного режиму\nПаролі та ключі API тепер захищені від читання користувачами, які не є адміністраторами",
+        "zh-cn": "移除了紧凑模式下的 “安装” 脚本和 “process.exit ()”\n密码和 API 密钥现在受到保护，不被非管理员用户读取"
+      },
       "5.3.1": {
         "en": "Added the button \"Test text generation\" to the \"Engine\" tab, so the selected engine can be tested with an own text\nTest generations do not overwrite the cached files anymore\nAdapter requires node.js >= 22 and js-controller >= 6.0.11 now\nOlder changelog entries were moved to CHANGELOG_OLD.md\nUpdated the dependabot and auto-merge configuration",
         "de": "Dem Tab „Engine“ wurde die Schaltfläche „Testtextgenerierung“ hinzugefügt, sodass die ausgewählte Engine mit einem eigenen Text getestet werden kann.\nTestgenerationen überschreiben die zwischengespeicherten Dateien nicht mehr.\nDer Adapter benötigt jetzt Node.js >= 22 und js-controller >= 6.0.11.\nÄltere Changelog-Einträge wurden nach CHANGELOG_OLD.md verschoben.\nDie Dependabot- und Auto-Merge-Konfiguration wurde aktualisiert.",
@@ -80,19 +93,6 @@
         "pl": "Aktualizacja pakietów\nPoprawione gry w vis\nPoprawione blokowane\nPoprawione przesyłanie plików",
         "uk": "Пакети оновлені\nПравильна гра в віках\nВиправлено блоклі\nВиправлено завантаження файлів",
         "zh-cn": "更新软件包\n已校正播放相对\n块状修正\n更正了文件的上传"
-      },
-      "4.0.1": {
-        "en": "Packages updated\nUsing the pre-calculated duration of the mp3 to wait long enough even for longer announcements",
-        "de": "Pakete aktualisiert\nMit der vorkalkulierten Dauer des mp3 lange genug warten, auch für längere Ankündigungen",
-        "ru": "Обновленные пакеты\nИспользование предварительно исчисленной продолжительности mp3, чтобы ждать достаточно долго даже для более длинных объявлений",
-        "pt": "Pacotes atualizados\nUsando a duração pré-calculada do mp3 para esperar o tempo suficiente mesmo para anúncios mais longos",
-        "nl": "Pakketten bijgewerkt\nMet behulp van de vooraf berekende duur van de mp3 te wachten lang genoeg zelfs voor langere aankondigingen",
-        "fr": "Mise à jour des paquets\nUtiliser la durée précalculée du mp3 pour attendre assez longtemps, même pour les annonces plus longues",
-        "it": "Pacchetti aggiornati\nUtilizzando la durata pre-calcolata del mp3 per aspettare abbastanza a lungo anche per annunci più lunghi",
-        "es": "Paquetes actualizados\nUsando la duración precalculada del mp3 para esperar lo suficiente incluso para anuncios más largos",
-        "pl": "Aktualizacja pakietów\nKorzystanie z wcześniej obliczonego czasu mp3 czekać wystarczająco długo nawet na dłuższe ogłoszenia",
-        "uk": "Пакети оновлені\nВикористання попередньо встановленої тривалості mp3, щоб довго чекати навіть для більш тривалого оголошення",
-        "zh-cn": "更新软件包\n使用 mp3 的预计算持续时间来等待足够长的时间, 甚至可以等待更长的通知"
       }
     },
     "titleLang": {
@@ -169,7 +169,11 @@
       }
     ]
   },
-  "protectedNative": ["ftpPassword", "freettsApiKey", "awsSecretKey"],
+  "protectedNative": [
+    "ftpPassword",
+    "freettsApiKey",
+    "awsSecretKey"
+  ],
   "native": {
     "type": "system",
     "systemCommand": "",

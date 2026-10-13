@@ -249,6 +249,11 @@ Changed type of top-level object to "meta" in order to comply with js-controller
 
 ### 0.0.1 (2015-02-06)
 * (bluefox) initial commit
+## 5.0.0 (2024-07-16)
+* (mcm1957) Adapter requires admin v7 or newer now
+* (mcm1957) Adapter requires jas-controller 5 or newer now
+* (bluefox) Added possibility to play directly from states: `sayit.0/tts.userfiles/gong.mp3`
+
 ## 4.0.5 (2024-07-12)
 * (bluefox) Packages updated
 * (bluefox) Corrected playing in vis

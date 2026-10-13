@@ -302,7 +302,7 @@ A request is limited to 10000 characters, so longer texts are split and said one
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### **WORK IN PROGRESS**
+### 5.3.2 (2026-10-13)
 * (@GermanBluefox) Removed the "install" script and `process.exit()` for compact mode
 * (@GermanBluefox) Passwords and API keys are now protected from reading by non-admin users
 
@@ -333,11 +333,6 @@ A request is limited to 10000 characters, so longer texts are split and said one
 * (bluefox) Adapter was rewritten with TypeScript
 * (bluefox) Updated Polly voices list
 * (bluefox) Added an option to send sonos device as a parameter in sendTo command
-
-### 5.0.0 (2024-07-16)
-* (mcm1957) Adapter requires admin v7 or newer now
-* (mcm1957) Adapter requires jas-controller 5 or newer now
-* (bluefox) Added possibility to play directly from states: `sayit.0/tts.userfiles/gong.mp3`
 
 [Older changelogs can be found there](CHANGELOG_OLD.md)
 
