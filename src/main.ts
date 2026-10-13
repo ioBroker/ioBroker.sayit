@@ -590,7 +590,7 @@ export class SayItAdapter extends Adapter {
         }
 
         if (!unload) {
-            setTimeout(() => (this.terminate ? this.terminate() : process.exit()), 500);
+            setTimeout(() => this.terminate(), 500);
         }
     };
 

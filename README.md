@@ -302,6 +302,10 @@ A request is limited to 10000 characters, so longer texts are split and said one
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### **WORK IN PROGRESS**
+* (@GermanBluefox) Removed the "install" script and `process.exit()` for compact mode
+* (@GermanBluefox) Passwords and API keys are now protected from reading by non-admin users
+
 ### 5.3.1 (2026-08-13)
 * (@GermanBluefox) Added the button "Test text generation" to the "Engine" tab, so the selected engine can be tested with an own text
 * (@GermanBluefox) Test generations do not overwrite the cached files anymore

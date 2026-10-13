@@ -100,5 +100,8 @@
     "tree": "arbre",
     "vis-2.0 (New)": "vis-2.0 (nouveau)",
     "vis.0 (deprecated)": "vis.0 (obsolète)",
-    "vis.0 and vis-2.0": "vis.0 et vis-2.0"
+    "vis.0 and vis-2.0": "vis.0 et vis-2.0",
+    "Folder ID": "ID du dossier",
+    "Test": "Test",
+    "Announce duration": "Durée de l'annonce"
 }

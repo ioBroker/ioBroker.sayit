@@ -165,10 +165,11 @@
     ],
     "globalDependencies": [
       {
-        "admin": ">=7.0.13"
+        "admin": ">=7.6.20"
       }
     ]
   },
+  "protectedNative": ["ftpPassword", "freettsApiKey", "awsSecretKey"],
   "native": {
     "type": "system",
     "systemCommand": "",
