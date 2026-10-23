@@ -532,7 +532,11 @@ class Text2Speech {
      * @returns Address without trailing slash, like "http://192.168.1.10:5000"
      */
     static #getPiperUrl(server) {
-        server = server.trim().replace(/[/]+$/, '');
+        server = server.trim();
+        // Remove the trailing slashes without a regular expression, which could be slow on many slashes
+        while (server.endsWith('/')) {
+            server = server.slice(0, -1);
+        }
         return /^https?:[/][/]/i.test(server) ? server : `http://${server}`;
     }
     /**
