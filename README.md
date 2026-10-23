@@ -322,7 +322,7 @@ Like by FreeTTS, the language is a part of the voice, e.g. `de_DE-thorsten-high`
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### **WORK IN PROGRESS**
+### 5.4.0 (2026-10-23)
 * (@GermanBluefox) Updated packages
 * (@GermanBluefox) Added the output type "Squeezebox" for the players of the squeezeboxrpc adapter (#5)
 * (@GermanBluefox) Added Piper as a new local TTS engine, e.g. with the voices of Thorsten-Voice (#398)
@@ -354,16 +354,6 @@ Like by FreeTTS, the language is a part of the voice, e.g. `de_DE-thorsten-high`
 * (@GermanBluefox) The engine is selected in two steps now: first the provider and then the voice
 * (@GermanBluefox) The words of the Blockly block are translated into all 11 languages now
 * (@GermanBluefox) Blockly block migrated to TypeScript and the generated code is unchanged
-
-### 5.2.4 (2026-08-07)
-* (@GermanBluefox) Corrected the upload of the announcement mp3 files and the location of the cache directory
-* (@GermanBluefox) Corrected the splitting of long texts for the Google engine
-* (@GermanBluefox) Corrected the detection of sonos devices in the configuration dialog
-* (@GermanBluefox) Cached files will be deleted again if the engine was changed
-* (@GermanBluefox) The queue does not block anymore if an error occurs by processing of a task
-* (@GermanBluefox) Texts with semicolons will not be interpreted as "language;volume;text" anymore
-* (@GermanBluefox) The local engines (PicoTTS, CoquiTTS) and the windows player are called without shell now
-* (@GermanBluefox) Corrected the default settings of a new instance
 
 [Older changelogs can be found there](CHANGELOG_OLD.md)
 

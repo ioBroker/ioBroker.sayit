@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "sayit",
-    "version": "5.3.3",
+    "version": "5.4.0",
     "news": {
+      "5.4.0": {
+        "en": "Updated packages\nAdded the output type \"Squeezebox\" for the players of the squeezeboxrpc adapter (#5)\nAdded Piper as a new local TTS engine, e.g. with the voices of Thorsten-Voice (#398)",
+        "de": "Neue Pakete\nAusgabetyp „Squeezebox“ für Player des SqueezeboxRPC-Adapters hinzugefügt (#5)\nPiper als neue TTS-Engine hinzugefügt, z. B. mit Thorsten-Voice (#398)",
+        "ru": "Обновленные пакеты\nДобавлен тип вывода «Squeezebox» для игроков адаптера squeezeboxrpc (#5)\nДобавлен Piper в качестве нового локального движка TTS, например, с голосами Thorsten-Voice (#398)",
+        "pt": "Pacotes novos\nAdicionado o tipo de saída “Squeezebox” para os players do adaptador rpc (#5)\nAdicionou o Piper como um novo motor TTS local, com a voz de Thorsten-Voice (#398)",
+        "nl": "Bijgewerkte pakketten\nHet uitvoertype „Squeezebox” toegevoegd voor de spelers van de squeezeboxrpc adapter (#5)\nPiper toegevoegd als nieuwe lokale TTS-engine, bijvoorbeeld met de stemmen van Thorsten-Voice (#398)",
+        "fr": "Packages mis à jour\nAjout du type de sortie « Squeezebox » pour les lecteurs de l'adaptateur SqueezeboxRPC (#5)\nPiper a été ajouté comme nouveau moteur TTS local, avec les voix de Thorsten-Voice (#398)",
+        "it": "Pacchi nuovi\nAggiunto il tipo di output «Squeezebox» per i lettori dell'adattatore RPC (#5)\nAggiunto Piper come motore TTS locale, ad es. con Thorsten-Voice (#398)",
+        "es": "Paquetes nuevos\nAñadió el tipo de salida «Squeezebox» para los reproductores del adaptador squeezeboxrpc (#5)\nAñadió Piper como nuevo motor de TTS local, por ejemplo, con las voces de Thorsten-Voice (#398)",
+        "pl": "Zaktualizowane pakiety\nDodano typ wyjścia „Squeezebox” dla odtwarzaczy adaptera squezeboxrpc (#5)\nDodano Piper jako nowy lokalny silnik TTS, np. z głosami Thorsten-Voice (#398)",
+        "uk": "Оновлені пакети\nДодано тип виводу «Squeezebox» для гравців адаптера squeezeboxrpc (#5)\nДодано Piper як новий локальний движок TTS, наприклад, з голосами Thorsten-Voice (#398)",
+        "zh-cn": "更新的软件包\n为 squeezeboxrpc 适配器的玩家添加了输出类型 “Squeezebox” (#5)\n添加了 Piper 作为新的本地 TTS 引擎，例如使用 Thorsten-Voice 的配音 (#398)"
+      },
       "5.3.3": {
         "en": "Fixed: a cache hit played the last generated text instead of the cached file (#497)\nThe cache directory is now resolved relative to `iobroker-data/sayit` and could be absolute. It can be changed in the configuration dialog. New instances store the cache in `iobroker-data/sayit/cache` (#442)\nBy changing of the engine, only cached files are deleted from the cache directory and not all files\nFixed: the heos players were not listed in the configuration dialog (#416)\nFixed: IPv6 addresses of the web server are written in square brackets in the link for the devices. Only IPv4 addresses are offered in the configuration dialog (#399)\nFixed: the cache was not used for the texts sent by the \"say\" command, e.g. from Blockly or scripts\nFixed: texts with SSML tags were never found in the cache, if the engine does not support SSML\nCorrected the roles of the states `tts.text`, `tts.cachetext` and `tts.playing`\nUsed the timers of the adapter and added the missing size attributes in the configuration dialog",
         "de": "Behoben: Ein Cachetreffer spielte den zuletzt generierten Text ab (#497)\nDas Cache-Verzeichnis ist jetzt relativ zu `iobroker-data/sayit` aufgelöst und könnte absolut sein. Es kann im Konfigurationsdialog geändert werden. Neue Instanzen speichern den Cache in `iobroker-data/sayit/cache` (#442)\nBeim Ändern der Engine werden nur Dateien aus dem Cache gelöscht und nicht alle\nBehoben: Die Heos-Player waren im Dialog nicht aufgeführt (#416)\nBehoben: IPv6-Adressen des Webservers stehen im Link für die Geräte in eckigen Klammern. Im Konfigurationsdialog gibt es nur IPv4-Adressen (#399)\nBehoben: Der Cache wurde nicht für „say“ -Texte genutzt, z. B. von Blockly oder Skripten\nBehoben: Texte mit SSML-Tags wurden nie im Cache gefunden, wenn die Engine SSML nicht unterstützt\nDie Rollen der Zustände `tts.text`, `tts.cachetext` und `tts.playing` wurden korrigiert\nBenutzte die Timer des Adapters und fügte fehlende Größenattribute im Konfigurationsdialog hinzu",
@@ -80,19 +93,6 @@
         "pl": "Adapter został przepisany z użyciem TypeScript.\nZaktualizowana lista głosów Polly\nDodano opcję przesyłania urządzenia Sonos jako parametru w poleceniu sendTo.",
         "uk": "Адаптер був переписаний з TypeScript.\nОновлений список голосів Polly\nДодано опцію надсилання пристрою Sonos як параметра у команді sendTo.",
         "zh-cn": "适配器使用TypeScript进行了重写\n更新了 Polly 语音列表\n添加了在sendTo命令中作为参数发送Sonos设备的选项"
-      },
-      "5.0.0": {
-        "en": "Adapter requires admin v7 or newer now\nAdapter requires jas-controller 5 or newer now\nAdded possibility to play directly from states: `sayit.0/tts.userfiles/gong.mp3`",
-        "de": "Adapter erfordert jetzt Admin v7 oder neuer\nAdapter erfordert jetzt Jas-Controller 5 oder neuer\nMöglichkeit, direkt aus Zuständen zu spielen: `sayit.0/tts.userfiles/gong.mp3`",
-        "ru": "Адаптер требует администратора v7 или новичка сейчас\nАдаптер требует jas-контроллер 5 или более новый сейчас\nДобавлена возможность играть непосредственно из государств: `sayit.0/tts.userfiles/gong.mp3`",
-        "pt": "Adapter requer admin v7 ou mais recente agora\nAdaptador requer jas-controller 5 ou mais recente agora\nAdicionado possibilidade de jogar diretamente de estados: `sayit.0/tts.userfiles/gong.mp3`",
-        "nl": "Adapter vereist admin v7 of nieuwer nu\nAdapter vereist jas-controller 5 of nieuwer nu\nToegevoegd mogelijkheid om direct te spelen vanuit staten: `sayit.0/tts.userfiles/gong.mp3`",
-        "fr": "Adaptateur nécessite admin v7 ou plus récent maintenant\nAdaptateur nécessite jas-controller 5 ou plus récent maintenant\nAjout de la possibilité de jouer directement à partir des états: `sayit.0/tts.userfiles/gong.mp3`",
-        "it": "L'adattatore richiede ora admin v7 o più recente\nAdattatore richiede jas-controller 5 o più nuovo ora\nAggiunta possibilità di giocare direttamente dagli stati: `sayit.0/tts.userfiles/gong.mp3`",
-        "es": "Adaptador requiere administración v7 o nuevo ahora\nAdaptador requiere jas-controller 5 o más nuevo ahora\nAñadido posibilidad de jugar directamente desde los estados: `sayit.0/tts.userfiles/gong.mp3`",
-        "pl": "Adapter wymaga admin v7 lub nowszych\nAdapter wymaga sterownika Jas- 5 lub nowszego teraz\nDodano możliwość gry bezpośrednio ze stanów: 'sayit.0 / tts.userfiles / gong.mp3'",
-        "uk": "Адаптер вимагає адміністратора v7 або новачка\nАдаптер вимагає jas-controller 5 або новіший зараз\n`sayit.0/tts.userfiles/gong.mp3`",
-        "zh-cn": "适配器需要管理员 v7 或者现在更新\n适配器需要JAS控制器 5或现在更新\n添加了直接从状态播放的可能性:`sayit.0/ts.userfiles/gong.mp3'"
       }
     },
     "titleLang": {
