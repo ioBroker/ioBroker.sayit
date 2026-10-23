@@ -52,9 +52,11 @@
                             "label": "Google Home"
                         }
                     ],
+                    "xs": 12,
                     "sm": 12,
                     "md": 6,
-                    "lg": 4
+                    "lg": 4,
+                    "xl": 4
                 },
                 "systemCommand": {
                     "newLine": true,
@@ -62,9 +64,11 @@
                     "label": "System command",
                     "hidden": "data.type !== 'system'",
                     "help": "optional - If player does not work",
+                    "xs": 12,
                     "sm": 6,
                     "md": 4,
-                    "lg": 2
+                    "lg": 2,
+                    "xl": 2
                 },
                 "systemPlayer": {
                     "type": "select",
@@ -86,9 +90,11 @@
                         }
                     ],
                     "help": "Ignore for non linux OS",
+                    "xs": 12,
                     "sm": 6,
                     "md": 4,
-                    "lg": 2
+                    "lg": 2,
+                    "xl": 2
                 },
                 "announce": {
                     "newLine": true,
@@ -99,9 +105,11 @@
                     "hidden": "data.type === 'googleHome'",
                     "noTranslation": true,
                     "upload": "tts.userfiles/",
+                    "xs": 12,
                     "sm": 12,
                     "md": 6,
-                    "lg": 4
+                    "lg": 4,
+                    "xl": 4
                 },
                 "annoTimeout": {
                     "newLine": true,
@@ -111,9 +119,11 @@
                     "hidden": "(data.type !== 'mp24' && data.type !== 'windows') || !data.announce",
                     "min": 0,
                     "max": 1000,
+                    "xs": 12,
                     "sm": 6,
                     "md": 4,
-                    "lg": 2
+                    "lg": 2,
+                    "xl": 2
                 },
                 "annoDuration": {
                     "type": "number",
@@ -122,9 +132,11 @@
                     "max": 99,
                     "help": "in seconds",
                     "hidden": "(data.type !== 'mp24' && data.type !== 'windows') || !data.announce",
+                    "xs": 12,
                     "sm": 6,
                     "md": 4,
-                    "lg": 2
+                    "lg": 2,
+                    "xl": 2
                 },
                 "annoVolume": {
                     "type": "number",
@@ -133,18 +145,22 @@
                     "max": 100,
                     "help": "in % to playing volume",
                     "hidden": "(data.type !== 'mp24' && data.type !== 'windows') || !data.announce",
+                    "xs": 12,
                     "sm": 6,
                     "md": 4,
-                    "lg": 2
+                    "lg": 2,
+                    "xl": 2
                 },
                 "cache": {
                     "newLine": true,
                     "type": "checkbox",
                     "label": "Cache",
                     "help": "Cache generated files",
+                    "xs": 12,
                     "sm": 6,
                     "md": 4,
-                    "lg": 2
+                    "lg": 2,
+                    "xl": 2
                 },
                 "cacheExpiryDays": {
                     "type": "number",
@@ -153,18 +169,22 @@
                     "label": "Cache-Expiry",
                     "help": "in days",
                     "hidden": "!data.cache",
+                    "xs": 12,
                     "sm": 6,
                     "md": 4,
-                    "lg": 2
+                    "lg": 2,
+                    "xl": 2
                 },
                 "cacheDir": {
                     "type": "text",
                     "label": "Cache directory",
                     "help": "Relative to iobroker-data/sayit or absolute",
                     "hidden": "!data.cache",
+                    "xs": 12,
                     "sm": 12,
                     "md": 8,
-                    "lg": 4
+                    "lg": 4,
+                    "xl": 4
                 },
                 "chromecastDevice": {
                     "newLine": true,
@@ -173,9 +193,11 @@
                     "command": "browseChromecast",
                     "noTranslation": true,
                     "hidden": "data.type !== 'chromecast'",
+                    "xs": 12,
                     "sm": 12,
                     "md": 6,
-                    "lg": 4
+                    "lg": 4,
+                    "xl": 4
                 },
                 "googleHomeServer": {
                     "newLine": true,
@@ -183,79 +205,97 @@
                     "command": "browseGoogleHome",
                     "label": "Google home server",
                     "hidden": "data.type !== 'googleHome'",
+                    "xs": 12,
                     "sm": 12,
                     "md": 6,
-                    "lg": 4
+                    "lg": 4,
+                    "xl": 4
                 },
                 "mp24Server": {
                     "newLine": true,
                     "type": "text",
                     "label": "Server IP Address",
                     "hidden": "data.type !== 'mp24ftp' && data.type !== 'mp24'",
+                    "xs": 12,
                     "sm": 12,
                     "md": 6,
-                    "lg": 4
+                    "lg": 4,
+                    "xl": 4
                 },
                 "ftpPort": {
                     "newLine": true,
                     "type": "number",
                     "label": "FTP Port",
                     "hidden": "data.type !== 'mp24ftp'",
+                    "xs": 12,
                     "sm": 6,
                     "md": 4,
-                    "lg": 2
+                    "lg": 2,
+                    "xl": 2
                 },
                 "ftpUser": {
                     "type": "text",
                     "label": "FTP User",
                     "hidden": "data.type !== 'mp24ftp'",
+                    "xs": 12,
                     "sm": 6,
                     "md": 4,
-                    "lg": 2
+                    "lg": 2,
+                    "xl": 2
                 },
                 "ftpPassword": {
                     "type": "password",
                     "label": "FTP Password",
                     "hidden": "data.type !== 'mp24ftp'",
+                    "xs": 12,
                     "sm": 6,
                     "md": 4,
-                    "lg": 2
+                    "lg": 2,
+                    "xl": 2
                 },
                 "sonosDevice": {
                     "type": "selectSendTo",
                     "label": "Device",
                     "hidden": "data.type !== 'sonos'",
                     "command": "browseSonos",
+                    "xs": 12,
                     "sm": 6,
                     "md": 4,
-                    "lg": 2
+                    "lg": 2,
+                    "xl": 2
                 },
                 "heosDevice": {
                     "type": "selectSendTo",
                     "label": "Device",
                     "hidden": "data.type !== 'heos'",
                     "command": "browseHeos",
+                    "xs": 12,
                     "sm": 6,
                     "md": 4,
-                    "lg": 2
+                    "lg": 2,
+                    "xl": 2
                 },
                 "mpdInstance": {
                     "type": "instance",
                     "label": "Device",
                     "hidden": "data.type !== 'mpd'",
                     "adapter": "mpd",
+                    "xs": 12,
                     "sm": 6,
                     "md": 4,
-                    "lg": 2
+                    "lg": 2,
+                    "xl": 2
                 },
                 "browserInstance": {
                     "newLine": true,
                     "type": "text",
                     "label": "Browser instance",
                     "hidden": "data.type !== 'browser'",
+                    "xs": 12,
                     "sm": 6,
                     "md": 3,
-                    "lg": 2
+                    "lg": 2,
+                    "xl": 2
                 },
                 "browserVis": {
                     "newLine": true,
@@ -276,9 +316,11 @@
                         }
                     ],
                     "hidden": "data.type !== 'browser'",
+                    "xs": 12,
                     "sm": 6,
                     "md": 3,
-                    "lg": 2
+                    "lg": 2,
+                    "xl": 2
                 },
                 "webInstance": {
                     "newLine": true,
@@ -286,9 +328,11 @@
                     "adapter": "web",
                     "label": "Web instance",
                     "hidden": "data.type !== 'sonos' && data.type !== 'heos' && data.type !== 'chromecast' && data.type !== 'mpd' && data.type !== 'googleHome'",
+                    "xs": 12,
                     "sm": 6,
                     "md": 4,
-                    "lg": 2
+                    "lg": 2,
+                    "xl": 2
                 },
                 "webServer": {
                     "type": "ip",
@@ -296,9 +340,11 @@
                     "noInternal": true,
                     "label": "Web server IP",
                     "hidden": "data.type !== 'sonos' && data.type !== 'heos' && data.type !== 'chromecast' && data.type !== 'mpd' && data.type !== 'googleHome'",
+                    "xs": 12,
                     "sm": 6,
                     "md": 4,
-                    "lg": 2
+                    "lg": 2,
+                    "xl": 2
                 },
                 "_test": {
                     "newLine": true,
@@ -329,9 +375,11 @@
                         { "value": "CoquiTTS", "label": "Coqui TTS (offline)" },
                         { "value": "polly", "label": "AWS Polly" }
                     ],
+                    "xs": 12,
                     "sm": 12,
                     "md": 6,
-                    "lg": 4
+                    "lg": 4,
+                    "xl": 4
                 },
                 "engine": {
                     "newLine": true,
@@ -1201,9 +1249,11 @@
                             "hidden": "data.engineProvider && data.engineProvider !== 'polly' && data.engine !== 'fi-FI_AP_Female_Suvi'"
                         }
                     ],
+                    "xs": 12,
                     "sm": 12,
                     "md": 6,
-                    "lg": 4
+                    "lg": 4,
+                    "xl": 4
                 },
                 "freettsApiKey": {
                     "newLine": true,
@@ -1212,9 +1262,11 @@
                     "help": "freetts_key_help",
                     "helpLink": "https://freetts.org/pricing",
                     "hidden": "data.engine != 'freeTTS'",
+                    "xs": 12,
                     "sm": 12,
                     "md": 6,
-                    "lg": 4
+                    "lg": 4,
+                    "xl": 4
                 },
                 "freettsVoice": {
                     "newLine": true,
@@ -1226,9 +1278,11 @@
                     "noTranslation": true,
                     "manual": true,
                     "hidden": "data.engine != 'freeTTS'",
+                    "xs": 12,
                     "sm": 12,
                     "md": 6,
-                    "lg": 4
+                    "lg": 4,
+                    "xl": 4
                 },
                 "freettsRate": {
                     "newLine": true,
@@ -1238,9 +1292,11 @@
                     "min": -50,
                     "max": 100,
                     "hidden": "data.engine != 'freeTTS'",
+                    "xs": 12,
                     "sm": 6,
                     "md": 4,
-                    "lg": 2
+                    "lg": 2,
+                    "xl": 2
                 },
                 "freettsPitch": {
                     "type": "number",
@@ -1249,18 +1305,22 @@
                     "min": -20,
                     "max": 20,
                     "hidden": "data.engine != 'freeTTS'",
+                    "xs": 12,
                     "sm": 6,
                     "md": 4,
-                    "lg": 2
+                    "lg": 2,
+                    "xl": 2
                 },
                 "yandexKey": {
                     "newLine": true,
                     "type": "text",
                     "hidden": "data.engine != 'ru_YA' && data.engine != 'ru_YA_CLOUD'",
                     "label": "API Key",
+                    "xs": 12,
                     "sm": 12,
                     "md": 6,
-                    "lg": 4
+                    "lg": 4,
+                    "xl": 4
                 },
                 "yandexCloudVoice": {
                     "newLine": true,
@@ -1278,9 +1338,11 @@
                         { "value": "alena", "label": "alena Premium" },
                         { "value": "filipp", "label": "filipp Premium" }
                     ],
+                    "xs": 12,
                     "sm": 12,
                     "md": 6,
-                    "lg": 4
+                    "lg": 4,
+                    "xl": 4
                 },
                 "yandexVoice": {
                     "newLine": true,
@@ -1292,9 +1354,11 @@
                         { "value": "jane", "label": "jane" },
                         { "value": "zahar", "label": "zahar" }
                     ],
+                    "xs": 12,
                     "sm": 6,
                     "md": 4,
-                    "lg": 2
+                    "lg": 2,
+                    "xl": 2
                 },
                 "yandexEmotion": {
                     "type": "select",
@@ -1308,71 +1372,93 @@
                         { "value": "evil", "label": "Evil" },
                         { "value": "mixed", "label": "Mixed" }
                     ],
+                    "xs": 12,
                     "sm": 6,
                     "md": 4,
-                    "lg": 2
+                    "lg": 2,
+                    "xl": 2
                 },
                 "yandexDrunk": {
                     "newLine": true,
                     "type": "checkbox",
                     "label": "Drunk",
                     "hidden": "data.engine != 'ru_YA'",
+                    "xs": 12,
                     "sm": 4,
-                    "md": 2
+                    "md": 2,
+                    "lg": 2,
+                    "xl": 2
                 },
                 "yandexIll": {
                     "type": "checkbox",
                     "hidden": "data.engine != 'ru_YA'",
                     "label": "Ill",
+                    "xs": 12,
                     "sm": 4,
-                    "md": 2
+                    "md": 2,
+                    "lg": 2,
+                    "xl": 2
                 },
                 "yandexRobot": {
                     "type": "checkbox",
                     "hidden": "data.engine != 'ru_YA'",
                     "label": "Robot",
+                    "xs": 12,
                     "sm": 4,
-                    "md": 2
+                    "md": 2,
+                    "lg": 2,
+                    "xl": 2
                 },
                 "yandexFolderID": {
                     "type": "text",
                     "hidden": "data.engine != 'ru_YA_CLOUD'",
                     "label": "Folder ID",
+                    "xs": 12,
                     "sm": 12,
-                    "md": 3
+                    "md": 3,
+                    "lg": 3,
+                    "xl": 3
                 },
                 "awsAccessKey": {
                     "newLine": true,
                     "type": "text",
                     "label": "Access Key",
                     "hidden": "!data.engine || !data.engine.includes('_AP_')",
+                    "xs": 12,
                     "sm": 6,
                     "md": 3,
-                    "lg": 2
+                    "lg": 2,
+                    "xl": 2
                 },
                 "awsSecretKey": {
                     "type": "password",
                     "label": "Secret Key",
                     "hidden": "!data.engine || !data.engine.includes('_AP_')",
+                    "xs": 12,
                     "sm": 6,
                     "md": 3,
-                    "lg": 2
+                    "lg": 2,
+                    "xl": 2
                 },
                 "awsRegion": {
                     "type": "text",
                     "label": "AWS Region",
                     "hidden": "!data.engine || !data.engine.includes('_AP_')",
+                    "xs": 12,
                     "sm": 6,
                     "md": 3,
-                    "lg": 1
+                    "lg": 1,
+                    "xl": 1
                 },
                 "cloudAppKey": {
                     "newLine": true,
                     "type": "text",
                     "label": "Cloud App Key from iobroker.pro or iobroker.net",
+                    "xs": 12,
                     "sm": 12,
                     "md": 6,
                     "lg": 4,
+                    "xl": 4,
                     "hidden": "!data.engine || !data.engine.includes('_CLOUD_') || data.cloudInstance"
                 },
                 "cloudInstance": {
@@ -1381,9 +1467,11 @@
                     "adapter": "cloud",
                     "label": "Cloud instance",
                     "hidden": "!data.engine || !data.engine.includes('_CLOUD_') || data.cloudAppKey",
+                    "xs": 12,
                     "sm": 12,
                     "md": 6,
-                    "lg": 4
+                    "lg": 4,
+                    "xl": 4
                 },
                 "coquiVocoder": {
                     "newLine": true,
@@ -1444,9 +1532,11 @@
                             "value": "vctk hifigan_v2"
                         }
                     ],
+                    "xs": 12,
                     "sm": 12,
                     "md": 4,
-                    "lg": 2
+                    "lg": 2,
+                    "xl": 2
                 },
                 "_testText": {
                     "newLine": true,
@@ -1456,9 +1546,11 @@
                     "defaultFunc": "({ de: 'Hallo, das ist ein Test der Sprachausgabe.', ru: 'Привет, это проверка синтеза речи.', uk: 'Привіт, це перевірка синтезу мовлення.', pl: 'Cześć, to jest test syntezy mowy.', it: 'Ciao, questo è un test della sintesi vocale.', pt: 'Olá, este é um teste da síntese de voz.', es: 'Hola, esta es una prueba de la síntesis de voz.', fr: 'Bonjour, ceci est un test de la synthèse vocale.', nl: 'Hallo, dit is een test van de spraakuitvoer.', zh: '你好，这是一次语音合成测试。' })[(data.engine === 'freeTTS' ? data.freettsVoice || 'en' : data.engine || 'en').substring(0, 2)] || 'Hello, this is a test of the speech output.'",
                     "minRows": 2,
                     "maxRows": 5,
+                    "xs": 12,
                     "sm": 12,
                     "md": 8,
-                    "lg": 6
+                    "lg": 6,
+                    "xl": 6
                 },
                 "_testGenerate": {
                     "newLine": true,
@@ -1472,9 +1564,11 @@
                     "showProcess": true,
                     "openUrl": true,
                     "timeout": 120000,
+                    "xs": 12,
                     "sm": 12,
                     "md": 4,
-                    "lg": 3
+                    "lg": 3,
+                    "xl": 3
                 }
             }
         }

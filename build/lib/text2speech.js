@@ -577,14 +577,14 @@ class Text2Speech {
                 return Promise.reject(new Error(`Instance "${adapter}" is not running`));
             }
             return new Promise((resolve, reject) => {
-                let timer = setTimeout(() => {
+                let timer = this.#adapter.setTimeout(() => {
                     timer = null;
                     reject(new Error(`Timeout (${timeout || 5000} ms) by sendTo "${adapter}"`));
                 }, timeout || 5000);
                 this.#adapter.sendTo(adapter, command, message, response => {
                     const typedResponse = response;
                     if (timer) {
-                        clearTimeout(timer);
+                        this.#adapter.clearTimeout(timer);
                         timer = null;
                         if (typedResponse?.error) {
                             reject(new Error(typedResponse.error));

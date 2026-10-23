@@ -206,7 +206,7 @@ class SayItAdapter extends adapter_core_1.Adapter {
             const result = [];
             browser.on('serviceUp', service => result.push({ name: service.name || service.fullname, ip: service.addresses[0] }));
             browser.on('error', (err) => this.log.error(`Error on MDNS discovery: ${err}`));
-            this.processMessageTimeout = setTimeout(() => {
+            this.processMessageTimeout = this.setTimeout(() => {
                 this.processMessageTimeout = null;
                 if (browser) {
                     browser.stop();
@@ -500,11 +500,11 @@ class SayItAdapter extends adapter_core_1.Adapter {
      */
     stopInstance = (unload, callback) => {
         if (this.processMessageTimeout) {
-            clearTimeout(this.processMessageTimeout);
+            this.clearTimeout(this.processMessageTimeout);
             this.processMessageTimeout = null;
         }
         if (this.timeoutRunning) {
-            clearTimeout(this.timeoutRunning);
+            this.clearTimeout(this.timeoutRunning);
             this.timeoutRunning = null;
         }
         try {
@@ -517,7 +517,7 @@ class SayItAdapter extends adapter_core_1.Adapter {
             callback();
         }
         if (!unload) {
-            setTimeout(() => this.terminate(), 500);
+            this.setTimeout(() => this.terminate(), 500);
         }
     };
     /**
@@ -867,7 +867,7 @@ class SayItAdapter extends adapter_core_1.Adapter {
             task.testOptions.callback = undefined;
         }
         if (this.tasks.length) {
-            this.timeoutRunning = setTimeout(() => {
+            this.timeoutRunning = this.setTimeout(() => {
                 this.timeoutRunning = null;
                 this.processing = false;
                 this.processTasks().catch(e => this.log.error(`Cannot process tasks: ${e.toString()}`));

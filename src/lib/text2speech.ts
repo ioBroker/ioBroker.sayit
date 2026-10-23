@@ -631,7 +631,7 @@ export default class Text2Speech {
             }
 
             return new Promise<{ base64?: string }>((resolve, reject) => {
-                let timer: NodeJS.Timeout | null = setTimeout(() => {
+                let timer: ioBroker.Timeout | undefined | null = this.#adapter.setTimeout(() => {
                     timer = null;
                     reject(new Error(`Timeout (${timeout || 5000} ms) by sendTo "${adapter}"`));
                 }, timeout || 5000);
@@ -639,7 +639,7 @@ export default class Text2Speech {
                 this.#adapter.sendTo(adapter, command, message, response => {
                     const typedResponse = response as { error?: string; base64?: string };
                     if (timer) {
-                        clearTimeout(timer);
+                        this.#adapter.clearTimeout(timer);
                         timer = null;
 
                         if (typedResponse?.error) {
