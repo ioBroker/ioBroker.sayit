@@ -40,6 +40,10 @@
                             "label": "Heos"
                         },
                         {
+                            "value": "squeezebox",
+                            "label": "Squeezebox"
+                        },
+                        {
                             "value": "chromecast",
                             "label": "Chromecast"
                         },
@@ -275,6 +279,17 @@
                     "lg": 2,
                     "xl": 2
                 },
+                "squeezeboxDevice": {
+                    "type": "selectSendTo",
+                    "label": "Device",
+                    "hidden": "data.type !== 'squeezebox'",
+                    "command": "browseSqueezebox",
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 2,
+                    "xl": 2
+                },
                 "mpdInstance": {
                     "type": "instance",
                     "label": "Device",
@@ -327,7 +342,7 @@
                     "type": "instance",
                     "adapter": "web",
                     "label": "Web instance",
-                    "hidden": "data.type !== 'sonos' && data.type !== 'heos' && data.type !== 'chromecast' && data.type !== 'mpd' && data.type !== 'googleHome'",
+                    "hidden": "data.type !== 'sonos' && data.type !== 'heos' && data.type !== 'squeezebox' && data.type !== 'chromecast' && data.type !== 'mpd' && data.type !== 'googleHome'",
                     "xs": 12,
                     "sm": 6,
                     "md": 4,
@@ -339,7 +354,7 @@
                     "onlyIp4": true,
                     "noInternal": true,
                     "label": "Web server IP",
-                    "hidden": "data.type !== 'sonos' && data.type !== 'heos' && data.type !== 'chromecast' && data.type !== 'mpd' && data.type !== 'googleHome'",
+                    "hidden": "data.type !== 'sonos' && data.type !== 'heos' && data.type !== 'squeezebox' && data.type !== 'chromecast' && data.type !== 'mpd' && data.type !== 'googleHome'",
                     "xs": 12,
                     "sm": 6,
                     "md": 4,
@@ -365,10 +380,11 @@
                     "type": "select",
                     "noTranslation": true,
                     "label": "Provider",
-                    "defaultFunc": "!data.engine ? 'google' : data.engine === 'freeTTS' ? 'freeTTS' : data.engine.startsWith('ru_YA') ? 'yandex' : data.engine.includes('_AP_') ? 'polly' : data.engine.includes('_CLOUD_') ? 'cloud' : data.engine.includes('CoquiTTS') ? 'CoquiTTS' : data.engine.includes('-') && data.engine !== 'zh-CN' ? 'PicoTTS' : 'google'",
+                    "defaultFunc": "!data.engine ? 'google' : data.engine === 'freeTTS' ? 'freeTTS' : data.engine === 'piper' ? 'piper' : data.engine.startsWith('ru_YA') ? 'yandex' : data.engine.includes('_AP_') ? 'polly' : data.engine.includes('_CLOUD_') ? 'cloud' : data.engine.includes('CoquiTTS') ? 'CoquiTTS' : data.engine.includes('-') && data.engine !== 'zh-CN' ? 'PicoTTS' : 'google'",
                     "options": [
                         { "value": "google", "label": "Google" },
                         { "value": "freeTTS", "label": "FreeTTS (freetts.org)" },
+                        { "value": "piper", "label": "Piper (local server)" },
                         { "value": "yandex", "label": "Yandex" },
                         { "value": "cloud", "label": "ioBroker Cloud" },
                         { "value": "PicoTTS", "label": "PicoTTS (offline)" },
@@ -447,6 +463,11 @@
                             "label": "FreeTTS (freetts.org)",
                             "value": "freeTTS",
                             "hidden": "data.engineProvider && data.engineProvider !== 'freeTTS' && data.engine !== 'freeTTS'"
+                        },
+                        {
+                            "label": "Piper (local server)",
+                            "value": "piper",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'piper' && data.engine !== 'piper'"
                         },
                         {
                             "label": "Yandex - Русский",
@@ -1305,6 +1326,63 @@
                     "min": -20,
                     "max": 20,
                     "hidden": "data.engine != 'freeTTS'",
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 2,
+                    "xl": 2
+                },
+                "piperServer": {
+                    "newLine": true,
+                    "type": "text",
+                    "label": "Piper server",
+                    "help": "piper_server_help",
+                    "helpLink": "https://github.com/OHF-Voice/piper1-gpl/blob/main/docs/API_HTTP.md",
+                    "placeholder": "http://192.168.1.10:5000",
+                    "hidden": "data.engine != 'piper'",
+                    "xs": 12,
+                    "sm": 12,
+                    "md": 6,
+                    "lg": 4,
+                    "xl": 4
+                },
+                "piperVoice": {
+                    "newLine": true,
+                    "type": "selectSendTo",
+                    "command": "getPiperVoices",
+                    "jsonData": "${JSON.stringify({ server: data.piperServer })}",
+                    "alsoDependsOn": ["piperServer"],
+                    "label": "Voice",
+                    "help": "piper_voice_help",
+                    "noTranslation": true,
+                    "manual": true,
+                    "hidden": "data.engine != 'piper'",
+                    "xs": 12,
+                    "sm": 12,
+                    "md": 6,
+                    "lg": 4,
+                    "xl": 4
+                },
+                "piperSpeaker": {
+                    "newLine": true,
+                    "type": "text",
+                    "label": "Speaker",
+                    "help": "piper_speaker_help",
+                    "hidden": "data.engine != 'piper'",
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 2,
+                    "xl": 2
+                },
+                "piperLengthScale": {
+                    "type": "number",
+                    "label": "Speed",
+                    "help": "piper_speed_help",
+                    "min": 0.3,
+                    "max": 3,
+                    "step": 0.1,
+                    "hidden": "data.engine != 'piper'",
                     "xs": 12,
                     "sm": 6,
                     "md": 4,

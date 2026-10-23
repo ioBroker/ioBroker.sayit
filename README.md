@@ -31,6 +31,8 @@ Actually, the following outputs are supported:
 
 - *Heos* - play text on HEOS device. Be sure the Web Adapter is enabled. It is required to enable HEOS to read the generated mp3 files.
 
+- *Squeezebox* - play text on a player of the Logitech Media Server (Lyrion) with the [squeezeboxrpc](https://github.com/oweitman/ioBroker.squeezeboxrpc) adapter (version 2.0.0 or newer). The text is written into the state `Announce` of the player, so the current playback is stopped and restored afterward. The volume of the announcement is configured in the squeezeboxrpc adapter. Be sure the Web Adapter is enabled, so the Media Server can read the generated mp3 files.
+
 - *Chromecast* - play text on a Chromecast device.
 
 - *MPD* - play text on Music Player Daemon. Use only **http** for web adapter, don't use https.
@@ -62,6 +64,17 @@ Offline:
 
 - Coqui TTS: English, German, Spanish, French, Dutch, Japanese, Chinese;
   For instructions how to use go to the [official documentation](https://tts.readthedocs.io/en/latest/index.html)
+
+- Piper: fast local voices in many languages, e.g. the German voices of [Thorsten-Voice](https://www.thorsten-voice.de).
+  [Piper](https://github.com/OHF-Voice/piper1-gpl) runs as an HTTP server in the local network (on the ioBroker host or on any other one),
+  so one server could be used by several applications. No internet and no other tools on the ioBroker host are required.
+  Installation of the server (see the [HTTP API](https://github.com/OHF-Voice/piper1-gpl/blob/main/docs/API_HTTP.md)):
+  ```
+  python3 -m pip install piper-tts[http]
+  python3 -m piper.download_voices de_DE-thorsten-high
+  python3 -m piper.http_server -m de_DE-thorsten-high --host 0.0.0.0 --port 5000
+  ```
+  Enter the address of the server, e.g. `http://192.168.1.10:5000`, in the configuration. The voices installed on the server are offered in the configuration dialog.
 
 ### Test of the text generation
 With the button `Test text generation` on the tab `Engine` you can check if the selected engine is configured properly.
@@ -164,6 +177,11 @@ The following values for engines are possible:
 The language is a part of the voice, so only one engine name exists. The voice, e.g. `de-DE-KatjaNeural`,
 is selected in the configuration dialog and the list of all available voices is read from the service.
 A request is limited to 10000 characters, so longer texts are split and said one after another.
+
+#### Piper
+- **piper** - the server, the voice, the speaker and the speed are taken from the instance configuration
+
+Like by FreeTTS, the language is a part of the voice, e.g. `de_DE-thorsten-high`. If no voice is selected, the default voice of the server is used.
 
 #### Yandex
 - **ru_YA:Yandex** - Русский
@@ -306,6 +324,8 @@ A request is limited to 10000 characters, so longer texts are split and said one
 ## Changelog
 ### **WORK IN PROGRESS**
 * (@GermanBluefox) Updated packages
+* (@GermanBluefox) Added the output type "Squeezebox" for the players of the squeezeboxrpc adapter (#5)
+* (@GermanBluefox) Added Piper as a new local TTS engine, e.g. with the voices of Thorsten-Voice (#398)
 
 ### 5.3.3 (2026-10-23)
 * (@GermanBluefox) Fixed: a cache hit played the last generated text instead of the cached file (#497)

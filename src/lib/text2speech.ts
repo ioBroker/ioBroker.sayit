@@ -578,6 +578,174 @@ export default class Text2Speech {
     }
 
     /**
+     * Build the base address of the Piper server. The protocol may be omitted in the configuration.
+     *
+     * @param server Address from the configuration, like "192.168.1.10:5000" or "http://piper:5000/"
+     * @returns Address without trailing slash, like "http://192.168.1.10:5000"
+     */
+    static #getPiperUrl(server: string): string {
+        server = server.trim();
+        // Remove the trailing slashes without a regular expression, which could be slow on many slashes
+        while (server.endsWith('/')) {
+            server = server.slice(0, -1);
+        }
+        return /^https?:[/][/]/i.test(server) ? server : `http://${server}`;
+    }
+
+    /**
+     * Read the list of the voices installed on the Piper server.
+     * Used by the configuration dialog to fill the voice selector.
+     *
+     * @param server Address of the Piper HTTP server, like "http://192.168.1.10:5000"
+     * @returns List of the voices, sorted by the name
+     */
+    static async getPiperVoices(server: string): Promise<{ value: string; label: string }[]> {
+        const response = await axios.get<{
+            [voice: string]: { language?: { name_english?: string }; num_speakers?: number };
+        }>(`${Text2Speech.#getPiperUrl(server)}/voices`, { timeout: 15000 });
+
+        if (!response.data || typeof response.data !== 'object') {
+            throw new Error('Unexpected answer from the Piper server');
+        }
+
+        return Object.keys(response.data)
+            .map(voice => {
+                const config = response.data[voice];
+                const language = config?.language?.name_english ? ` (${config.language.name_english})` : '';
+                const speakers = (config?.num_speakers || 1) > 1 ? ` [${config.num_speakers} speakers]` : '';
+                // "de_DE-thorsten-high" => "de_DE-thorsten-high (German) [2 speakers]"
+                return { value: voice, label: `${voice}${language}${speakers}` };
+            })
+            .sort((a, b) => (a.label > b.label ? 1 : a.label < b.label ? -1 : 0));
+    }
+
+    /**
+     * Read the format and the position of the samples from a WAV file
+     *
+     * @param wav Content of the WAV file
+     * @returns Number of channels, sample rate and position of the samples
+     */
+    static #readWavHeader(wav: Buffer): { channels: number; sampleRate: number; dataOffset: number; dataLen: number } {
+        if (wav.length < 44 || wav.toString('ascii', 0, 4) !== 'RIFF' || wav.toString('ascii', 8, 12) !== 'WAVE') {
+            throw new Error(`Received file is not a WAV file: ${wav.toString('utf8', 0, 200)}`);
+        }
+        let channels = 0;
+        let sampleRate = 0;
+        let bits = 0;
+        let format = 0;
+        // The file consists of chunks: 4 bytes ID, 4 bytes length, data
+        let pos = 12;
+        while (pos + 8 <= wav.length) {
+            const id = wav.toString('ascii', pos, pos + 4);
+            const size = wav.readUInt32LE(pos + 4);
+            if (id === 'fmt ') {
+                format = wav.readUInt16LE(pos + 8);
+                channels = wav.readUInt16LE(pos + 10);
+                sampleRate = wav.readUInt32LE(pos + 12);
+                bits = wav.readUInt16LE(pos + 22);
+            } else if (id === 'data') {
+                if (format !== 1 || bits !== 16 || (channels !== 1 && channels !== 2)) {
+                    throw new Error(`Unsupported WAV format: ${format}, ${bits} bits, ${channels} channels`);
+                }
+                // A streamed file could have no valid length of the data
+                const dataLen = size && pos + 8 + size <= wav.length ? size : wav.length - pos - 8;
+                return { channels, sampleRate, dataOffset: pos + 8, dataLen };
+            }
+            // Chunks are aligned to 2 bytes
+            pos += 8 + size + (size % 2);
+        }
+        throw new Error('No audio data found in the WAV file');
+    }
+
+    /**
+     * Convert a WAV file (PCM, 16 bit) into mp3. It is done in JavaScript, so no external tool like "lame" is required.
+     *
+     * @param wav Content of the WAV file
+     * @returns Content of the mp3 file
+     */
+    static async #wavToMp3(wav: Buffer): Promise<Buffer> {
+        const header = Text2Speech.#readWavHeader(wav);
+
+        // The package is an ES module only, so it must be loaded with import()
+        const lamejs = await import('@breezystack/lamejs');
+
+        // The buffer could start at an odd address, so the samples are copied instead of creating a view
+        const data = wav.subarray(header.dataOffset, header.dataOffset + header.dataLen);
+        const count = Math.floor(data.length / 2 / header.channels);
+        const channels: Int16Array[] = [];
+        for (let c = 0; c < header.channels; c++) {
+            channels.push(new Int16Array(count));
+        }
+        for (let i = 0; i < count; i++) {
+            for (let c = 0; c < header.channels; c++) {
+                channels[c][i] = data.readInt16LE((i * header.channels + c) * 2);
+            }
+        }
+
+        const encoder = new lamejs.Mp3Encoder(header.channels, header.sampleRate, 64);
+        const chunks: Buffer[] = [];
+        // lamejs encodes the samples in blocks of 1152
+        for (let i = 0; i < count; i += 1152) {
+            const left = channels[0].subarray(i, i + 1152);
+            const right = header.channels === 2 ? channels[1].subarray(i, i + 1152) : undefined;
+            const mp3 = encoder.encodeBuffer(left, right);
+            if (mp3.length) {
+                chunks.push(Buffer.from(mp3));
+            }
+        }
+        chunks.push(Buffer.from(encoder.flush()));
+
+        return Buffer.concat(chunks);
+    }
+
+    /**
+     * Generate the mp3 file with a Piper HTTP server (python3 -m piper.http_server).
+     * Piper answers with a WAV file, which is converted to mp3.
+     *
+     * @param props Text, language and options of the task
+     */
+    async #sayItGetSpeechPiper(props: SayItProps): Promise<void> {
+        const server = props.testOptions?.piperServer || this.#config.piperServer;
+        if (!server) {
+            throw new Error('No Piper server defined');
+        }
+        const voice = props.testOptions?.piperVoice || this.#config.piperVoice;
+        const speaker = (props.testOptions?.piperSpeaker || this.#config.piperSpeaker || '').toString().trim();
+        const lengthScale = parseFloat(
+            (props.testOptions?.piperLengthScale ?? this.#config.piperLengthScale) as string,
+        );
+
+        // Not defined values are taken by the server from its command line or from the voice
+        const body: { text: string; voice?: string; speaker?: string; speaker_id?: number; length_scale?: number } = {
+            text: props.text,
+        };
+        if (voice) {
+            body.voice = voice;
+        }
+        if (/^[0-9]+$/.test(speaker)) {
+            body.speaker_id = parseInt(speaker, 10);
+        } else if (speaker) {
+            body.speaker = speaker;
+        }
+        if (lengthScale > 0 && lengthScale !== 1) {
+            body.length_scale = lengthScale;
+        }
+
+        let wav: Buffer;
+        try {
+            const response = await axios.post(`${Text2Speech.#getPiperUrl(server)}/synthesize`, body, {
+                responseType: 'arraybuffer',
+                timeout: 60000,
+            });
+            wav = Buffer.from(response.data);
+        } catch (error) {
+            throw new Error(`Cannot generate speech with Piper: ${Text2Speech.#getAxiosError(error)}`);
+        }
+
+        fs.writeFileSync(this.#MP3FILE, await Text2Speech.#wavToMp3(wav));
+    }
+
+    /**
      * Generate the mp3 file with the locally installed CoquiTTS (tts) and convert it with "lame" to mp3
      *
      * @param props Text, language and options of the task
@@ -863,6 +1031,8 @@ export default class Text2Speech {
                 await this.#sayItGetSpeechPicoTTS(props.text, props.language);
             } else if (engine === 'freeTTS') {
                 await this.#sayItGetSpeechFreeTTS(props);
+            } else if (engine === 'piper') {
+                await this.#sayItGetSpeechPiper(props);
             } else {
                 throw new Error(`Engine ${engine as string} not yet supported.`);
             }

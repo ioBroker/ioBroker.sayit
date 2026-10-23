@@ -329,6 +329,38 @@ class Speech2Device {
         return true;
     }
     /**
+     * Play the file on a player of the Logitech Media Server with the squeezeboxrpc adapter.
+     * The adapter stops the current playback, plays the file and restores the playback and the volume.
+     *
+     * @param props Text and options of the task
+     * @returns True if the file was sent to the squeezeboxrpc adapter
+     */
+    async #sayItSqueezebox(props) {
+        const squeezeboxDevice = props.testOptions?.squeezeboxDevice || this.config.squeezeboxDevice;
+        if (!squeezeboxDevice) {
+            this.adapter.log.warn('No squeezebox player defined');
+            return false;
+        }
+        // The state "Announce" exists since squeezeboxrpc 2.0.0
+        const announceId = `${squeezeboxDevice}.Announce`;
+        const obj = await this.adapter.getForeignObjectAsync(announceId);
+        if (!obj) {
+            this.adapter.log.warn(`State "${announceId}" not found. Please update the squeezeboxrpc adapter to 2.0.0 or newer`);
+            return false;
+        }
+        const result = await this.#uploadToStates(this.#speechSource(props));
+        const webLink = await this.#getWebLink(props.testOptions);
+        if (!webLink) {
+            this.adapter.log.warn('Web server is unavailable!');
+            return false;
+        }
+        // The volume of the announcement is defined in the configuration of the squeezeboxrpc adapter
+        const url = `${webLink}${result.fileInDB}`;
+        this.adapter.log.info(`Set "${announceId}" to ${url}`);
+        await this.adapter.setForeignStateAsync(announceId, url);
+        return true;
+    }
+    /**
      * Play the file on a MPD (music player daemon) device
      *
      * @param props Text, volume and options of the task
@@ -833,6 +865,9 @@ class Speech2Device {
         }
         if (type === 'heos') {
             return await this.#sayItHeos(props);
+        }
+        if (type === 'squeezebox') {
+            return await this.#sayItSqueezebox(props);
         }
         if (type === 'chromecast') {
             return await this.#sayItChromecast(props);
