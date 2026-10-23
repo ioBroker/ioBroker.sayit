@@ -180,7 +180,17 @@ type EngineType =
 export interface SayItAdapterConfig {
     /** Type of the output device */
     type:
-        'system' | 'mp24ftp' | 'mp24' | 'chromecast' | 'googleHome' | 'sonos' | 'browser' | 'mpd' | 'heos' | 'windows';
+        | 'system'
+        | 'mp24ftp'
+        | 'mp24'
+        | 'chromecast'
+        | 'googleHome'
+        | 'sonos'
+        | 'browser'
+        | 'mpd'
+        | 'heos'
+        | 'squeezebox'
+        | 'windows';
     /** Own play command for the type "system". "%s" will be replaced by the file name */
     systemCommand: string;
     /** Player used for the type "system" on linux: "mpg321", "omxplayer" or "mplayer" */
@@ -202,6 +212,8 @@ export interface SayItAdapterConfig {
     sonosDevice: string;
     /** ID of the HEOS player, like "heos.0.players.123456" */
     heosDevice: string;
+    /** ID of the player of the squeezeboxrpc adapter, like "squeezeboxrpc.0.Players.Kitchen" */
+    squeezeboxDevice: string;
     /** Instance of the MPD adapter, like "mpd.0" */
     mpdInstance: string;
     /** IP address of the google home device */
@@ -268,6 +280,7 @@ export type TestOptions = {
     webServer?: string;
     webInstance?: `${string}.${number}`;
     heosDevice?: string;
+    squeezeboxDevice?: string;
     mpdInstance?: `${string}.${number}`;
     chromecastDevice?: string;
     googleHomeServer?: string;

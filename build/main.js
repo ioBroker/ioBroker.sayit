@@ -350,6 +350,7 @@ class SayItAdapter extends adapter_core_1.Adapter {
             const browserInstance = obj.message?.browserInstance;
             const sonosDevice = obj.message?.sonosDevice;
             const heosDevice = obj.message?.heosDevice;
+            const squeezeboxDevice = obj.message?.squeezeboxDevice;
             const mpdInstance = obj.message?.mpdInstance;
             const chromecastDevice = obj.message?.chromecastDevice;
             if (text) {
@@ -373,6 +374,7 @@ class SayItAdapter extends adapter_core_1.Adapter {
                             browserVis,
                             sonosDevice,
                             heosDevice,
+                            squeezeboxDevice,
                             mpdInstance,
                             browserInstance,
                             chromecastDevice,
@@ -442,6 +444,23 @@ class SayItAdapter extends adapter_core_1.Adapter {
             })
                 .catch(e => {
                 this.log.warn(`Cannot read heos players: ${e}`);
+                this.sendTo(obj.from, obj.command, [], obj.callback);
+            });
+        }
+        else if (obj.callback && obj.command === 'browseSqueezebox') {
+            // The squeezeboxrpc adapter creates the players as devices "squeezeboxrpc.0.Players.<name>"
+            this.getObjectViewAsync('system', 'device', { startkey: 'squeezeboxrpc.', endkey: 'squeezeboxrpc.\u9999' })
+                .then(res => {
+                const list = [];
+                res?.rows.forEach(row => {
+                    if (/^squeezeboxrpc\.\d+\.Players\.[^.]+$/.test(row.id)) {
+                        list.push({ value: row.id, label: row.id.replace(/^squeezeboxrpc\.\d+\.Players\./, '') });
+                    }
+                });
+                this.sendTo(obj.from, obj.command, list, obj.callback);
+            })
+                .catch(e => {
+                this.log.warn(`Cannot read squeezebox players: ${e}`);
                 this.sendTo(obj.from, obj.command, [], obj.callback);
             });
         }
@@ -1183,6 +1202,7 @@ class SayItAdapter extends adapter_core_1.Adapter {
         // calculate weblink for devices that require it
         if (this.config.type === 'sonos' ||
             this.config.type === 'heos' ||
+            this.config.type === 'squeezebox' ||
             this.config.type === 'chromecast' ||
             this.config.type === 'mpd' ||
             this.config.type === 'googleHome') {
@@ -1258,7 +1278,7 @@ class SayItAdapter extends adapter_core_1.Adapter {
             return '';
         }
         if (obj.native.auth) {
-            this.log.error(`Cannot use server "${obj._id}" with authentication for sonos/heos/chromecast. Select other or create another one.`);
+            this.log.error(`Cannot use server "${obj._id}" with authentication for sonos/heos/squeezebox/chromecast. Select other or create another one.`);
             return '';
         }
         let host;

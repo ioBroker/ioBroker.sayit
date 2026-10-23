@@ -31,6 +31,8 @@ Actually, the following outputs are supported:
 
 - *Heos* - play text on HEOS device. Be sure the Web Adapter is enabled. It is required to enable HEOS to read the generated mp3 files.
 
+- *Squeezebox* - play text on a player of the Logitech Media Server (Lyrion) with the [squeezeboxrpc](https://github.com/oweitman/ioBroker.squeezeboxrpc) adapter (version 2.0.0 or newer). The text is written into the state `Announce` of the player, so the current playback is stopped and restored afterward. The volume of the announcement is configured in the squeezeboxrpc adapter. Be sure the Web Adapter is enabled, so the Media Server can read the generated mp3 files.
+
 - *Chromecast* - play text on a Chromecast device.
 
 - *MPD* - play text on Music Player Daemon. Use only **http** for web adapter, don't use https.
@@ -306,6 +308,7 @@ A request is limited to 10000 characters, so longer texts are split and said one
 ## Changelog
 ### **WORK IN PROGRESS**
 * (@GermanBluefox) Updated packages
+* (@GermanBluefox) Added the output type "Squeezebox" for the players of the squeezeboxrpc adapter (#5)
 
 ### 5.3.3 (2026-10-23)
 * (@GermanBluefox) Fixed: a cache hit played the last generated text instead of the cached file (#497)

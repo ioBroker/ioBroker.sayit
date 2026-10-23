@@ -457,6 +457,7 @@ export class SayItAdapter extends Adapter {
             const browserInstance = obj.message?.browserInstance as string;
             const sonosDevice = obj.message?.sonosDevice as string;
             const heosDevice = obj.message?.heosDevice as string;
+            const squeezeboxDevice = obj.message?.squeezeboxDevice as string;
             const mpdInstance = obj.message?.mpdInstance as `${string}.${number}`;
             const chromecastDevice = obj.message?.chromecastDevice as string;
 
@@ -482,6 +483,7 @@ export class SayItAdapter extends Adapter {
                             browserVis,
                             sonosDevice,
                             heosDevice,
+                            squeezeboxDevice,
                             mpdInstance,
                             browserInstance,
                             chromecastDevice,
@@ -554,6 +556,22 @@ export class SayItAdapter extends Adapter {
                 })
                 .catch(e => {
                     this.log.warn(`Cannot read heos players: ${e}`);
+                    this.sendTo(obj.from, obj.command, [], obj.callback);
+                });
+        } else if (obj.callback && obj.command === 'browseSqueezebox') {
+            // The squeezeboxrpc adapter creates the players as devices "squeezeboxrpc.0.Players.<name>"
+            this.getObjectViewAsync('system', 'device', { startkey: 'squeezeboxrpc.', endkey: 'squeezeboxrpc.\u9999' })
+                .then(res => {
+                    const list: { value: string; label: string }[] = [];
+                    res?.rows.forEach(row => {
+                        if (/^squeezeboxrpc\.\d+\.Players\.[^.]+$/.test(row.id)) {
+                            list.push({ value: row.id, label: row.id.replace(/^squeezeboxrpc\.\d+\.Players\./, '') });
+                        }
+                    });
+                    this.sendTo(obj.from, obj.command, list, obj.callback);
+                })
+                .catch(e => {
+                    this.log.warn(`Cannot read squeezebox players: ${e}`);
                     this.sendTo(obj.from, obj.command, [], obj.callback);
                 });
         } else if (obj.callback && obj.command === 'browseSonos') {
@@ -1345,6 +1363,7 @@ export class SayItAdapter extends Adapter {
         if (
             this.config.type === 'sonos' ||
             this.config.type === 'heos' ||
+            this.config.type === 'squeezebox' ||
             this.config.type === 'chromecast' ||
             this.config.type === 'mpd' ||
             this.config.type === 'googleHome'
@@ -1435,7 +1454,7 @@ export class SayItAdapter extends Adapter {
 
         if (obj.native.auth) {
             this.log.error(
-                `Cannot use server "${obj._id}" with authentication for sonos/heos/chromecast. Select other or create another one.`,
+                `Cannot use server "${obj._id}" with authentication for sonos/heos/squeezebox/chromecast. Select other or create another one.`,
             );
             return '';
         }

@@ -1325,6 +1325,13 @@ const sayitOptions = {
         server: true,
         libs: ['fs', 'crypto', 'http'],
     },
+    squeezebox: {
+        name: 'Squeezebox',
+        mp3Required: true,
+        checkLength: true,
+        server: true,
+        libs: ['fs', 'crypto', 'http'],
+    },
     chromecast: {
         name: 'Chromecast',
         mp3Required: true,

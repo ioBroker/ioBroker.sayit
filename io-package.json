@@ -185,6 +185,7 @@
     "engine": "",
     "sonosDevice": "",
     "heosDevice": "",
+    "squeezeboxDevice": "",
     "mpdInstance": "",
     "googleHomeServer": "",
     "chromecastDevice": "",
