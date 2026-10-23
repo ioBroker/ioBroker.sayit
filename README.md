@@ -302,6 +302,9 @@ A request is limited to 10000 characters, so longer texts are split and said one
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### **WORK IN PROGRESS**
+* (@GermanBluefox) Fixed: a cache hit played the last generated text instead of the cached file (#497)
+
 ### 5.3.2 (2026-10-13)
 * (@GermanBluefox) Removed the "install" script and `process.exit()` for compact mode
 * (@GermanBluefox) Passwords and API keys are now protected from reading by non-admin users
