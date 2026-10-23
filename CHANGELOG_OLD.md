@@ -249,6 +249,11 @@ Changed type of top-level object to "meta" in order to comply with js-controller
 
 ### 0.0.1 (2015-02-06)
 * (bluefox) initial commit
+## 5.1.0 (2025-09-17)
+* (bluefox) Adapter was rewritten with TypeScript
+* (bluefox) Updated Polly voices list
+* (bluefox) Added an option to send sonos device as a parameter in sendTo command
+
 ## 5.0.0 (2024-07-16)
 * (mcm1957) Adapter requires admin v7 or newer now
 * (mcm1957) Adapter requires jas-controller 5 or newer now
