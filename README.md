@@ -111,6 +111,8 @@ After creation of adapter instance, you can find the following objects:
 - `sayit.N.tts.cachetext`: Phrase to be cached, and then it can be used without an internet.
    E.g., you can enter here manually "No internet" and if ping to google.com is negative, write "No internet" to "tts.text" and it will be pronounced. Of course, cache must be enabled.
 
+The cached files are stored in the cache directory. A relative path is relative to `iobroker-data/sayit`, an absolute path is used as it is. The default for new instances is `cache`, i.e. `iobroker-data/sayit/cache`. Older instances keep `../../cache/`, i.e. `<ioBroker installation>/cache`.
+
 State `tts.text` supports extended syntax, so the language/engine and volume can be defined together with text. It is used to enable multi-language text2speech engines.
 E.g., if adapter has engine `Google-english`, it is possible with phrase `de:Sag es` to force using Google-Deutsch speech engine.
 
@@ -304,6 +306,8 @@ A request is limited to 10000 characters, so longer texts are split and said one
 ## Changelog
 ### **WORK IN PROGRESS**
 * (@GermanBluefox) Fixed: a cache hit played the last generated text instead of the cached file (#497)
+* (@GermanBluefox) The cache directory is now resolved relative to `iobroker-data/sayit` and could be absolute. It can be changed in the configuration dialog. New instances store the cache in `iobroker-data/sayit/cache` (#442)
+* (@GermanBluefox) By changing of the engine, only cached files are deleted from the cache directory and not all files
 
 ### 5.3.2 (2026-10-13)
 * (@GermanBluefox) Removed the "install" script and `process.exit()` for compact mode

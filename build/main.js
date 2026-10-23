@@ -1079,11 +1079,12 @@ class SayItAdapter extends adapter_core_1.Adapter {
         await this.prepareAnnounceFiles(this.config);
         // If cache enabled
         if (this.config.cache) {
-            if (this.config.cacheDir && (this.config.cacheDir[0] === '/' || this.config.cacheDir[0] === '\\')) {
-                this.config.cacheDir = this.config.cacheDir.substring(1);
-            }
-            // Relative directories are relative to the adapter directory (not to "build") and "join" resolves ".."
-            this.cacheDir = (0, node_path_1.normalize)((0, node_path_1.join)(this.rootDir, this.config.cacheDir || 'cache')).replace(/[/\\]$/, '');
+            // An absolute path is taken as it is. A relative one is resolved against the data directory of the adapter
+            // in "iobroker-data" and never against the installation tree, because npm prunes everything
+            // in "node_modules" that is not a package (#442). The old default "../../cache/" still resolves
+            // to "<install root>/cache", so the existing instances keep their cache.
+            const cacheDir = this.config.cacheDir?.trim() || 'cache';
+            this.cacheDir = (0, node_path_1.normalize)((0, node_path_1.isAbsolute)(cacheDir) ? cacheDir : (0, node_path_1.join)(this.dataDir, cacheDir)).replace(/[/\\]$/, '');
             // Create cache directory, if it does not exist
             if (!(0, node_fs_1.existsSync)(this.cacheDir)) {
                 try {
@@ -1108,10 +1109,11 @@ class SayItAdapter extends adapter_core_1.Adapter {
                 }
                 // If engine changed, all cached files are invalid
                 if (engine !== this.cacheSignature) {
-                    // Delete all files in this directory
+                    // Delete only the cached files, named like "<md5>.mp3", because the user could
+                    // select a directory with other files as the cache directory
                     const files = (0, node_fs_1.readdirSync)(this.cacheDir);
                     for (let f = 0; f < files.length; f++) {
-                        if (files[f] === 'engine.txt') {
+                        if (!/^[0-9a-f]{32}\.\w+$/.test(files[f])) {
                             continue;
                         }
                         const fileName = (0, node_path_1.join)(this.cacheDir, files[f]);
