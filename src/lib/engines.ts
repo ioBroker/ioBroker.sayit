@@ -6,7 +6,7 @@ import type { VoiceId } from '@aws-sdk/client-polly';
 const sayitEngines: {
     [engine: string]: {
         name: string;
-        engine: 'google' | 'yandex' | 'yandexCloud' | 'cloud' | 'PicoTTS' | 'CoquiTTS' | 'polly' | 'freeTTS';
+        engine: 'google' | 'yandex' | 'yandexCloud' | 'cloud' | 'PicoTTS' | 'CoquiTTS' | 'polly' | 'freeTTS' | 'piper';
         voice?: string[];
         emotion?: string[];
         gender?: 'Female' | 'Male';
@@ -31,6 +31,10 @@ const sayitEngines: {
     // freetts.org offers more than 400 voices in more than 75 languages.
     // The language is not selected here, but by the voice (option "freettsVoice"), like "de-DE-KatjaNeural"
     freeTTS: { name: 'FreeTTS', engine: 'freeTTS' },
+
+    // Piper runs as a local HTTP server (python3 -m piper.http_server). Like freetts.org,
+    // the language is not selected here, but by the voice (option "piperVoice"), like "de_DE-thorsten-high"
+    piper: { name: 'Piper', engine: 'piper' },
 
     ru_YA: {
         name: 'Yandex - Русский',

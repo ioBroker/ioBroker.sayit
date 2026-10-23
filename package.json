@@ -40,6 +40,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-polly": "^3.1156.0",
+    "@breezystack/lamejs": "^1.2.7",
     "@iobroker/adapter-core": "^3.4.3",
     "axios": "^1.20.0",
     "google-tts-api": "^2.0.2",

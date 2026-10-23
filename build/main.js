@@ -31,6 +31,10 @@ const VOICE_OPTIONS = [
     'freettsVoice',
     'freettsRate',
     'freettsPitch',
+    'piperServer',
+    'piperVoice',
+    'piperSpeaker',
+    'piperLengthScale',
     'coquiVocoder',
     'cloudAppKey',
     'cloudInstance',
@@ -185,11 +189,15 @@ class SayItAdapter extends adapter_core_1.Adapter {
     }
     /**
      * Description of the currently configured voice. As soon as it changes, all cached files are invalid.
-     * The FreeTTS engine has no own language, so the voice must be a part of it too.
+     * The FreeTTS and Piper engines have no own language, so the voice must be a part of it too.
      */
     get cacheSignature() {
         if (this.config.engine === 'freeTTS') {
             return `freeTTS;${this.config.freettsVoice};${this.config.freettsRate};${this.config.freettsPitch}`;
+        }
+        if (this.config.engine === 'piper') {
+            // An empty voice is the default voice of the server, so the server is a part of the signature too
+            return `piper;${this.config.piperServer};${this.config.piperVoice};${this.config.piperSpeaker};${this.config.piperLengthScale}`;
         }
         return this.config.engine;
     }
@@ -230,33 +238,41 @@ class SayItAdapter extends adapter_core_1.Adapter {
      * Two-letter language of the given engine
      *
      * @param engine Engine (voice) that will be used for the generation
-     * @param freettsVoice Voice of freetts.org, because the FreeTTS engine has no own language
+     * @param voices Voices of the dialog, because the FreeTTS and Piper engines have no own language
      * @returns Language, like "de"
      */
-    getEngineLanguage(engine, freettsVoice) {
-        // The FreeTTS engine has no own language. It is defined by the voice, like "de-DE-KatjaNeural"
-        return (engine === 'freeTTS' ? freettsVoice || this.config.freettsVoice || 'en' : engine).substring(0, 2);
+    getEngineLanguage(engine, voices) {
+        // The FreeTTS and Piper engines have no own language.
+        // It is defined by the voice, like "de-DE-KatjaNeural" or "de_DE-thorsten-high"
+        let language = engine;
+        if (engine === 'freeTTS') {
+            language = voices?.freettsVoice || this.config.freettsVoice || 'en';
+        }
+        else if (engine === 'piper') {
+            language = voices?.piperVoice || this.config.piperVoice || 'en';
+        }
+        return language.substring(0, 2);
     }
     /**
      * Short greeting in the language of the given engine. Used by the "Test" button of the "Player" tab.
      *
      * @param engine Engine (voice) that will be used for the generation
-     * @param freettsVoice Voice of freetts.org, because the FreeTTS engine has no own language
+     * @param voices Voices of the dialog, because the FreeTTS and Piper engines have no own language
      * @returns Greeting, like "Hallo"
      */
-    getHelloText(engine, freettsVoice) {
-        return HELLO_TEXTS[this.getEngineLanguage(engine, freettsVoice)] || HELLO_TEXTS.en;
+    getHelloText(engine, voices) {
+        return HELLO_TEXTS[this.getEngineLanguage(engine, voices)] || HELLO_TEXTS.en;
     }
     /**
      * Sentence in the language of the given engine. Used by the "Test text generation" button
      * of the "Engine" tab if the user cleared the text field.
      *
      * @param engine Engine (voice) that will be used for the generation
-     * @param freettsVoice Voice of freetts.org, because the FreeTTS engine has no own language
+     * @param voices Voices of the dialog, because the FreeTTS and Piper engines have no own language
      * @returns Test sentence, like "Hallo, das ist ein Test der Sprachausgabe."
      */
-    getTestText(engine, freettsVoice) {
-        return TEST_TEXTS[this.getEngineLanguage(engine, freettsVoice)] || TEST_TEXTS.en;
+    getTestText(engine, voices) {
+        return TEST_TEXTS[this.getEngineLanguage(engine, voices)] || TEST_TEXTS.en;
     }
     /**
      * Store the generated test file in the ioBroker file storage, so the user can listen to it in the browser.
@@ -295,7 +311,7 @@ class SayItAdapter extends adapter_core_1.Adapter {
         }
         const testOptions = { ...obj.message };
         const engine = testOptions.engine || this.config.engine || 'en';
-        const text = (obj.message?._testText || '').trim() || this.getTestText(engine, testOptions.freettsVoice);
+        const text = (obj.message?._testText || '').trim() || this.getTestText(engine, testOptions);
         // Some engines accept only a limited number of characters at once. Normally the rest of the text is
         // added to the queue and played part by part, but the test must only generate and never play something,
         // so the text is split here and every part is generated one after another.
@@ -330,7 +346,11 @@ class SayItAdapter extends adapter_core_1.Adapter {
                 GENERATED_TEXTS[this.lang] || GENERATED_TEXTS.en,
                 '',
                 `"${text.length > 100 ? `${text.substring(0, 100)}…` : text}"`,
-                engine === 'freeTTS' ? `freeTTS: ${testOptions.freettsVoice || this.config.freettsVoice}` : engine,
+                engine === 'freeTTS'
+                    ? `freeTTS: ${testOptions.freettsVoice || this.config.freettsVoice}`
+                    : engine === 'piper'
+                        ? `Piper: ${testOptions.piperVoice || this.config.piperVoice || '-'}`
+                        : engine,
                 `${Math.round(generated.length / 100) / 10} kB · ${duration} s · ${elapsed} ms`,
             ].join('\n'),
             openUrl: url,
@@ -493,9 +513,23 @@ class SayItAdapter extends adapter_core_1.Adapter {
                 this.sendTo(obj.from, obj.command, [], obj.callback);
             });
         }
+        else if (obj.callback && obj.command === 'getPiperVoices') {
+            // The dialog sends the server address, so an address that is entered but not yet saved is used too
+            const server = obj.message?.server || this.config.piperServer;
+            if (!server) {
+                this.sendTo(obj.from, obj.command, [], obj.callback);
+                return;
+            }
+            text2speech_1.default.getPiperVoices(server)
+                .then(voices => this.sendTo(obj.from, obj.command, voices, obj.callback))
+                .catch(e => {
+                this.log.warn(`Cannot read the voices from the Piper server "${server}": ${e.toString()}`);
+                this.sendTo(obj.from, obj.command, [], obj.callback);
+            });
+        }
         else if (obj.callback && obj.command === 'test') {
             const engine = obj.message?.engine || this.config.engine || 'en';
-            const text = `${this.getHelloText(engine, obj.message?.freettsVoice)} ${this.helloCounter++}`;
+            const text = `${this.getHelloText(engine, obj.message)} ${this.helloCounter++}`;
             const testOptions = { ...obj.message };
             if (obj.callback) {
                 testOptions.callback = (error) => {

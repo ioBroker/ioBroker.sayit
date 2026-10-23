@@ -219,6 +219,10 @@
     "freettsVoice": "en-US-JennyNeural",
     "freettsRate": 0,
     "freettsPitch": 0,
+    "piperServer": "",
+    "piperVoice": "",
+    "piperSpeaker": "",
+    "piperLengthScale": 1,
     "convertedV1toV2": false
   },
   "instanceObjects": [

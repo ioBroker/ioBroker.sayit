@@ -11,6 +11,7 @@ type EngineType =
     | 'nl'
     | 'zh-CN'
     | 'freeTTS'
+    | 'piper'
     | 'ru_YA'
     | 'ru_YA_CLOUD'
     | 'ru-RU_CLOUD_Female'
@@ -263,6 +264,14 @@ export interface SayItAdapterConfig {
     freettsRate: number | string;
     /** Pitch for freetts.org in Hz. Allowed range: -20 .. +20 */
     freettsPitch: number | string;
+    /** Address of the Piper HTTP server, like "http://192.168.1.10:5000" */
+    piperServer: string;
+    /** Voice of the Piper server, like "de_DE-thorsten-high". It defines the language too. Empty - the default voice of the server */
+    piperVoice: string;
+    /** Speaker of a voice with several speakers. Empty - the default speaker */
+    piperSpeaker: string;
+    /** Speaking speed: 1 - normal, smaller values are faster, bigger values are slower */
+    piperLengthScale: number | string;
     /** True if the configuration was already converted from version 1 to version 2 */
     convertedV1toV2: boolean;
     /** Model and vocoder for CoquiTTS, like "ljspeech univnet" */
@@ -305,6 +314,10 @@ export type TestOptions = {
     freettsVoice?: string;
     freettsRate?: number | string;
     freettsPitch?: number | string;
+    piperServer?: string;
+    piperVoice?: string;
+    piperSpeaker?: string;
+    piperLengthScale?: number | string;
     coquiVocoder?: string;
     cloudAppKey?: string;
     cloudInstance?: string;
