@@ -299,6 +299,11 @@ export type TestOptions = {
     announce?: string;
     annoTimeout?: number | string;
     volume?: number | string;
+    /**
+     * Set by the "say" command, if the options only select the output and do not change the voice.
+     * In this case the cached files may be used, because it is not a test of the voice settings.
+     */
+    useCache?: boolean;
     callback?: (error?: string) => void;
 };
 

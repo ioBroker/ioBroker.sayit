@@ -16,6 +16,31 @@ import Speech2Device from './lib/speech2device';
 import { Adapter, type AdapterOptions, getAbsoluteDefaultDataDir } from '@iobroker/adapter-core';
 import type { EngineType, SayItAdapterConfig, SayItDeviceProps, SayItProps, TestOptions } from './types';
 
+/**
+ * Options of the "say" command, which change the generated voice.
+ * If one of them is given, the files cached with the saved configuration cannot be used.
+ */
+const VOICE_OPTIONS: (keyof TestOptions)[] = [
+    'yandexCloudVoice',
+    'yandexKey',
+    'yandexEmotion',
+    'yandexFolderID',
+    'yandexVoice',
+    'yandexDrunk',
+    'yandexIll',
+    'yandexRobot',
+    'awsAccessKey',
+    'awsSecretKey',
+    'awsRegion',
+    'freettsApiKey',
+    'freettsVoice',
+    'freettsRate',
+    'freettsPitch',
+    'coquiVocoder',
+    'cloudAppKey',
+    'cloudInstance',
+];
+
 /** Greeting used by the "Test" button of the "Player" tab */
 const HELLO_TEXTS: { [language: string]: string } = {
     en: 'Hello',
@@ -438,6 +463,8 @@ export class SayItAdapter extends Adapter {
             if (text) {
                 if (obj.callback) {
                     const testOptions: TestOptions = { ...obj.message };
+                    // The cache could be used, if only the output (device, volume, ...) is selected
+                    testOptions.useCache = !VOICE_OPTIONS.some(option => testOptions[option] !== undefined);
                     testOptions.callback = (error?: string): void => {
                         this.sendTo(obj.from, obj.command, { error, result: error ? undefined : 'Ok' }, obj.callback);
                     };
@@ -458,6 +485,8 @@ export class SayItAdapter extends Adapter {
                             mpdInstance,
                             browserInstance,
                             chromecastDevice,
+                            // Only the output is selected here, so the cached files could be used
+                            useCache: true,
                         },
                     }).catch(e => this.log.error(`Cannot add to queue ${e.toString()}`));
                 }
@@ -498,22 +527,35 @@ export class SayItAdapter extends Adapter {
                 },
             );
         } else if (obj.callback && obj.command === 'browseHeos') {
-            this.getObjectView('system', 'device', { startkey: 'heos.', endkey: 'heos.\u9999' }, (err, res) => {
-                const list: { value: string; label: string }[] = [];
-                res?.rows.forEach(row => {
-                    let name = row.value?.common?.name;
-                    if (typeof name === 'object') {
-                        name = name[this.lang] || name.en;
-                    }
-                    if (row.id.includes('.players.')) {
-                        list.push({
-                            value: row.id,
-                            label: `${row.id.replace(/^heos\.\d+\.players\./, '')} [${name}]`,
-                        });
-                    }
+            // The heos adapter creates the players as channels "heos.0.players.<pid>" (#416).
+            // Devices are read too, to support the players of older versions.
+            const params = { startkey: 'heos.', endkey: 'heos.\u9999' };
+            Promise.all([
+                this.getObjectViewAsync('system', 'channel', params),
+                this.getObjectViewAsync('system', 'device', params),
+            ])
+                .then(results => {
+                    const list: { value: string; label: string }[] = [];
+                    results.forEach(res =>
+                        res?.rows.forEach(row => {
+                            let name = row.value?.common?.name;
+                            if (typeof name === 'object') {
+                                name = name[this.lang] || name.en;
+                            }
+                            if (/^heos\.\d+\.players\.[^.]+$/.test(row.id)) {
+                                list.push({
+                                    value: row.id,
+                                    label: `${row.id.replace(/^heos\.\d+\.players\./, '')} [${name}]`,
+                                });
+                            }
+                        }),
+                    );
+                    this.sendTo(obj.from, obj.command, list, obj.callback);
+                })
+                .catch(e => {
+                    this.log.warn(`Cannot read heos players: ${e}`);
+                    this.sendTo(obj.from, obj.command, [], obj.callback);
                 });
-                this.sendTo(obj.from, obj.command, list, obj.callback);
-            });
         } else if (obj.callback && obj.command === 'browseSonos') {
             this.getObjectView('system', 'device', { startkey: 'sonos.', endkey: 'sonos.\u9999' }, (err, res) => {
                 const list: { value: string; label: string }[] = [];
@@ -838,6 +880,8 @@ export class SayItAdapter extends Adapter {
             }
 
             let fileName: string | undefined;
+            // A test of the voice settings must not use the cache. The "say" command uses it, if possible.
+            const isTest = !!testOptions && !testOptions.useCache;
 
             // find out if say.mp3 must be generated
             const isGenerate = !Speech2Device.isPlayFile(text) && sayitOptions[type].mp3Required;
@@ -849,7 +893,7 @@ export class SayItAdapter extends Adapter {
                 // Check: may be it is a file from DB filesystem, like /vis.0/main/img/door-bell.mp3
                 if (text[0] === '/') {
                     let fileNameTemp: string | false | undefined;
-                    if (!testOptions && (this.config.cache || onlyCache)) {
+                    if (!isTest && (this.config.cache || onlyCache)) {
                         fileNameTemp = this.isCached(text);
                     }
 
@@ -902,8 +946,8 @@ export class SayItAdapter extends Adapter {
                 // If a text first must be generated, and it is different from the last one
                 if (!fileName) {
                     // do not cache if test options active, to test the voice generation too
-                    if (this.sayLastGeneratedText !== `[${language}]${text}` || testOptions) {
-                        if (this.config.cache && !testOptions) {
+                    if (this.sayLastGeneratedText !== `[${language}]${text}` || isTest) {
+                        if (this.config.cache && !isTest) {
                             const md5filename = this.isCached(`${language};${text}`);
                             if (md5filename) {
                                 fileName = md5filename;
@@ -919,8 +963,10 @@ export class SayItAdapter extends Adapter {
                                     volume,
                                     testOptions,
                                 });
-                                // Only the content of MP3FILE could be reused for the next identical text
-                                this.sayLastGeneratedText = fileName === this.MP3FILE ? `[${language}]${text}` : '';
+                                // Only the content of MP3FILE could be reused for the next identical text,
+                                // but not if it was generated with the voice settings of a test
+                                this.sayLastGeneratedText =
+                                    fileName === this.MP3FILE && !isTest ? `[${language}]${text}` : '';
                             } catch (e) {
                                 fileName = '';
                                 error = `Cannot generate speech file: ${e}`;
@@ -1410,6 +1456,17 @@ export class SayItAdapter extends Adapter {
             }
         } else {
             host = obj.native.bind;
+        }
+
+        if (host.includes(':')) {
+            // A link-local IPv6 address is valid only together with the network interface of this host (#399)
+            if (/^fe80:/i.test(host)) {
+                this.log.warn(
+                    `Web server address "${host}" is a link-local IPv6 address and cannot be reached by the devices. Please select an IPv4 address.`,
+                );
+            }
+            // IPv6 addresses must be written in square brackets in a URL
+            host = `[${host.replace(/^\[|\]$/g, '')}]`;
         }
 
         return `http${obj.native.secure ? 's' : ''}://${host}:${obj.native.port}`;

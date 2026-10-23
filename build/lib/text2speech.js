@@ -759,12 +759,16 @@ class Text2Speech {
      * @returns Name of the generated (or cached) file
      */
     async sayItGetSpeech(props) {
-        if (this.#config.cache && !props.testOptions) {
-            const md5filename = this.#isCached(`${props.language};${props.text}`);
+        // A test of the voice settings must not use the cache. The "say" command uses it, if possible.
+        const useCache = this.#config.cache && (!props.testOptions || !!props.testOptions.useCache);
+        // The text could be changed below (SSML removed), so the key must be built from the original text
+        const cacheKey = `${props.language};${props.text}`;
+        if (useCache) {
+            const md5filename = this.#isCached(cacheKey);
             if (md5filename) {
                 return md5filename;
             }
-            this.#adapter.log.debug(`Cache file for "${props.language};${props.text}" not found`);
+            this.#adapter.log.debug(`Cache file for "${cacheKey}" not found`);
         }
         if (engines_1.sayitEngines[props.language]?.engine) {
             if (!engines_1.sayitEngines[props.language].ssml) {
@@ -806,8 +810,8 @@ class Text2Speech {
         }
         // The test files are generated with the settings of the configuration dialog and not with the
         // saved ones, so they must not be stored in the cache of the saved configuration
-        if (this.#config.cache && !props.testOptions) {
-            this.#cacheFile(props.text, props.language, this.#getCachedFileName(`${props.language};${props.text}`));
+        if (useCache) {
+            this.#cacheFile(props.text, props.language, this.#getCachedFileName(cacheKey));
         }
         return this.#MP3FILE;
     }

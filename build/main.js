@@ -11,6 +11,30 @@ const engines_1 = require("./lib/engines");
 const text2speech_1 = __importDefault(require("./lib/text2speech"));
 const speech2device_1 = __importDefault(require("./lib/speech2device"));
 const adapter_core_1 = require("@iobroker/adapter-core");
+/**
+ * Options of the "say" command, which change the generated voice.
+ * If one of them is given, the files cached with the saved configuration cannot be used.
+ */
+const VOICE_OPTIONS = [
+    'yandexCloudVoice',
+    'yandexKey',
+    'yandexEmotion',
+    'yandexFolderID',
+    'yandexVoice',
+    'yandexDrunk',
+    'yandexIll',
+    'yandexRobot',
+    'awsAccessKey',
+    'awsSecretKey',
+    'awsRegion',
+    'freettsApiKey',
+    'freettsVoice',
+    'freettsRate',
+    'freettsPitch',
+    'coquiVocoder',
+    'cloudAppKey',
+    'cloudInstance',
+];
 /** Greeting used by the "Test" button of the "Player" tab */
 const HELLO_TEXTS = {
     en: 'Hello',
@@ -331,6 +355,8 @@ class SayItAdapter extends adapter_core_1.Adapter {
             if (text) {
                 if (obj.callback) {
                     const testOptions = { ...obj.message };
+                    // The cache could be used, if only the output (device, volume, ...) is selected
+                    testOptions.useCache = !VOICE_OPTIONS.some(option => testOptions[option] !== undefined);
                     testOptions.callback = (error) => {
                         this.sendTo(obj.from, obj.command, { error, result: error ? undefined : 'Ok' }, obj.callback);
                     };
@@ -350,6 +376,8 @@ class SayItAdapter extends adapter_core_1.Adapter {
                             mpdInstance,
                             browserInstance,
                             chromecastDevice,
+                            // Only the output is selected here, so the cached files could be used
+                            useCache: true,
                         },
                     }).catch(e => this.log.error(`Cannot add to queue ${e.toString()}`));
                 }
@@ -389,21 +417,32 @@ class SayItAdapter extends adapter_core_1.Adapter {
             });
         }
         else if (obj.callback && obj.command === 'browseHeos') {
-            this.getObjectView('system', 'device', { startkey: 'heos.', endkey: 'heos.\u9999' }, (err, res) => {
+            // The heos adapter creates the players as channels "heos.0.players.<pid>" (#416).
+            // Devices are read too, to support the players of older versions.
+            const params = { startkey: 'heos.', endkey: 'heos.\u9999' };
+            Promise.all([
+                this.getObjectViewAsync('system', 'channel', params),
+                this.getObjectViewAsync('system', 'device', params),
+            ])
+                .then(results => {
                 const list = [];
-                res?.rows.forEach(row => {
+                results.forEach(res => res?.rows.forEach(row => {
                     let name = row.value?.common?.name;
                     if (typeof name === 'object') {
                         name = name[this.lang] || name.en;
                     }
-                    if (row.id.includes('.players.')) {
+                    if (/^heos\.\d+\.players\.[^.]+$/.test(row.id)) {
                         list.push({
                             value: row.id,
                             label: `${row.id.replace(/^heos\.\d+\.players\./, '')} [${name}]`,
                         });
                     }
-                });
+                }));
                 this.sendTo(obj.from, obj.command, list, obj.callback);
+            })
+                .catch(e => {
+                this.log.warn(`Cannot read heos players: ${e}`);
+                this.sendTo(obj.from, obj.command, [], obj.callback);
             });
         }
         else if (obj.callback && obj.command === 'browseSonos') {
@@ -696,6 +735,8 @@ class SayItAdapter extends adapter_core_1.Adapter {
                 volume = undefined;
             }
             let fileName;
+            // A test of the voice settings must not use the cache. The "say" command uses it, if possible.
+            const isTest = !!testOptions && !testOptions.useCache;
             // find out if say.mp3 must be generated
             const isGenerate = !speech2device_1.default.isPlayFile(text) && engines_1.sayitOptions[type].mp3Required;
             language ||= (testOptions && testOptions.engine) || this.config.engine;
@@ -704,7 +745,7 @@ class SayItAdapter extends adapter_core_1.Adapter {
                 // Check: may be it is a file from DB filesystem, like /vis.0/main/img/door-bell.mp3
                 if (text[0] === '/') {
                     let fileNameTemp;
-                    if (!testOptions && (this.config.cache || onlyCache)) {
+                    if (!isTest && (this.config.cache || onlyCache)) {
                         fileNameTemp = this.isCached(text);
                     }
                     if (!fileNameTemp) {
@@ -754,8 +795,8 @@ class SayItAdapter extends adapter_core_1.Adapter {
                 // If a text first must be generated, and it is different from the last one
                 if (!fileName) {
                     // do not cache if test options active, to test the voice generation too
-                    if (this.sayLastGeneratedText !== `[${language}]${text}` || testOptions) {
-                        if (this.config.cache && !testOptions) {
+                    if (this.sayLastGeneratedText !== `[${language}]${text}` || isTest) {
+                        if (this.config.cache && !isTest) {
                             const md5filename = this.isCached(`${language};${text}`);
                             if (md5filename) {
                                 fileName = md5filename;
@@ -770,8 +811,10 @@ class SayItAdapter extends adapter_core_1.Adapter {
                                     volume,
                                     testOptions,
                                 });
-                                // Only the content of MP3FILE could be reused for the next identical text
-                                this.sayLastGeneratedText = fileName === this.MP3FILE ? `[${language}]${text}` : '';
+                                // Only the content of MP3FILE could be reused for the next identical text,
+                                // but not if it was generated with the voice settings of a test
+                                this.sayLastGeneratedText =
+                                    fileName === this.MP3FILE && !isTest ? `[${language}]${text}` : '';
                             }
                             catch (e) {
                                 fileName = '';
@@ -1232,6 +1275,14 @@ class SayItAdapter extends adapter_core_1.Adapter {
         }
         else {
             host = obj.native.bind;
+        }
+        if (host.includes(':')) {
+            // A link-local IPv6 address is valid only together with the network interface of this host (#399)
+            if (/^fe80:/i.test(host)) {
+                this.log.warn(`Web server address "${host}" is a link-local IPv6 address and cannot be reached by the devices. Please select an IPv4 address.`);
+            }
+            // IPv6 addresses must be written in square brackets in a URL
+            host = `[${host.replace(/^\[|\]$/g, '')}]`;
         }
         return `http${obj.native.secure ? 's' : ''}://${host}:${obj.native.port}`;
     };
