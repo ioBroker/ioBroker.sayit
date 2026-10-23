@@ -385,7 +385,7 @@ class Speech2Device {
             return await new Promise((resolve, reject) => {
                 let count = 0;
                 let checking = false;
-                let intervalHandler = setInterval(async () => {
+                let intervalHandler = this.adapter.setInterval(async () => {
                     // Do not start the next check if the previous one is not finished yet
                     if (checking || !intervalHandler) {
                         return;
@@ -395,7 +395,7 @@ class Speech2Device {
                     /** Stop the interval, so no further checks will be done */
                     const stop = () => {
                         if (intervalHandler) {
-                            clearInterval(intervalHandler);
+                            this.adapter.clearInterval(intervalHandler);
                             intervalHandler = null;
                         }
                     };

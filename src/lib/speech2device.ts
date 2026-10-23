@@ -436,7 +436,7 @@ export default class Speech2Device {
             return await new Promise<boolean>((resolve, reject) => {
                 let count = 0;
                 let checking = false;
-                let intervalHandler: NodeJS.Timeout | null = setInterval(async () => {
+                let intervalHandler: ioBroker.Interval | undefined | null = this.adapter.setInterval(async () => {
                     // Do not start the next check if the previous one is not finished yet
                     if (checking || !intervalHandler) {
                         return;
@@ -447,7 +447,7 @@ export default class Speech2Device {
                     /** Stop the interval, so no further checks will be done */
                     const stop = (): void => {
                         if (intervalHandler) {
-                            clearInterval(intervalHandler);
+                            this.adapter.clearInterval(intervalHandler);
                             intervalHandler = null;
                         }
                     };

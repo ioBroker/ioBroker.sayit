@@ -136,9 +136,9 @@ export class SayItAdapter extends Adapter {
     private dataDir = join(getAbsoluteDefaultDataDir(), 'sayit');
 
     /** Timer of the mDNS discovery */
-    private processMessageTimeout: NodeJS.Timeout | null = null;
+    private processMessageTimeout: ioBroker.Timeout | undefined | null = null;
     /** Timer that starts the processing of the next task in the queue */
-    private timeoutRunning: NodeJS.Timeout | null = null;
+    private timeoutRunning: ioBroker.Timeout | undefined | null = null;
     /** System language. Used to show the device names in the configuration dialog */
     private lang!: ioBroker.Languages;
 
@@ -286,7 +286,7 @@ export class SayItAdapter extends Adapter {
                 result.push({ name: service.name || service.fullname, ip: service.addresses[0] }),
             );
             browser.on('error', (err: string) => this.log.error(`Error on MDNS discovery: ${err}`));
-            this.processMessageTimeout = setTimeout(() => {
+            this.processMessageTimeout = this.setTimeout(() => {
                 this.processMessageTimeout = null;
                 if (browser) {
                     browser.stop();
@@ -612,12 +612,12 @@ export class SayItAdapter extends Adapter {
      */
     stopInstance = (unload?: boolean, callback?: () => void): void => {
         if (this.processMessageTimeout) {
-            clearTimeout(this.processMessageTimeout);
+            this.clearTimeout(this.processMessageTimeout);
             this.processMessageTimeout = null;
         }
 
         if (this.timeoutRunning) {
-            clearTimeout(this.timeoutRunning);
+            this.clearTimeout(this.timeoutRunning);
             this.timeoutRunning = null;
         }
 
@@ -632,7 +632,7 @@ export class SayItAdapter extends Adapter {
         }
 
         if (!unload) {
-            setTimeout(() => this.terminate(), 500);
+            this.setTimeout(() => this.terminate(), 500);
         }
     };
 
@@ -1019,7 +1019,7 @@ export class SayItAdapter extends Adapter {
         }
 
         if (this.tasks.length) {
-            this.timeoutRunning = setTimeout(
+            this.timeoutRunning = this.setTimeout(
                 () => {
                     this.timeoutRunning = null;
                     this.processing = false;

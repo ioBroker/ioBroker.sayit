@@ -268,7 +268,7 @@
       "_id": "tts.text",
       "type": "state",
       "common": {
-        "role": "media.tts.text",
+        "role": "media.tts",
         "name": "Text to speech",
         "type": "string",
         "read": true,
@@ -294,7 +294,7 @@
       "_id": "tts.cachetext",
       "type": "state",
       "common": {
-        "role": "media.tts.cachetext",
+        "role": "text",
         "name": "Text to cache",
         "type": "string",
         "read": true,
@@ -307,7 +307,7 @@
       "_id": "tts.playing",
       "type": "state",
       "common": {
-        "role": "media.tts.text",
+        "role": "indicator.working",
         "name": "Is now speaking",
         "type": "boolean",
         "read": true,
