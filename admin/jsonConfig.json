@@ -292,6 +292,8 @@
                 },
                 "webServer": {
                     "type": "ip",
+                    "onlyIp4": true,
+                    "noInternal": true,
                     "label": "Web server IP",
                     "hidden": "data.type !== 'sonos' && data.type !== 'heos' && data.type !== 'chromecast' && data.type !== 'mpd' && data.type !== 'googleHome'",
                     "sm": 6,
