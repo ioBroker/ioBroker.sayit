@@ -8,7 +8,7 @@ import {
     readdirSync,
     lstatSync,
 } from 'node:fs';
-import { normalize, join } from 'node:path';
+import { normalize, join, isAbsolute } from 'node:path';
 import { createHash } from 'node:crypto';
 import { sayitEngines, sayitOptions } from './lib/engines';
 import Text2Speech from './lib/text2speech';
@@ -1236,11 +1236,15 @@ export class SayItAdapter extends Adapter {
 
         // If cache enabled
         if (this.config.cache) {
-            if (this.config.cacheDir && (this.config.cacheDir[0] === '/' || this.config.cacheDir[0] === '\\')) {
-                this.config.cacheDir = this.config.cacheDir.substring(1);
-            }
-            // Relative directories are relative to the adapter directory (not to "build") and "join" resolves ".."
-            this.cacheDir = normalize(join(this.rootDir, this.config.cacheDir || 'cache')).replace(/[/\\]$/, '');
+            // An absolute path is taken as it is. A relative one is resolved against the data directory of the adapter
+            // in "iobroker-data" and never against the installation tree, because npm prunes everything
+            // in "node_modules" that is not a package (#442). The old default "../../cache/" still resolves
+            // to "<install root>/cache", so the existing instances keep their cache.
+            const cacheDir = this.config.cacheDir?.trim() || 'cache';
+            this.cacheDir = normalize(isAbsolute(cacheDir) ? cacheDir : join(this.dataDir, cacheDir)).replace(
+                /[/\\]$/,
+                '',
+            );
 
             // Create cache directory, if it does not exist
             if (!existsSync(this.cacheDir)) {
@@ -1263,10 +1267,11 @@ export class SayItAdapter extends Adapter {
                 }
                 // If engine changed, all cached files are invalid
                 if (engine !== this.cacheSignature) {
-                    // Delete all files in this directory
+                    // Delete only the cached files, named like "<md5>.mp3", because the user could
+                    // select a directory with other files as the cache directory
                     const files = readdirSync(this.cacheDir);
                     for (let f = 0; f < files.length; f++) {
-                        if (files[f] === 'engine.txt') {
+                        if (!/^[0-9a-f]{32}\.\w+$/.test(files[f])) {
                             continue;
                         }
                         const fileName = join(this.cacheDir, files[f]);

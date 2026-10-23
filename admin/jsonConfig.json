@@ -157,6 +157,15 @@
                     "md": 4,
                     "lg": 2
                 },
+                "cacheDir": {
+                    "type": "text",
+                    "label": "Cache directory",
+                    "help": "Relative to iobroker-data/sayit or absolute",
+                    "hidden": "!data.cache",
+                    "sm": 12,
+                    "md": 8,
+                    "lg": 4
+                },
                 "chromecastDevice": {
                     "newLine": true,
                     "type": "selectSendTo",

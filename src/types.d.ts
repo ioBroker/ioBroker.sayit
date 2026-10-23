@@ -189,7 +189,7 @@ export interface SayItAdapterConfig {
     cache: boolean;
     /** Delete cached files after this number of days. 0 - never delete */
     cacheExpiryDays: number;
-    /** Cache directory. Relative paths are relative to the adapter directory */
+    /** Cache directory. Relative paths are relative to the data directory of the adapter (iobroker-data/sayit) */
     cacheDir: string;
     /** Engine (voice) used for the text generation */
     engine: EngineType;

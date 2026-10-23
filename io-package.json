@@ -180,7 +180,7 @@
     "systemPlayer": "mplayer",
     "volume": "",
     "cache": true,
-    "cacheDir": "../../cache/",
+    "cacheDir": "cache",
     "cacheExpiryDays": 0,
     "engine": "",
     "sonosDevice": "",
