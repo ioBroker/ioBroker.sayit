@@ -39,7 +39,7 @@
     "mdns": "^2.7.2"
   },
   "dependencies": {
-    "@aws-sdk/client-polly": "^3.1150.0",
+    "@aws-sdk/client-polly": "^3.1152.0",
     "@iobroker/adapter-core": "^3.4.3",
     "axios": "^1.20.0",
     "google-tts-api": "^2.0.2",
