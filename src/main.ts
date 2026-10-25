@@ -468,7 +468,7 @@ export class SayItAdapter extends Adapter {
             const text: string | undefined = obj.message?.text as string;
             const language: EngineType | undefined = obj.message?.language as EngineType;
             const volume = obj.message?.volume ? parseInt(obj.message.volume as string, 10) : undefined;
-            const browserVis = obj.message?.browserVis as '' | '1' | '2';
+            const browserVis = obj.message?.browserVis as '' | '1' | '2' | 'aura';
             const browserInstance = obj.message?.browserInstance as string;
             const sonosDevice = obj.message?.sonosDevice as string;
             const heosDevice = obj.message?.heosDevice as string;
@@ -1309,7 +1309,7 @@ export class SayItAdapter extends Adapter {
             }
             throw new Error('Cannot get instance config object');
         }
-        this.config.browserVis = this.config.browserVis.toString() as '' | '1' | '2';
+        this.config.browserVis = this.config.browserVis.toString() as '' | '1' | '2' | 'aura';
 
         const systemConfig = await this.getForeignObjectAsync('system.config');
         this.lang = systemConfig?.common?.language || 'de';
