@@ -34,6 +34,8 @@ Actually, the following outputs are supported:
 
 - *Squeezebox* - play text on a player of the Logitech Media Server (Lyrion) with the [squeezeboxrpc](https://github.com/oweitman/ioBroker.squeezeboxrpc) adapter (version 2.0.0 or newer). The text is written into the state `Announce` of the player, so the current playback is stopped and restored afterward. The volume of the announcement is configured in the squeezeboxrpc adapter. Be sure the Web Adapter is enabled, so the Media Server can read the generated mp3 files.
 
+- *Fully Kiosk Browser* - play text on an Android tablet with [Fully Kiosk Browser](https://www.fully-kiosk.com) and the [fullybrowser](https://github.com/arteck/ioBroker.fullybrowser) adapter (version 3.0.5 or newer). The REST command `playSound` is sent via the state `Commands.setRAW` of the device and the volume is set via `Commands.setAudioVolume`. Be sure the Web Adapter is enabled, so the tablet can read the generated mp3 files.
+
 - *Chromecast* - play text on a Chromecast device.
 
 - *MPD* - play text on Music Player Daemon. Use only **http** for web adapter, don't use https.
@@ -322,9 +324,11 @@ Like by FreeTTS, the language is a part of the voice, e.g. `de_DE-thorsten-high`
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
-* (@hdering) Added the Aura dashboards as a target of the output type "Browser"
 ## Changelog
+### **WORK IN PROGRESS**
+* (@hdering) Added the Aura dashboards as a target of the output type "Browser" (#518)
+* (@GermanBluefox) Added the output type "Fully Kiosk Browser" for the tablets of the fullybrowser adapter
+
 ### 5.4.0 (2026-10-23)
 * (@GermanBluefox) Updated packages
 * (@GermanBluefox) Added the output type "Squeezebox" for the players of the squeezeboxrpc adapter (#5)

@@ -191,6 +191,7 @@ export interface SayItAdapterConfig {
         | 'mpd'
         | 'heos'
         | 'squeezebox'
+        | 'fully'
         | 'windows';
     /** Own play command for the type "system". "%s" will be replaced by the file name */
     systemCommand: string;
@@ -215,6 +216,8 @@ export interface SayItAdapterConfig {
     heosDevice: string;
     /** ID of the player of the squeezeboxrpc adapter, like "squeezeboxrpc.0.Players.Kitchen" */
     squeezeboxDevice: string;
+    /** ID of the tablet of the fullybrowser adapter, like "fullybrowser.0.Kitchen" */
+    fullyDevice: string;
     /** Instance of the MPD adapter, like "mpd.0" */
     mpdInstance: string;
     /** IP address of the google home device */
@@ -293,6 +296,7 @@ export type TestOptions = {
     webInstance?: `${string}.${number}`;
     heosDevice?: string;
     squeezeboxDevice?: string;
+    fullyDevice?: string;
     mpdInstance?: `${string}.${number}`;
     chromecastDevice?: string;
     googleHomeServer?: string;

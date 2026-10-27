@@ -33,6 +33,8 @@ export default class Speech2Device {
     private vis2exist: boolean | null = null;
     /** ID of the Aura state that was found, or null if not checked yet or not found */
     private auraExist: string | null = null;
+    /** ID of the Aura state that was not found and already reported, to log the error only once */
+    private auraMissing: string | null = null;
     private config: SayItAdapterConfig;
 
     constructor(adapter: ioBroker.Adapter, options: Speech2DeviceOptions) {
@@ -302,11 +304,15 @@ export default class Speech2Device {
         try {
             if (this.auraExist !== id) {
                 if (!(await this.adapter.getForeignObjectAsync(id))) {
-                    this.adapter.log.error(`Cannot play in Aura, because ${id} was not found`);
+                    if (this.auraMissing !== id) {
+                        this.adapter.log.error(`Cannot play in Aura, because ${id} was not found`);
+                        this.auraMissing = id;
+                    }
                     this.auraExist = null;
                     return false;
                 }
                 this.auraExist = id;
+                this.auraMissing = null;
             }
             const clients = (browserInstance || '')
                 .split(',')
@@ -451,6 +457,53 @@ export default class Speech2Device {
         const url = `${webLink}${result.fileInDB}`;
         this.adapter.log.info(`Set "${announceId}" to ${url}`);
         await this.adapter.setForeignStateAsync(announceId, url);
+
+        return true;
+    }
+
+    /**
+     * Play the file on an Android tablet with the Fully Kiosk Browser via the fullybrowser adapter.
+     * The REST command "playSound" is sent over the state "Commands.setRAW" (fullybrowser 3.0.5 or newer).
+     *
+     * @param props Text, volume and options of the task
+     * @returns True if the file was sent to the fullybrowser adapter
+     */
+    async #sayItFully(props: SayItDeviceProps): Promise<boolean> {
+        const fullyDevice = props.testOptions?.fullyDevice || this.config.fullyDevice;
+        if (!fullyDevice) {
+            this.adapter.log.warn('No Fully Kiosk Browser device defined');
+            return false;
+        }
+
+        const rawId = `${fullyDevice}.Commands.setRAW`;
+        const obj = await this.adapter.getForeignObjectAsync(rawId);
+        if (!obj) {
+            this.adapter.log.warn(
+                `State "${rawId}" not found. Please update the fullybrowser adapter to 3.0.5 or newer`,
+            );
+            return false;
+        }
+
+        props.volume ||= props.testOptions?.volume
+            ? parseInt(props.testOptions.volume as string, 10)
+            : this.options.sayLastVolume;
+
+        const result = await this.#uploadToStates(this.#speechSource(props));
+        const webLink = await this.#getWebLink(props.testOptions);
+        if (!webLink) {
+            this.adapter.log.warn('Web server is unavailable!');
+            return false;
+        }
+
+        if (props.volume) {
+            // playSound uses the stream 3 (music) too
+            await this.adapter.setForeignStateAsync(`${fullyDevice}.Commands.setAudioVolume`, props.volume);
+        }
+
+        // setRAW sends "cmd=<value>" without encoding, so the URL must be encoded here
+        const url = `${webLink}${result.fileInDB}`;
+        this.adapter.log.info(`Set "${rawId}" to playSound ${url}`);
+        await this.adapter.setForeignStateAsync(rawId, `playSound&url=${encodeURIComponent(url)}&loop=false&stream=3`);
 
         return true;
     }
@@ -1004,6 +1057,9 @@ export default class Speech2Device {
         }
         if (type === 'squeezebox') {
             return await this.#sayItSqueezebox(props);
+        }
+        if (type === 'fully') {
+            return await this.#sayItFully(props);
         }
         if (type === 'chromecast') {
             return await this.#sayItChromecast(props);

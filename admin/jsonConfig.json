@@ -44,6 +44,10 @@
                             "label": "Squeezebox"
                         },
                         {
+                            "value": "fully",
+                            "label": "Fully Kiosk Browser"
+                        },
+                        {
                             "value": "chromecast",
                             "label": "Chromecast"
                         },
@@ -290,6 +294,17 @@
                     "lg": 2,
                     "xl": 2
                 },
+                "fullyDevice": {
+                    "type": "selectSendTo",
+                    "label": "Device",
+                    "hidden": "data.type !== 'fully'",
+                    "command": "browseFully",
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 2,
+                    "xl": 2
+                },
                 "mpdInstance": {
                     "type": "instance",
                     "label": "Device",
@@ -305,6 +320,7 @@
                     "newLine": true,
                     "type": "text",
                     "label": "Browser instance",
+                    "help": "browser_instance_help",
                     "hidden": "data.type !== 'browser'",
                     "xs": 12,
                     "sm": 6,
@@ -345,7 +361,6 @@
                     "type": "instance",
                     "adapter": "aura",
                     "label": "Aura instance",
-                    "help": "aura_instance_help",
                     "hidden": "data.type !== 'browser' || data.browserVis !== 'aura'",
                     "xs": 12,
                     "sm": 6,
@@ -358,7 +373,7 @@
                     "type": "instance",
                     "adapter": "web",
                     "label": "Web instance",
-                    "hidden": "data.type !== 'sonos' && data.type !== 'heos' && data.type !== 'squeezebox' && data.type !== 'chromecast' && data.type !== 'mpd' && data.type !== 'googleHome'",
+                    "hidden": "data.type !== 'sonos' && data.type !== 'heos' && data.type !== 'squeezebox' && data.type !== 'fully' && data.type !== 'chromecast' && data.type !== 'mpd' && data.type !== 'googleHome'",
                     "xs": 12,
                     "sm": 6,
                     "md": 4,
@@ -370,7 +385,7 @@
                     "onlyIp4": true,
                     "noInternal": true,
                     "label": "Web server IP",
-                    "hidden": "data.type !== 'sonos' && data.type !== 'heos' && data.type !== 'squeezebox' && data.type !== 'chromecast' && data.type !== 'mpd' && data.type !== 'googleHome'",
+                    "hidden": "data.type !== 'sonos' && data.type !== 'heos' && data.type !== 'squeezebox' && data.type !== 'fully' && data.type !== 'chromecast' && data.type !== 'mpd' && data.type !== 'googleHome'",
                     "xs": 12,
                     "sm": 6,
                     "md": 4,

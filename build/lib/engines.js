@@ -1335,6 +1335,13 @@ const sayitOptions = {
         server: true,
         libs: ['fs', 'crypto', 'http'],
     },
+    fully: {
+        name: 'Fully Kiosk Browser',
+        mp3Required: true,
+        checkLength: true,
+        server: true,
+        libs: ['fs', 'crypto', 'http'],
+    },
     chromecast: {
         name: 'Chromecast',
         mp3Required: true,

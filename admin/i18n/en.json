@@ -112,7 +112,7 @@
     "vis.0 and vis-2.0": "vis.0 and vis-2.0",
     "Aura dashboards": "Aura dashboards",
     "Aura instance": "Aura instance",
-    "aura_instance_help": "Browser instance: comma-separated Aura client IDs, or FFFFFFFF for all dashboards",
+    "browser_instance_help": "vis: ID of the browser or FFFFFFFF for all. Aura: comma-separated client IDs, empty for all dashboards",
     "Folder ID": "Folder ID",
     "Test": "Test",
     "Announce duration": "Announce duration"

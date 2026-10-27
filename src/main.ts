@@ -473,6 +473,7 @@ export class SayItAdapter extends Adapter {
             const sonosDevice = obj.message?.sonosDevice as string;
             const heosDevice = obj.message?.heosDevice as string;
             const squeezeboxDevice = obj.message?.squeezeboxDevice as string;
+            const fullyDevice = obj.message?.fullyDevice as string;
             const mpdInstance = obj.message?.mpdInstance as `${string}.${number}`;
             const chromecastDevice = obj.message?.chromecastDevice as string;
 
@@ -499,6 +500,7 @@ export class SayItAdapter extends Adapter {
                             sonosDevice,
                             heosDevice,
                             squeezeboxDevice,
+                            fullyDevice,
                             mpdInstance,
                             browserInstance,
                             chromecastDevice,
@@ -587,6 +589,26 @@ export class SayItAdapter extends Adapter {
                 })
                 .catch(e => {
                     this.log.warn(`Cannot read squeezebox players: ${e}`);
+                    this.sendTo(obj.from, obj.command, [], obj.callback);
+                });
+        } else if (obj.callback && obj.command === 'browseFully') {
+            // The fullybrowser adapter creates the tablets as devices "fullybrowser.0.<name>"
+            this.getObjectViewAsync('system', 'device', { startkey: 'fullybrowser.', endkey: 'fullybrowser.\u9999' })
+                .then(res => {
+                    const list: { value: string; label: string }[] = [];
+                    res?.rows.forEach(row => {
+                        if (/^fullybrowser\.\d+\.[^.]+$/.test(row.id)) {
+                            let name = row.value?.common?.name;
+                            if (typeof name === 'object') {
+                                name = name[this.lang] || name.en;
+                            }
+                            list.push({ value: row.id, label: name ? `${name} (${row.id})` : row.id });
+                        }
+                    });
+                    this.sendTo(obj.from, obj.command, list, obj.callback);
+                })
+                .catch(e => {
+                    this.log.warn(`Cannot read fully browser devices: ${e}`);
                     this.sendTo(obj.from, obj.command, [], obj.callback);
                 });
         } else if (obj.callback && obj.command === 'browseSonos') {
@@ -1392,6 +1414,7 @@ export class SayItAdapter extends Adapter {
             this.config.type === 'sonos' ||
             this.config.type === 'heos' ||
             this.config.type === 'squeezebox' ||
+            this.config.type === 'fully' ||
             this.config.type === 'chromecast' ||
             this.config.type === 'mpd' ||
             this.config.type === 'googleHome'
@@ -1482,7 +1505,7 @@ export class SayItAdapter extends Adapter {
 
         if (obj.native.auth) {
             this.log.error(
-                `Cannot use server "${obj._id}" with authentication for sonos/heos/squeezebox/chromecast. Select other or create another one.`,
+                `Cannot use server "${obj._id}" with authentication for sonos/heos/squeezebox/fully/chromecast. Select other or create another one.`,
             );
             return '';
         }
