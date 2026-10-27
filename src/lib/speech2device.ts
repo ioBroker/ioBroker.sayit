@@ -31,6 +31,8 @@ export default class Speech2Device {
     private vis1exist: boolean | null = null;
     /** True if the vis-2.0 objects exist. Null if it was not checked yet */
     private vis2exist: boolean | null = null;
+    /** ID of the Aura state that was found, or null if not checked yet or not found */
+    private auraExist: string | null = null;
     private config: SayItAdapterConfig;
 
     constructor(adapter: ioBroker.Adapter, options: Speech2DeviceOptions) {
@@ -234,6 +236,10 @@ export default class Speech2Device {
         const browserVis =
             props.testOptions?.browserVis === undefined ? this.config.browserVis : props.testOptions.browserVis;
 
+        if (browserVis === 'aura') {
+            return this.#sayItAura(props, result.fileInDB, browserInstance);
+        }
+
         // check if vis.0.control.command exists
         if (!browserVis || browserVis === '1') {
             try {
@@ -279,6 +285,47 @@ export default class Speech2Device {
         }
 
         return !!this.vis1exist || !!this.vis2exist;
+    }
+
+    /**
+     * Play the file in the Aura dashboards (ioBroker.aura): Aura plays whatever is written to
+     * `aura.N.speech.say` on every open dashboard, or only on some of them.
+     *
+     * @param props Text, type and options of the task
+     * @param fileInDB Path of the uploaded file, like "/sayit.0/tts.mp3?ts=..."
+     * @param browserInstance Comma-separated Aura client IDs, or empty / "FFFFFFFF" / "*" for all dashboards
+     * @returns True if the Aura instance was found
+     */
+    async #sayItAura(props: SayItDeviceProps, fileInDB: string, browserInstance?: string): Promise<boolean> {
+        const auraInstance = props.testOptions?.browserAuraInstance || this.config.browserAuraInstance || 'aura.0';
+        const id = `${auraInstance}.speech.say`;
+        try {
+            if (this.auraExist !== id) {
+                if (!(await this.adapter.getForeignObjectAsync(id))) {
+                    this.adapter.log.error(`Cannot play in Aura, because ${id} was not found`);
+                    this.auraExist = null;
+                    return false;
+                }
+                this.auraExist = id;
+            }
+            const clients = (browserInstance || '')
+                .split(',')
+                .map(c => c.trim())
+                .filter(c => c && c !== '*' && c.toUpperCase() !== 'FFFFFFFF');
+            const payload: { file: string; volume?: number; clients?: string[] } = { file: fileInDB };
+            if (typeof props.volume === 'number' && !isNaN(props.volume)) {
+                payload.volume = props.volume;
+            }
+            if (clients.length) {
+                payload.clients = clients;
+            }
+            await this.adapter.setForeignStateAsync(id, JSON.stringify(payload));
+            return true;
+        } catch (e) {
+            this.adapter.log.error(`Cannot control Aura: ${e}`);
+            this.auraExist = null;
+            return false;
+        }
     }
 
     /**

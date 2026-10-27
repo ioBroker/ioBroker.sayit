@@ -328,9 +328,25 @@
                         {
                             "value": "2",
                             "label": "vis-2.0 (New)"
+                        },
+                        {
+                            "value": "aura",
+                            "label": "Aura dashboards"
                         }
                     ],
                     "hidden": "data.type !== 'browser'",
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 3,
+                    "lg": 2,
+                    "xl": 2
+                },
+                "browserAuraInstance": {
+                    "type": "instance",
+                    "adapter": "aura",
+                    "label": "Aura instance",
+                    "help": "aura_instance_help",
+                    "hidden": "data.type !== 'browser' || data.browserVis !== 'aura'",
                     "xs": 12,
                     "sm": 6,
                     "md": 3,

@@ -17,6 +17,7 @@ SayIt Adapter can convert text to speech and play it on some device.
 Actually, the following outputs are supported:
 
 - *Browser* - browser will play the text within opened `iobroker.vis` page. It is supported almost by every desktop browser and by few mobile Browsers.
+  With "Vis instances" set to *Aura dashboards*, the text is played in the open [Aura](https://github.com/hdering/ioBroker.aura) dashboards instead. "Browser instance" then takes a comma-separated list of Aura client IDs, or `FFFFFFFF` for every dashboard.
 
 - *[Home24- MediaPlayer](http://www.home-24.net/index.php?app=media)* - the text will be sent and played to the Android device with Home24 - MediaPlayer installed. For this will be used build in Android text to speech engine. The port cannot be changed and set to 50000.
 
@@ -321,6 +322,8 @@ Like by FreeTTS, the language is a part of the voice, e.g. `de_DE-thorsten-high`
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+* (@hdering) Added the Aura dashboards as a target of the output type "Browser"
 ## Changelog
 ### 5.4.0 (2026-10-23)
 * (@GermanBluefox) Updated packages

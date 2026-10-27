@@ -110,6 +110,9 @@
     "vis-2.0 (New)": "vis-2.0 (neu)",
     "vis.0 (deprecated)": "vis.0 (veraltet)",
     "vis.0 and vis-2.0": "vis.0 und vis-2.0",
+    "Aura dashboards": "Aura-Dashboards",
+    "Aura instance": "Aura-Instanz",
+    "aura_instance_help": "Browser-Instanz: Aura-Client-IDs mit Komma getrennt, oder FFFFFFFF für alle Dashboards",
     "Folder ID": "Ordner-ID",
     "Test": "Test",
     "Announce duration": "Dauer der Ansage"

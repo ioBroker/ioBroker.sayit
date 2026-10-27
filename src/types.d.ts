@@ -228,8 +228,10 @@ export interface SayItAdapterConfig {
     ftpPassword: string;
     /** Name of the browser instance for vis or "FFFFFFFF" for all instances */
     browserInstance: string;
-    /** Which vis version must be controlled: "" - both, "1" - vis, "2" - vis-2 */
-    browserVis: '' | '1' | '2';
+    /** Which vis version must be controlled: "" - both, "1" - vis, "2" - vis-2, "aura" - Aura dashboards */
+    browserVis: '' | '1' | '2' | 'aura';
+    /** Aura instance for browserVis "aura", like "aura.0" */
+    browserAuraInstance?: `${string}.${number}`;
     /** Instance of the web adapter, like "web.0" */
     webInstance: `${string}.${number}`;
     /** IP address of the web server. Used if the web adapter is bound to 0.0.0.0 */
@@ -284,7 +286,8 @@ export type TestOptions = {
     type: SayItAdapterConfig['type'];
     engine: EngineType;
     browserInstance?: string;
-    browserVis?: '' | '1' | '2';
+    browserVis?: '' | '1' | '2' | 'aura';
+    browserAuraInstance?: `${string}.${number}`;
     sonosDevice?: string;
     webServer?: string;
     webInstance?: `${string}.${number}`;
