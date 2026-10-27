@@ -249,6 +249,12 @@ Changed type of top-level object to "meta" in order to comply with js-controller
 
 ### 0.0.1 (2015-02-06)
 * (bluefox) initial commit
+## 5.3.0 (2026-08-13)
+* (@GermanBluefox) Added freetts.org as a new TTS engine with more than 400 voices. An API key is required
+* (@GermanBluefox) The engine is selected in two steps now: first the provider and then the voice
+* (@GermanBluefox) The words of the Blockly block are translated into all 11 languages now
+* (@GermanBluefox) Blockly block migrated to TypeScript and the generated code is unchanged
+
 ## 5.2.4 (2026-08-07)
 * (@GermanBluefox) Corrected the upload of the announcement mp3 files and the location of the cache directory
 * (@GermanBluefox) Corrected the splitting of long texts for the Google engine

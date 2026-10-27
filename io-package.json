@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "sayit",
-    "version": "5.4.0",
+    "version": "5.5.0",
     "news": {
+      "5.5.0": {
+        "en": "Added the Aura dashboards as a target of the output type \"Browser\" (#518)\nAdded the output type \"Fully Kiosk Browser\" for the tablets of the fullybrowser adapter",
+        "de": "Aura-Dashboards als Ziel des Ausgabetyps „Browser“ hinzugefügt (#518)\nAusgabetyp „Fully Kiosk Browser“ für Tablets des Fully Browser Adapters hinzugefügt",
+        "ru": "Добавлены панели управления Aura в качестве цели типа вывода «Браузер» (#518)\nДобавлен тип вывода «Fully Kiosk Browser» для планшетов с полностью браузерным адаптером",
+        "pt": "Adicionou os painéis do Aura como alvo da saída “Browser” (#518)\nAdicionado o tipo de saída “Fully Kiosk Browser” para os tablets do adaptador",
+        "nl": "De Aura-dashboards toegevoegd als doel voor het uitvoertype „Browser” (#518)\nHet uitvoertype „Fully Kiosk Browser” toegevoegd voor de tablets van de FullyBrowser-adapter",
+        "fr": "Ajout des tableaux de bord Aura en tant que cible du type de sortie « Browser » (#518)\nAjout du type de sortie « Fully Kiosk Browser » pour les tablettes de l'adaptateur Fullybrowser",
+        "it": "Aggiunti i dashboard Aura come target di output «Browser» (#518)\nAggiunto il tipo di output «Fully Kiosk Browser» per i tablet dell'adattatore",
+        "es": "Añadió los paneles Aura como destino del tipo de salida «Browser» (#518)\nAñadió el tipo de salida «Full Kiosk Browser» para las tabletas del adaptador FullyBrowser",
+        "pl": "Dodano pulpity nawigacyjne Aura jako cel typu wyjściowego „Przeglądarka” (#518)\nDodano typ wyjścia „Fully Kiosk Browser” dla tabletów adaptera fullybrowser",
+        "uk": "Додано інформаційні панелі Aura як ціль вихідного типу «Браузер» (#518)\nДодано тип виводу «Повністю кіоск браузер» для планшетів адаптера fullybrowser",
+        "zh-cn": "将 Aura 仪表板添加为输出类型 “浏览器” 的目标 (#518)\n为全浏览器适配器的平板电脑添加了输出类型 “Fully Kiosk 浏览器”"
+      },
       "5.4.0": {
         "en": "Updated packages\nAdded the output type \"Squeezebox\" for the players of the squeezeboxrpc adapter (#5)\nAdded Piper as a new local TTS engine, e.g. with the voices of Thorsten-Voice (#398)",
         "de": "Neue Pakete\nAusgabetyp „Squeezebox“ für Player des SqueezeboxRPC-Adapters hinzugefügt (#5)\nPiper als neue TTS-Engine hinzugefügt, z. B. mit Thorsten-Voice (#398)",
@@ -80,19 +93,6 @@
         "pl": "Poprawiono przesyłanie plików mp3 z ogłoszeniami i lokalizację katalogu pamięci podręcznej\nPoprawiono dzielenie długich tekstów w wyszukiwarce Google\nPoprawiono wykrywanie urządzeń Sonos w oknie dialogowym konfiguracji\nPliki w pamięci podręcznej zostaną ponownie usunięte, jeśli zmieniono silnik\nKolejka nie blokuje się już, jeśli podczas przetwarzania zadania wystąpi błąd\nTeksty ze średnikami nie będą już interpretowane jako „język;objętość;tekst”\nSilniki lokalne (PicoTTS, CoquiTTS) i odtwarzacz okienkowy są teraz wywoływane bez powłoki\nPoprawiono domyślne ustawienia nowej instancji",
         "uk": "Виправлено завантаження mp3-файлів оголошень та розташування каталогу кешу\nВиправлено розділення довгих текстів для пошукової системи Google\nВиправлено виявлення пристроїв Sonos у діалоговому вікні конфігурації\nКешовані файли будуть видалені знову, якщо двигун було змінено\nЧерга більше не блокується, якщо під час обробки завдання виникає помилка.\nТексти з крапкою з комою більше не інтерпретуватимуться як \"мова;том;текст\"\nЛокальні рушії (PicoTTS, CoquiTTS) та програвач Windows тепер викликаються без оболонки.\nВиправлено налаштування за замовчуванням нового екземпляра",
         "zh-cn": "已更正公告 mp3 文件的上传问题以及缓存目录的位置。\n修正了谷歌搜索引擎对长文本的分割问题\n修正了配置对话框中 Sonos 设备的检测问题\n如果引擎发生变更，缓存文件将被再次删除。\n如果任务处理过程中发生错误，队列将不再阻塞。\n包含分号的文本将不再被解释为“语言；音量；文本”\n现在本地引擎（PicoTTS、CoquiTTS）和 Windows 播放器无需 shell 即可调用。\n更正了新实例的默认设置"
-      },
-      "5.1.0": {
-        "en": "Adapter was rewritten with TypeScript\nUpdated Polly voices list\nAdded option to send sonos device as parameter in sendTo command",
-        "de": "Adapter wurde mit TypeScript neu geschrieben.\nAktualisierte Liste der Polly-Stimmen\nHinzufügen der Option, ein Sonos-Gerät als Parameter im sendTo-Befehl zu übermitteln.",
-        "ru": "Адаптер был переписан с использованием TypeScript.\nОбновлен список голосов Polly\nДобавлена опция отправки устройства Sonos в качестве параметра в команде sendTo.",
-        "pt": "O adaptador foi reescrito com TypeScript\nLista de vozes do Polly atualizada\nAdicionada a opção de enviar dispositivo Sonos como parâmetro no comando sendTo",
-        "nl": "Adapter is herschreven met TypeScript\nBijgewerkte lijst met Polly stemmen\nOptie toegevoegd om een Sonos-apparaat als parameter te verzenden in het sendTo-commando.",
-        "fr": "L'adaptateur a été réécrit en TypeScript\nListe des voix de Polly mise à jour\nAjout de l'option d'envoyer un appareil Sonos en tant que paramètre dans la commande sendTo",
-        "it": "L'adattatore è stato riscritto in TypeScript\nAggiornata la lista delle voci di Polly\nAggiunta opzione per inviare il dispositivo Sonos come parametro nel comando sendTo.",
-        "es": "El adaptador fue reescrito con TypeScript\nLista de voces de Polly actualizada\nAgregada la opción de enviar un dispositivo Sonos como parámetro en el comando sendTo.",
-        "pl": "Adapter został przepisany z użyciem TypeScript.\nZaktualizowana lista głosów Polly\nDodano opcję przesyłania urządzenia Sonos jako parametru w poleceniu sendTo.",
-        "uk": "Адаптер був переписаний з TypeScript.\nОновлений список голосів Polly\nДодано опцію надсилання пристрою Sonos як параметра у команді sendTo.",
-        "zh-cn": "适配器使用TypeScript进行了重写\n更新了 Polly 语音列表\n添加了在sendTo命令中作为参数发送Sonos设备的选项"
       }
     },
     "titleLang": {

@@ -325,7 +325,7 @@ Like by FreeTTS, the language is a part of the voice, e.g. `de_DE-thorsten-high`
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### **WORK IN PROGRESS**
+### 5.5.0 (2026-10-27)
 * (@hdering) Added the Aura dashboards as a target of the output type "Browser" (#518)
 * (@GermanBluefox) Added the output type "Fully Kiosk Browser" for the tablets of the fullybrowser adapter
 
@@ -355,12 +355,6 @@ Like by FreeTTS, the language is a part of the voice, e.g. `de_DE-thorsten-high`
 * (@GermanBluefox) Adapter requires node.js >= 22 and js-controller >= 6.0.11 now
 * (@GermanBluefox) Older changelog entries were moved to CHANGELOG_OLD.md
 * (@GermanBluefox) Updated the dependabot and auto-merge configuration
-
-### 5.3.0 (2026-08-13)
-* (@GermanBluefox) Added freetts.org as a new TTS engine with more than 400 voices. An API key is required
-* (@GermanBluefox) The engine is selected in two steps now: first the provider and then the voice
-* (@GermanBluefox) The words of the Blockly block are translated into all 11 languages now
-* (@GermanBluefox) Blockly block migrated to TypeScript and the generated code is unchanged
 
 [Older changelogs can be found there](CHANGELOG_OLD.md)
 
