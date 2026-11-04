@@ -60,6 +60,10 @@
                             "label": "Bose SoundTouch"
                         },
                         {
+                            "value": "kodi",
+                            "label": "Kodi"
+                        },
+                        {
                             "value": "fully",
                             "label": "Fully Kiosk Browser"
                         },
@@ -89,6 +93,19 @@
                     "closeable": false,
                     "text": "info_no_restore",
                     "hidden": "data.type !== 'googleHome'",
+                    "xs": 12,
+                    "sm": 12,
+                    "md": 12,
+                    "lg": 8,
+                    "xl": 8
+                },
+                "_kodiInfo": {
+                    "type": "infoBox",
+                    "newLine": true,
+                    "boxType": "warning",
+                    "closeable": false,
+                    "text": "info_no_restore_kodi",
+                    "hidden": "data.type !== 'kodi'",
                     "xs": 12,
                     "sm": 12,
                     "md": 12,
@@ -406,6 +423,17 @@
                     "lg": 2,
                     "xl": 2
                 },
+                "kodiInstance": {
+                    "type": "instance",
+                    "label": "Device",
+                    "hidden": "data.type !== 'kodi'",
+                    "adapter": "kodi",
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 2,
+                    "xl": 2
+                },
                 "fullyDevice": {
                     "type": "selectSendTo",
                     "label": "Device",
@@ -485,7 +513,7 @@
                     "type": "instance",
                     "adapter": "web",
                     "label": "Web instance",
-                    "hidden": "data.type !== 'sonos' && data.type !== 'heos' && data.type !== 'squeezebox' && data.type !== 'wiim' && data.type !== 'assistant' && data.type !== 'bose' && data.type !== 'fully' && data.type !== 'chromecast' && data.type !== 'mpd' && data.type !== 'googleHome'",
+                    "hidden": "data.type !== 'sonos' && data.type !== 'heos' && data.type !== 'squeezebox' && data.type !== 'wiim' && data.type !== 'assistant' && data.type !== 'bose' && data.type !== 'kodi' && data.type !== 'fully' && data.type !== 'chromecast' && data.type !== 'mpd' && data.type !== 'googleHome'",
                     "xs": 12,
                     "sm": 6,
                     "md": 4,
@@ -497,7 +525,7 @@
                     "onlyIp4": true,
                     "noInternal": true,
                     "label": "Web server IP",
-                    "hidden": "data.type !== 'sonos' && data.type !== 'heos' && data.type !== 'squeezebox' && data.type !== 'wiim' && data.type !== 'assistant' && data.type !== 'bose' && data.type !== 'fully' && data.type !== 'chromecast' && data.type !== 'mpd' && data.type !== 'googleHome'",
+                    "hidden": "data.type !== 'sonos' && data.type !== 'heos' && data.type !== 'squeezebox' && data.type !== 'wiim' && data.type !== 'assistant' && data.type !== 'bose' && data.type !== 'kodi' && data.type !== 'fully' && data.type !== 'chromecast' && data.type !== 'mpd' && data.type !== 'googleHome'",
                     "xs": 12,
                     "sm": 6,
                     "md": 4,

@@ -192,6 +192,7 @@
     "alexaCommand": "speak",
     "boseInstance": "",
     "boseAppKey": "",
+    "kodiInstance": "",
     "fullyDevice": "",
     "mpdInstance": "",
     "googleHomeServer": "",

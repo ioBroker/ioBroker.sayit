@@ -195,6 +195,7 @@ export interface SayItAdapterConfig {
         | 'assistant'
         | 'alexa'
         | 'bose'
+        | 'kodi'
         | 'fully'
         | 'windows';
     /** Own play command for the type "system". "%s" will be replaced by the file name */
@@ -232,6 +233,8 @@ export interface SayItAdapterConfig {
     boseInstance: string;
     /** App key, which is sent with the notification to the Bose speaker. Empty - "ioBroker.sayit" is used */
     boseAppKey: string;
+    /** Instance of the kodi adapter (one instance per Kodi), like "kodi.0" */
+    kodiInstance: string;
     /** ID of the tablet of the fullybrowser adapter, like "fullybrowser.0.Kitchen" */
     fullyDevice: string;
     /** Instance of the MPD adapter, like "mpd.0" */
@@ -318,6 +321,7 @@ export type TestOptions = {
     alexaCommand?: 'speak' | 'announcement';
     boseInstance?: string;
     boseAppKey?: string;
+    kodiInstance?: string;
     fullyDevice?: string;
     mpdInstance?: `${string}.${number}`;
     chromecastDevice?: string;

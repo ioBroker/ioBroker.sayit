@@ -650,6 +650,43 @@ export default class Speech2Device {
     }
 
     /**
+     * Play the file on Kodi with the kodi adapter (one instance per Kodi).
+     * The state "open" clears the music playlist of Kodi, plays the file and switches to the fullscreen player,
+     * so the current playback is stopped and not restored afterward.
+     *
+     * @param props Text and options of the task
+     * @returns True if the file was sent to the kodi adapter
+     */
+    async #sayItKodi(props: SayItDeviceProps): Promise<boolean> {
+        const kodiInstance = props.testOptions?.kodiInstance || this.config.kodiInstance;
+        if (!kodiInstance) {
+            this.adapter.log.warn('No Kodi instance defined');
+            return false;
+        }
+
+        const openId = `${kodiInstance}.open`;
+        const obj = await this.adapter.getForeignObjectAsync(openId);
+        if (!obj) {
+            this.adapter.log.warn(`State "${openId}" not found. Please check the kodi adapter`);
+            return false;
+        }
+
+        const result = await this.#uploadToStates(props);
+        const webLink = await this.#getWebLink(props.testOptions);
+        if (!webLink) {
+            this.adapter.log.warn('Web server is unavailable!');
+            return false;
+        }
+
+        // The file is played with the actual volume of Kodi
+        const url = `${webLink}${result.fileInDB}`;
+        this.adapter.log.info(`Set "${openId}" to ${url}`);
+        await this.adapter.setForeignStateAsync(openId, url);
+
+        return true;
+    }
+
+    /**
      * Replace the characters, which are not allowed in the text of an XML element
      *
      * @param text Text to escape
@@ -1362,6 +1399,9 @@ export default class Speech2Device {
         }
         if (type === 'bose') {
             return await this.#sayItBose(props);
+        }
+        if (type === 'kodi') {
+            return await this.#sayItKodi(props);
         }
         if (type === 'fully') {
             return await this.#sayItFully(props);
