@@ -196,6 +196,7 @@ export interface SayItAdapterConfig {
         | 'alexa'
         | 'bose'
         | 'kodi'
+        | 'asterisk'
         | 'fully'
         | 'windows';
     /** Own play command for the type "system". "%s" will be replaced by the file name */
@@ -235,6 +236,14 @@ export interface SayItAdapterConfig {
     boseAppKey: string;
     /** Instance of the kodi adapter (one instance per Kodi), like "kodi.0" */
     kodiInstance: string;
+    /** Instance of the asterisk adapter, like "asterisk.0" */
+    asteriskInstance: string;
+    /** Telephone number, which is called by the asterisk adapter */
+    asteriskTelnr: string;
+    /** Telephone number, which is shown to the callee. Empty - anonymous call */
+    asteriskCallerId: string;
+    /** How many times the message is repeated in the call. Empty - default of the asterisk adapter (5) */
+    asteriskRepeat: number | string;
     /** ID of the tablet of the fullybrowser adapter, like "fullybrowser.0.Kitchen" */
     fullyDevice: string;
     /** Instance of the MPD adapter, like "mpd.0" */
@@ -322,6 +331,10 @@ export type TestOptions = {
     boseInstance?: string;
     boseAppKey?: string;
     kodiInstance?: string;
+    asteriskInstance?: string;
+    asteriskTelnr?: string;
+    asteriskCallerId?: string;
+    asteriskRepeat?: number | string;
     fullyDevice?: string;
     mpdInstance?: `${string}.${number}`;
     chromecastDevice?: string;

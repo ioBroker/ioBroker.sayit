@@ -123,5 +123,11 @@
     "bose_app_key_help": "Optional. Empty - \"ioBroker.sayit\" is used",
     "info_no_restore": "The current playback (e.g. music from Spotify) is stopped and not restored after the text. If a volume is given for the text, the device keeps this volume afterward.",
     "info_bose": "Only some SoundTouch models support announcements (e.g. SoundTouch 10, 20 and 30 Series III): the current playback is paused and resumed afterward. The speaker checks the app key at the Bose cloud, which was shut down on May 6, 2026. Without a replacement of the Bose cloud the speaker may reject the announcement.",
-    "info_no_restore_kodi": "The current playback is stopped and not restored after the text. Kodi clears its music playlist for the text and switches to the fullscreen player."
+    "info_no_restore_kodi": "The current playback is stopped and not restored after the text. Kodi clears its music playlist for the text and switches to the fullscreen player.",
+    "Telephone number": "Telephone number",
+    "Caller ID": "Caller ID",
+    "Repeat message": "Repeat message",
+    "asterisk_callerid_help": "Number shown to the callee. Empty - anonymous call",
+    "asterisk_repeat_help": "Empty - default of the asterisk adapter (5 times)",
+    "info_asterisk": "Every text is a separate phone call, so the announcement sound is not played. sayit and the asterisk adapter must run on the same host, because the asterisk adapter reads the generated mp3 file from the disk."
 }

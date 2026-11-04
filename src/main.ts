@@ -567,6 +567,9 @@ export class SayItAdapter extends Adapter {
             const alexaCommand = obj.message?.alexaCommand as 'speak' | 'announcement' | undefined;
             const boseInstance = obj.message?.boseInstance as string;
             const kodiInstance = obj.message?.kodiInstance as string;
+            const asteriskInstance = obj.message?.asteriskInstance as string;
+            const asteriskTelnr = obj.message?.asteriskTelnr as string;
+            const asteriskCallerId = obj.message?.asteriskCallerId as string;
             const fullyDevice = obj.message?.fullyDevice as string;
             const mpdInstance = obj.message?.mpdInstance as `${string}.${number}`;
             const chromecastDevice = obj.message?.chromecastDevice as string;
@@ -600,6 +603,9 @@ export class SayItAdapter extends Adapter {
                             alexaCommand,
                             boseInstance,
                             kodiInstance,
+                            asteriskInstance,
+                            asteriskTelnr,
+                            asteriskCallerId,
                             fullyDevice,
                             mpdInstance,
                             browserInstance,
@@ -953,10 +959,13 @@ export class SayItAdapter extends Adapter {
 
         // If more time than annoTimeout seconds till last text, add announcement.
         // Alexa cannot play files, it has its own chime with the command "announcement".
+        // With asterisk every file is a separate phone call, so the announcement would be an own call.
+        const outputType = props.testOptions?.type || this.config.type;
         if (
             !onlyCache &&
             announce &&
-            (props.testOptions?.type || this.config.type) !== 'alexa' &&
+            outputType !== 'alexa' &&
+            outputType !== 'asterisk' &&
             !this.tasks.length &&
             (!this.lastSay || Date.now() - this.lastSay > annoTimeout * 1000)
         ) {

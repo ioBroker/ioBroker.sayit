@@ -687,6 +687,88 @@ export default class Speech2Device {
     }
 
     /**
+     * Call a telephone number with the asterisk adapter and play the file in the call.
+     * The asterisk adapter reads the mp3 file from the disk, converts it to gsm and sends it to the asterisk server,
+     * so sayit and the asterisk adapter must run on the same host. Every text is a separate call.
+     *
+     * @param props Text and options of the task
+     * @returns True if the asterisk adapter started the call
+     */
+    async #sayItAsterisk(props: SayItDeviceProps): Promise<boolean> {
+        const asteriskInstance = props.testOptions?.asteriskInstance || this.config.asteriskInstance;
+        const telnr = props.testOptions?.asteriskTelnr || this.config.asteriskTelnr;
+        if (!asteriskInstance) {
+            this.adapter.log.warn('No asterisk instance defined');
+            return false;
+        }
+        if (!telnr) {
+            this.adapter.log.warn('No telephone number defined for the call with the asterisk adapter');
+            return false;
+        }
+
+        const instanceObj = (await this.adapter.getForeignObjectAsync(`system.adapter.${asteriskInstance}`)) as
+            ioBroker.InstanceObject | null | undefined;
+        if (!instanceObj) {
+            this.adapter.log.warn(`Instance "${asteriskInstance}" not found`);
+            return false;
+        }
+        if (instanceObj.common?.host && this.adapter.host && instanceObj.common.host !== this.adapter.host) {
+            this.adapter.log.warn(
+                `"${asteriskInstance}" runs on the host "${instanceObj.common.host}" and sayit on "${this.adapter.host}". ` +
+                    'Both must run on the same host, because the asterisk adapter reads the generated file from the disk',
+            );
+            return false;
+        }
+
+        // The file must be on the disk, as the asterisk adapter cannot download it
+        const result = await this.#uploadToStates(props, true);
+        const audiofile = result.fileOnDisk;
+        if (!audiofile || !/\.(mp3|gsm)$/i.test(audiofile)) {
+            this.adapter.log.warn(`The asterisk adapter can play only mp3 or gsm files and not "${audiofile}"`);
+            return false;
+        }
+
+        const callerid = props.testOptions?.asteriskCallerId || this.config.asteriskCallerId;
+        const repeat = parseInt(
+            (props.testOptions?.asteriskRepeat !== undefined
+                ? props.testOptions.asteriskRepeat
+                : this.config.asteriskRepeat) as string,
+            10,
+        );
+        const message: { telnr: string; audiofile: string; callerid?: string; repeat?: number } = { telnr, audiofile };
+        if (callerid) {
+            message.callerid = callerid;
+        }
+        if (repeat > 0) {
+            message.repeat = repeat;
+        }
+
+        this.adapter.log.info(`Call ${telnr} with "${asteriskInstance}" and play ${audiofile}`);
+
+        // The asterisk adapter answers after the file was converted and the call was started.
+        // It waits up to 60 seconds for the connection, so sayit waits 90 seconds for the answer.
+        const response = await new Promise<{ result?: unknown; error?: string } | null>(resolve => {
+            const timer = this.adapter.setTimeout(() => resolve(null), 90_000);
+            this.adapter.sendTo(asteriskInstance, 'dial', message, (res: any): void => {
+                if (timer) {
+                    this.adapter.clearTimeout(timer);
+                }
+                resolve(res as { result?: unknown; error?: string });
+            });
+        });
+        if (!response) {
+            this.adapter.log.warn(`No answer from "${asteriskInstance}" in 90 seconds`);
+            return false;
+        }
+        if (response.error) {
+            this.adapter.log.warn(`"${asteriskInstance}" cannot call ${telnr}: ${response.error}`);
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
      * Replace the characters, which are not allowed in the text of an XML element
      *
      * @param text Text to escape
@@ -1402,6 +1484,9 @@ export default class Speech2Device {
         }
         if (type === 'kodi') {
             return await this.#sayItKodi(props);
+        }
+        if (type === 'asterisk') {
+            return await this.#sayItAsterisk(props);
         }
         if (type === 'fully') {
             return await this.#sayItFully(props);

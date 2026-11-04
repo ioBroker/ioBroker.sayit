@@ -64,6 +64,10 @@
                             "label": "Kodi"
                         },
                         {
+                            "value": "asterisk",
+                            "label": "Asterisk (phone call)"
+                        },
+                        {
                             "value": "fully",
                             "label": "Fully Kiosk Browser"
                         },
@@ -106,6 +110,19 @@
                     "closeable": false,
                     "text": "info_no_restore_kodi",
                     "hidden": "data.type !== 'kodi'",
+                    "xs": 12,
+                    "sm": 12,
+                    "md": 12,
+                    "lg": 8,
+                    "xl": 8
+                },
+                "_asteriskInfo": {
+                    "type": "infoBox",
+                    "newLine": true,
+                    "boxType": "info",
+                    "closeable": false,
+                    "text": "info_asterisk",
+                    "hidden": "data.type !== 'asterisk'",
                     "xs": 12,
                     "sm": 12,
                     "md": 12,
@@ -169,7 +186,7 @@
                     "fileTypes": "audio",
                     "pattern": "tts.userfiles/*.mp3",
                     "objectID": "sayit.%INSTANCE%",
-                    "hidden": "data.type === 'googleHome' || data.type === 'alexa'",
+                    "hidden": "data.type === 'googleHome' || data.type === 'alexa' || data.type === 'asterisk'",
                     "noTranslation": true,
                     "upload": "tts.userfiles/",
                     "xs": 12,
@@ -428,6 +445,50 @@
                     "label": "Device",
                     "hidden": "data.type !== 'kodi'",
                     "adapter": "kodi",
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 2,
+                    "xl": 2
+                },
+                "asteriskInstance": {
+                    "type": "instance",
+                    "label": "Device",
+                    "hidden": "data.type !== 'asterisk'",
+                    "adapter": "asterisk",
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 2,
+                    "xl": 2
+                },
+                "asteriskTelnr": {
+                    "type": "text",
+                    "label": "Telephone number",
+                    "hidden": "data.type !== 'asterisk'",
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 2,
+                    "xl": 2
+                },
+                "asteriskCallerId": {
+                    "type": "text",
+                    "label": "Caller ID",
+                    "help": "asterisk_callerid_help",
+                    "hidden": "data.type !== 'asterisk'",
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 2,
+                    "xl": 2
+                },
+                "asteriskRepeat": {
+                    "type": "number",
+                    "label": "Repeat message",
+                    "help": "asterisk_repeat_help",
+                    "min": 1,
+                    "hidden": "data.type !== 'asterisk'",
                     "xs": 12,
                     "sm": 6,
                     "md": 4,

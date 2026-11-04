@@ -1420,6 +1420,14 @@ const sayitOptions: {
         server: true,
         libs: ['fs', 'crypto', 'http'],
     },
+    asterisk: {
+        // The asterisk adapter reads the generated file from the disk, so no web server is required
+        name: 'Asterisk (phone call)',
+        mp3Required: true,
+        checkLength: true,
+        server: false,
+        libs: ['fs'],
+    },
     kodi: {
         name: 'Kodi',
         mp3Required: true,

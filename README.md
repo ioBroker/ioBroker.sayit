@@ -46,6 +46,8 @@ Actually, the following outputs are supported:
 
 - *Kodi* - play text on Kodi with the [kodi](https://github.com/iobroker-community-adapters/ioBroker.kodi) adapter (one instance per Kodi). The link to the file is written into the state `open` of the instance. The kodi adapter clears the music playlist of Kodi for it and switches to the fullscreen player, so the current playback is stopped and **not restored** after the text. The file is played with the actual volume of Kodi. Be sure the Web Adapter is enabled, so Kodi can read the generated mp3 files.
 
+- *Asterisk (phone call)* - call a telephone number with the [asterisk](https://github.com/schmupu/ioBroker.asterisk) adapter and play the text in the call. sayit sends the path of the generated mp3 file with the command `dial` to the asterisk adapter, which converts it to gsm and sends it to the Asterisk server. So sayit and the asterisk adapter **must run on the same host**. Every text is a separate call, so the announcement sound is not played. The telephone number, the caller ID and how many times the message is repeated are set in the configuration, the number and the caller ID could also be given in the `say` message (`asteriskTelnr`, `asteriskCallerId`).
+
 - *Chromecast* - play text on a Chromecast device.
 
 - *Google Home* - play text on a Google Home or another cast device, which sayit controls directly. The current playback (e.g. music from Spotify) is stopped and **not restored** after the text. Use the output type *Chromecast* with the chromecast adapter, if the playback must be resumed.
@@ -346,6 +348,7 @@ Like by FreeTTS, the language is a part of the voice, e.g. `de_DE-thorsten-high`
 - (@GermanBluefox) Added the output type "Alexa" for the Echo devices of the alexa2 adapter
 - (@GermanBluefox) Added the output type "Bose SoundTouch" with the notification interface of the speaker, which resumes the playback
 - (@GermanBluefox) Added the output type "Kodi" for the kodi adapter
+- (@GermanBluefox) Added the output type "Asterisk (phone call)": the text is played in a phone call of the asterisk adapter
 - (@GermanBluefox) The configuration shows a hint for the output types, which do not restore the playback (Google Home, Kodi)
 ### 5.5.0 (2026-10-27)
 * (@hdering) Added the Aura dashboards as a target of the output type "Browser" (#518)
