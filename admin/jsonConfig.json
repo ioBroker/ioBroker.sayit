@@ -44,6 +44,14 @@
                             "label": "Squeezebox"
                         },
                         {
+                            "value": "wiim",
+                            "label": "WiiM / LinkPlay"
+                        },
+                        {
+                            "value": "assistant",
+                            "label": "Assistant satellites"
+                        },
+                        {
                             "value": "fully",
                             "label": "Fully Kiosk Browser"
                         },
@@ -294,6 +302,28 @@
                     "lg": 2,
                     "xl": 2
                 },
+                "wiimDevice": {
+                    "type": "selectSendTo",
+                    "label": "Device",
+                    "hidden": "data.type !== 'wiim'",
+                    "command": "browseWiim",
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 2,
+                    "xl": 2
+                },
+                "assistantDevice": {
+                    "type": "selectSendTo",
+                    "label": "Device",
+                    "hidden": "data.type !== 'assistant'",
+                    "command": "browseAssistant",
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 2,
+                    "xl": 2
+                },
                 "fullyDevice": {
                     "type": "selectSendTo",
                     "label": "Device",
@@ -373,7 +403,7 @@
                     "type": "instance",
                     "adapter": "web",
                     "label": "Web instance",
-                    "hidden": "data.type !== 'sonos' && data.type !== 'heos' && data.type !== 'squeezebox' && data.type !== 'fully' && data.type !== 'chromecast' && data.type !== 'mpd' && data.type !== 'googleHome'",
+                    "hidden": "data.type !== 'sonos' && data.type !== 'heos' && data.type !== 'squeezebox' && data.type !== 'wiim' && data.type !== 'assistant' && data.type !== 'fully' && data.type !== 'chromecast' && data.type !== 'mpd' && data.type !== 'googleHome'",
                     "xs": 12,
                     "sm": 6,
                     "md": 4,
@@ -385,7 +415,7 @@
                     "onlyIp4": true,
                     "noInternal": true,
                     "label": "Web server IP",
-                    "hidden": "data.type !== 'sonos' && data.type !== 'heos' && data.type !== 'squeezebox' && data.type !== 'fully' && data.type !== 'chromecast' && data.type !== 'mpd' && data.type !== 'googleHome'",
+                    "hidden": "data.type !== 'sonos' && data.type !== 'heos' && data.type !== 'squeezebox' && data.type !== 'wiim' && data.type !== 'assistant' && data.type !== 'fully' && data.type !== 'chromecast' && data.type !== 'mpd' && data.type !== 'googleHome'",
                     "xs": 12,
                     "sm": 6,
                     "md": 4,

@@ -468,6 +468,81 @@ export default class Speech2Device {
     }
 
     /**
+     * Play the file on a WiiM, Arylic or other LinkPlay based streamer with the wiim adapter.
+     * The state "playPromptUrl" plays the file as a notification: the current playback is lowered and resumed afterward.
+     *
+     * @param props Text and options of the task
+     * @returns True if the file was sent to the wiim adapter
+     */
+    async #sayItWiim(props: SayItDeviceProps): Promise<boolean> {
+        const wiimDevice = props.testOptions?.wiimDevice || this.config.wiimDevice;
+        if (!wiimDevice) {
+            this.adapter.log.warn('No WiiM streamer defined');
+            return false;
+        }
+
+        const promptId = `${wiimDevice}.playPromptUrl`;
+        const obj = await this.adapter.getForeignObjectAsync(promptId);
+        if (!obj) {
+            this.adapter.log.warn(`State "${promptId}" not found. Please update the wiim adapter`);
+            return false;
+        }
+
+        const result = await this.#uploadToStates(props);
+        const webLink = await this.#getWebLink(props.testOptions);
+        if (!webLink) {
+            this.adapter.log.warn('Web server is unavailable!');
+            return false;
+        }
+
+        // The prompt is played with the actual volume of the streamer
+        const url = `${webLink}${result.fileInDB}`;
+        this.adapter.log.info(`Set "${promptId}" to ${url}`);
+        await this.adapter.setForeignStateAsync(promptId, url);
+
+        return true;
+    }
+
+    /**
+     * Play the file on the voice satellites of the assistant adapter.
+     * "assistant.0" plays on all satellites (state "tts.text"),
+     * "assistant.0.satellites.<id>" plays on one satellite (state "tts" of the satellite).
+     *
+     * @param props Text and options of the task
+     * @returns True if the file was sent to the assistant adapter
+     */
+    async #sayItAssistant(props: SayItDeviceProps): Promise<boolean> {
+        const assistantDevice = props.testOptions?.assistantDevice || this.config.assistantDevice;
+        if (!assistantDevice) {
+            this.adapter.log.warn('No assistant instance or satellite defined');
+            return false;
+        }
+
+        const ttsId = /^assistant\.\d+$/.test(assistantDevice)
+            ? `${assistantDevice}.tts.text`
+            : `${assistantDevice}.tts`;
+        const obj = await this.adapter.getForeignObjectAsync(ttsId);
+        if (!obj) {
+            this.adapter.log.warn(`State "${ttsId}" not found. Please check the assistant adapter`);
+            return false;
+        }
+
+        const result = await this.#uploadToStates(props);
+        const webLink = await this.#getWebLink(props.testOptions);
+        if (!webLink) {
+            this.adapter.log.warn('Web server is unavailable!');
+            return false;
+        }
+
+        // The assistant adapter downloads the file with ffmpeg and plays it with the volume of the satellite
+        const url = `${webLink}${result.fileInDB}`;
+        this.adapter.log.info(`Set "${ttsId}" to ${url}`);
+        await this.adapter.setForeignStateAsync(ttsId, url);
+
+        return true;
+    }
+
+    /**
      * Play the file on an Android tablet with the Fully Kiosk Browser via the fullybrowser adapter.
      * The REST command "playSound" is sent over the state "Commands.setRAW" (fullybrowser 3.0.5 or newer).
      *
@@ -1063,6 +1138,12 @@ export default class Speech2Device {
         }
         if (type === 'squeezebox') {
             return await this.#sayItSqueezebox(props);
+        }
+        if (type === 'wiim') {
+            return await this.#sayItWiim(props);
+        }
+        if (type === 'assistant') {
+            return await this.#sayItAssistant(props);
         }
         if (type === 'fully') {
             return await this.#sayItFully(props);

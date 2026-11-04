@@ -191,6 +191,8 @@ export interface SayItAdapterConfig {
         | 'mpd'
         | 'heos'
         | 'squeezebox'
+        | 'wiim'
+        | 'assistant'
         | 'fully'
         | 'windows';
     /** Own play command for the type "system". "%s" will be replaced by the file name */
@@ -216,6 +218,10 @@ export interface SayItAdapterConfig {
     heosDevice: string;
     /** ID of the player of the squeezeboxrpc adapter, like "squeezeboxrpc.0.Players.Kitchen" */
     squeezeboxDevice: string;
+    /** ID of the streamer of the wiim adapter, like "wiim.0.Kitchen" */
+    wiimDevice: string;
+    /** Instance of the assistant adapter for all satellites, like "assistant.0", or one satellite, like "assistant.0.satellites.kitchen" */
+    assistantDevice: string;
     /** ID of the tablet of the fullybrowser adapter, like "fullybrowser.0.Kitchen" */
     fullyDevice: string;
     /** Instance of the MPD adapter, like "mpd.0" */
@@ -296,6 +302,8 @@ export type TestOptions = {
     webInstance?: `${string}.${number}`;
     heosDevice?: string;
     squeezeboxDevice?: string;
+    wiimDevice?: string;
+    assistantDevice?: string;
     fullyDevice?: string;
     mpdInstance?: `${string}.${number}`;
     chromecastDevice?: string;

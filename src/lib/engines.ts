@@ -1406,6 +1406,20 @@ const sayitOptions: {
         server: true,
         libs: ['fs', 'crypto', 'http'],
     },
+    wiim: {
+        name: 'WiiM / LinkPlay',
+        mp3Required: true,
+        checkLength: true,
+        server: true,
+        libs: ['fs', 'crypto', 'http'],
+    },
+    assistant: {
+        name: 'Assistant satellites',
+        mp3Required: true,
+        checkLength: true,
+        server: true,
+        libs: ['fs', 'crypto', 'http'],
+    },
     fully: {
         name: 'Fully Kiosk Browser',
         mp3Required: true,

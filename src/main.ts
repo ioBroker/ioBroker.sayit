@@ -93,6 +93,21 @@ const GENERATED_TEXTS: Record<ioBroker.Languages, string> = {
     'zh-cn': '文本已成功生成。',
 };
 
+/** Label of the target "all satellites" of the assistant adapter in the language of the ioBroker installation */
+const ALL_SATELLITES: Record<ioBroker.Languages, string> = {
+    en: 'all satellites',
+    de: 'alle Satelliten',
+    ru: 'все сателлиты',
+    pt: 'todos os satélites',
+    nl: 'alle satellieten',
+    fr: 'tous les satellites',
+    it: 'tutti i satelliti',
+    es: 'todos los satélites',
+    pl: 'wszystkie satelity',
+    uk: 'усі сателіти',
+    'zh-cn': '所有卫星设备',
+};
+
 /** Description of one mDNS service found by the discovery of google cast devices */
 interface Service {
     addresses: string[];
@@ -459,6 +474,51 @@ export class SayItAdapter extends Adapter {
     }
 
     /**
+     * Collect the targets of the assistant adapter for the configuration dialog:
+     * every instance (plays on all satellites) and every satellite of the instance.
+     *
+     * @returns List of the targets, like "assistant.0" and "assistant.0.satellites.kitchen"
+     */
+    async browseAssistant(): Promise<{ value: string; label: string }[]> {
+        const list: { value: string; label: string }[] = [];
+        const instances = await this.getObjectViewAsync('system', 'instance', {
+            startkey: 'system.adapter.assistant.',
+            endkey: 'system.adapter.assistant.\u9999',
+        });
+        const satellites = await this.getObjectViewAsync('system', 'device', {
+            startkey: 'assistant.',
+            endkey: 'assistant.\u9999',
+        });
+
+        instances?.rows.forEach(instance => {
+            const m = instance.id.match(/^system\.adapter\.(assistant\.\d+)$/);
+            if (!m) {
+                return;
+            }
+            const instanceId = m[1];
+            list.push({ value: instanceId, label: `${instanceId}: ${ALL_SATELLITES[this.lang] || ALL_SATELLITES.en}` });
+            satellites?.rows.forEach(row => {
+                if (
+                    row.id.startsWith(`${instanceId}.satellites.`) &&
+                    /^assistant\.\d+\.satellites\.[^.]+$/.test(row.id)
+                ) {
+                    let name = row.value?.common?.name;
+                    if (typeof name === 'object') {
+                        name = name[this.lang] || name.en;
+                    }
+                    const satId = row.id.replace(/^assistant\.\d+\.satellites\./, '');
+                    list.push({
+                        value: row.id,
+                        label: `${instanceId}: ${name && name !== satId ? `${name} (${satId})` : satId}`,
+                    });
+                }
+            });
+        });
+
+        return list;
+    }
+
+    /**
      * Process a message sent by another adapter or by the admin configuration dialog
      *
      * @param obj Message object
@@ -473,6 +533,8 @@ export class SayItAdapter extends Adapter {
             const sonosDevice = obj.message?.sonosDevice as string;
             const heosDevice = obj.message?.heosDevice as string;
             const squeezeboxDevice = obj.message?.squeezeboxDevice as string;
+            const wiimDevice = obj.message?.wiimDevice as string;
+            const assistantDevice = obj.message?.assistantDevice as string;
             const fullyDevice = obj.message?.fullyDevice as string;
             const mpdInstance = obj.message?.mpdInstance as `${string}.${number}`;
             const chromecastDevice = obj.message?.chromecastDevice as string;
@@ -500,6 +562,8 @@ export class SayItAdapter extends Adapter {
                             sonosDevice,
                             heosDevice,
                             squeezeboxDevice,
+                            wiimDevice,
+                            assistantDevice,
                             fullyDevice,
                             mpdInstance,
                             browserInstance,
@@ -589,6 +653,31 @@ export class SayItAdapter extends Adapter {
                 })
                 .catch(e => {
                     this.log.warn(`Cannot read squeezebox players: ${e}`);
+                    this.sendTo(obj.from, obj.command, [], obj.callback);
+                });
+        } else if (obj.callback && obj.command === 'browseWiim') {
+            // The wiim adapter creates the streamers as devices "wiim.0.<name>"
+            this.getObjectViewAsync('system', 'device', { startkey: 'wiim.', endkey: 'wiim.\u9999' })
+                .then(res => {
+                    const list: { value: string; label: string }[] = [];
+                    res?.rows.forEach(row => {
+                        if (/^wiim\.\d+\.[^.]+$/.test(row.id)) {
+                            list.push({ value: row.id, label: row.id.replace(/^wiim\.\d+\./, '') });
+                        }
+                    });
+                    this.sendTo(obj.from, obj.command, list, obj.callback);
+                })
+                .catch(e => {
+                    this.log.warn(`Cannot read WiiM streamers: ${e}`);
+                    this.sendTo(obj.from, obj.command, [], obj.callback);
+                });
+        } else if (obj.callback && obj.command === 'browseAssistant') {
+            // Every instance of the assistant adapter plays on all satellites ("assistant.0"),
+            // and the satellites are devices "assistant.0.satellites.<id>"
+            this.browseAssistant()
+                .then(list => this.sendTo(obj.from, obj.command, list, obj.callback))
+                .catch(e => {
+                    this.log.warn(`Cannot read assistant satellites: ${e}`);
                     this.sendTo(obj.from, obj.command, [], obj.callback);
                 });
         } else if (obj.callback && obj.command === 'browseFully') {
@@ -1414,6 +1503,8 @@ export class SayItAdapter extends Adapter {
             this.config.type === 'sonos' ||
             this.config.type === 'heos' ||
             this.config.type === 'squeezebox' ||
+            this.config.type === 'wiim' ||
+            this.config.type === 'assistant' ||
             this.config.type === 'fully' ||
             this.config.type === 'chromecast' ||
             this.config.type === 'mpd' ||
@@ -1505,7 +1596,7 @@ export class SayItAdapter extends Adapter {
 
         if (obj.native.auth) {
             this.log.error(
-                `Cannot use server "${obj._id}" with authentication for sonos/heos/squeezebox/fully/chromecast. Select other or create another one.`,
+                `Cannot use server "${obj._id}" with authentication for sonos/heos/squeezebox/wiim/assistant/fully/chromecast. Select other or create another one.`,
             );
             return '';
         }

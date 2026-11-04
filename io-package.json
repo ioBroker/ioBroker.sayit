@@ -186,6 +186,8 @@
     "sonosDevice": "",
     "heosDevice": "",
     "squeezeboxDevice": "",
+    "wiimDevice": "",
+    "assistantDevice": "",
     "fullyDevice": "",
     "mpdInstance": "",
     "googleHomeServer": "",
