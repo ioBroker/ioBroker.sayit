@@ -339,8 +339,7 @@ Like by FreeTTS, the language is a part of the voice, e.g. `de_DE-thorsten-high`
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-
-### **WORK IN PROGRESS**
+### 5.6.0 (2026-11-04)
 - (copilot) Adapter requires node.js >= 22.19.0 now
 - (@GermanBluefox) Fixed: the announcement sound was overwritten by the following text, so external players (e.g. Squeezebox) said the text twice (#527)
 - (@GermanBluefox) Added the output type "WiiM / LinkPlay" for the streamers of the wiim adapter
@@ -350,6 +349,7 @@ Like by FreeTTS, the language is a part of the voice, e.g. `de_DE-thorsten-high`
 - (@GermanBluefox) Added the output type "Kodi" for the kodi adapter
 - (@GermanBluefox) Added the output type "Asterisk (phone call)": the text is played in a phone call of the asterisk adapter
 - (@GermanBluefox) The configuration shows a hint for the output types, which do not restore the playback (Google Home, Kodi)
+
 ### 5.5.0 (2026-10-27)
 * (@hdering) Added the Aura dashboards as a target of the output type "Browser" (#518)
 * (@GermanBluefox) Added the output type "Fully Kiosk Browser" for the tablets of the fullybrowser adapter
@@ -373,13 +373,6 @@ Like by FreeTTS, the language is a part of the voice, e.g. `de_DE-thorsten-high`
 ### 5.3.2 (2026-10-13)
 * (@GermanBluefox) Removed the "install" script and `process.exit()` for compact mode
 * (@GermanBluefox) Passwords and API keys are now protected from reading by non-admin users
-
-### 5.3.1 (2026-08-13)
-* (@GermanBluefox) Added the button "Test text generation" to the "Engine" tab, so the selected engine can be tested with an own text
-* (@GermanBluefox) Test generations do not overwrite the cached files anymore
-* (@GermanBluefox) Adapter requires node.js >= 22 and js-controller >= 6.0.11 now
-* (@GermanBluefox) Older changelog entries were moved to CHANGELOG_OLD.md
-* (@GermanBluefox) Updated the dependabot and auto-merge configuration
 
 [Older changelogs can be found there](CHANGELOG_OLD.md)
 

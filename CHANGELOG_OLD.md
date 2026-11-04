@@ -249,6 +249,13 @@ Changed type of top-level object to "meta" in order to comply with js-controller
 
 ### 0.0.1 (2015-02-06)
 * (bluefox) initial commit
+## 5.3.1 (2026-08-13)
+* (@GermanBluefox) Added the button "Test text generation" to the "Engine" tab, so the selected engine can be tested with an own text
+* (@GermanBluefox) Test generations do not overwrite the cached files anymore
+* (@GermanBluefox) Adapter requires node.js >= 22 and js-controller >= 6.0.11 now
+* (@GermanBluefox) Older changelog entries were moved to CHANGELOG_OLD.md
+* (@GermanBluefox) Updated the dependabot and auto-merge configuration
+
 ## 5.3.0 (2026-08-13)
 * (@GermanBluefox) Added freetts.org as a new TTS engine with more than 400 voices. An API key is required
 * (@GermanBluefox) The engine is selected in two steps now: first the provider and then the voice

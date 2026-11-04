@@ -138,12 +138,15 @@ class Speech2Device {
     /**
      * Store the file to say in the "tts.mp3" (or "tts.ogg") file of this instance,
      * so it could be played by a browser or by an external device over the web server.
+     * Sound files (like the announcement gong) are stored in the "tts.sound.<ext>" file instead,
+     * so the following text cannot overwrite the sound before the device has downloaded it.
      *
-     * @param text Text to say or the name of the file to play
+     * @param props Text and options of the task
      * @param saveToDisk If true, the file will be stored on the disk too (required for FTP and system player)
      * @returns Link to the file in the ioBroker file storage and the name of the file on the disk
      */
-    async #uploadToStates(text, saveToDisk) {
+    async #uploadToStates(props, saveToDisk) {
+        const text = this.#speechSource(props);
         let fileData;
         let fileName;
         const data = await this.#getFileInStates(text);
@@ -173,8 +176,11 @@ class Speech2Device {
         catch (e) {
             throw new Error(`Cannot upload file "${fileName}" to state: ${e.toString()}`);
         }
-        const file = `tts.${this.options.outFileExt}`;
-        await this.adapter.writeFileAsync(this.adapter.namespace, `tts.${this.options.outFileExt}`, fileData);
+        // "props.text" is the name of the sound file, if a sound file must be played and not a generated text
+        const file = _a.isPlayFile(props.text)
+            ? `tts.sound${(0, node_path_1.extname)(fileName).toLowerCase()}`
+            : `tts.${this.options.outFileExt}`;
+        await this.adapter.writeFileAsync(this.adapter.namespace, file, fileData);
         return {
             fileInDB: `/${this.adapter.namespace}/${file}?ts=${Date.now()}`,
             fileOnDisk: fileName,
@@ -211,7 +217,7 @@ class Speech2Device {
      * @returns True if the file was sent to at least one vis version
      */
     async #sayItBrowser(props) {
-        const result = await this.#uploadToStates(this.#speechSource(props));
+        const result = await this.#uploadToStates(props);
         const browserInstance = props.testOptions?.browserInstance || this.config.browserInstance;
         const browserVis = props.testOptions?.browserVis === undefined ? this.config.browserVis : props.testOptions.browserVis;
         if (browserVis === 'aura') {
@@ -334,7 +340,7 @@ class Speech2Device {
         props.volume ||= props.testOptions?.volume
             ? parseInt(props.testOptions.volume, 10)
             : this.options.sayLastVolume;
-        const result = await this.#uploadToStates(this.#speechSource(props));
+        const result = await this.#uploadToStates(props);
         const webLink = await this.#getWebLink(props.testOptions);
         const fileName = `${props.volume ? `${props.volume};` : ''}${webLink}${result.fileInDB}`;
         const sonosDevice = props.testOptions?.sonosDevice || this.config.sonosDevice;
@@ -362,7 +368,7 @@ class Speech2Device {
         props.volume ||= props.testOptions?.volume
             ? parseInt(props.testOptions.volume, 10)
             : this.options.sayLastVolume;
-        const result = await this.#uploadToStates(this.#speechSource(props));
+        const result = await this.#uploadToStates(props);
         const webLink = await this.#getWebLink(props.testOptions);
         const fileName = `${props.volume ? `${props.volume};` : ''}${webLink}${result.fileInDB}`;
         const heosDevice = props.testOptions?.heosDevice || this.config.heosDevice;
@@ -400,7 +406,7 @@ class Speech2Device {
             this.adapter.log.warn(`State "${announceId}" not found. Please update the squeezeboxrpc adapter to 2.0.0 or newer`);
             return false;
         }
-        const result = await this.#uploadToStates(this.#speechSource(props));
+        const result = await this.#uploadToStates(props);
         const webLink = await this.#getWebLink(props.testOptions);
         if (!webLink) {
             this.adapter.log.warn('Web server is unavailable!');
@@ -410,6 +416,360 @@ class Speech2Device {
         const url = `${webLink}${result.fileInDB}`;
         this.adapter.log.info(`Set "${announceId}" to ${url}`);
         await this.adapter.setForeignStateAsync(announceId, url);
+        return true;
+    }
+    /**
+     * Play the file on a WiiM, Arylic or other LinkPlay based streamer with the wiim adapter.
+     * The state "playPromptUrl" plays the file as a notification: the current playback is lowered and resumed afterward.
+     *
+     * @param props Text and options of the task
+     * @returns True if the file was sent to the wiim adapter
+     */
+    async #sayItWiim(props) {
+        const wiimDevice = props.testOptions?.wiimDevice || this.config.wiimDevice;
+        if (!wiimDevice) {
+            this.adapter.log.warn('No WiiM streamer defined');
+            return false;
+        }
+        const promptId = `${wiimDevice}.playPromptUrl`;
+        const obj = await this.adapter.getForeignObjectAsync(promptId);
+        if (!obj) {
+            this.adapter.log.warn(`State "${promptId}" not found. Please update the wiim adapter`);
+            return false;
+        }
+        const result = await this.#uploadToStates(props);
+        const webLink = await this.#getWebLink(props.testOptions);
+        if (!webLink) {
+            this.adapter.log.warn('Web server is unavailable!');
+            return false;
+        }
+        // The prompt is played with the actual volume of the streamer
+        const url = `${webLink}${result.fileInDB}`;
+        this.adapter.log.info(`Set "${promptId}" to ${url}`);
+        await this.adapter.setForeignStateAsync(promptId, url);
+        return true;
+    }
+    /**
+     * Play the file on the voice satellites of the assistant adapter.
+     * "assistant.0" plays on all satellites (state "tts.text"),
+     * "assistant.0.satellites.<id>" plays on one satellite (state "tts" of the satellite).
+     *
+     * @param props Text and options of the task
+     * @returns True if the file was sent to the assistant adapter
+     */
+    async #sayItAssistant(props) {
+        const assistantDevice = props.testOptions?.assistantDevice || this.config.assistantDevice;
+        if (!assistantDevice) {
+            this.adapter.log.warn('No assistant instance or satellite defined');
+            return false;
+        }
+        const ttsId = /^assistant\.\d+$/.test(assistantDevice)
+            ? `${assistantDevice}.tts.text`
+            : `${assistantDevice}.tts`;
+        const obj = await this.adapter.getForeignObjectAsync(ttsId);
+        if (!obj) {
+            this.adapter.log.warn(`State "${ttsId}" not found. Please check the assistant adapter`);
+            return false;
+        }
+        const result = await this.#uploadToStates(props);
+        const webLink = await this.#getWebLink(props.testOptions);
+        if (!webLink) {
+            this.adapter.log.warn('Web server is unavailable!');
+            return false;
+        }
+        // The assistant adapter downloads the file with ffmpeg and plays it with the volume of the satellite
+        const url = `${webLink}${result.fileInDB}`;
+        this.adapter.log.info(`Set "${ttsId}" to ${url}`);
+        await this.adapter.setForeignStateAsync(ttsId, url);
+        return true;
+    }
+    /**
+     * Split the text into blocks of at most 250 characters, as the alexa2 adapter can speak only 250 characters at once.
+     * The blocks are separated by ";", so the alexa2 adapter speaks them one after another.
+     * The text is split preferably at the end of a sentence, otherwise between words.
+     *
+     * @param text Text to speak
+     * @param maxLength Maximal length of one block
+     * @returns Blocks separated by ";"
+     */
+    static splitAlexaText(text, maxLength = 250) {
+        // ";" separates the blocks and the volume for the alexa2 adapter, so it must not be in the text itself
+        const sentences = text
+            .replace(/;/g, ',')
+            .replace(/\s+/g, ' ')
+            .trim()
+            .split(/(?<=[.!?])\s+/);
+        const blocks = [];
+        let block = '';
+        const add = (part) => {
+            if (!block) {
+                block = part;
+            }
+            else if (block.length + 1 + part.length <= maxLength) {
+                block = `${block} ${part}`;
+            }
+            else {
+                blocks.push(block);
+                block = part;
+            }
+        };
+        for (const sentence of sentences) {
+            if (sentence.length <= maxLength) {
+                add(sentence);
+                continue;
+            }
+            // The sentence is too long: split it between the words
+            for (let word of sentence.split(' ')) {
+                // A word longer than the block (like a link) must be cut
+                while (word.length > maxLength) {
+                    if (block) {
+                        blocks.push(block);
+                        block = '';
+                    }
+                    blocks.push(word.substring(0, maxLength));
+                    word = word.substring(maxLength);
+                }
+                if (word) {
+                    add(word);
+                }
+            }
+        }
+        if (block) {
+            blocks.push(block);
+        }
+        return blocks.join(';');
+    }
+    /**
+     * Say the text on an echo device with the alexa2 adapter.
+     * Alexa speaks the text with its own voice, so the voice of sayit is not used, and sound files cannot be played.
+     * The command "announcement" plays the chime of Alexa before the text.
+     *
+     * @param props Text, volume and options of the task
+     * @returns True if the text was sent to the alexa2 adapter
+     */
+    async #sayItAlexa(props) {
+        const alexaDevice = props.testOptions?.alexaDevice || this.config.alexaDevice;
+        if (!alexaDevice) {
+            this.adapter.log.warn('No Alexa device defined');
+            return false;
+        }
+        if (_a.isPlayFile(props.text)) {
+            this.adapter.log.warn(`Alexa cannot play the file "${props.text}"`);
+            return false;
+        }
+        const command = (props.testOptions?.alexaCommand || this.config.alexaCommand) === 'announcement' ? 'announcement' : 'speak';
+        const commandId = `${alexaDevice}.Commands.${command}`;
+        const obj = await this.adapter.getForeignObjectAsync(commandId);
+        if (!obj) {
+            this.adapter.log.warn(`State "${commandId}" not found. Does the device support commands of the alexa2 adapter?`);
+            return false;
+        }
+        const text = _a.splitAlexaText(props.text);
+        if (!text) {
+            return false;
+        }
+        // The alexa2 adapter sets this volume before the text and restores the volume afterward. 0 is ignored by alexa2.
+        const volume = Math.round(Number(props.volume));
+        const value = volume > 0 && volume <= 100 ? `${volume};${text}` : text;
+        this.adapter.log.info(`Set "${commandId}" to ${value}`);
+        await this.adapter.setForeignStateAsync(commandId, value);
+        // Alexa speaks the text in the cloud, so the duration can only be estimated:
+        // about 80 ms per character and 2 seconds of delay by the cloud
+        props.duration = Math.ceil(props.text.length * 0.08) + 2;
+        return true;
+    }
+    /**
+     * Play the file on Kodi with the kodi adapter (one instance per Kodi).
+     * The state "open" clears the music playlist of Kodi, plays the file and switches to the fullscreen player,
+     * so the current playback is stopped and not restored afterward.
+     *
+     * @param props Text and options of the task
+     * @returns True if the file was sent to the kodi adapter
+     */
+    async #sayItKodi(props) {
+        const kodiInstance = props.testOptions?.kodiInstance || this.config.kodiInstance;
+        if (!kodiInstance) {
+            this.adapter.log.warn('No Kodi instance defined');
+            return false;
+        }
+        const openId = `${kodiInstance}.open`;
+        const obj = await this.adapter.getForeignObjectAsync(openId);
+        if (!obj) {
+            this.adapter.log.warn(`State "${openId}" not found. Please check the kodi adapter`);
+            return false;
+        }
+        const result = await this.#uploadToStates(props);
+        const webLink = await this.#getWebLink(props.testOptions);
+        if (!webLink) {
+            this.adapter.log.warn('Web server is unavailable!');
+            return false;
+        }
+        // The file is played with the actual volume of Kodi
+        const url = `${webLink}${result.fileInDB}`;
+        this.adapter.log.info(`Set "${openId}" to ${url}`);
+        await this.adapter.setForeignStateAsync(openId, url);
+        return true;
+    }
+    /**
+     * Call a telephone number with the asterisk adapter and play the file in the call.
+     * The asterisk adapter reads the mp3 file from the disk, converts it to gsm and sends it to the asterisk server,
+     * so sayit and the asterisk adapter must run on the same host. Every text is a separate call.
+     *
+     * @param props Text and options of the task
+     * @returns True if the asterisk adapter started the call
+     */
+    async #sayItAsterisk(props) {
+        const asteriskInstance = props.testOptions?.asteriskInstance || this.config.asteriskInstance;
+        const telnr = props.testOptions?.asteriskTelnr || this.config.asteriskTelnr;
+        if (!asteriskInstance) {
+            this.adapter.log.warn('No asterisk instance defined');
+            return false;
+        }
+        if (!telnr) {
+            this.adapter.log.warn('No telephone number defined for the call with the asterisk adapter');
+            return false;
+        }
+        const instanceObj = (await this.adapter.getForeignObjectAsync(`system.adapter.${asteriskInstance}`));
+        if (!instanceObj) {
+            this.adapter.log.warn(`Instance "${asteriskInstance}" not found`);
+            return false;
+        }
+        if (instanceObj.common?.host && this.adapter.host && instanceObj.common.host !== this.adapter.host) {
+            this.adapter.log.warn(`"${asteriskInstance}" runs on the host "${instanceObj.common.host}" and sayit on "${this.adapter.host}". ` +
+                'Both must run on the same host, because the asterisk adapter reads the generated file from the disk');
+            return false;
+        }
+        // The file must be on the disk, as the asterisk adapter cannot download it
+        const result = await this.#uploadToStates(props, true);
+        const audiofile = result.fileOnDisk;
+        if (!audiofile || !/\.(mp3|gsm)$/i.test(audiofile)) {
+            this.adapter.log.warn(`The asterisk adapter can play only mp3 or gsm files and not "${audiofile}"`);
+            return false;
+        }
+        const callerid = props.testOptions?.asteriskCallerId || this.config.asteriskCallerId;
+        const repeat = parseInt((props.testOptions?.asteriskRepeat !== undefined
+            ? props.testOptions.asteriskRepeat
+            : this.config.asteriskRepeat), 10);
+        const message = { telnr, audiofile };
+        if (callerid) {
+            message.callerid = callerid;
+        }
+        if (repeat > 0) {
+            message.repeat = repeat;
+        }
+        this.adapter.log.info(`Call ${telnr} with "${asteriskInstance}" and play ${audiofile}`);
+        // The asterisk adapter answers after the file was converted and the call was started.
+        // It waits up to 60 seconds for the connection, so sayit waits 90 seconds for the answer.
+        const response = await new Promise(resolve => {
+            const timer = this.adapter.setTimeout(() => resolve(null), 90_000);
+            this.adapter.sendTo(asteriskInstance, 'dial', message, (res) => {
+                if (timer) {
+                    this.adapter.clearTimeout(timer);
+                }
+                resolve(res);
+            });
+        });
+        if (!response) {
+            this.adapter.log.warn(`No answer from "${asteriskInstance}" in 90 seconds`);
+            return false;
+        }
+        if (response.error) {
+            this.adapter.log.warn(`"${asteriskInstance}" cannot call ${telnr}: ${response.error}`);
+            return false;
+        }
+        return true;
+    }
+    /**
+     * Replace the characters, which are not allowed in the text of an XML element
+     *
+     * @param text Text to escape
+     * @returns Escaped text
+     */
+    static escapeXml(text) {
+        return text
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&apos;');
+    }
+    /**
+     * Find the IP address of the speaker of a bosesoundtouch instance (one instance controls one speaker)
+     *
+     * @param boseInstance Instance of the bosesoundtouch adapter, like "bosesoundtouch.0"
+     * @returns IP address or host name of the speaker or an empty string
+     */
+    async #getBoseAddress(boseInstance) {
+        // The adapter reports the IP address of the speaker in "deviceInfo.ipAddress"
+        const state = await this.adapter.getForeignStateAsync(`${boseInstance}.deviceInfo.ipAddress`);
+        if (state?.val) {
+            return String(state.val);
+        }
+        // Otherwise the address from the configuration of the instance
+        const obj = await this.adapter.getForeignObjectAsync(`system.adapter.${boseInstance}`);
+        return obj?.native?.address || '';
+    }
+    /**
+     * Play the file on a Bose SoundTouch speaker over the notification interface "/speaker" of the speaker (port 8090).
+     * The speaker pauses the current playback, plays the file and resumes the playback afterward.
+     * Only some models support it (e.g. SoundTouch 10, 20 and 30 Series III).
+     *
+     * @param props Text, volume and options of the task
+     * @returns True if the speaker accepted the notification
+     */
+    async #sayItBose(props) {
+        const boseInstance = props.testOptions?.boseInstance || this.config.boseInstance;
+        if (!boseInstance) {
+            this.adapter.log.warn('No Bose SoundTouch instance defined');
+            return false;
+        }
+        const address = await this.#getBoseAddress(boseInstance);
+        if (!address) {
+            this.adapter.log.warn(`Cannot find the IP address of the Bose speaker of "${boseInstance}"`);
+            return false;
+        }
+        const result = await this.#uploadToStates(props);
+        const webLink = await this.#getWebLink(props.testOptions);
+        if (!webLink) {
+            this.adapter.log.warn('Web server is unavailable!');
+            return false;
+        }
+        const url = `${webLink}${result.fileInDB}`;
+        // The speaker validates the app key. Any non-empty key is accepted by the replacements of the Bose cloud.
+        const appKey = props.testOptions?.boseAppKey || this.config.boseAppKey || 'ioBroker.sayit';
+        // 0 or no volume: the notification is played with the actual volume of the speaker
+        const volume = Math.round(Number(props.volume));
+        // "service", "reason" and "message" are shown as artist, track and album in "now playing" of the speaker
+        const message = _a.isPlayFile(props.text) ? props.text.split(/[/\\]/).pop() || '' : props.text;
+        const body = `<play_info>` +
+            `<app_key>${_a.escapeXml(appKey)}</app_key>` +
+            `<url>${_a.escapeXml(url)}</url>` +
+            `<service>ioBroker</service>` +
+            `<reason>${_a.escapeXml(this.adapter.namespace)}</reason>` +
+            `<message>${_a.escapeXml(message.substring(0, 100))}</message>${volume > 0 && volume <= 100 ? `<volume>${volume}</volume>` : ''}</play_info>`;
+        this.adapter.log.info(`Send to Bose speaker ${address}: ${url}`);
+        try {
+            const response = await axios_1.default.post(`http://${address}:8090/speaker`, body, {
+                headers: { 'Content-Type': 'text/xml' },
+                timeout: 5000,
+                responseType: 'text',
+                validateStatus: () => true,
+            });
+            const answer = typeof response.data === 'string' ? response.data : JSON.stringify(response.data);
+            // The speaker answers "<status>/speaker</status>" if the notification was accepted
+            if (response.status !== 200 || !answer.includes('<status>')) {
+                this.adapter.log.warn(`Bose speaker ${address} rejected the notification (HTTP ${response.status}): ${answer}. ` +
+                    'Only some models support it (e.g. SoundTouch 10, 20 and 30 Series III), ' +
+                    'and the speaker checks the app key at the Bose cloud');
+                return false;
+            }
+        }
+        catch (e) {
+            this.adapter.log.error(`Cannot send the notification to the Bose speaker ${address}: ${e}`);
+            return false;
+        }
+        // The speaker needs a moment to pause the playback, and a new notification during a notification is rejected
+        props.duration += 1;
         return true;
     }
     /**
@@ -434,7 +794,7 @@ class Speech2Device {
         props.volume ||= props.testOptions?.volume
             ? parseInt(props.testOptions.volume, 10)
             : this.options.sayLastVolume;
-        const result = await this.#uploadToStates(this.#speechSource(props));
+        const result = await this.#uploadToStates(props);
         const webLink = await this.#getWebLink(props.testOptions);
         if (!webLink) {
             this.adapter.log.warn('Web server is unavailable!');
@@ -460,7 +820,7 @@ class Speech2Device {
         props.volume ||= props.testOptions?.volume
             ? parseInt(props.testOptions.volume, 10)
             : this.options.sayLastVolume;
-        const result = await this.#uploadToStates(this.#speechSource(props));
+        const result = await this.#uploadToStates(props);
         const webLink = await this.#getWebLink(props.testOptions);
         const mpdInstance = props.testOptions?.mpdInstance || this.config.mpdInstance;
         const fileName = `${props.volume ? `${props.volume};` : ''}${webLink}${result.fileInDB}`;
@@ -488,7 +848,7 @@ class Speech2Device {
         props.volume ||= props.testOptions?.volume
             ? parseInt(props.testOptions.volume, 10)
             : this.options.sayLastVolume;
-        const result = await this.#uploadToStates(this.#speechSource(props));
+        const result = await this.#uploadToStates(props);
         const webLink = await this.#getWebLink(props.testOptions);
         const chromecastDevice = props.testOptions?.chromecastDevice || this.config.chromecastDevice;
         // Create announcement JSON
@@ -633,7 +993,7 @@ class Speech2Device {
      */
     async #sayItGoogleHome(props) {
         props.volume ||= this.options.sayLastVolume;
-        const result = await this.#uploadToStates(this.#speechSource(props));
+        const result = await this.#uploadToStates(props);
         const webLink = await this.#getWebLink(props.testOptions);
         const googleHomeServer = props.testOptions?.googleHomeServer || this.config.googleHomeServer;
         if (googleHomeServer && webLink) {
@@ -690,7 +1050,7 @@ class Speech2Device {
      * @returns True if the file was uploaded and played
      */
     async #sayItMP24ftp(props) {
-        const result = await this.#uploadToStates(this.#speechSource(props), true);
+        const result = await this.#uploadToStates(props, true);
         const mp24Server = props.testOptions?.mp24Server || this.config.mp24Server;
         const ftpPort = props.testOptions?.ftpPort || this.config.ftpPort;
         const ftpUser = props.testOptions?.ftpUser || this.config.ftpUser;
@@ -758,7 +1118,7 @@ class Speech2Device {
      * @returns True if the file was played
      */
     async #sayItSystem(props) {
-        const result = await this.#uploadToStates(this.#speechSource(props), true);
+        const result = await this.#uploadToStates(props, true);
         const systemCommand = props.testOptions?.systemCommand || this.config.systemCommand;
         const systemPlayer = props.testOptions?.systemPlayer || this.config.systemPlayer;
         const p = (0, node_os_1.platform)();
@@ -958,6 +1318,24 @@ class Speech2Device {
         }
         if (type === 'squeezebox') {
             return await this.#sayItSqueezebox(props);
+        }
+        if (type === 'wiim') {
+            return await this.#sayItWiim(props);
+        }
+        if (type === 'assistant') {
+            return await this.#sayItAssistant(props);
+        }
+        if (type === 'alexa') {
+            return await this.#sayItAlexa(props);
+        }
+        if (type === 'bose') {
+            return await this.#sayItBose(props);
+        }
+        if (type === 'kodi') {
+            return await this.#sayItKodi(props);
+        }
+        if (type === 'asterisk') {
+            return await this.#sayItAsterisk(props);
         }
         if (type === 'fully') {
             return await this.#sayItFully(props);

@@ -84,6 +84,20 @@ const GENERATED_TEXTS = {
     uk: 'Текст успішно згенеровано.',
     'zh-cn': '文本已成功生成。',
 };
+/** Label of the target "all satellites" of the assistant adapter in the language of the ioBroker installation */
+const ALL_SATELLITES = {
+    en: 'all satellites',
+    de: 'alle Satelliten',
+    ru: 'все сателлиты',
+    pt: 'todos os satélites',
+    nl: 'alle satellieten',
+    fr: 'tous les satellites',
+    it: 'tutti i satelliti',
+    es: 'todos los satélites',
+    pl: 'wszystkie satelity',
+    uk: 'усі сателіти',
+    'zh-cn': '所有卫星设备',
+};
 class SayItAdapter extends adapter_core_1.Adapter {
     dataDir = (0, node_path_1.join)((0, adapter_core_1.getAbsoluteDefaultDataDir)(), 'sayit');
     /** Timer of the mDNS discovery */
@@ -357,6 +371,71 @@ class SayItAdapter extends adapter_core_1.Adapter {
         }, obj.callback);
     }
     /**
+     * Collect the targets of the assistant adapter for the configuration dialog:
+     * every instance (plays on all satellites) and every satellite of the instance.
+     *
+     * @returns List of the targets, like "assistant.0" and "assistant.0.satellites.kitchen"
+     */
+    async browseAssistant() {
+        const list = [];
+        const instances = await this.getObjectViewAsync('system', 'instance', {
+            startkey: 'system.adapter.assistant.',
+            endkey: 'system.adapter.assistant.\u9999',
+        });
+        const satellites = await this.getObjectViewAsync('system', 'device', {
+            startkey: 'assistant.',
+            endkey: 'assistant.\u9999',
+        });
+        instances?.rows.forEach(instance => {
+            const m = instance.id.match(/^system\.adapter\.(assistant\.\d+)$/);
+            if (!m) {
+                return;
+            }
+            const instanceId = m[1];
+            list.push({ value: instanceId, label: `${instanceId}: ${ALL_SATELLITES[this.lang] || ALL_SATELLITES.en}` });
+            satellites?.rows.forEach(row => {
+                if (row.id.startsWith(`${instanceId}.satellites.`) &&
+                    /^assistant\.\d+\.satellites\.[^.]+$/.test(row.id)) {
+                    let name = row.value?.common?.name;
+                    if (typeof name === 'object') {
+                        name = name[this.lang] || name.en;
+                    }
+                    const satId = row.id.replace(/^assistant\.\d+\.satellites\./, '');
+                    list.push({
+                        value: row.id,
+                        label: `${instanceId}: ${name && name !== satId ? `${name} (${satId})` : satId}`,
+                    });
+                }
+            });
+        });
+        return list;
+    }
+    /**
+     * Collect the echo devices of the alexa2 adapter for the configuration dialog.
+     * Only the devices, which support the commands of the alexa2 adapter, have the state "Commands.speak".
+     *
+     * @returns List of the devices, like "alexa2.0.Echo-Devices.G0912345678"
+     */
+    async browseAlexa() {
+        const states = await this.getForeignObjectsAsync('alexa2.*.Echo-Devices.*.Commands.speak', 'state');
+        const devices = await this.getForeignObjectsAsync('alexa2.*.Echo-Devices.*', 'device');
+        const list = [];
+        Object.keys(states || {}).forEach(id => {
+            const m = id.match(/^(alexa2\.\d+\.Echo-Devices\.[^.]+)\.Commands\.speak$/);
+            if (!m) {
+                return;
+            }
+            let name = devices?.[m[1]]?.common?.name;
+            if (typeof name === 'object') {
+                name = name[this.lang] || name.en;
+            }
+            const serial = m[1].replace(/^alexa2\.\d+\.Echo-Devices\./, '');
+            list.push({ value: m[1], label: name ? `${name} (${serial})` : serial });
+        });
+        list.sort((a, b) => a.label.localeCompare(b.label));
+        return list;
+    }
+    /**
      * Process a message sent by another adapter or by the admin configuration dialog
      *
      * @param obj Message object
@@ -371,6 +450,15 @@ class SayItAdapter extends adapter_core_1.Adapter {
             const sonosDevice = obj.message?.sonosDevice;
             const heosDevice = obj.message?.heosDevice;
             const squeezeboxDevice = obj.message?.squeezeboxDevice;
+            const wiimDevice = obj.message?.wiimDevice;
+            const assistantDevice = obj.message?.assistantDevice;
+            const alexaDevice = obj.message?.alexaDevice;
+            const alexaCommand = obj.message?.alexaCommand;
+            const boseInstance = obj.message?.boseInstance;
+            const kodiInstance = obj.message?.kodiInstance;
+            const asteriskInstance = obj.message?.asteriskInstance;
+            const asteriskTelnr = obj.message?.asteriskTelnr;
+            const asteriskCallerId = obj.message?.asteriskCallerId;
             const fullyDevice = obj.message?.fullyDevice;
             const mpdInstance = obj.message?.mpdInstance;
             const chromecastDevice = obj.message?.chromecastDevice;
@@ -396,6 +484,15 @@ class SayItAdapter extends adapter_core_1.Adapter {
                             sonosDevice,
                             heosDevice,
                             squeezeboxDevice,
+                            wiimDevice,
+                            assistantDevice,
+                            alexaDevice,
+                            alexaCommand,
+                            boseInstance,
+                            kodiInstance,
+                            asteriskInstance,
+                            asteriskTelnr,
+                            asteriskCallerId,
                             fullyDevice,
                             mpdInstance,
                             browserInstance,
@@ -483,6 +580,41 @@ class SayItAdapter extends adapter_core_1.Adapter {
             })
                 .catch(e => {
                 this.log.warn(`Cannot read squeezebox players: ${e}`);
+                this.sendTo(obj.from, obj.command, [], obj.callback);
+            });
+        }
+        else if (obj.callback && obj.command === 'browseWiim') {
+            // The wiim adapter creates the streamers as devices "wiim.0.<name>"
+            this.getObjectViewAsync('system', 'device', { startkey: 'wiim.', endkey: 'wiim.\u9999' })
+                .then(res => {
+                const list = [];
+                res?.rows.forEach(row => {
+                    if (/^wiim\.\d+\.[^.]+$/.test(row.id)) {
+                        list.push({ value: row.id, label: row.id.replace(/^wiim\.\d+\./, '') });
+                    }
+                });
+                this.sendTo(obj.from, obj.command, list, obj.callback);
+            })
+                .catch(e => {
+                this.log.warn(`Cannot read WiiM streamers: ${e}`);
+                this.sendTo(obj.from, obj.command, [], obj.callback);
+            });
+        }
+        else if (obj.callback && obj.command === 'browseAssistant') {
+            // Every instance of the assistant adapter plays on all satellites ("assistant.0"),
+            // and the satellites are devices "assistant.0.satellites.<id>"
+            this.browseAssistant()
+                .then(list => this.sendTo(obj.from, obj.command, list, obj.callback))
+                .catch(e => {
+                this.log.warn(`Cannot read assistant satellites: ${e}`);
+                this.sendTo(obj.from, obj.command, [], obj.callback);
+            });
+        }
+        else if (obj.callback && obj.command === 'browseAlexa') {
+            this.browseAlexa()
+                .then(list => this.sendTo(obj.from, obj.command, list, obj.callback))
+                .catch(e => {
+                this.log.warn(`Cannot read Alexa devices: ${e}`);
                 this.sendTo(obj.from, obj.command, [], obj.callback);
             });
         }
@@ -698,9 +830,14 @@ class SayItAdapter extends adapter_core_1.Adapter {
             combined,
             testOptions: props.testOptions,
         };
-        // If more time than annoTimeout seconds till last text, add announcement
+        // If more time than annoTimeout seconds till last text, add announcement.
+        // Alexa cannot play files, it has its own chime with the command "announcement".
+        // With asterisk every file is a separate phone call, so the announcement would be an own call.
+        const outputType = props.testOptions?.type || this.config.type;
         if (!onlyCache &&
             announce &&
+            outputType !== 'alexa' &&
+            outputType !== 'asterisk' &&
             !this.tasks.length &&
             (!this.lastSay || Date.now() - this.lastSay > annoTimeout * 1000)) {
             if (props.testOptions) {
@@ -1260,6 +1397,10 @@ class SayItAdapter extends adapter_core_1.Adapter {
         if (this.config.type === 'sonos' ||
             this.config.type === 'heos' ||
             this.config.type === 'squeezebox' ||
+            this.config.type === 'wiim' ||
+            this.config.type === 'assistant' ||
+            this.config.type === 'bose' ||
+            this.config.type === 'kodi' ||
             this.config.type === 'fully' ||
             this.config.type === 'chromecast' ||
             this.config.type === 'mpd' ||
@@ -1336,7 +1477,7 @@ class SayItAdapter extends adapter_core_1.Adapter {
             return '';
         }
         if (obj.native.auth) {
-            this.log.error(`Cannot use server "${obj._id}" with authentication for sonos/heos/squeezebox/fully/chromecast. Select other or create another one.`);
+            this.log.error(`Cannot use server "${obj._id}" with authentication for sonos/heos/squeezebox/wiim/assistant/bose/kodi/fully/chromecast. Select other or create another one.`);
             return '';
         }
         let host;

@@ -1335,6 +1335,50 @@ const sayitOptions = {
         server: true,
         libs: ['fs', 'crypto', 'http'],
     },
+    wiim: {
+        name: 'WiiM / LinkPlay',
+        mp3Required: true,
+        checkLength: true,
+        server: true,
+        libs: ['fs', 'crypto', 'http'],
+    },
+    assistant: {
+        name: 'Assistant satellites',
+        mp3Required: true,
+        checkLength: true,
+        server: true,
+        libs: ['fs', 'crypto', 'http'],
+    },
+    asterisk: {
+        // The asterisk adapter reads the generated file from the disk, so no web server is required
+        name: 'Asterisk (phone call)',
+        mp3Required: true,
+        checkLength: true,
+        server: false,
+        libs: ['fs'],
+    },
+    kodi: {
+        name: 'Kodi',
+        mp3Required: true,
+        checkLength: true,
+        server: true,
+        libs: ['fs', 'crypto', 'http'],
+    },
+    bose: {
+        name: 'Bose SoundTouch',
+        mp3Required: true,
+        checkLength: true,
+        server: true,
+        libs: ['fs', 'crypto', 'http'],
+    },
+    alexa: {
+        // Alexa speaks the text with its own voice, so no mp3 file is generated
+        name: 'Alexa',
+        mp3Required: false,
+        checkLength: false,
+        server: false,
+        libs: [],
+    },
     fully: {
         name: 'Fully Kiosk Browser',
         mp3Required: true,
