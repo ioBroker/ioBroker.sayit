@@ -1,5 +1,5 @@
 import { platform } from 'node:os';
-import { normalize, join } from 'node:path';
+import { normalize, join, extname } from 'node:path';
 import { exec, spawn } from 'node:child_process';
 import { writeFileSync, readFileSync } from 'node:fs';
 import jsftp from 'jsftp';
@@ -153,15 +153,18 @@ export default class Speech2Device {
     /**
      * Store the file to say in the "tts.mp3" (or "tts.ogg") file of this instance,
      * so it could be played by a browser or by an external device over the web server.
+     * Sound files (like the announcement gong) are stored in the "tts.sound.<ext>" file instead,
+     * so the following text cannot overwrite the sound before the device has downloaded it.
      *
-     * @param text Text to say or the name of the file to play
+     * @param props Text and options of the task
      * @param saveToDisk If true, the file will be stored on the disk too (required for FTP and system player)
      * @returns Link to the file in the ioBroker file storage and the name of the file on the disk
      */
     async #uploadToStates(
-        text: string,
+        props: SayItDeviceProps,
         saveToDisk?: boolean,
     ): Promise<{ fileInDB: string; fileOnDisk: string | null }> {
+        const text = this.#speechSource(props);
         let fileData;
         let fileName;
         const data = await this.#getFileInStates(text);
@@ -190,9 +193,12 @@ export default class Speech2Device {
             throw new Error(`Cannot upload file "${fileName}" to state: ${e.toString()}`);
         }
 
-        const file = `tts.${this.options.outFileExt}`;
+        // "props.text" is the name of the sound file, if a sound file must be played and not a generated text
+        const file = Speech2Device.isPlayFile(props.text)
+            ? `tts.sound${extname(fileName).toLowerCase()}`
+            : `tts.${this.options.outFileExt}`;
 
-        await this.adapter.writeFileAsync(this.adapter.namespace, `tts.${this.options.outFileExt}`, fileData);
+        await this.adapter.writeFileAsync(this.adapter.namespace, file, fileData);
         return {
             fileInDB: `/${this.adapter.namespace}/${file}?ts=${Date.now()}`,
             fileOnDisk: fileName,
@@ -232,7 +238,7 @@ export default class Speech2Device {
      * @returns True if the file was sent to at least one vis version
      */
     async #sayItBrowser(props: SayItDeviceProps): Promise<boolean> {
-        const result = await this.#uploadToStates(this.#speechSource(props));
+        const result = await this.#uploadToStates(props);
 
         const browserInstance = props.testOptions?.browserInstance || this.config.browserInstance;
         const browserVis =
@@ -368,7 +374,7 @@ export default class Speech2Device {
         props.volume ||= props.testOptions?.volume
             ? parseInt(props.testOptions.volume as string, 10)
             : this.options.sayLastVolume;
-        const result = await this.#uploadToStates(this.#speechSource(props));
+        const result = await this.#uploadToStates(props);
 
         const webLink = await this.#getWebLink(props.testOptions);
 
@@ -401,7 +407,7 @@ export default class Speech2Device {
             ? parseInt(props.testOptions.volume as string, 10)
             : this.options.sayLastVolume;
 
-        const result = await this.#uploadToStates(this.#speechSource(props));
+        const result = await this.#uploadToStates(props);
 
         const webLink = await this.#getWebLink(props.testOptions);
 
@@ -446,7 +452,7 @@ export default class Speech2Device {
             return false;
         }
 
-        const result = await this.#uploadToStates(this.#speechSource(props));
+        const result = await this.#uploadToStates(props);
         const webLink = await this.#getWebLink(props.testOptions);
         if (!webLink) {
             this.adapter.log.warn('Web server is unavailable!');
@@ -488,7 +494,7 @@ export default class Speech2Device {
             ? parseInt(props.testOptions.volume as string, 10)
             : this.options.sayLastVolume;
 
-        const result = await this.#uploadToStates(this.#speechSource(props));
+        const result = await this.#uploadToStates(props);
         const webLink = await this.#getWebLink(props.testOptions);
         if (!webLink) {
             this.adapter.log.warn('Web server is unavailable!');
@@ -519,7 +525,7 @@ export default class Speech2Device {
             ? parseInt(props.testOptions.volume as string, 10)
             : this.options.sayLastVolume;
 
-        const result = await this.#uploadToStates(this.#speechSource(props));
+        const result = await this.#uploadToStates(props);
         const webLink = await this.#getWebLink(props.testOptions);
         const mpdInstance = props.testOptions?.mpdInstance || this.config.mpdInstance;
 
@@ -550,7 +556,7 @@ export default class Speech2Device {
             ? parseInt(props.testOptions.volume as string, 10)
             : this.options.sayLastVolume;
 
-        const result = await this.#uploadToStates(this.#speechSource(props));
+        const result = await this.#uploadToStates(props);
 
         const webLink = await this.#getWebLink(props.testOptions);
         const chromecastDevice = props.testOptions?.chromecastDevice || this.config.chromecastDevice;
@@ -717,7 +723,7 @@ export default class Speech2Device {
      */
     async #sayItGoogleHome(props: SayItDeviceProps): Promise<boolean> {
         props.volume ||= this.options.sayLastVolume;
-        const result = await this.#uploadToStates(this.#speechSource(props));
+        const result = await this.#uploadToStates(props);
         const webLink = await this.#getWebLink(props.testOptions);
         const googleHomeServer = props.testOptions?.googleHomeServer || this.config.googleHomeServer;
 
@@ -778,7 +784,7 @@ export default class Speech2Device {
      * @returns True if the file was uploaded and played
      */
     async #sayItMP24ftp(props: SayItDeviceProps): Promise<boolean> {
-        const result = await this.#uploadToStates(this.#speechSource(props), true);
+        const result = await this.#uploadToStates(props, true);
         const mp24Server = props.testOptions?.mp24Server || this.config.mp24Server;
         const ftpPort = props.testOptions?.ftpPort || this.config.ftpPort;
         const ftpUser = props.testOptions?.ftpUser || this.config.ftpUser;
@@ -854,7 +860,7 @@ export default class Speech2Device {
      * @returns True if the file was played
      */
     async #sayItSystem(props: SayItDeviceProps): Promise<boolean> {
-        const result = await this.#uploadToStates(this.#speechSource(props), true);
+        const result = await this.#uploadToStates(props, true);
         const systemCommand = props.testOptions?.systemCommand || this.config.systemCommand;
         const systemPlayer = props.testOptions?.systemPlayer || this.config.systemPlayer;
 
