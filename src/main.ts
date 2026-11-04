@@ -519,6 +519,34 @@ export class SayItAdapter extends Adapter {
     }
 
     /**
+     * Collect the echo devices of the alexa2 adapter for the configuration dialog.
+     * Only the devices, which support the commands of the alexa2 adapter, have the state "Commands.speak".
+     *
+     * @returns List of the devices, like "alexa2.0.Echo-Devices.G0912345678"
+     */
+    async browseAlexa(): Promise<{ value: string; label: string }[]> {
+        const states = await this.getForeignObjectsAsync('alexa2.*.Echo-Devices.*.Commands.speak', 'state');
+        const devices = await this.getForeignObjectsAsync('alexa2.*.Echo-Devices.*', 'device');
+        const list: { value: string; label: string }[] = [];
+
+        Object.keys(states || {}).forEach(id => {
+            const m = id.match(/^(alexa2\.\d+\.Echo-Devices\.[^.]+)\.Commands\.speak$/);
+            if (!m) {
+                return;
+            }
+            let name = devices?.[m[1]]?.common?.name;
+            if (typeof name === 'object') {
+                name = name[this.lang] || name.en;
+            }
+            const serial = m[1].replace(/^alexa2\.\d+\.Echo-Devices\./, '');
+            list.push({ value: m[1], label: name ? `${name} (${serial})` : serial });
+        });
+        list.sort((a, b) => a.label.localeCompare(b.label));
+
+        return list;
+    }
+
+    /**
      * Process a message sent by another adapter or by the admin configuration dialog
      *
      * @param obj Message object
@@ -535,6 +563,8 @@ export class SayItAdapter extends Adapter {
             const squeezeboxDevice = obj.message?.squeezeboxDevice as string;
             const wiimDevice = obj.message?.wiimDevice as string;
             const assistantDevice = obj.message?.assistantDevice as string;
+            const alexaDevice = obj.message?.alexaDevice as string;
+            const alexaCommand = obj.message?.alexaCommand as 'speak' | 'announcement' | undefined;
             const fullyDevice = obj.message?.fullyDevice as string;
             const mpdInstance = obj.message?.mpdInstance as `${string}.${number}`;
             const chromecastDevice = obj.message?.chromecastDevice as string;
@@ -564,6 +594,8 @@ export class SayItAdapter extends Adapter {
                             squeezeboxDevice,
                             wiimDevice,
                             assistantDevice,
+                            alexaDevice,
+                            alexaCommand,
                             fullyDevice,
                             mpdInstance,
                             browserInstance,
@@ -678,6 +710,13 @@ export class SayItAdapter extends Adapter {
                 .then(list => this.sendTo(obj.from, obj.command, list, obj.callback))
                 .catch(e => {
                     this.log.warn(`Cannot read assistant satellites: ${e}`);
+                    this.sendTo(obj.from, obj.command, [], obj.callback);
+                });
+        } else if (obj.callback && obj.command === 'browseAlexa') {
+            this.browseAlexa()
+                .then(list => this.sendTo(obj.from, obj.command, list, obj.callback))
+                .catch(e => {
+                    this.log.warn(`Cannot read Alexa devices: ${e}`);
                     this.sendTo(obj.from, obj.command, [], obj.callback);
                 });
         } else if (obj.callback && obj.command === 'browseFully') {
@@ -908,10 +947,12 @@ export class SayItAdapter extends Adapter {
             testOptions: props.testOptions,
         };
 
-        // If more time than annoTimeout seconds till last text, add announcement
+        // If more time than annoTimeout seconds till last text, add announcement.
+        // Alexa cannot play files, it has its own chime with the command "announcement".
         if (
             !onlyCache &&
             announce &&
+            (props.testOptions?.type || this.config.type) !== 'alexa' &&
             !this.tasks.length &&
             (!this.lastSay || Date.now() - this.lastSay > annoTimeout * 1000)
         ) {

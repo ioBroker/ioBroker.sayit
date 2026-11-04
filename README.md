@@ -38,6 +38,8 @@ Actually, the following outputs are supported:
 
 - *Assistant satellites* - play text on the voice satellites of the [assistant](https://github.com/ioBroker/ioBroker.assistant) adapter. Select the instance (e.g. `assistant.0`) to play the text on all satellites (state `tts.text`) or one satellite (state `satellites.<id>.tts`). The text is spoken with the voice selected in sayit, the assistant adapter only plays the generated mp3 file, so it needs [ffmpeg](https://ffmpeg.org/) on its host. Be sure the Web Adapter is enabled, so the assistant adapter can read the generated mp3 files.
 
+- *Alexa* - say text on an Echo device (or a group) with the [alexa2](https://github.com/Apollon77/ioBroker.alexa2) adapter. Alexa speaks the text with its **own voice**, so the voice (engine) of sayit, the cache and the announcement sound are not used, and sound files (mp3, wav) cannot be played. The text is written into the state `Commands.speak` or `Commands.announcement` (with the chime of Alexa, only if announcements are enabled for the device and "Do not disturb" is off). Long texts are split into blocks of 250 characters, the volume is set before the text and restored afterward by the alexa2 adapter. As Alexa speaks in the cloud, sayit can only estimate the duration of the text before the next one is sent.
+
 - *Fully Kiosk Browser* - play text on an Android tablet with [Fully Kiosk Browser](https://www.fully-kiosk.com) and the [fullybrowser](https://github.com/arteck/ioBroker.fullybrowser) adapter (version 3.0.5 or newer). The REST command `playSound` is sent via the state `Commands.setRAW` of the device and the volume is set via `Commands.setAudioVolume`. Be sure the Web Adapter is enabled, so the tablet can read the generated mp3 files.
 
 - *Chromecast* - play text on a Chromecast device.
@@ -335,6 +337,7 @@ Like by FreeTTS, the language is a part of the voice, e.g. `de_DE-thorsten-high`
 - (@GermanBluefox) Fixed: the announcement sound was overwritten by the following text, so external players (e.g. Squeezebox) said the text twice (#527)
 - (@GermanBluefox) Added the output type "WiiM / LinkPlay" for the streamers of the wiim adapter
 - (@GermanBluefox) Added the output type "Assistant satellites" for the voice satellites of the assistant adapter
+- (@GermanBluefox) Added the output type "Alexa" for the Echo devices of the alexa2 adapter
 ### 5.5.0 (2026-10-27)
 * (@hdering) Added the Aura dashboards as a target of the output type "Browser" (#518)
 * (@GermanBluefox) Added the output type "Fully Kiosk Browser" for the tablets of the fullybrowser adapter

@@ -52,6 +52,10 @@
                             "label": "Assistant satellites"
                         },
                         {
+                            "value": "alexa",
+                            "label": "Alexa"
+                        },
+                        {
                             "value": "fully",
                             "label": "Fully Kiosk Browser"
                         },
@@ -118,7 +122,7 @@
                     "fileTypes": "audio",
                     "pattern": "tts.userfiles/*.mp3",
                     "objectID": "sayit.%INSTANCE%",
-                    "hidden": "data.type === 'googleHome'",
+                    "hidden": "data.type === 'googleHome' || data.type === 'alexa'",
                     "noTranslation": true,
                     "upload": "tts.userfiles/",
                     "xs": 12,
@@ -318,6 +322,32 @@
                     "label": "Device",
                     "hidden": "data.type !== 'assistant'",
                     "command": "browseAssistant",
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 2,
+                    "xl": 2
+                },
+                "alexaDevice": {
+                    "type": "selectSendTo",
+                    "label": "Device",
+                    "hidden": "data.type !== 'alexa'",
+                    "command": "browseAlexa",
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 2,
+                    "xl": 2
+                },
+                "alexaCommand": {
+                    "type": "select",
+                    "label": "Alexa command",
+                    "hidden": "data.type !== 'alexa'",
+                    "options": [
+                        { "value": "speak", "label": "Speak" },
+                        { "value": "announcement", "label": "Announcement with the chime of Alexa" }
+                    ],
+                    "default": "speak",
                     "xs": 12,
                     "sm": 6,
                     "md": 4,

@@ -193,6 +193,7 @@ export interface SayItAdapterConfig {
         | 'squeezebox'
         | 'wiim'
         | 'assistant'
+        | 'alexa'
         | 'fully'
         | 'windows';
     /** Own play command for the type "system". "%s" will be replaced by the file name */
@@ -222,6 +223,10 @@ export interface SayItAdapterConfig {
     wiimDevice: string;
     /** Instance of the assistant adapter for all satellites, like "assistant.0", or one satellite, like "assistant.0.satellites.kitchen" */
     assistantDevice: string;
+    /** ID of the echo device of the alexa2 adapter, like "alexa2.0.Echo-Devices.G0912345678" */
+    alexaDevice: string;
+    /** Command of the alexa2 adapter: "speak" or "announcement" (with the chime of Alexa) */
+    alexaCommand: 'speak' | 'announcement';
     /** ID of the tablet of the fullybrowser adapter, like "fullybrowser.0.Kitchen" */
     fullyDevice: string;
     /** Instance of the MPD adapter, like "mpd.0" */
@@ -304,6 +309,8 @@ export type TestOptions = {
     squeezeboxDevice?: string;
     wiimDevice?: string;
     assistantDevice?: string;
+    alexaDevice?: string;
+    alexaCommand?: 'speak' | 'announcement';
     fullyDevice?: string;
     mpdInstance?: `${string}.${number}`;
     chromecastDevice?: string;

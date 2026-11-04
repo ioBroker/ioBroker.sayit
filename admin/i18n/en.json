@@ -115,5 +115,8 @@
     "browser_instance_help": "vis: ID of the browser or FFFFFFFF for all. Aura: comma-separated client IDs, empty for all dashboards",
     "Folder ID": "Folder ID",
     "Test": "Test",
-    "Announce duration": "Announce duration"
+    "Announce duration": "Announce duration",
+    "Alexa command": "Alexa command",
+    "Speak": "Speak",
+    "Announcement with the chime of Alexa": "Announcement with the chime of Alexa"
 }

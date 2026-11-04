@@ -1420,6 +1420,14 @@ const sayitOptions: {
         server: true,
         libs: ['fs', 'crypto', 'http'],
     },
+    alexa: {
+        // Alexa speaks the text with its own voice, so no mp3 file is generated
+        name: 'Alexa',
+        mp3Required: false,
+        checkLength: false,
+        server: false,
+        libs: [],
+    },
     fully: {
         name: 'Fully Kiosk Browser',
         mp3Required: true,

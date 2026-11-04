@@ -543,6 +543,113 @@ export default class Speech2Device {
     }
 
     /**
+     * Split the text into blocks of at most 250 characters, as the alexa2 adapter can speak only 250 characters at once.
+     * The blocks are separated by ";", so the alexa2 adapter speaks them one after another.
+     * The text is split preferably at the end of a sentence, otherwise between words.
+     *
+     * @param text Text to speak
+     * @param maxLength Maximal length of one block
+     * @returns Blocks separated by ";"
+     */
+    static splitAlexaText(text: string, maxLength = 250): string {
+        // ";" separates the blocks and the volume for the alexa2 adapter, so it must not be in the text itself
+        const sentences = text
+            .replace(/;/g, ',')
+            .replace(/\s+/g, ' ')
+            .trim()
+            .split(/(?<=[.!?])\s+/);
+        const blocks: string[] = [];
+        let block = '';
+
+        const add = (part: string): void => {
+            if (!block) {
+                block = part;
+            } else if (block.length + 1 + part.length <= maxLength) {
+                block = `${block} ${part}`;
+            } else {
+                blocks.push(block);
+                block = part;
+            }
+        };
+
+        for (const sentence of sentences) {
+            if (sentence.length <= maxLength) {
+                add(sentence);
+                continue;
+            }
+            // The sentence is too long: split it between the words
+            for (let word of sentence.split(' ')) {
+                // A word longer than the block (like a link) must be cut
+                while (word.length > maxLength) {
+                    if (block) {
+                        blocks.push(block);
+                        block = '';
+                    }
+                    blocks.push(word.substring(0, maxLength));
+                    word = word.substring(maxLength);
+                }
+                if (word) {
+                    add(word);
+                }
+            }
+        }
+        if (block) {
+            blocks.push(block);
+        }
+
+        return blocks.join(';');
+    }
+
+    /**
+     * Say the text on an echo device with the alexa2 adapter.
+     * Alexa speaks the text with its own voice, so the voice of sayit is not used, and sound files cannot be played.
+     * The command "announcement" plays the chime of Alexa before the text.
+     *
+     * @param props Text, volume and options of the task
+     * @returns True if the text was sent to the alexa2 adapter
+     */
+    async #sayItAlexa(props: SayItDeviceProps): Promise<boolean> {
+        const alexaDevice = props.testOptions?.alexaDevice || this.config.alexaDevice;
+        if (!alexaDevice) {
+            this.adapter.log.warn('No Alexa device defined');
+            return false;
+        }
+        if (Speech2Device.isPlayFile(props.text)) {
+            this.adapter.log.warn(`Alexa cannot play the file "${props.text}"`);
+            return false;
+        }
+
+        const command =
+            (props.testOptions?.alexaCommand || this.config.alexaCommand) === 'announcement' ? 'announcement' : 'speak';
+        const commandId = `${alexaDevice}.Commands.${command}`;
+        const obj = await this.adapter.getForeignObjectAsync(commandId);
+        if (!obj) {
+            this.adapter.log.warn(
+                `State "${commandId}" not found. Does the device support commands of the alexa2 adapter?`,
+            );
+            return false;
+        }
+
+        const text = Speech2Device.splitAlexaText(props.text);
+        if (!text) {
+            return false;
+        }
+
+        // The alexa2 adapter sets this volume before the text and restores the volume afterward. 0 is ignored by alexa2.
+        const volume = Math.round(Number(props.volume));
+        const value = volume > 0 && volume <= 100 ? `${volume};${text}` : text;
+
+        this.adapter.log.info(`Set "${commandId}" to ${value}`);
+        await this.adapter.setForeignStateAsync(commandId, value);
+
+        // Alexa speaks the text in the cloud, so the duration can only be estimated:
+        // about 80 ms per character and 2 seconds of delay by the cloud
+        props.duration = Math.ceil(props.text.length * 0.08) + 2;
+
+        return true;
+    }
+
+    /**
      * Play the file on an Android tablet with the Fully Kiosk Browser via the fullybrowser adapter.
      * The REST command "playSound" is sent over the state "Commands.setRAW" (fullybrowser 3.0.5 or newer).
      *
@@ -1144,6 +1251,9 @@ export default class Speech2Device {
         }
         if (type === 'assistant') {
             return await this.#sayItAssistant(props);
+        }
+        if (type === 'alexa') {
+            return await this.#sayItAlexa(props);
         }
         if (type === 'fully') {
             return await this.#sayItFully(props);
