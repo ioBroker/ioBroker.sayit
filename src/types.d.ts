@@ -194,6 +194,7 @@ export interface SayItAdapterConfig {
         | 'wiim'
         | 'assistant'
         | 'alexa'
+        | 'bose'
         | 'fully'
         | 'windows';
     /** Own play command for the type "system". "%s" will be replaced by the file name */
@@ -227,6 +228,10 @@ export interface SayItAdapterConfig {
     alexaDevice: string;
     /** Command of the alexa2 adapter: "speak" or "announcement" (with the chime of Alexa) */
     alexaCommand: 'speak' | 'announcement';
+    /** Instance of the bosesoundtouch adapter (one instance per speaker), like "bosesoundtouch.0" */
+    boseInstance: string;
+    /** App key, which is sent with the notification to the Bose speaker. Empty - "ioBroker.sayit" is used */
+    boseAppKey: string;
     /** ID of the tablet of the fullybrowser adapter, like "fullybrowser.0.Kitchen" */
     fullyDevice: string;
     /** Instance of the MPD adapter, like "mpd.0" */
@@ -311,6 +316,8 @@ export type TestOptions = {
     assistantDevice?: string;
     alexaDevice?: string;
     alexaCommand?: 'speak' | 'announcement';
+    boseInstance?: string;
+    boseAppKey?: string;
     fullyDevice?: string;
     mpdInstance?: `${string}.${number}`;
     chromecastDevice?: string;

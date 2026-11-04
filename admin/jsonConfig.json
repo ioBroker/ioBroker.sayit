@@ -56,6 +56,10 @@
                             "label": "Alexa"
                         },
                         {
+                            "value": "bose",
+                            "label": "Bose SoundTouch"
+                        },
+                        {
                             "value": "fully",
                             "label": "Fully Kiosk Browser"
                         },
@@ -77,6 +81,32 @@
                     "md": 6,
                     "lg": 4,
                     "xl": 4
+                },
+                "_noRestoreInfo": {
+                    "type": "infoBox",
+                    "newLine": true,
+                    "boxType": "warning",
+                    "closeable": false,
+                    "text": "info_no_restore",
+                    "hidden": "data.type !== 'googleHome'",
+                    "xs": 12,
+                    "sm": 12,
+                    "md": 12,
+                    "lg": 8,
+                    "xl": 8
+                },
+                "_boseInfo": {
+                    "type": "infoBox",
+                    "newLine": true,
+                    "boxType": "info",
+                    "closeable": false,
+                    "text": "info_bose",
+                    "hidden": "data.type !== 'bose'",
+                    "xs": 12,
+                    "sm": 12,
+                    "md": 12,
+                    "lg": 8,
+                    "xl": 8
                 },
                 "systemCommand": {
                     "newLine": true,
@@ -354,6 +384,28 @@
                     "lg": 2,
                     "xl": 2
                 },
+                "boseInstance": {
+                    "type": "instance",
+                    "label": "Device",
+                    "hidden": "data.type !== 'bose'",
+                    "adapter": "bosesoundtouch",
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 2,
+                    "xl": 2
+                },
+                "boseAppKey": {
+                    "type": "text",
+                    "label": "Bose app key",
+                    "help": "bose_app_key_help",
+                    "hidden": "data.type !== 'bose'",
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 2,
+                    "xl": 2
+                },
                 "fullyDevice": {
                     "type": "selectSendTo",
                     "label": "Device",
@@ -433,7 +485,7 @@
                     "type": "instance",
                     "adapter": "web",
                     "label": "Web instance",
-                    "hidden": "data.type !== 'sonos' && data.type !== 'heos' && data.type !== 'squeezebox' && data.type !== 'wiim' && data.type !== 'assistant' && data.type !== 'fully' && data.type !== 'chromecast' && data.type !== 'mpd' && data.type !== 'googleHome'",
+                    "hidden": "data.type !== 'sonos' && data.type !== 'heos' && data.type !== 'squeezebox' && data.type !== 'wiim' && data.type !== 'assistant' && data.type !== 'bose' && data.type !== 'fully' && data.type !== 'chromecast' && data.type !== 'mpd' && data.type !== 'googleHome'",
                     "xs": 12,
                     "sm": 6,
                     "md": 4,
@@ -445,7 +497,7 @@
                     "onlyIp4": true,
                     "noInternal": true,
                     "label": "Web server IP",
-                    "hidden": "data.type !== 'sonos' && data.type !== 'heos' && data.type !== 'squeezebox' && data.type !== 'wiim' && data.type !== 'assistant' && data.type !== 'fully' && data.type !== 'chromecast' && data.type !== 'mpd' && data.type !== 'googleHome'",
+                    "hidden": "data.type !== 'sonos' && data.type !== 'heos' && data.type !== 'squeezebox' && data.type !== 'wiim' && data.type !== 'assistant' && data.type !== 'bose' && data.type !== 'fully' && data.type !== 'chromecast' && data.type !== 'mpd' && data.type !== 'googleHome'",
                     "xs": 12,
                     "sm": 6,
                     "md": 4,

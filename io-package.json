@@ -190,6 +190,8 @@
     "assistantDevice": "",
     "alexaDevice": "",
     "alexaCommand": "speak",
+    "boseInstance": "",
+    "boseAppKey": "",
     "fullyDevice": "",
     "mpdInstance": "",
     "googleHomeServer": "",

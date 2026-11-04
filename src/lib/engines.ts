@@ -1420,6 +1420,13 @@ const sayitOptions: {
         server: true,
         libs: ['fs', 'crypto', 'http'],
     },
+    bose: {
+        name: 'Bose SoundTouch',
+        mp3Required: true,
+        checkLength: true,
+        server: true,
+        libs: ['fs', 'crypto', 'http'],
+    },
     alexa: {
         // Alexa speaks the text with its own voice, so no mp3 file is generated
         name: 'Alexa',

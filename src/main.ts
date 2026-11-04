@@ -565,6 +565,7 @@ export class SayItAdapter extends Adapter {
             const assistantDevice = obj.message?.assistantDevice as string;
             const alexaDevice = obj.message?.alexaDevice as string;
             const alexaCommand = obj.message?.alexaCommand as 'speak' | 'announcement' | undefined;
+            const boseInstance = obj.message?.boseInstance as string;
             const fullyDevice = obj.message?.fullyDevice as string;
             const mpdInstance = obj.message?.mpdInstance as `${string}.${number}`;
             const chromecastDevice = obj.message?.chromecastDevice as string;
@@ -596,6 +597,7 @@ export class SayItAdapter extends Adapter {
                             assistantDevice,
                             alexaDevice,
                             alexaCommand,
+                            boseInstance,
                             fullyDevice,
                             mpdInstance,
                             browserInstance,
@@ -1546,6 +1548,7 @@ export class SayItAdapter extends Adapter {
             this.config.type === 'squeezebox' ||
             this.config.type === 'wiim' ||
             this.config.type === 'assistant' ||
+            this.config.type === 'bose' ||
             this.config.type === 'fully' ||
             this.config.type === 'chromecast' ||
             this.config.type === 'mpd' ||
@@ -1637,7 +1640,7 @@ export class SayItAdapter extends Adapter {
 
         if (obj.native.auth) {
             this.log.error(
-                `Cannot use server "${obj._id}" with authentication for sonos/heos/squeezebox/wiim/assistant/fully/chromecast. Select other or create another one.`,
+                `Cannot use server "${obj._id}" with authentication for sonos/heos/squeezebox/wiim/assistant/bose/fully/chromecast. Select other or create another one.`,
             );
             return '';
         }

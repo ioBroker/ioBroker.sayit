@@ -42,7 +42,11 @@ Actually, the following outputs are supported:
 
 - *Fully Kiosk Browser* - play text on an Android tablet with [Fully Kiosk Browser](https://www.fully-kiosk.com) and the [fullybrowser](https://github.com/arteck/ioBroker.fullybrowser) adapter (version 3.0.5 or newer). The REST command `playSound` is sent via the state `Commands.setRAW` of the device and the volume is set via `Commands.setAudioVolume`. Be sure the Web Adapter is enabled, so the tablet can read the generated mp3 files.
 
+- *Bose SoundTouch* - play text on a Bose SoundTouch speaker of the [bosesoundtouch](https://github.com/iobroker-community-adapters/ioBroker.bosesoundtouch) adapter (one instance per speaker). sayit sends the link to the file directly to the notification interface `/speaker` (port 8090) of the speaker, so the current playback is paused and resumed afterward. Only some models support it (e.g. SoundTouch 10, 20 and 30 Series III), other models reject the announcement (see the log). The speaker checks the app key at the Bose cloud, which was shut down on May 6, 2026, so without a replacement of the Bose cloud (e.g. the service of the [Bose SoundTouch Toolkit](https://gesellix.github.io/Bose-SoundTouch/), which accepts any non-empty key) the speaker may reject the announcement. Be sure the Web Adapter is enabled, so the speaker can read the generated mp3 files.
+
 - *Chromecast* - play text on a Chromecast device.
+
+- *Google Home* - play text on a Google Home or another cast device, which sayit controls directly. The current playback (e.g. music from Spotify) is stopped and **not restored** after the text. Use the output type *Chromecast* with the chromecast adapter, if the playback must be resumed.
 
 - *MPD* - play text on Music Player Daemon. Use only **http** for web adapter, don't use https.
 
@@ -338,6 +342,8 @@ Like by FreeTTS, the language is a part of the voice, e.g. `de_DE-thorsten-high`
 - (@GermanBluefox) Added the output type "WiiM / LinkPlay" for the streamers of the wiim adapter
 - (@GermanBluefox) Added the output type "Assistant satellites" for the voice satellites of the assistant adapter
 - (@GermanBluefox) Added the output type "Alexa" for the Echo devices of the alexa2 adapter
+- (@GermanBluefox) Added the output type "Bose SoundTouch" with the notification interface of the speaker, which resumes the playback
+- (@GermanBluefox) The configuration shows a hint for the output types, which do not restore the playback (Google Home)
 ### 5.5.0 (2026-10-27)
 * (@hdering) Added the Aura dashboards as a target of the output type "Browser" (#518)
 * (@GermanBluefox) Added the output type "Fully Kiosk Browser" for the tablets of the fullybrowser adapter

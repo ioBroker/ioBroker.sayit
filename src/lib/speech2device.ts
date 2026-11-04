@@ -650,6 +650,111 @@ export default class Speech2Device {
     }
 
     /**
+     * Replace the characters, which are not allowed in the text of an XML element
+     *
+     * @param text Text to escape
+     * @returns Escaped text
+     */
+    static escapeXml(text: string): string {
+        return text
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&apos;');
+    }
+
+    /**
+     * Find the IP address of the speaker of a bosesoundtouch instance (one instance controls one speaker)
+     *
+     * @param boseInstance Instance of the bosesoundtouch adapter, like "bosesoundtouch.0"
+     * @returns IP address or host name of the speaker or an empty string
+     */
+    async #getBoseAddress(boseInstance: string): Promise<string> {
+        // The adapter reports the IP address of the speaker in "deviceInfo.ipAddress"
+        const state = await this.adapter.getForeignStateAsync(`${boseInstance}.deviceInfo.ipAddress`);
+        if (state?.val) {
+            return String(state.val);
+        }
+        // Otherwise the address from the configuration of the instance
+        const obj = await this.adapter.getForeignObjectAsync(`system.adapter.${boseInstance}`);
+        return (obj?.native?.address as string) || '';
+    }
+
+    /**
+     * Play the file on a Bose SoundTouch speaker over the notification interface "/speaker" of the speaker (port 8090).
+     * The speaker pauses the current playback, plays the file and resumes the playback afterward.
+     * Only some models support it (e.g. SoundTouch 10, 20 and 30 Series III).
+     *
+     * @param props Text, volume and options of the task
+     * @returns True if the speaker accepted the notification
+     */
+    async #sayItBose(props: SayItDeviceProps): Promise<boolean> {
+        const boseInstance = props.testOptions?.boseInstance || this.config.boseInstance;
+        if (!boseInstance) {
+            this.adapter.log.warn('No Bose SoundTouch instance defined');
+            return false;
+        }
+        const address = await this.#getBoseAddress(boseInstance);
+        if (!address) {
+            this.adapter.log.warn(`Cannot find the IP address of the Bose speaker of "${boseInstance}"`);
+            return false;
+        }
+
+        const result = await this.#uploadToStates(props);
+        const webLink = await this.#getWebLink(props.testOptions);
+        if (!webLink) {
+            this.adapter.log.warn('Web server is unavailable!');
+            return false;
+        }
+
+        const url = `${webLink}${result.fileInDB}`;
+        // The speaker validates the app key. Any non-empty key is accepted by the replacements of the Bose cloud.
+        const appKey = props.testOptions?.boseAppKey || this.config.boseAppKey || 'ioBroker.sayit';
+        // 0 or no volume: the notification is played with the actual volume of the speaker
+        const volume = Math.round(Number(props.volume));
+        // "service", "reason" and "message" are shown as artist, track and album in "now playing" of the speaker
+        const message = Speech2Device.isPlayFile(props.text) ? props.text.split(/[/\\]/).pop() || '' : props.text;
+        const body =
+            `<play_info>` +
+            `<app_key>${Speech2Device.escapeXml(appKey)}</app_key>` +
+            `<url>${Speech2Device.escapeXml(url)}</url>` +
+            `<service>ioBroker</service>` +
+            `<reason>${Speech2Device.escapeXml(this.adapter.namespace)}</reason>` +
+            `<message>${Speech2Device.escapeXml(message.substring(0, 100))}</message>${
+                volume > 0 && volume <= 100 ? `<volume>${volume}</volume>` : ''
+            }</play_info>`;
+
+        this.adapter.log.info(`Send to Bose speaker ${address}: ${url}`);
+        try {
+            const response = await axios.post(`http://${address}:8090/speaker`, body, {
+                headers: { 'Content-Type': 'text/xml' },
+                timeout: 5000,
+                responseType: 'text',
+                validateStatus: () => true,
+            });
+            const answer = typeof response.data === 'string' ? response.data : JSON.stringify(response.data);
+            // The speaker answers "<status>/speaker</status>" if the notification was accepted
+            if (response.status !== 200 || !answer.includes('<status>')) {
+                this.adapter.log.warn(
+                    `Bose speaker ${address} rejected the notification (HTTP ${response.status}): ${answer}. ` +
+                        'Only some models support it (e.g. SoundTouch 10, 20 and 30 Series III), ' +
+                        'and the speaker checks the app key at the Bose cloud',
+                );
+                return false;
+            }
+        } catch (e) {
+            this.adapter.log.error(`Cannot send the notification to the Bose speaker ${address}: ${e}`);
+            return false;
+        }
+
+        // The speaker needs a moment to pause the playback, and a new notification during a notification is rejected
+        props.duration += 1;
+
+        return true;
+    }
+
+    /**
      * Play the file on an Android tablet with the Fully Kiosk Browser via the fullybrowser adapter.
      * The REST command "playSound" is sent over the state "Commands.setRAW" (fullybrowser 3.0.5 or newer).
      *
@@ -1254,6 +1359,9 @@ export default class Speech2Device {
         }
         if (type === 'alexa') {
             return await this.#sayItAlexa(props);
+        }
+        if (type === 'bose') {
+            return await this.#sayItBose(props);
         }
         if (type === 'fully') {
             return await this.#sayItFully(props);

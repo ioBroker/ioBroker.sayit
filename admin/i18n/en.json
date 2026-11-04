@@ -118,5 +118,9 @@
     "Announce duration": "Announce duration",
     "Alexa command": "Alexa command",
     "Speak": "Speak",
-    "Announcement with the chime of Alexa": "Announcement with the chime of Alexa"
+    "Announcement with the chime of Alexa": "Announcement with the chime of Alexa",
+    "Bose app key": "Bose app key",
+    "bose_app_key_help": "Optional. Empty - \"ioBroker.sayit\" is used",
+    "info_no_restore": "The current playback (e.g. music from Spotify) is stopped and not restored after the text. If a volume is given for the text, the device keeps this volume afterward.",
+    "info_bose": "Only some SoundTouch models support announcements (e.g. SoundTouch 10, 20 and 30 Series III): the current playback is paused and resumed afterward. The speaker checks the app key at the Bose cloud, which was shut down on May 6, 2026. Without a replacement of the Bose cloud the speaker may reject the announcement."
 }
