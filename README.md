@@ -34,7 +34,7 @@ Actually, the following outputs are supported:
 
 - *Squeezebox* - play text on a player of the Logitech Media Server (Lyrion) with the [squeezeboxrpc](https://github.com/oweitman/ioBroker.squeezeboxrpc) adapter (version 2.0.0 or newer). The text is written into the state `Announce` of the player, so the current playback is stopped and restored afterward. The volume of the announcement is configured in the squeezeboxrpc adapter. Be sure the Web Adapter is enabled, so the Media Server can read the generated mp3 files.
 
-- *WiiM / LinkPlay* - play text on a WiiM, Arylic or other LinkPlay based streamer with the [wiim](https://github.com/KaiIOB/ioBroker.wiim) adapter. The link to the file is written into the state `playPromptUrl` of the streamer, so the file is played as a notification: the current playback is lowered and resumed afterward. The announcement is played with the actual volume of the streamer. Arylic devices need firmware 4.6.415145 or newer. Be sure the Web Adapter is enabled, so the streamer can read the generated mp3 files.
+- *WiiM / LinkPlay* - play text on a WiiM, Arylic or other LinkPlay based streamer with the [wiim](https://github.com/KaiIOB/ioBroker.wiim) adapter. On Arylic devices with firmware 4.6.415145 or newer and other LinkPlay devices the link to the file is written into the state `playPromptUrl` of the streamer, so the file is played as a notification: the current playback is lowered and resumed afterward. WiiM devices do not support `playPromptUrl`, so the link is written into the state `play_URL`: the current playback is stopped and not restored after the announcement. The announcement is played with the actual volume of the streamer. Be sure the Web Adapter is enabled, so the streamer can read the generated mp3 files.
 
 - *Assistant satellites* - play text on the voice satellites of the [assistant](https://github.com/ioBroker/ioBroker.assistant) adapter. Select the instance (e.g. `assistant.0`) to play the text on all satellites (state `tts.text`) or one satellite (state `satellites.<id>.tts`). The text is spoken with the voice selected in sayit, the assistant adapter only plays the generated mp3 file, so it needs [ffmpeg](https://ffmpeg.org/) on its host. Be sure the Web Adapter is enabled, so the assistant adapter can read the generated mp3 files.
 
@@ -339,6 +339,9 @@ Like by FreeTTS, the language is a part of the voice, e.g. `de_DE-thorsten-high`
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### **WORK IN PROGRESS**
+- (@GermanBluefox) Fixed: WiiM streamers use the state play_URL, as they do not support playPromptUrl (#537)
+
 ### 5.6.0 (2026-11-04)
 - (copilot) Adapter requires node.js >= 22.19.0 now
 - (@GermanBluefox) Fixed: the announcement sound was overwritten by the following text, so external players (e.g. Squeezebox) said the text twice (#527)
