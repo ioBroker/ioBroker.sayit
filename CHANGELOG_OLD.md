@@ -249,6 +249,10 @@ Changed type of top-level object to "meta" in order to comply with js-controller
 
 ### 0.0.1 (2015-02-06)
 * (bluefox) initial commit
+## 5.3.2 (2026-10-13)
+* (@GermanBluefox) Removed the "install" script and `process.exit()` for compact mode
+* (@GermanBluefox) Passwords and API keys are now protected from reading by non-admin users
+
 ## 5.3.1 (2026-08-13)
 * (@GermanBluefox) Added the button "Test text generation" to the "Engine" tab, so the selected engine can be tested with an own text
 * (@GermanBluefox) Test generations do not overwrite the cached files anymore

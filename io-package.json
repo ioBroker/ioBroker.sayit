@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "sayit",
-    "version": "5.6.0",
+    "version": "5.6.1",
     "news": {
+      "5.6.1": {
+        "en": "Fixed: WiiM streamers use the state play_URL, as they do not support playPromptUrl (#537)",
+        "de": "Behoben: WiIM-Streamer nutzen Play_URL, da sie PlayPromptURL nicht unterstützen (#537)",
+        "ru": "Исправлено: стримеры WiIM используют состояние play_URL, так как они не поддерживают playPromptURL (#537)",
+        "pt": "Corrigido: os streamers WiiM usam o estado Play_URL, pois não suportam (#537)",
+        "nl": "Opgelost: WiIM-streamers gebruiken de status play_URL, omdat ze geen ondersteuning bieden voor PlayPromptURL (#537)",
+        "fr": "Corrigé : les streamers WiiM utilisent l'état Play_URL, qui n'accepte pas PlayPromptURL (#537)",
+        "it": "Risolto: gli streamer WiIM usano lo stato Play_URL, non PlayPromptURL (#537)",
+        "es": "Corregido: Los streamers de WiiM usan el estado Play_URL, ya que no admiten PlayPromptURL (#537)",
+        "pl": "Naprawiono: Streamery WiiM używają stanu Play_url, ponieważ nie obsługują PlayPromptURL (#537)",
+        "uk": "Виправлено: WiIM стримери використовують стан Play_URL, оскільки вони не підтримують PlayPromptUrl (#537)",
+        "zh-cn": "修复：WiiM 主播使用状态 play_URL，因为他们不支持 PlayPrompTurl (#537)"
+      },
       "5.6.0": {
         "en": "Adapter requires node.js >= 22.19.0 now\nFixed: the announcement sound was overwritten by the following text, so external players (e.g. Squeezebox) said the text twice (#527)\nAdded the output type \"WiiM / LinkPlay\" for the streamers of the wiim adapter\nAdded the output type \"Assistant satellites\" for the voice satellites of the assistant adapter\nAdded the output type \"Alexa\" for the Echo devices of the alexa2 adapter\nAdded the output type \"Bose SoundTouch\" with the notification interface of the speaker, which resumes the playback\nAdded the output type \"Kodi\" for the kodi adapter\nAdded the output type \"Asterisk (phone call)\": the text is played in a phone call of the asterisk adapter\nThe configuration shows a hint for the output types, which do not restore the playback (Google Home, Kodi)",
         "de": "Adapter benötigt jetzt node.js >= 22.19.0\nBehoben: Der Ansageton wurde vom folgenden Text überschrieben, sodass externe Player (z. B. Squeezebox) den Text zweimal gesagt haben (#527)\nAusgabetyp „WiiM / LinkPlay“ für die Streamer des wiim-Adapters hinzugefügt\nAusgabetyp „Assistant satellites“ für die Sprachsatelliten des assistant-Adapters hinzugefügt\nAusgabetyp „Alexa“ für die Echo-Geräte des alexa2-Adapters hinzugefügt\nAusgabetyp „Bose SoundTouch“ mit der Benachrichtigungsschnittstelle des Lautsprechers hinzugefügt, die die Wiedergabe danach fortsetzt\nAusgabetyp „Kodi“ für den kodi-Adapter hinzugefügt\nAusgabetyp „Asterisk (Anruf)“ hinzugefügt: Der Text wird in einem Telefonanruf über den asterisk-Adapter abgespielt\nDie Konfiguration zeigt einen Hinweis bei den Ausgabetypen, die die Wiedergabe nicht wiederherstellen (Google Home, Kodi)",
@@ -80,19 +93,6 @@
         "pl": "Dodano przycisk „Testuj generowanie tekstu” do zakładki „Silnik”, dzięki czemu wybrany silnik można przetestować przy użyciu własnego tekstu\nGeneracje testów nie nadpisują już plików w pamięci podręcznej\nAdapter wymaga teraz node.js >= 22 i js-controller >= 6.0.11\nStarsze wpisy w dzienniku zmian zostały przeniesione do pliku CHANGELOG_OLD.md\nZaktualizowano konfigurację Devidabota i automatycznego scalania",
         "uk": "Додано кнопку \"Тестування генерації тексту\" на вкладку \"Двигун\", щоб вибраний движок можна було протестувати з власним текстом\nГенерації тестів більше не перезаписують кешовані файли\nАдаптер тепер вимагає node.js >= 22 та js-controller >= 6.0.11\nСтаріші записи журналу змін було перенесено до CHANGELOG_OLD.md\nОновлено конфігурацію dependabot та автоматичного об'єднання.",
         "zh-cn": "在“引擎”选项卡中添加了“测试文本生成”按钮，以便可以使用自定义文本测试所选引擎。\n测试生成不再覆盖缓存文件\n适配器现在需要 node.js >= 22 和 js-controller >= 6.0.11。\n较早的变更日志条目已移至 CHANGELOG_OLD.md 文件。\n更新了 Dependabot 和自动合并配置"
-      },
-      "5.3.0": {
-        "en": "Added freetts.org as a new TTS engine with more than 400 voices. An API key is required\nThe engine is selected in two steps now: first the provider and then the voice\nThe words of the Blockly block are translated into all 11 languages now\nBlockly block migrated to TypeScript and the generated code is unchanged",
-        "de": "freetts.org wurde als neue TTS-Engine mit über 400 Stimmen hinzugefügt. Ein API-Schlüssel ist erforderlich.\nDie Auswahl des Senders erfolgt nun in zwei Schritten: zuerst der Anbieter und dann die Stimme.\nDie Wörter des Blockly-Blocks sind jetzt in alle 11 Sprachen übersetzt.\nDer Blockly-Block wurde auf TypeScript migriert, der generierte Code bleibt jedoch unverändert.",
-        "ru": "Добавлен freetts.org в качестве нового движка преобразования текста в речь с более чем 400 голосами. Требуется ключ API.\nТеперь выбор движка происходит в два этапа: сначала провайдер, а затем голосовой канал.\nСлова, содержащиеся в блоке Blockly, теперь переведены на все 11 языков.\nБлок Blockly переведён на TypeScript, при этом сгенерированный код остался без изменений.",
-        "pt": "Adicionamos o freetts.org como um novo mecanismo de TTS com mais de 400 vozes. É necessária uma chave de API.\nO mecanismo de busca agora é selecionado em duas etapas: primeiro o provedor e depois a voz.\nAs palavras do bloco Blockly agora estão traduzidas para todos os 11 idiomas.\nO Blockly Block migrou para TypeScript e o código gerado permanece inalterado.",
-        "nl": "Freetts.org is toegevoegd als nieuwe TTS-engine met meer dan 400 stemmen. Een API-sleutel is vereist.\nDe keuze voor de engine verloopt nu in twee stappen: eerst de provider en vervolgens de spraak.\nDe woorden van het Blockly-blok zijn nu in alle 11 talen vertaald.\nHet Blockly-blok is gemigreerd naar TypeScript en de gegenereerde code is ongewijzigd gebleven.",
-        "fr": "Ajout de freetts.org comme nouveau moteur de synthèse vocale avec plus de 400 voix. Une clé API est requise.\nLe moteur est désormais sélectionné en deux étapes : d’abord le fournisseur, puis la voix.\nLes mots du bloc Blockly sont désormais traduits dans les 11 langues.\nLe bloc Blockly a été migré vers TypeScript et le code généré reste inchangé.",
-        "it": "È stato aggiunto freetts.org come nuovo motore TTS con oltre 400 voci. È necessaria una chiave API.\nIl motore viene ora selezionato in due fasi: prima il fornitore e poi la voce\nLe parole del blocco Blockly sono ora tradotte in tutte le 11 lingue\nBlockly è stato migrato a TypeScript e il codice generato è rimasto invariato.",
-        "es": "Se ha añadido freetts.org como nuevo motor de síntesis de voz con más de 400 voces. Se requiere una clave API.\nEl motor se selecciona ahora en dos pasos: primero el proveedor y luego la voz.\nLas palabras del bloque Blockly ahora están traducidas a los 11 idiomas.\nEl bloque de Blockly se migró a TypeScript y el código generado no sufrió cambios.",
-        "pl": "Dodano freetts.org jako nowy silnik TTS z ponad 400 głosami. Wymagany jest klucz API.\nWybór silnika odbywa się teraz w dwóch etapach: najpierw wybieramy dostawcę, a potem operatora głosowego.\nSłowa bloku Blockly są teraz tłumaczone na wszystkie 11 języków\nBlok Blockly został przeniesiony do TypeScript, a wygenerowany kod pozostał niezmieniony",
-        "uk": "Додано freetts.org як новий механізм синтезу мовлення з більш ніж 400 голосами. Потрібен ключ API.\nТепер вибір двигуна відбувається у два кроки: спочатку постачальник, а потім голосовий сервіс.\nСлова блоку Blockly тепер перекладені всіма 11 мовами.\nБлоковий код перенесено до TypeScript, а згенерований код не змінився.",
-        "zh-cn": "新增 freetts.org 作为新的 TTS 引擎，提供 400 多种语音。需要 API 密钥。\n现在引擎的选择分两步进行：首先是提供商，然后是语音引擎。\nBlockly模块的文字现在已被翻译成所有11种语言。\nBlockly 代码块已迁移到 TypeScript，生成的代码保持不变。"
       }
     },
     "titleLang": {

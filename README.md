@@ -339,7 +339,7 @@ Like by FreeTTS, the language is a part of the voice, e.g. `de_DE-thorsten-high`
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### **WORK IN PROGRESS**
+### 5.6.1 (2026-11-18)
 - (@GermanBluefox) Fixed: WiiM streamers use the state play_URL, as they do not support playPromptUrl (#537)
 
 ### 5.6.0 (2026-11-04)
@@ -372,10 +372,6 @@ Like by FreeTTS, the language is a part of the voice, e.g. `de_DE-thorsten-high`
 * (@GermanBluefox) Fixed: texts with SSML tags were never found in the cache, if the engine does not support SSML
 * (@GermanBluefox) Corrected the roles of the states `tts.text`, `tts.cachetext` and `tts.playing`
 * (@GermanBluefox) Used the timers of the adapter and added the missing size attributes in the configuration dialog
-
-### 5.3.2 (2026-10-13)
-* (@GermanBluefox) Removed the "install" script and `process.exit()` for compact mode
-* (@GermanBluefox) Passwords and API keys are now protected from reading by non-admin users
 
 [Older changelogs can be found there](CHANGELOG_OLD.md)
 
