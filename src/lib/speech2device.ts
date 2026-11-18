@@ -469,7 +469,10 @@ export default class Speech2Device {
 
     /**
      * Play the file on a WiiM, Arylic or other LinkPlay based streamer with the wiim adapter.
-     * The state "playPromptUrl" plays the file as a notification: the current playback is lowered and resumed afterward.
+     * Arylic (firmware >= 4.6.415145) and other LinkPlay devices get the file via the state "playPromptUrl",
+     * which plays it as a notification: the current playback is lowered and resumed afterward.
+     * WiiM devices (state "reqtype" is "https") do not support "playPromptUrl", so the state "play_URL" is used:
+     * the file replaces the current playback, which is not resumed.
      *
      * @param props Text and options of the task
      * @returns True if the file was sent to the wiim adapter
@@ -481,12 +484,20 @@ export default class Speech2Device {
             return false;
         }
 
-        const promptId = `${wiimDevice}.playPromptUrl`;
+        // The wiim adapter communicates with WiiM devices via https and with Arylic/LinkPlay devices via http
+        const reqType = await this.adapter.getForeignStateAsync(`${wiimDevice}.reqtype`);
+        const isWiim = reqType?.val === 'https';
+        const promptId = isWiim ? `${wiimDevice}.play_URL` : `${wiimDevice}.playPromptUrl`;
         const obj = await this.adapter.getForeignObjectAsync(promptId);
         if (!obj) {
             this.adapter.log.warn(`State "${promptId}" not found. Please update the wiim adapter`);
             return false;
         }
+        this.adapter.log.debug(
+            isWiim
+                ? `WiiM device detected: use "${promptId}", the current playback will not be resumed`
+                : `Use "${promptId}" to play the file as a notification`,
+        );
 
         const result = await this.#uploadToStates(props);
         const webLink = await this.#getWebLink(props.testOptions);
