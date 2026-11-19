@@ -167,6 +167,11 @@ sendTo('sayit.0', 'say', {
 });
 ```
 
+### Messages for scripts and AI agents
+`sendTo('sayit.0', 'help', {})` answers `{ help, commands }`: a description of all messages (e.g. `say` with all its
+parameters) for AI agents (e.g. pi-agent) and script authors, and the list of all commands with `write` (`true` if the
+command has an effect, e.g. plays something).
+
 ### Priorities
 To immediately pronounce the text despite the queued texts, you have two possibilities:
 - place "!" as a first character in text, so this text will be pronounced immediately after the current one.
@@ -339,6 +344,9 @@ Like by FreeTTS, the language is a part of the voice, e.g. `de_DE-thorsten-high`
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### **WORK IN PROGRESS**
+- (@GermanBluefox) Added the message "help": a description of all messages for AI agents (e.g. pi-agent), and common.supportedMessages.help
+
 ### 5.6.1 (2026-11-18)
 - (@GermanBluefox) Fixed: WiiM streamers use the state play_URL, as they do not support playPromptUrl (#537)
 

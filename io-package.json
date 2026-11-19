@@ -135,6 +135,11 @@
     "loglevel": "info",
     "messagebox": true,
     "supportStopInstance": true,
+    "supportedMessages": {
+      "custom": true,
+      "stopInstance": true,
+      "help": true
+    },
     "stopBeforeUpdate": true,
     "icon": "sayit.png",
     "adminUI": {

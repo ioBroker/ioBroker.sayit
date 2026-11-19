@@ -8,6 +8,7 @@ const node_fs_1 = require("node:fs");
 const node_path_1 = require("node:path");
 const node_crypto_1 = require("node:crypto");
 const engines_1 = require("./lib/engines");
+const help_1 = require("./lib/help");
 const text2speech_1 = __importDefault(require("./lib/text2speech"));
 const speech2device_1 = __importDefault(require("./lib/speech2device"));
 const adapter_core_1 = require("@iobroker/adapter-core");
@@ -441,7 +442,13 @@ class SayItAdapter extends adapter_core_1.Adapter {
      * @param obj Message object
      */
     processMessage(obj) {
-        if (obj.command === 'say') {
+        if (obj.command === 'help') {
+            // A description of all commands for AI agents and script authors
+            if (obj.callback) {
+                this.sendTo(obj.from, obj.command, { help: help_1.HELP, commands: help_1.COMMANDS }, obj.callback);
+            }
+        }
+        else if (obj.command === 'say') {
             const text = obj.message?.text;
             const language = obj.message?.language;
             const volume = obj.message?.volume ? parseInt(obj.message.volume, 10) : undefined;

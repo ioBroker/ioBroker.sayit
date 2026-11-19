@@ -11,6 +11,7 @@ import {
 import { normalize, join, isAbsolute } from 'node:path';
 import { createHash } from 'node:crypto';
 import { sayitEngines, sayitOptions } from './lib/engines';
+import { COMMANDS, HELP } from './lib/help';
 import Text2Speech from './lib/text2speech';
 import Speech2Device from './lib/speech2device';
 import { Adapter, type AdapterOptions, getAbsoluteDefaultDataDir } from '@iobroker/adapter-core';
@@ -552,7 +553,12 @@ export class SayItAdapter extends Adapter {
      * @param obj Message object
      */
     processMessage(obj: ioBroker.Message): void {
-        if (obj.command === 'say') {
+        if (obj.command === 'help') {
+            // A description of all commands for AI agents and script authors
+            if (obj.callback) {
+                this.sendTo(obj.from, obj.command, { help: HELP, commands: COMMANDS }, obj.callback);
+            }
+        } else if (obj.command === 'say') {
             const text: string | undefined = obj.message?.text as string;
             const language: EngineType | undefined = obj.message?.language as EngineType;
             const volume = obj.message?.volume ? parseInt(obj.message.volume as string, 10) : undefined;
