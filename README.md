@@ -344,7 +344,7 @@ Like by FreeTTS, the language is a part of the voice, e.g. `de_DE-thorsten-high`
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### **WORK IN PROGRESS**
+### 5.7.0 (2026-11-19)
 - (@GermanBluefox) Added the message "help": a description of all messages for AI agents (e.g. pi-agent), and common.supportedMessages.help
 
 ### 5.6.1 (2026-11-18)
@@ -369,17 +369,6 @@ Like by FreeTTS, the language is a part of the voice, e.g. `de_DE-thorsten-high`
 * (@GermanBluefox) Updated packages
 * (@GermanBluefox) Added the output type "Squeezebox" for the players of the squeezeboxrpc adapter (#5)
 * (@GermanBluefox) Added Piper as a new local TTS engine, e.g. with the voices of Thorsten-Voice (#398)
-
-### 5.3.3 (2026-10-23)
-* (@GermanBluefox) Fixed: a cache hit played the last generated text instead of the cached file (#497)
-* (@GermanBluefox) The cache directory is now resolved relative to `iobroker-data/sayit` and could be absolute. It can be changed in the configuration dialog. New instances store the cache in `iobroker-data/sayit/cache` (#442)
-* (@GermanBluefox) By changing of the engine, only cached files are deleted from the cache directory and not all files
-* (@GermanBluefox) Fixed: the heos players were not listed in the configuration dialog (#416)
-* (@GermanBluefox) Fixed: IPv6 addresses of the web server are written in square brackets in the link for the devices. Only IPv4 addresses are offered in the configuration dialog (#399)
-* (@GermanBluefox) Fixed: the cache was not used for the texts sent by the "say" command, e.g. from Blockly or scripts
-* (@GermanBluefox) Fixed: texts with SSML tags were never found in the cache, if the engine does not support SSML
-* (@GermanBluefox) Corrected the roles of the states `tts.text`, `tts.cachetext` and `tts.playing`
-* (@GermanBluefox) Used the timers of the adapter and added the missing size attributes in the configuration dialog
 
 [Older changelogs can be found there](CHANGELOG_OLD.md)
 

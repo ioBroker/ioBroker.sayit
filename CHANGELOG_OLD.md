@@ -249,6 +249,17 @@ Changed type of top-level object to "meta" in order to comply with js-controller
 
 ### 0.0.1 (2015-02-06)
 * (bluefox) initial commit
+## 5.3.3 (2026-10-23)
+* (@GermanBluefox) Fixed: a cache hit played the last generated text instead of the cached file (#497)
+* (@GermanBluefox) The cache directory is now resolved relative to `iobroker-data/sayit` and could be absolute. It can be changed in the configuration dialog. New instances store the cache in `iobroker-data/sayit/cache` (#442)
+* (@GermanBluefox) By changing of the engine, only cached files are deleted from the cache directory and not all files
+* (@GermanBluefox) Fixed: the heos players were not listed in the configuration dialog (#416)
+* (@GermanBluefox) Fixed: IPv6 addresses of the web server are written in square brackets in the link for the devices. Only IPv4 addresses are offered in the configuration dialog (#399)
+* (@GermanBluefox) Fixed: the cache was not used for the texts sent by the "say" command, e.g. from Blockly or scripts
+* (@GermanBluefox) Fixed: texts with SSML tags were never found in the cache, if the engine does not support SSML
+* (@GermanBluefox) Corrected the roles of the states `tts.text`, `tts.cachetext` and `tts.playing`
+* (@GermanBluefox) Used the timers of the adapter and added the missing size attributes in the configuration dialog
+
 ## 5.3.2 (2026-10-13)
 * (@GermanBluefox) Removed the "install" script and `process.exit()` for compact mode
 * (@GermanBluefox) Passwords and API keys are now protected from reading by non-admin users

@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "sayit",
-    "version": "5.6.1",
+    "version": "5.7.0",
     "news": {
+      "5.7.0": {
+        "en": "Added the message \"help\": a description of all messages for AI agents (e.g. pi-agent), and common.supportedMessages.help",
+        "de": "Nachricht „help“ hinzugefügt: Beschreibung aller Nachrichten für KI-Agenten (z. B. pi-agent) und common.supportedMessages.Help",
+        "ru": "Добавлено сообщение «help»: описание всех сообщений для агентов искусственного интеллекта (например, pi-agent) и common.supportedMessages.help",
+        "pt": "Adicionou a mensagem “help”: uma descrição de todas as mensagens dos agentes de IA (p. ex. pi-agent) e common.supportedMessages.help",
+        "nl": "Het bericht „help” toegevoegd: een beschrijving van alle berichten voor AI-agenten (bijv. pi-agent) en Common.SupportedMessages.help",
+        "fr": "Ajout du message « help » : description de tous les messages des agents IA (p.ex. pi-agent) et common.supportedMessages.help",
+        "it": "Aggiunto «help»: una descrizione di tutti i messaggi per gli agenti AI (ad es. pi-agent) e common.supportedmessages.help",
+        "es": "Añadió el mensaje «help»: una descripción de todos los mensajes de los agentes de IA (p. ej. pi-agent) y common.SupportedMessages.Help",
+        "pl": "Dodano komunikat „help”: opis wszystkich wiadomości dla agentów AI (np. pi-agent) oraz common.supportedMessages.help",
+        "uk": "Додано повідомлення «help»: опис всіх повідомлень для агентів AI (наприклад, pi-agent) та common.supportedMessages.help",
+        "zh-cn": "添加了 “帮助” 消息：对 AI 代理（例如 pi-agent）的所有消息的描述，以及 common.supportedMessages.Help"
+      },
       "5.6.1": {
         "en": "Fixed: WiiM streamers use the state play_URL, as they do not support playPromptUrl (#537)",
         "de": "Behoben: WiIM-Streamer nutzen Play_URL, da sie PlayPromptURL nicht unterstützen (#537)",
@@ -80,19 +93,6 @@
         "pl": "Usunięto skrypt „install” i `process.exit () `dla trybu kompaktowego\nHasła i klucze API są teraz chronione przed odczytem przez użytkowników niebędących administratorem",
         "uk": "Вилучено скрипт «install» і `process.exit () `для компактного режиму\nПаролі та ключі API тепер захищені від читання користувачами, які не є адміністраторами",
         "zh-cn": "移除了紧凑模式下的 “安装” 脚本和 “process.exit ()”\n密码和 API 密钥现在受到保护，不被非管理员用户读取"
-      },
-      "5.3.1": {
-        "en": "Added the button \"Test text generation\" to the \"Engine\" tab, so the selected engine can be tested with an own text\nTest generations do not overwrite the cached files anymore\nAdapter requires node.js >= 22 and js-controller >= 6.0.11 now\nOlder changelog entries were moved to CHANGELOG_OLD.md\nUpdated the dependabot and auto-merge configuration",
-        "de": "Dem Tab „Engine“ wurde die Schaltfläche „Testtextgenerierung“ hinzugefügt, sodass die ausgewählte Engine mit einem eigenen Text getestet werden kann.\nTestgenerationen überschreiben die zwischengespeicherten Dateien nicht mehr.\nDer Adapter benötigt jetzt Node.js >= 22 und js-controller >= 6.0.11.\nÄltere Changelog-Einträge wurden nach CHANGELOG_OLD.md verschoben.\nDie Dependabot- und Auto-Merge-Konfiguration wurde aktualisiert.",
-        "ru": "Добавлена кнопка «Проверить генерацию текста» на вкладку «Движок», чтобы выбранный движок можно было протестировать с помощью собственного текста.\nПри генерации тестов кэшированные файлы больше не перезаписываются.\nДля работы адаптера требуется Node.js версии >= 22 и js-controller версии >= 6.0.11.\nБолее старые записи в журнале изменений были перемещены в файл CHANGELOG_OLD.md.\nОбновлены конфигурации dependabot и automerge.",
-        "pt": "Adicionamos o botão \"Testar geração de texto\" à aba \"Mecanismo\", para que o mecanismo selecionado possa ser testado com um texto próprio.\nAs gerações de teste não sobrescrevem mais os arquivos em cache.\nO adaptador agora requer node.js >= 22 e js-controller >= 6.0.11.\nAs entradas mais antigas do changelog foram movidas para CHANGELOG_OLD.md\nAtualizei a configuração do Dependabot e do Auto-Merge.",
-        "nl": "De knop \"Test tekstgeneratie\" is toegevoegd aan het tabblad \"Engine\", zodat de geselecteerde engine met een eigen tekst kan worden getest.\nTestgeneraties overschrijven de in de cache opgeslagen bestanden niet meer.\nDe adapter vereist nu Node.js >= 22 en js-controller >= 6.0.11.\nOudere changelog-items zijn verplaatst naar CHANGELOG_OLD.md\nDe configuratie van Dependabot en Automerge is bijgewerkt.",
-        "fr": "Ajout du bouton « Tester la génération de texte » à l’onglet « Moteur », permettant ainsi de tester le moteur sélectionné avec un texte personnalisé.\nLes générations de test n'écrasent plus les fichiers mis en cache.\nL'adaptateur requiert désormais Node.js >= 22 et js-controller >= 6.0.11.\nLes anciennes entrées du journal des modifications ont été déplacées vers CHANGELOG_OLD.md\nMise à jour de la configuration de dependabot et de fusion automatique",
-        "it": "È stato aggiunto il pulsante \"Generazione testo di prova\" alla scheda \"Motore\", in modo che il motore selezionato possa essere testato con un testo personalizzato.\nLe generazioni di test non sovrascrivono più i file memorizzati nella cache.\nL'adattatore richiede Node.js >= 22 e js-controller >= 6.0.11.\nLe voci più vecchie del registro delle modifiche sono state spostate nel file CHANGELOG_OLD.md\nConfigurazione di Dependabot e Auto-Merge aggiornata.",
-        "es": "Se agregó el botón \"Probar generación de texto\" a la pestaña \"Motor\", para que el motor seleccionado pueda probarse con un texto propio.\nLas generaciones de prueba ya no sobrescriben los archivos en caché.\nEl adaptador ahora requiere node.js >= 22 y js-controller >= 6.0.11.\nLas entradas más antiguas del registro de cambios se trasladaron a CHANGELOG_OLD.md.\nSe actualizó la configuración de dependabot y auto-merge.",
-        "pl": "Dodano przycisk „Testuj generowanie tekstu” do zakładki „Silnik”, dzięki czemu wybrany silnik można przetestować przy użyciu własnego tekstu\nGeneracje testów nie nadpisują już plików w pamięci podręcznej\nAdapter wymaga teraz node.js >= 22 i js-controller >= 6.0.11\nStarsze wpisy w dzienniku zmian zostały przeniesione do pliku CHANGELOG_OLD.md\nZaktualizowano konfigurację Devidabota i automatycznego scalania",
-        "uk": "Додано кнопку \"Тестування генерації тексту\" на вкладку \"Двигун\", щоб вибраний движок можна було протестувати з власним текстом\nГенерації тестів більше не перезаписують кешовані файли\nАдаптер тепер вимагає node.js >= 22 та js-controller >= 6.0.11\nСтаріші записи журналу змін було перенесено до CHANGELOG_OLD.md\nОновлено конфігурацію dependabot та автоматичного об'єднання.",
-        "zh-cn": "在“引擎”选项卡中添加了“测试文本生成”按钮，以便可以使用自定义文本测试所选引擎。\n测试生成不再覆盖缓存文件\n适配器现在需要 node.js >= 22 和 js-controller >= 6.0.11。\n较早的变更日志条目已移至 CHANGELOG_OLD.md 文件。\n更新了 Dependabot 和自动合并配置"
       }
     },
     "titleLang": {
