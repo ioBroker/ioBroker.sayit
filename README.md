@@ -172,6 +172,11 @@ sendTo('sayit.0', 'say', {
 parameters) for AI agents (e.g. pi-agent) and script authors, and the list of all commands with `write` (`true` if the
 command has an effect, e.g. plays something).
 
+The commands `speak {text, device?, room?, volume?, language?, priority?}`, `playSound {url | file, device?, room?,
+volume?}` and `synthesize {text, language?, voice?}` follow the shared catalog of ioBroker commands (family `speech`):
+they answer `{ok: true, devices}` (`synthesize`: `{data, contentType}` with base64 audio) or `{error, reason}`, and
+`help` marks them with `standard`.
+
 ### Priorities
 To immediately pronounce the text despite the queued texts, you have two possibilities:
 - place "!" as a first character in text, so this text will be pronounced immediately after the current one.
@@ -344,6 +349,9 @@ Like by FreeTTS, the language is a part of the voice, e.g. `de_DE-thorsten-high`
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### **WORK IN PROGRESS**
+- (@GermanBluefox) Added the standard commands of the shared catalog: speech.speak, speech.playSound, speech.synthesize
+
 ### 5.7.1 (2026-11-21)
 - (@GermanBluefox) Corrected sonos browsing
 

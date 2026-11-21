@@ -10,8 +10,23 @@ import {
 } from 'node:fs';
 import { normalize, join, isAbsolute } from 'node:path';
 import { createHash } from 'node:crypto';
+import axios from 'axios';
 import { sayitEngines, sayitOptions } from './lib/engines';
 import { COMMANDS, HELP } from './lib/help';
+import {
+    DEVICE_KINDS,
+    deviceInRoom,
+    engineFor,
+    matchDevice,
+    objectName,
+    soundExtension,
+    soundSource,
+    speakRequest,
+    volumeOf,
+    type DeviceKind,
+    type OutputDevice,
+    type StandardError,
+} from './lib/standard';
 import Text2Speech from './lib/text2speech';
 import Speech2Device from './lib/speech2device';
 import { Adapter, type AdapterOptions, getAbsoluteDefaultDataDir } from '@iobroker/adapter-core';
@@ -108,6 +123,11 @@ const ALL_SATELLITES: Record<ioBroker.Languages, string> = {
     uk: 'усі сателіти',
     'zh-cn': '所有卫星设备',
 };
+
+/** How long "synthesize" waits for the texts of the queue, because they are generated into the same file */
+const SYNTHESIZE_WAIT_MS = 30000;
+/** Largest sound file that "playSound" downloads */
+const MAX_SOUND_BYTES = 10 * 1024 * 1024;
 
 /** Description of one mDNS service found by the discovery of google cast devices */
 interface Service {
@@ -548,6 +568,325 @@ export class SayItAdapter extends Adapter {
     }
 
     /**
+     * Read the devices of an output type for the commands of the shared catalog
+     *
+     * @param kind Output type with devices
+     * @returns The devices, like the browse commands list them
+     */
+    async readOutputDevices(kind: DeviceKind): Promise<OutputDevice[]> {
+        const devices: OutputDevice[] = [];
+        for (const type of kind.objects) {
+            const prefix = type === 'instance' ? `system.adapter.${kind.adapter}.` : `${kind.adapter}.`;
+            const res = await this.getObjectViewAsync('system', type as 'device', {
+                startkey: prefix,
+                endkey: `${prefix}\u9999`,
+            });
+            res?.rows.forEach(row => {
+                const id = type === 'instance' ? row.id.replace(/^system\.adapter\./, '') : row.id;
+                if (kind.pattern.test(id) && !devices.some(device => device.id === id)) {
+                    const name = type === 'instance' ? '' : objectName(row.value?.common?.name, this.lang);
+                    devices.push({ id, name: name || id.split('.').pop() || id });
+                }
+            });
+        }
+        return devices;
+    }
+
+    /**
+     * The device of the output type of the settings that a catalog command names by "device" (ID or name) or "room"
+     *
+     * @param message Message of the command
+     * @returns The option of "say" with the device, nothing for the device of the settings, or an error
+     */
+    async findStandardDevice(
+        message: Record<string, unknown>,
+    ): Promise<{ option?: keyof TestOptions; device?: OutputDevice } | StandardError> {
+        const device = typeof message.device === 'string' ? message.device.trim() : '';
+        const room = typeof message.room === 'string' ? message.room.trim() : '';
+        if (!device && !room) {
+            return {};
+        }
+        const kind = DEVICE_KINDS[this.config.type];
+        if (!kind) {
+            return {
+                error: `The output "${this.config.type}" of ${this.namespace} has no devices to choose from`,
+                reason: 'NOT_SUPPORTED',
+            };
+        }
+        const devices = await this.readOutputDevices(kind);
+        let found: OutputDevice | StandardError;
+        if (device) {
+            // An ID of the right form is taken as it is, even if its object cannot be read
+            found =
+                kind.pattern.test(device) && !devices.some(d => d.id === device)
+                    ? { id: device, name: device }
+                    : matchDevice(devices, device);
+        } else {
+            const rooms = await this.getForeignObjectsAsync('enum.rooms.*', 'enum');
+            found = deviceInRoom(devices, Object.values(rooms || {}), room, this.lang);
+        }
+        return 'error' in found ? found : { option: kind.option, device: found };
+    }
+
+    /**
+     * Name of the device that the output of the settings plays on, for the answers of the catalog commands
+     *
+     * @param device Device chosen by the command
+     * @returns Name of the device, or the output type
+     */
+    outputName(device?: OutputDevice): string {
+        const kind = DEVICE_KINDS[this.config.type];
+        const configured = kind ? (this.config as unknown as Record<string, unknown>)[kind.option] : undefined;
+        return device?.name || (typeof configured === 'string' && configured) || this.config.type;
+    }
+
+    /**
+     * Put a text or a sound file of a catalog command into the queue and answer when it was handed to the output
+     *
+     * @param obj Message of the command
+     * @param task Text (or file), engine, volume, device and extra options of "say"
+     * @param task.text Text to say or the file to play
+     * @param task.engine Engine of the text
+     * @param task.volume Volume in percent
+     * @param task.target Device of the output, if the command chose one
+     * @param task.target.option Option of "say" that selects the device
+     * @param task.target.device The device
+     * @param task.options More options of "say"
+     * @param done Called when the task is finished (also if it was dropped)
+     */
+    async queueStandard(
+        obj: ioBroker.Message,
+        task: {
+            text: string;
+            engine: EngineType;
+            volume?: number;
+            target: { option?: keyof TestOptions; device?: OutputDevice };
+            options?: Partial<TestOptions>;
+        },
+        done?: () => void,
+    ): Promise<void> {
+        let answered = false;
+        const devices = [this.outputName(task.target.device)];
+        const testOptions: TestOptions = {
+            type: this.config.type,
+            engine: task.engine,
+            ...task.options,
+            // The cache can be used, if only the output (device, volume, ...) is chosen and not the voice
+            useCache: !VOICE_OPTIONS.some(option => task.options?.[option] !== undefined),
+            callback: (error?: string): void => {
+                answered = true;
+                done?.();
+                if (obj.callback) {
+                    this.sendTo(obj.from, obj.command, error ? { error } : { ok: true, devices }, obj.callback);
+                }
+            },
+        };
+        if (task.target.option && task.target.device) {
+            (testOptions as Record<string, unknown>)[task.target.option] = task.target.device.id;
+        }
+        await this.addToQueue({ text: task.text, language: task.engine, volume: task.volume, testOptions });
+        // The same text within 0.5 s is said only once: the second one is dropped, but it gets an answer too
+        if (!answered && !this.tasks.some(t => t.testOptions === testOptions)) {
+            testOptions.callback?.();
+        }
+    }
+
+    /**
+     * Engine for a catalog command: the one of the settings, unless another language or voice is wanted
+     *
+     * @param message Message with "language" and "voice"
+     * @returns Engine and voice options or an error
+     */
+    standardEngine(message: Record<string, unknown>): ReturnType<typeof engineFor> {
+        return engineFor(
+            this.config.engine || 'en',
+            engine => this.getEngineLanguage(engine),
+            message.language,
+            message.voice,
+        );
+    }
+
+    /**
+     * speech.speak of the shared catalog: say a text, optionally on another device of the output or in another language
+     *
+     * @param obj Message with {text, device?, room?, volume?, language?, priority?}
+     */
+    async standardSpeak(obj: ioBroker.Message): Promise<void> {
+        const message = (obj.message && typeof obj.message === 'object' ? obj.message : {}) as Record<string, unknown>;
+        const request = speakRequest(message);
+        const voice = 'error' in request ? request : this.standardEngine(message);
+        const target = 'error' in voice ? voice : await this.findStandardDevice(message);
+        if ('error' in target || 'error' in request || 'error' in voice) {
+            const error = 'error' in request ? request : 'error' in voice ? voice : (target as StandardError);
+            if (obj.callback) {
+                this.sendTo(obj.from, obj.command, error, obj.callback);
+            }
+            return;
+        }
+        await this.queueStandard(obj, {
+            text: request.text,
+            engine: voice.engine,
+            volume: request.volume,
+            target,
+            options: voice.voice,
+        });
+    }
+
+    /**
+     * speech.playSound of the shared catalog: play a sound file (mp3, wav, ogg) on the output
+     *
+     * @param obj Message with {url | file, device?, room?, volume?}
+     */
+    async standardPlaySound(obj: ioBroker.Message): Promise<void> {
+        const message = (obj.message && typeof obj.message === 'object' ? obj.message : {}) as Record<string, unknown>;
+        const answer = (result: StandardError): void => {
+            if (obj.callback) {
+                this.sendTo(obj.from, obj.command, result, obj.callback);
+            }
+        };
+        if (this.config.type === 'alexa') {
+            return answer({ error: 'Alexa cannot play sound files', reason: 'NOT_SUPPORTED' });
+        }
+        const source = soundSource(message);
+        if ('error' in source) {
+            return answer(source);
+        }
+        const volume = volumeOf(message.volume);
+        if (volume === null) {
+            return answer({ error: 'The volume must be a number from 0 to 100', reason: 'BAD_REQUEST' });
+        }
+        const target = await this.findStandardDevice(message);
+        if ('error' in target) {
+            return answer(target);
+        }
+
+        let file: string;
+        let temporary = false;
+        if ('path' in source) {
+            file = source.path;
+        } else {
+            let data: Buffer;
+            let ext: string;
+            if ('url' in source) {
+                try {
+                    const response = await axios.get<ArrayBuffer>(source.url, {
+                        responseType: 'arraybuffer',
+                        timeout: 15000,
+                        maxContentLength: MAX_SOUND_BYTES,
+                    });
+                    data = Buffer.from(response.data);
+                    ext = soundExtension(source.url, response.headers['content-type']);
+                } catch (e) {
+                    return answer({ error: `Cannot download "${source.url}": ${e.message}`, reason: 'NOT_FOUND' });
+                }
+                if (!ext) {
+                    return answer({ error: `"${source.url}" is not an mp3, wav or ogg file`, reason: 'NOT_SUPPORTED' });
+                }
+            } else {
+                data = source.data;
+                ext = source.ext;
+            }
+            // A file of its own for every sound, so the next one cannot overwrite it before it was played
+            file = join(this.dataDir, `${this.namespace}.sound.${createHash('md5').update(data).digest('hex')}.${ext}`);
+            try {
+                writeFileSync(file, data);
+            } catch (e) {
+                return answer({ error: `Cannot store the sound: ${e.message}` } as StandardError);
+            }
+            temporary = true;
+        }
+
+        await this.queueStandard(
+            obj,
+            {
+                text: file,
+                engine: this.config.engine || 'en',
+                volume,
+                target,
+                // A sound gets no announcement gong in front of it
+                options: { announce: '' },
+            },
+            () => {
+                if (temporary && !this.tasks.some(t => t.text === file)) {
+                    try {
+                        unlinkSync(file);
+                    } catch {
+                        // ignore
+                    }
+                }
+            },
+        );
+    }
+
+    /**
+     * speech.synthesize of the shared catalog: generate the speech of a text without playing it
+     *
+     * @param obj Message with {text, language?, voice?}
+     */
+    async standardSynthesize(obj: ioBroker.Message): Promise<void> {
+        const message = (obj.message && typeof obj.message === 'object' ? obj.message : {}) as Record<string, unknown>;
+        const answer = (result: Record<string, unknown>): void => {
+            if (obj.callback) {
+                this.sendTo(obj.from, obj.command, result, obj.callback);
+            }
+        };
+        const text = typeof message.text === 'string' ? message.text.trim() : '';
+        if (!text) {
+            return answer({ error: 'No text', reason: 'BAD_REQUEST' });
+        }
+        const voice = this.standardEngine(message);
+        if ('error' in voice) {
+            return answer({ ...voice });
+        }
+        if (!this.text2speech) {
+            return answer({ error: 'Adapter is not ready yet', reason: 'NOT_READY' });
+        }
+
+        // The texts of the queue are generated into the same file, so wait until the queue is idle and hold it
+        const until = Date.now() + SYNTHESIZE_WAIT_MS;
+        while (this.processing) {
+            if (Date.now() > until) {
+                return answer({ error: 'sayit is still playing the texts of its queue', reason: 'TIMEOUT' });
+            }
+            await new Promise<void>(resolve => this.setTimeout(resolve, 200));
+        }
+        this.processing = true;
+        try {
+            // Engines with a length limit add the rest of a long text to the queue, so the text is split here
+            const maxLength = Text2Speech.getMaxTextLength(voice.engine);
+            const parts = maxLength ? Text2Speech.splitText(text, maxLength) : [text];
+            const testOptions: TestOptions = {
+                type: this.config.type,
+                engine: voice.engine,
+                ...voice.voice,
+                useCache: !voice.voice,
+            };
+            const audio: Buffer[] = [];
+            for (const part of parts) {
+                const fileName = await this.text2speech.sayItGetSpeech({
+                    type: this.config.type,
+                    text: part,
+                    language: voice.engine,
+                    testOptions,
+                });
+                audio.push(readFileSync(fileName));
+            }
+            answer({
+                data: Buffer.concat(audio).toString('base64'),
+                contentType: voice.engine === 'ru_YA_CLOUD' ? 'audio/ogg' : 'audio/mpeg',
+            });
+        } catch (e) {
+            this.log.error(`Cannot generate speech file: ${e}`);
+            answer({ error: `Cannot generate speech file: ${e}` });
+        } finally {
+            // The generated file was overwritten, so it must not be reused for the next text
+            this.sayLastGeneratedText = '';
+            this.processing = false;
+            this.processTasks().catch(e => this.log.error(`Cannot process tasks: ${e.toString()}`));
+        }
+    }
+
+    /**
      * Process a message sent by another adapter or by the admin configuration dialog
      *
      * @param obj Message object
@@ -624,6 +963,29 @@ export class SayItAdapter extends Adapter {
             } else {
                 this.sendTo(obj.from, obj.command, { error: 'No text' }, obj.callback);
             }
+        } else if (obj.command === 'speak') {
+            // speech.speak of the shared catalog
+            this.standardSpeak(obj).catch(e => {
+                this.log.error(`Cannot speak: ${e}`);
+                if (obj.callback) {
+                    this.sendTo(obj.from, obj.command, { error: `Cannot speak: ${e}` }, obj.callback);
+                }
+            });
+        } else if (obj.command === 'playSound') {
+            // speech.playSound of the shared catalog
+            this.standardPlaySound(obj).catch(e => {
+                this.log.error(`Cannot play the sound: ${e}`);
+                if (obj.callback) {
+                    this.sendTo(obj.from, obj.command, { error: `Cannot play the sound: ${e}` }, obj.callback);
+                }
+            });
+        } else if (obj.command === 'synthesize') {
+            // speech.synthesize of the shared catalog
+            this.standardSynthesize(obj).catch(e => {
+                if (obj.callback) {
+                    this.sendTo(obj.from, obj.command, { error: `Cannot generate speech file: ${e}` }, obj.callback);
+                }
+            });
         } else if (obj.command === 'stopInstance') {
             this.stopInstance(false, () => {
                 if (obj.callback) {
@@ -813,6 +1175,14 @@ export class SayItAdapter extends Adapter {
                 this.log.error(`Cannot generate the test text: ${e}`);
                 this.sendTo(obj.from, obj.command, { error: `Cannot generate speech file: ${e}` }, obj.callback);
             });
+        } else if (obj.callback) {
+            // Without an answer the caller would wait for its whole timeout
+            this.sendTo(
+                obj.from,
+                obj.command,
+                { error: `Unknown command "${obj.command}"`, reason: 'NOT_SUPPORTED' },
+                obj.callback,
+            );
         }
     }
 

@@ -5,10 +5,16 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.HELP = exports.COMMANDS = void 0;
-/** The commands `processMessage` answers. write: true if the command has an effect (plays, writes, stops) */
+/**
+ * The commands `processMessage` answers. write: true if the command has an effect (plays, writes, stops).
+ * standard: the command of the shared catalog of ioBroker commands (ioBroker.assistant HELP.md) it follows.
+ */
 exports.COMMANDS = [
     { command: 'help', write: false },
     { command: 'say', write: true },
+    { command: 'speak', write: true, standard: 'speech.speak' },
+    { command: 'playSound', write: true, standard: 'speech.playSound' },
+    { command: 'synthesize', write: false, standard: 'speech.synthesize' },
     { command: 'stopInstance', write: true },
     { command: 'browseGoogleHome', write: false },
     { command: 'browseChromecast', write: false },
@@ -50,10 +56,29 @@ Commands (sendTo sayit.0):
   squeezebox, wiim, assistant, alexa, bose, kodi, asterisk, fully, chromecast, googleHome, mpd, mp24, mp24ftp),
   engine (= language) and every other option of the settings (e.g. googleHomeServer, piperVoice, freettsVoice).
   Without a callback the output type of the settings is used.
+- speak {text, device?, room?, volume?, language?, priority?}: standard speech.speak, the first choice for agents.
+  Says the text on the output of the settings; answer {ok: true, devices: [name]} when it was handed to the output,
+  or {error, reason}. device: a device of the output type of the settings by ID or name (an exact name wins over a
+  part of it; the browse command of the output lists them); room: the device of that type in this ioBroker room
+  (enum.rooms.<id> or its name). Several fit: reason AMBIGUOUS with candidates; none: NOT_FOUND; an output without
+  devices to choose (system, windows, browser, googleHome, mp24, mp24ftp, asterisk): NOT_SUPPORTED. volume: 0-100 %.
+  language: ISO 639-1 (de, en ...): the voice of the settings if it speaks it, else the Google voice of the language
+  (NOT_SUPPORTED if there is none); an engine key of sayit works too. priority: true = before the queued texts.
+  No text: BAD_REQUEST.
+- playSound {url | file, device?, room?, volume?}: standard speech.playSound. Plays an mp3, wav or ogg file, without
+  the announcement gong; answer {ok: true, devices: [name]} when it was handed to the output. url: http(s), loaded
+  first (at most 10 MB); file: a path of the ioBroker files (/vis.0/main/bell.mp3 or iobfile://vis.0/main/bell.mp3),
+  a path on the host, a data URL, or base64 with contentType. device, room, volume as for speak. Output alexa cannot
+  play files: NOT_SUPPORTED.
+- synthesize {text, language?, voice?}: standard speech.synthesize. Generates the speech without playing it; answer
+  {data: <base64>, contentType: "audio/mpeg"} ("audio/ogg" for the engine ru_YA_CLOUD). language as for speak;
+  voice: an engine key of sayit, or a voice of FreeTTS or Piper if that is the engine of the settings (else
+  NOT_FOUND). It waits up to 30 s until the queue is played (else TIMEOUT).
+  speak, playSound and synthesize follow the shared catalog of ioBroker commands (family speech).
 - browseAlexa, browseAssistant, browseChromecast, browseFully, browseHeos, browseSonos, browseSqueezebox, browseWiim:
   the devices of that kind, made for the settings: [{value, label}]; value is the ID for the <device> of say.
 - test, testGenerate, browseGoogleHome, getFreeTtsVoices, getPiperVoices, stopInstance: for the settings, not for
-  agents.
+  agents. Unknown commands answer {error, reason: "NOT_SUPPORTED"}.
 
 States (sayit.0.tts.*):
 - text: writing a text says it on the output of the settings (same prefixes as say).
@@ -70,6 +95,7 @@ How to talk to the user:
   commands list the devices.
 - At night (about 22:00 to 07:00) speak only on the user's explicit request, and loud (volume above about 50) only
   when the user asks for it.
-- With output asterisk every text is a phone call: only on the user's request and to a number the user confirmed.
+- With output asterisk every text and sound (say, speak, playSound) is a phone call: only on the user's explicit
+  request and to a number the user confirmed.
 - Tell the user an error of the answer. "Ok" does not prove that it was heard: a missing device is only logged.`;
 //# sourceMappingURL=help.js.map
