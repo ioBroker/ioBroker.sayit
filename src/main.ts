@@ -756,7 +756,7 @@ export class SayItAdapter extends Adapter {
                     this.sendTo(obj.from, obj.command, [], obj.callback);
                 });
         } else if (obj.callback && obj.command === 'browseSonos') {
-            this.getObjectView('system', 'device', { startkey: 'sonos.', endkey: 'sonos.\u9999' }, (err, res) => {
+            this.getObjectView('system', 'channel', { startkey: 'sonos.', endkey: 'sonos.\u9999' }, (err, res) => {
                 const list: { value: string; label: string }[] = [];
                 res?.rows.forEach(row => {
                     let name = row.value?.common?.name;
