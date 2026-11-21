@@ -249,6 +249,11 @@ Changed type of top-level object to "meta" in order to comply with js-controller
 
 ### 0.0.1 (2015-02-06)
 * (bluefox) initial commit
+## 5.4.0 (2026-10-23)
+* (@GermanBluefox) Updated packages
+* (@GermanBluefox) Added the output type "Squeezebox" for the players of the squeezeboxrpc adapter (#5)
+* (@GermanBluefox) Added Piper as a new local TTS engine, e.g. with the voices of Thorsten-Voice (#398)
+
 ## 5.3.3 (2026-10-23)
 * (@GermanBluefox) Fixed: a cache hit played the last generated text instead of the cached file (#497)
 * (@GermanBluefox) The cache directory is now resolved relative to `iobroker-data/sayit` and could be absolute. It can be changed in the configuration dialog. New instances store the cache in `iobroker-data/sayit/cache` (#442)

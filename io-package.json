@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "sayit",
-    "version": "5.7.0",
+    "version": "5.7.1",
     "news": {
+      "5.7.1": {
+        "en": "Corrected sonos browsing",
+        "de": "Sonos-Browsing korrigiert",
+        "ru": "Исправлен просмотр sonos",
+        "pt": "Navegação sonos corrigida",
+        "nl": "Browsen op Sonos is gecorrigeerd",
+        "fr": "Navigation Sonos corrigée",
+        "it": "Navigazione Sonos corretta",
+        "es": "Navegación de Sonos corregida",
+        "pl": "Poprawiono przeglądanie sonos",
+        "uk": "Виправлений перегляд sonos",
+        "zh-cn": "更正了 sonos 浏览问题"
+      },
       "5.7.0": {
         "en": "Added the message \"help\": a description of all messages for AI agents (e.g. pi-agent), and common.supportedMessages.help",
         "de": "Nachricht „help“ hinzugefügt: Beschreibung aller Nachrichten für KI-Agenten (z. B. pi-agent) und common.supportedMessages.Help",
@@ -80,19 +93,6 @@
         "pl": "Naprawiono: trafienie pamięci podręcznej odtwarzało ostatnio wygenerowany tekst zamiast buforowanego pliku (#497)\nKatalog pamięci podręcznej jest teraz rozwiązany względem `iobroker-data/sayit` i może być bezwzględny. Można go zmienić w oknie konfiguracji. Nowe instancje przechowują pamięć podręczną w `iobroker-data/sayit/cache` (#442)\nZmieniając silnik, tylko pliki w pamięci podręcznej są usuwane z katalogu pamięci podręcznej, a nie wszystkie pliki\nNaprawiono: odtwarzacze heos nie były wymienione w oknie konfiguracji (#416)\nNaprawiono: Adresy IPv6 serwera WWW są zapisywane w nawiasach kwadratowych w łączu dla urządzeń. Tylko adresy IPv4 są oferowane w oknie dialogowym konfiguracji (#399)\nNaprawiono: pamięć podręczna nie była używana do tekstów wysyłanych poleceniem „powiedz”, np. z Blockly lub skryptów\nNaprawiono: teksty ze znacznikami SSML nigdy nie były znalezione w pamięci podręcznej, jeśli silnik nie obsługuje SSML\nPoprawiono role stanów `tts.text`, `tts.cachetext` i `tts.playing`\nUżyto timerów adaptera i dodano brakujące atrybuty rozmiaru w oknie dialogowym konfiguracji",
         "uk": "Виправлено: удар кешу відтворював останній згенерований текст замість кешованого файлу (#497)\nТепер каталог кешу вирішено відносно `iobroker-data/sayit` і може бути абсолютним. Його можна змінити в діалоговому вікні налаштування. Нові екземпляри зберігають кеш у `iobroker-data/sayit/cache` (#442)\nЗмінюючи движок, з каталогу кешу видаляються тільки кешовані файли і не всі файли\nВиправлено: гравці heos не були перераховані в діалоговому вікні налаштування (#416)\nВиправлено: IPv6 адреси веб-сервера записуються у квадратних дужках у посиланні для пристроїв. У діалоговому вікні налаштування пропонуються лише адреси IPv4 (#399)\nВиправлено: кеш не використовувався для текстів, надісланих командою «say», наприклад, з Blockly або сценаріїв\nВиправлено: тексти з тегами SSML ніколи не були знайдені в кеші, якщо двигун не підтримує SSML\nВиправлено ролі станів `tts.text`, `tts.cachetext` і `tts.playing`\nВикористовували таймери адаптера і додали відсутні атрибути розміру в діалоговому вікні налаштування",
         "zh-cn": "修复：缓存点击播放的是最后生成的文本，而不是缓存的文件 (#497)\n缓存目录现在是相对于 “iobroker-data/sayit” 解析的，可能是绝对的。可以在配置对话框中进行更改。新实例将缓存存储在 `iobroker-data/sayit/cache`中 (#442)\n通过更改引擎，只会从缓存目录中删除缓存的文件，而不是所有文件\n修复：配置对话框中未列出英雄玩家 (#416)\n修复：Web 服务器的 IPv6 地址写在设备链接的方括号中。配置对话框中仅提供 IPv4 地址 (#399)\n修复：缓存未用于 “说” 命令发送的文本，例如来自Blockly或脚本的文本\n修复：如果引擎不支持 SSML，则在缓存中找不到带有 SSML 标签的文本\n更正了状态 “tts.text”、“tts.cachetext” 和 “tts.playing” 的作用\n使用了适配器的计时器并在配置对话框中添加了缺失的大小属性"
-      },
-      "5.3.2": {
-        "en": "Removed the \"install\" script and `process.exit()` for compact mode\nPasswords and API keys are now protected from reading by non-admin users",
-        "de": "Install-Skript und process.exit () für Kompaktmodus entfernt\nPasswörter und API-Keys sind jetzt für Nicht-Admins lesbar",
-        "ru": "Удалены скрипт «install» и `process.exit () `для компактного режима\nПароли и ключи API теперь защищены от чтения пользователями, не являющимися администраторами",
-        "pt": "Removido o script “install” e o `process.exit () `no modo compacto\nSenhas e chaves de API agora não podem ser lidas por administradores",
-        "nl": "Het „install” -script en `process.exit () `voor de compacte modus verwijderd\nWachtwoorden en API-sleutels zijn nu beschermd tegen lezen door gebruikers die geen beheerder zijn",
-        "fr": "Le script « install » et « process.exit () » ont été supprimés en mode compact\nLes mots de passe et les clés API ne peuvent plus être lus par des non-administrateurs",
-        "it": "Rimossi lo script «install» e `process.exit () `in modalità compatta\nLe password e le chiavi API sono ora protette da utenti non admin",
-        "es": "Se quitaron el guion «install» y `process.exit () `para el modo compacto\nLos usuarios que no son administradores ahora pueden leer contraseñas y claves de API",
-        "pl": "Usunięto skrypt „install” i `process.exit () `dla trybu kompaktowego\nHasła i klucze API są teraz chronione przed odczytem przez użytkowników niebędących administratorem",
-        "uk": "Вилучено скрипт «install» і `process.exit () `для компактного режиму\nПаролі та ключі API тепер захищені від читання користувачами, які не є адміністраторами",
-        "zh-cn": "移除了紧凑模式下的 “安装” 脚本和 “process.exit ()”\n密码和 API 密钥现在受到保护，不被非管理员用户读取"
       }
     },
     "titleLang": {

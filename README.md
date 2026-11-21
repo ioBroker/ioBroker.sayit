@@ -344,7 +344,7 @@ Like by FreeTTS, the language is a part of the voice, e.g. `de_DE-thorsten-high`
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### **WORK IN PROGRESS**
+### 5.7.1 (2026-11-21)
 - (@GermanBluefox) Corrected sonos browsing
 
 ### 5.7.0 (2026-11-19)
@@ -367,11 +367,6 @@ Like by FreeTTS, the language is a part of the voice, e.g. `de_DE-thorsten-high`
 ### 5.5.0 (2026-10-27)
 * (@hdering) Added the Aura dashboards as a target of the output type "Browser" (#518)
 * (@GermanBluefox) Added the output type "Fully Kiosk Browser" for the tablets of the fullybrowser adapter
-
-### 5.4.0 (2026-10-23)
-* (@GermanBluefox) Updated packages
-* (@GermanBluefox) Added the output type "Squeezebox" for the players of the squeezeboxrpc adapter (#5)
-* (@GermanBluefox) Added Piper as a new local TTS engine, e.g. with the voices of Thorsten-Voice (#398)
 
 [Older changelogs can be found there](CHANGELOG_OLD.md)
 

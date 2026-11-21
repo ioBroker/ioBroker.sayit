@@ -647,7 +647,7 @@ class SayItAdapter extends adapter_core_1.Adapter {
             });
         }
         else if (obj.callback && obj.command === 'browseSonos') {
-            this.getObjectView('system', 'device', { startkey: 'sonos.', endkey: 'sonos.\u9999' }, (err, res) => {
+            this.getObjectView('system', 'channel', { startkey: 'sonos.', endkey: 'sonos.\u9999' }, (err, res) => {
                 const list = [];
                 res?.rows.forEach(row => {
                     let name = row.value?.common?.name;
