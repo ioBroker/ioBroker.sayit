@@ -249,6 +249,10 @@ Changed type of top-level object to "meta" in order to comply with js-controller
 
 ### 0.0.1 (2015-02-06)
 * (bluefox) initial commit
+## 5.5.0 (2026-10-27)
+* (@hdering) Added the Aura dashboards as a target of the output type "Browser" (#518)
+* (@GermanBluefox) Added the output type "Fully Kiosk Browser" for the tablets of the fullybrowser adapter
+
 ## 5.4.0 (2026-10-23)
 * (@GermanBluefox) Updated packages
 * (@GermanBluefox) Added the output type "Squeezebox" for the players of the squeezeboxrpc adapter (#5)

@@ -349,7 +349,7 @@ Like by FreeTTS, the language is a part of the voice, e.g. `de_DE-thorsten-high`
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### **WORK IN PROGRESS**
+### 5.8.0 (2026-11-23)
 - (@GermanBluefox) Added the standard commands of the shared catalog: speech.speak, speech.playSound, speech.synthesize
 
 ### 5.7.1 (2026-11-21)
@@ -371,10 +371,6 @@ Like by FreeTTS, the language is a part of the voice, e.g. `de_DE-thorsten-high`
 - (@GermanBluefox) Added the output type "Kodi" for the kodi adapter
 - (@GermanBluefox) Added the output type "Asterisk (phone call)": the text is played in a phone call of the asterisk adapter
 - (@GermanBluefox) The configuration shows a hint for the output types, which do not restore the playback (Google Home, Kodi)
-
-### 5.5.0 (2026-10-27)
-* (@hdering) Added the Aura dashboards as a target of the output type "Browser" (#518)
-* (@GermanBluefox) Added the output type "Fully Kiosk Browser" for the tablets of the fullybrowser adapter
 
 [Older changelogs can be found there](CHANGELOG_OLD.md)
 
