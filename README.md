@@ -369,7 +369,7 @@ to mp3. The models that deliver neither mp3 nor WAV are not offered. Enable the 
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### **WORK IN PROGRESS**
+### 5.9.0 (2026-11-28)
 - (@GermanBluefox) The test buttons of the settings report why nothing was played (e.g. no device selected) instead of "Ok"
 - (@GermanBluefox) Bluetooth speakers: sayit waits for the answer of bluetooth-player, so the test button tells why the text was not heard (e.g. "Bluetooth not connected"), and the next text starts right after the announcement
 - (@GermanBluefox) "Test text generation" plays the generated sound in the settings dialog (needs a json-config with `audio` in the answer of `sendTo`), older versions of admin open it in a new window as before
@@ -389,17 +389,6 @@ to mp3. The models that deliver neither mp3 nor WAV are not offered. Enable the 
 
 ### 5.6.1 (2026-11-18)
 - (@GermanBluefox) Fixed: WiiM streamers use the state play_URL, as they do not support playPromptUrl (#537)
-
-### 5.6.0 (2026-11-04)
-- (copilot) Adapter requires node.js >= 22.19.0 now
-- (@GermanBluefox) Fixed: the announcement sound was overwritten by the following text, so external players (e.g. Squeezebox) said the text twice (#527)
-- (@GermanBluefox) Added the output type "WiiM / LinkPlay" for the streamers of the wiim adapter
-- (@GermanBluefox) Added the output type "Assistant satellites" for the voice satellites of the assistant adapter
-- (@GermanBluefox) Added the output type "Alexa" for the Echo devices of the alexa2 adapter
-- (@GermanBluefox) Added the output type "Bose SoundTouch" with the notification interface of the speaker, which resumes the playback
-- (@GermanBluefox) Added the output type "Kodi" for the kodi adapter
-- (@GermanBluefox) Added the output type "Asterisk (phone call)": the text is played in a phone call of the asterisk adapter
-- (@GermanBluefox) The configuration shows a hint for the output types, which do not restore the playback (Google Home, Kodi)
 
 [Older changelogs can be found there](CHANGELOG_OLD.md)
 

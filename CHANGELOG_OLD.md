@@ -249,6 +249,17 @@ Changed type of top-level object to "meta" in order to comply with js-controller
 
 ### 0.0.1 (2015-02-06)
 * (bluefox) initial commit
+## 5.6.0 (2026-11-04)
+- (copilot) Adapter requires node.js >= 22.19.0 now
+- (@GermanBluefox) Fixed: the announcement sound was overwritten by the following text, so external players (e.g. Squeezebox) said the text twice (#527)
+- (@GermanBluefox) Added the output type "WiiM / LinkPlay" for the streamers of the wiim adapter
+- (@GermanBluefox) Added the output type "Assistant satellites" for the voice satellites of the assistant adapter
+- (@GermanBluefox) Added the output type "Alexa" for the Echo devices of the alexa2 adapter
+- (@GermanBluefox) Added the output type "Bose SoundTouch" with the notification interface of the speaker, which resumes the playback
+- (@GermanBluefox) Added the output type "Kodi" for the kodi adapter
+- (@GermanBluefox) Added the output type "Asterisk (phone call)": the text is played in a phone call of the asterisk adapter
+- (@GermanBluefox) The configuration shows a hint for the output types, which do not restore the playback (Google Home, Kodi)
+
 ## 5.5.0 (2026-10-27)
 * (@hdering) Added the Aura dashboards as a target of the output type "Browser" (#518)
 * (@GermanBluefox) Added the output type "Fully Kiosk Browser" for the tablets of the fullybrowser adapter
