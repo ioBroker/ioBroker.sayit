@@ -14,6 +14,7 @@ const standard_1 = require("./lib/standard");
 const text2speech_1 = __importDefault(require("./lib/text2speech"));
 const speech2device_1 = __importDefault(require("./lib/speech2device"));
 const adapter_core_1 = require("@iobroker/adapter-core");
+const openrouter_1 = require("./lib/openrouter");
 /**
  * Options of the "say" command, which change the generated voice.
  * If one of them is given, the files cached with the saved configuration cannot be used.
@@ -27,6 +28,8 @@ const VOICE_OPTIONS = [
     'yandexDrunk',
     'yandexIll',
     'yandexRobot',
+    'awsCredentialType',
+    'awsCredentialId',
     'awsAccessKey',
     'awsSecretKey',
     'awsRegion',
@@ -38,6 +41,13 @@ const VOICE_OPTIONS = [
     'piperVoice',
     'piperSpeaker',
     'piperLengthScale',
+    'openrouterCredentialType',
+    'openrouterCredentialId',
+    'openrouterApiKey',
+    'openrouterModel',
+    'openrouterVoice',
+    'openrouterInstructions',
+    'openrouterSpeed',
     'coquiVocoder',
     'cloudAppKey',
     'cloudInstance',
@@ -73,6 +83,8 @@ const TEST_TEXTS = {
     nl: 'Hallo, dit is een test van de spraakuitvoer.',
     zh: '你好，这是一次语音合成测试。',
 };
+/** A generated test file up to this size (bytes) is sent with the answer of "testGenerate", a bigger one as URL */
+const TEST_AUDIO_INLINE_MAX = 2_000_000;
 /** Answer of the "testGenerate" command in the language of the ioBroker installation */
 const GENERATED_TEXTS = {
     en: 'The text was generated successfully.',
@@ -86,6 +98,89 @@ const GENERATED_TEXTS = {
     pl: 'Tekst został pomyślnie wygenerowany.',
     uk: 'Текст успішно згенеровано.',
     'zh-cn': '文本已成功生成。',
+};
+/** State of the system-wide AI settings for the OpenRouter key in the language of the ioBroker installation */
+const OPENROUTER_SYSTEM_TEXTS = {
+    en: {
+        ok: 'The key of the credential "%s" from the system-wide AI settings is used',
+        noCredential: 'The system-wide AI settings use OpenRouter, but name no credential',
+        otherProvider: 'The system-wide AI settings use "%s", not OpenRouter. Select "System credentials" or "Manual"',
+        none: 'No provider is set up in the system-wide AI settings',
+    },
+    de: {
+        ok: 'Der Schlüssel der Anmeldedaten "%s" aus den systemweiten KI-Einstellungen wird verwendet',
+        noCredential: 'Die systemweiten KI-Einstellungen verwenden OpenRouter, nennen aber keine Anmeldedaten',
+        otherProvider: 'Die systemweiten KI-Einstellungen verwenden "%s", nicht OpenRouter. "Systemanmeldedaten" oder "Manuell" wählen',
+        none: 'In den systemweiten KI-Einstellungen ist kein Anbieter eingerichtet',
+    },
+    ru: {
+        ok: 'Используется ключ учётных данных "%s" из общесистемных настроек ИИ',
+        noCredential: 'Общесистемные настройки ИИ используют OpenRouter, но учётные данные не указаны',
+        otherProvider: 'Общесистемные настройки ИИ используют "%s", а не OpenRouter. Выберите "Системные учётные данные" или "Вручную"',
+        none: 'В общесистемных настройках ИИ не настроен провайдер',
+    },
+    pt: {
+        ok: 'É usada a chave da credencial "%s" das configurações de IA do sistema',
+        noCredential: 'As configurações de IA do sistema usam OpenRouter, mas não indicam credencial',
+        otherProvider: 'As configurações de IA do sistema usam "%s", não OpenRouter. Selecione "Credenciais do sistema" ou "Manual"',
+        none: 'Nenhum provedor está configurado nas configurações de IA do sistema',
+    },
+    nl: {
+        ok: 'De sleutel van de inloggegevens "%s" uit de systeembrede AI-instellingen wordt gebruikt',
+        noCredential: 'De systeembrede AI-instellingen gebruiken OpenRouter, maar noemen geen inloggegevens',
+        otherProvider: 'De systeembrede AI-instellingen gebruiken "%s", niet OpenRouter. Kies "Systeeminloggegevens" of "Handmatig"',
+        none: 'In de systeembrede AI-instellingen is geen aanbieder ingesteld',
+    },
+    fr: {
+        ok: 'La clé des identifiants "%s" des paramètres IA du système est utilisée',
+        noCredential: "Les paramètres IA du système utilisent OpenRouter, mais n'indiquent aucun identifiant",
+        otherProvider: 'Les paramètres IA du système utilisent "%s", pas OpenRouter. Choisissez "Identifiants système" ou "Manuel"',
+        none: "Aucun fournisseur n'est configuré dans les paramètres IA du système",
+    },
+    it: {
+        ok: 'Viene usata la chiave delle credenziali "%s" delle impostazioni IA di sistema',
+        noCredential: 'Le impostazioni IA di sistema usano OpenRouter, ma non indicano credenziali',
+        otherProvider: 'Le impostazioni IA di sistema usano "%s", non OpenRouter. Scegli "Credenziali di sistema" o "Manuale"',
+        none: 'Nelle impostazioni IA di sistema non è configurato alcun fornitore',
+    },
+    es: {
+        ok: 'Se usa la clave de la credencial "%s" de los ajustes de IA del sistema',
+        noCredential: 'Los ajustes de IA del sistema usan OpenRouter, pero no indican ninguna credencial',
+        otherProvider: 'Los ajustes de IA del sistema usan "%s", no OpenRouter. Elige "Credenciales del sistema" o "Manual"',
+        none: 'No hay ningún proveedor configurado en los ajustes de IA del sistema',
+    },
+    pl: {
+        ok: 'Używany jest klucz poświadczeń "%s" z systemowych ustawień AI',
+        noCredential: 'Systemowe ustawienia AI używają OpenRouter, ale nie wskazują poświadczeń',
+        otherProvider: 'Systemowe ustawienia AI używają "%s", a nie OpenRouter. Wybierz "Poświadczenia systemowe" lub "Ręcznie"',
+        none: 'W systemowych ustawieniach AI nie skonfigurowano dostawcy',
+    },
+    uk: {
+        ok: 'Використовується ключ облікових даних "%s" із загальносистемних налаштувань ШІ',
+        noCredential: 'Загальносистемні налаштування ШІ використовують OpenRouter, але не вказують облікові дані',
+        otherProvider: 'Загальносистемні налаштування ШІ використовують "%s", а не OpenRouter. Виберіть "Системні облікові дані" або "Вручну"',
+        none: 'У загальносистемних налаштуваннях ШІ не налаштовано провайдера',
+    },
+    'zh-cn': {
+        ok: '使用系统级 AI 设置中凭证“%s”的密钥',
+        noCredential: '系统级 AI 设置使用 OpenRouter，但未指定凭证',
+        otherProvider: '系统级 AI 设置使用“%s”，而不是 OpenRouter。请选择“系统凭证”或“手动”',
+        none: '系统级 AI 设置中未配置提供商',
+    },
+};
+/** Label of the target "all speakers" of the bluetooth-player adapter in the language of the ioBroker installation */
+const ALL_SPEAKERS = {
+    en: 'all speakers',
+    de: 'alle Lautsprecher',
+    ru: 'все колонки',
+    pt: 'todos os alto-falantes',
+    nl: 'alle luidsprekers',
+    fr: 'tous les haut-parleurs',
+    it: 'tutti gli altoparlanti',
+    es: 'todos los altavoces',
+    pl: 'wszystkie głośniki',
+    uk: 'усі колонки',
+    'zh-cn': '所有扬声器',
 };
 /** Label of the target "all satellites" of the assistant adapter in the language of the ioBroker installation */
 const ALL_SATELLITES = {
@@ -220,6 +315,9 @@ class SayItAdapter extends adapter_core_1.Adapter {
             // An empty voice is the default voice of the server, so the server is a part of the signature too
             return `piper;${this.config.piperServer};${this.config.piperVoice};${this.config.piperSpeaker};${this.config.piperLengthScale}`;
         }
+        if (this.config.engine === 'openrouter') {
+            return `openrouter;${this.config.openrouterModel};${this.config.openrouterVoice};${this.config.openrouterInstructions};${this.config.openrouterSpeed}`;
+        }
         return this.config.engine;
     }
     /**
@@ -271,6 +369,10 @@ class SayItAdapter extends adapter_core_1.Adapter {
         }
         else if (engine === 'piper') {
             language = voices?.piperVoice || this.config.piperVoice || 'en';
+        }
+        else if (engine === 'openrouter') {
+            // The voices of OpenRouter have no common naming, so the language of the installation is used
+            language = this.lang || 'en';
         }
         return language.substring(0, 2);
     }
@@ -371,9 +473,17 @@ class SayItAdapter extends adapter_core_1.Adapter {
                     ? `freeTTS: ${testOptions.freettsVoice || this.config.freettsVoice}`
                     : engine === 'piper'
                         ? `Piper: ${testOptions.piperVoice || this.config.piperVoice || '-'}`
-                        : engine,
+                        : engine === 'openrouter'
+                            ? `OpenRouter: ${testOptions.openrouterModel || this.config.openrouterModel || '-'} · ${(testOptions.openrouterVoice ?? this.config.openrouterVoice) || '-'}`
+                            : engine,
                 `${Math.round(generated.length / 100) / 10} kB · ${duration} s · ${elapsed} ms`,
             ].join('\n'),
+            // The dialog plays the sound under the button (if its json-config knows "audio"). A short sound
+            // comes with the answer, so it plays also behind a reverse proxy; a long one is loaded from admin
+            audio: generated.length <= TEST_AUDIO_INLINE_MAX || !url
+                ? `data:${engine === 'ru_YA_CLOUD' ? 'audio/ogg' : 'audio/mpeg'};base64,${generated.toString('base64')}`
+                : url,
+            // Older versions of admin ignore "audio" and open the file in a new window
             openUrl: url,
         }, obj.callback);
     }
@@ -411,6 +521,65 @@ class SayItAdapter extends adapter_core_1.Adapter {
                     list.push({
                         value: row.id,
                         label: `${instanceId}: ${name && name !== satId ? `${name} (${satId})` : satId}`,
+                    });
+                }
+            });
+        });
+        return list;
+    }
+    /**
+     * The state of the system-wide AI settings for the OpenRouter key, for the configuration dialog
+     *
+     * @returns text and color of the hint
+     */
+    async openRouterSystemInfo() {
+        const system = await (0, openrouter_1.openRouterSystemCredential)(this);
+        const texts = OPENROUTER_SYSTEM_TEXTS[this.lang] || OPENROUTER_SYSTEM_TEXTS.en;
+        if (system.provider === 'openrouter' && system.credentialId) {
+            return { text: texts.ok.replace('%s', system.credentialId), style: { color: 'green' } };
+        }
+        if (system.provider === 'openrouter') {
+            return { text: texts.noCredential, style: { color: 'orange' } };
+        }
+        if (system.provider) {
+            return { text: texts.otherProvider.replace('%s', system.provider), style: { color: 'orange' } };
+        }
+        return { text: texts.none, style: { color: 'orange' } };
+    }
+    /**
+     * Collect the targets of the bluetooth-player adapter for the configuration dialog:
+     * every instance (plays on all speakers) and every speaker of the instance.
+     *
+     * @returns List of the targets, like "bluetooth-player.0" and "bluetooth-player.0.speakers.F4B6888B243C"
+     */
+    async browseBluetoothPlayer() {
+        const list = [];
+        const instances = await this.getObjectViewAsync('system', 'instance', {
+            startkey: 'system.adapter.bluetooth-player.',
+            endkey: 'system.adapter.bluetooth-player.\u9999',
+        });
+        const speakers = await this.getObjectViewAsync('system', 'device', {
+            startkey: 'bluetooth-player.',
+            endkey: 'bluetooth-player.\u9999',
+        });
+        instances?.rows.forEach(instance => {
+            const m = instance.id.match(/^system\.adapter\.(bluetooth-player\.\d+)$/);
+            if (!m) {
+                return;
+            }
+            const instanceId = m[1];
+            list.push({ value: instanceId, label: `${instanceId}: ${ALL_SPEAKERS[this.lang] || ALL_SPEAKERS.en}` });
+            speakers?.rows.forEach(row => {
+                if (row.id.startsWith(`${instanceId}.speakers.`) &&
+                    /^bluetooth-player\.\d+\.speakers\.[^.]+$/.test(row.id)) {
+                    let name = row.value?.common?.name;
+                    if (typeof name === 'object') {
+                        name = name[this.lang] || name.en;
+                    }
+                    const speakerId = row.id.replace(/^bluetooth-player\.\d+\.speakers\./, '');
+                    list.push({
+                        value: row.id,
+                        label: `${instanceId}: ${name && name !== speakerId ? `${name} (${speakerId})` : speakerId}`,
                     });
                 }
             });
@@ -760,6 +929,7 @@ class SayItAdapter extends adapter_core_1.Adapter {
             const squeezeboxDevice = obj.message?.squeezeboxDevice;
             const wiimDevice = obj.message?.wiimDevice;
             const assistantDevice = obj.message?.assistantDevice;
+            const bluetoothPlayerDevice = obj.message?.bluetoothPlayerDevice;
             const alexaDevice = obj.message?.alexaDevice;
             const alexaCommand = obj.message?.alexaCommand;
             const boseInstance = obj.message?.boseInstance;
@@ -773,6 +943,11 @@ class SayItAdapter extends adapter_core_1.Adapter {
             if (text) {
                 if (obj.callback) {
                     const testOptions = { ...obj.message };
+                    // Which credential carries the keys is a matter of the settings, not of a message
+                    delete testOptions.openrouterCredentialType;
+                    delete testOptions.openrouterCredentialId;
+                    delete testOptions.awsCredentialType;
+                    delete testOptions.awsCredentialId;
                     // The cache could be used, if only the output (device, volume, ...) is selected
                     testOptions.useCache = !VOICE_OPTIONS.some(option => testOptions[option] !== undefined);
                     testOptions.callback = (error) => {
@@ -794,6 +969,7 @@ class SayItAdapter extends adapter_core_1.Adapter {
                             squeezeboxDevice,
                             wiimDevice,
                             assistantDevice,
+                            bluetoothPlayerDevice,
                             alexaDevice,
                             alexaCommand,
                             boseInstance,
@@ -944,6 +1120,16 @@ class SayItAdapter extends adapter_core_1.Adapter {
                 this.sendTo(obj.from, obj.command, [], obj.callback);
             });
         }
+        else if (obj.callback && obj.command === 'browseBluetoothPlayer') {
+            // Every instance of the bluetooth-player adapter plays on all speakers ("bluetooth-player.0"),
+            // and the speakers are devices "bluetooth-player.0.speakers.<id>"
+            this.browseBluetoothPlayer()
+                .then(list => this.sendTo(obj.from, obj.command, list, obj.callback))
+                .catch(e => {
+                this.log.warn(`Cannot read Bluetooth speakers: ${e}`);
+                this.sendTo(obj.from, obj.command, [], obj.callback);
+            });
+        }
         else if (obj.callback && obj.command === 'browseAlexa') {
             this.browseAlexa()
                 .then(list => this.sendTo(obj.from, obj.command, list, obj.callback))
@@ -1013,6 +1199,30 @@ class SayItAdapter extends adapter_core_1.Adapter {
                 .then(voices => this.sendTo(obj.from, obj.command, voices, obj.callback))
                 .catch(e => {
                 this.log.warn(`Cannot read the voices from the Piper server "${server}": ${e.toString()}`);
+                this.sendTo(obj.from, obj.command, [], obj.callback);
+            });
+        }
+        else if (obj.callback && obj.command === 'getOpenRouterModels') {
+            (0, openrouter_1.openRouterModelOptions)()
+                .then(models => this.sendTo(obj.from, obj.command, models, obj.callback))
+                .catch(e => {
+                this.log.warn(`Cannot read the TTS models of OpenRouter: ${e.toString()}`);
+                this.sendTo(obj.from, obj.command, [], obj.callback);
+            });
+        }
+        else if (obj.callback && obj.command === 'getOpenRouterSystemInfo') {
+            // For the settings dialog: whether the system-wide AI settings have a key of OpenRouter
+            this.openRouterSystemInfo()
+                .then(info => this.sendTo(obj.from, obj.command, info, obj.callback))
+                .catch(e => this.sendTo(obj.from, obj.command, { text: e.toString(), style: { color: 'red' } }, obj.callback));
+        }
+        else if (obj.callback && obj.command === 'getOpenRouterVoices') {
+            // The dialog sends the model, so a model that is selected but not yet saved is used too
+            const model = obj.message?.model ?? this.config.openrouterModel;
+            (0, openrouter_1.openRouterVoiceOptions)(model || '')
+                .then(voices => this.sendTo(obj.from, obj.command, voices, obj.callback))
+                .catch(e => {
+                this.log.warn(`Cannot read the voices of the OpenRouter model "${model}": ${e.toString()}`);
                 this.sendTo(obj.from, obj.command, [], obj.callback);
             });
         }
@@ -1195,7 +1405,8 @@ class SayItAdapter extends adapter_core_1.Adapter {
                 language: task.language,
                 volume: annoVolume,
                 ts: task.ts,
-                testOptions: props.testOptions,
+                // The caller (e.g. the test button) is informed after the text, not after the announcement
+                testOptions: props.testOptions ? { ...props.testOptions, callback: undefined } : undefined,
             });
             // and then text
             this.tasks.push(task);
@@ -1387,13 +1598,18 @@ class SayItAdapter extends adapter_core_1.Adapter {
                     if (fileName && this.text2speech && this.speech2device) {
                         props.duration = (await this.text2speech.getDuration(fileName)) || 0;
                         props.fileName = fileName;
-                        await this.speech2device.playFile(props);
+                        if (!(await this.speech2device.playFile(props))) {
+                            // e.g. no device selected: the caller (like the test button) must not get "ok"
+                            error = this.speech2device.lastFailure || 'The file was not played';
+                        }
                     }
-                    else if (!isGenerate) {
+                    else if (!isGenerate && this.speech2device) {
                         if (speech2device_1.default.isPlayFile(text) && this.text2speech) {
                             props.duration = (await this.text2speech.getDuration(text)) || 0;
                         }
-                        await this.speech2device?.playFile(props);
+                        if (!(await this.speech2device.playFile(props))) {
+                            error = this.speech2device.lastFailure || 'The file was not played';
+                        }
                     }
                     this.lastSay = Date.now();
                 }

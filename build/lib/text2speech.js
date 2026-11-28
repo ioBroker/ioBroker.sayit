@@ -14,6 +14,8 @@ const axios_1 = __importDefault(require("axios"));
 const node_child_process_1 = require("node:child_process");
 const node_path_1 = require("node:path");
 const google_tts_api_1 = require("google-tts-api");
+const adapter_core_1 = require("@iobroker/adapter-core");
+const openrouter_1 = require("./openrouter");
 /** Maximal length of a text that could be requested at once from the google translate API */
 const GOOGLE_MAX_TEXT_LENGTH = 70;
 /** Base address of the freetts.org service */
@@ -32,6 +34,8 @@ class Text2Speech {
     /** Absolute name of the temporary wav file, used by the local engines (PicoTTS, CoquiTTS) */
     #WAVFILE;
     #polly;
+    /** Region and keys of #polly, to create a new client if they change */
+    #pollySignature = '';
     #config;
     constructor(adapter, options) {
         this.#adapter = adapter;
@@ -474,31 +478,59 @@ class Text2Speech {
         node_fs_1.default.writeFileSync(this.#MP3FILE, response.data, 'binary');
     }
     /**
+     * Region and keys of AWS: from a credential of the central credential store (admin: settings → credentials,
+     * template "AWS") or from the settings of sayit
+     *
+     * @param props Text, language and options of the task
+     * @returns region and keys
+     */
+    async #getPollyCredentials(props) {
+        // The settings dialog sends its unsaved values: where the keys come from, with the keys or the credential
+        const source = props.testOptions?.awsCredentialType !== undefined ? props.testOptions : this.#config;
+        if (source.awsCredentialType !== 'manager') {
+            return {
+                region: props.testOptions?.awsRegion || this.#config.awsRegion,
+                accessKeyId: props.testOptions?.awsAccessKey || this.#config.awsAccessKey,
+                secretAccessKey: props.testOptions?.awsSecretKey || this.#config.awsSecretKey,
+            };
+        }
+        const id = (source.awsCredentialId || '').trim();
+        if (!id) {
+            throw new Error('No AWS credential selected');
+        }
+        let info;
+        try {
+            info = await adapter_core_1.Credentials.getCredentials(this.#adapter, id);
+        }
+        catch (e) {
+            throw new Error(`Cannot read the AWS credential "${id}": ${e.message}`);
+        }
+        if (info?.type !== 'aws') {
+            throw new Error(`The credential "${id}" is not an AWS credential`);
+        }
+        const accessKeyId = String(info.values.accessKeyId || '').trim();
+        const secretAccessKey = String(info.values.secretAccessKey || '').trim();
+        if (!accessKeyId || !secretAccessKey) {
+            throw new Error(`The AWS credential "${id}" has no access key`);
+        }
+        // The region is a part of the credential; the one of the settings only if the credential has none
+        const region = String(info.values.region || '').trim() || source.awsRegion || '';
+        return { region, accessKeyId, secretAccessKey };
+    }
+    /**
      * Generate the mp3 file directly with the AWS Polly API
      *
      * @param props Text, language and options of the task
      */
     async #sayItGetSpeechPolly(props) {
-        let _polly;
-        if (props.testOptions) {
-            _polly = new client_polly_1.PollyClient({
-                region: props.testOptions?.awsRegion || this.#config.awsRegion,
-                credentials: {
-                    accessKeyId: props.testOptions?.awsAccessKey || this.#config.awsAccessKey,
-                    secretAccessKey: props.testOptions?.awsSecretKey || this.#config.awsSecretKey,
-                },
-            });
+        const { region, accessKeyId, secretAccessKey } = await this.#getPollyCredentials(props);
+        // The keys are read every time (a credential can change), the client is created again only if they changed
+        const signature = JSON.stringify([region, accessKeyId, secretAccessKey]);
+        if (!this.#polly || this.#pollySignature !== signature) {
+            this.#polly = new client_polly_1.PollyClient({ region, credentials: { accessKeyId, secretAccessKey } });
+            this.#pollySignature = signature;
         }
-        else {
-            this.#polly ||= new client_polly_1.PollyClient({
-                region: this.#config.awsRegion,
-                credentials: {
-                    accessKeyId: this.#config.awsAccessKey,
-                    secretAccessKey: this.#config.awsSecretKey,
-                },
-            });
-            _polly = this.#polly;
-        }
+        const _polly = this.#polly;
         let type = 'text';
         if (props.text.match(/<[-+\w\s'"=]+>/)) {
             if (!props.text.match(/^<speak>/)) {
@@ -677,6 +709,40 @@ class Text2Speech {
             throw new Error(`Cannot generate speech with Piper: ${_a.#getAxiosError(error)}`);
         }
         node_fs_1.default.writeFileSync(this.#MP3FILE, await _a.#wavToMp3(wav));
+    }
+    /**
+     * Generate the mp3 file with a TTS model of OpenRouter. Models without mp3 (Google Gemini) deliver a WAV file,
+     * which is converted to mp3.
+     *
+     * @param props Text, language and options of the task
+     */
+    async #sayItGetSpeechOpenRouter(props) {
+        // The settings dialog sends its unsaved values: where the key comes from, with the key or the credential
+        const keySource = props.testOptions?.openrouterCredentialType !== undefined ? props.testOptions : this.#config;
+        const apiKey = await (0, openrouter_1.resolveOpenRouterKey)(this.#adapter, {
+            credentialType: keySource.openrouterCredentialType,
+            credentialId: keySource.openrouterCredentialId,
+            apiKey: keySource.openrouterApiKey,
+        });
+        const model = (props.testOptions?.openrouterModel || this.#config.openrouterModel || '').trim();
+        if (!model) {
+            throw new Error('No OpenRouter model defined');
+        }
+        // An empty voice in the dialog is the default voice, so it must not be replaced by the saved one
+        const voice = (props.testOptions?.openrouterVoice ?? this.#config.openrouterVoice ?? '').trim();
+        const instructions = (props.testOptions?.openrouterInstructions ??
+            this.#config.openrouterInstructions ??
+            '').trim();
+        const speed = parseFloat((props.testOptions?.openrouterSpeed ?? this.#config.openrouterSpeed));
+        const { audio, format } = await (0, openrouter_1.generateOpenRouterSpeech)({
+            apiKey,
+            model,
+            text: props.text,
+            voice,
+            instructions,
+            speed: speed > 0 ? speed : undefined,
+        });
+        node_fs_1.default.writeFileSync(this.#MP3FILE, format === 'wav' ? await _a.#wavToMp3(audio) : audio);
     }
     /**
      * Generate the mp3 file with the locally installed CoquiTTS (tts) and convert it with "lame" to mp3
@@ -955,6 +1021,9 @@ class Text2Speech {
             }
             else if (engine === 'piper') {
                 await this.#sayItGetSpeechPiper(props);
+            }
+            else if (engine === 'openrouter') {
+                await this.#sayItGetSpeechOpenRouter(props);
             }
             else {
                 throw new Error(`Engine ${engine} not yet supported.`);

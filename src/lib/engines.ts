@@ -6,7 +6,17 @@ import type { VoiceId } from '@aws-sdk/client-polly';
 const sayitEngines: {
     [engine: string]: {
         name: string;
-        engine: 'google' | 'yandex' | 'yandexCloud' | 'cloud' | 'PicoTTS' | 'CoquiTTS' | 'polly' | 'freeTTS' | 'piper';
+        engine:
+            | 'google'
+            | 'yandex'
+            | 'yandexCloud'
+            | 'cloud'
+            | 'PicoTTS'
+            | 'CoquiTTS'
+            | 'polly'
+            | 'freeTTS'
+            | 'piper'
+            | 'openrouter';
         voice?: string[];
         emotion?: string[];
         gender?: 'Female' | 'Male';
@@ -35,6 +45,10 @@ const sayitEngines: {
     // Piper runs as a local HTTP server (python3 -m piper.http_server). Like freetts.org,
     // the language is not selected here, but by the voice (option "piperVoice"), like "de_DE-thorsten-high"
     piper: { name: 'Piper', engine: 'piper' },
+
+    // OpenRouter offers the TTS models of many providers with one API key. The model and the voice are
+    // selected in the configuration (options "openrouterModel" and "openrouterVoice")
+    openrouter: { name: 'OpenRouter', engine: 'openrouter' },
 
     ru_YA: {
         name: 'Yandex - Русский',
@@ -1419,6 +1433,14 @@ const sayitOptions: {
         checkLength: true,
         server: true,
         libs: ['fs', 'crypto', 'http'],
+    },
+    bluetoothPlayer: {
+        // The bluetooth-player adapter reads the generated file from the ioBroker file storage, so no web server is required
+        name: 'Bluetooth speakers (bluetooth-player)',
+        mp3Required: true,
+        checkLength: true,
+        server: false,
+        libs: ['fs'],
     },
     asterisk: {
         // The asterisk adapter reads the generated file from the disk, so no web server is required

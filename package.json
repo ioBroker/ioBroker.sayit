@@ -42,6 +42,7 @@
     "@aws-sdk/client-polly": "^3.1175.0",
     "@breezystack/lamejs": "^1.2.7",
     "@iobroker/adapter-core": "^3.4.3",
+    "@iobroker/ai-core": "^0.0.6",
     "axios": "^1.21.1",
     "google-tts-api": "^2.0.2",
     "jsftp": "^2.1.3",

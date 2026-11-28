@@ -21,6 +21,9 @@
     // Piper runs as a local HTTP server (python3 -m piper.http_server). Like freetts.org,
     // the language is not selected here, but by the voice (option "piperVoice"), like "de_DE-thorsten-high"
     piper: { name: "Piper", engine: "piper" },
+    // OpenRouter offers the TTS models of many providers with one API key. The model and the voice are
+    // selected in the configuration (options "openrouterModel" and "openrouterVoice")
+    openrouter: { name: "OpenRouter", engine: "openrouter" },
     ru_YA: {
       name: "Yandex - Русский",
       engine: "yandex",

@@ -12,6 +12,7 @@ type EngineType =
     | 'zh-CN'
     | 'freeTTS'
     | 'piper'
+    | 'openrouter'
     | 'ru_YA'
     | 'ru_YA_CLOUD'
     | 'ru-RU_CLOUD_Female'
@@ -193,6 +194,7 @@ export interface SayItAdapterConfig {
         | 'squeezebox'
         | 'wiim'
         | 'assistant'
+        | 'bluetoothPlayer'
         | 'alexa'
         | 'bose'
         | 'kodi'
@@ -226,6 +228,8 @@ export interface SayItAdapterConfig {
     wiimDevice: string;
     /** Instance of the assistant adapter for all satellites, like "assistant.0", or one satellite, like "assistant.0.satellites.kitchen" */
     assistantDevice: string;
+    /** Instance of the bluetooth-player adapter for all speakers, like "bluetooth-player.0", or one speaker, like "bluetooth-player.0.speakers.F4B6888B243C" */
+    bluetoothPlayerDevice: string;
     /** ID of the echo device of the alexa2 adapter, like "alexa2.0.Echo-Devices.G0912345678" */
     alexaDevice: string;
     /** Command of the alexa2 adapter: "speak" or "announcement" (with the chime of Alexa) */
@@ -286,6 +290,10 @@ export interface SayItAdapterConfig {
     yandexDrunk: boolean;
     yandexIll: boolean;
     yandexRobot: boolean;
+    /** Where the keys of AWS Polly come from: "manager" - a credential of the central credential store, "manual" (or empty) - awsAccessKey, awsSecretKey and awsRegion */
+    awsCredentialType: 'manager' | 'manual' | '';
+    /** Credential of the type "aws" with the keys and the region, like "system.credentials.aws" (for "manager") */
+    awsCredentialId: string;
     awsAccessKey: string;
     awsSecretKey: string;
     awsRegion: string;
@@ -305,6 +313,23 @@ export interface SayItAdapterConfig {
     piperSpeaker: string;
     /** Speaking speed: 1 - normal, smaller values are faster, bigger values are slower */
     piperLengthScale: number | string;
+    /**
+     * Where the API key of OpenRouter comes from: "system" - the system-wide AI settings of admin (provider OpenRouter),
+     * "manager" - a credential of the central credential store, "manual" - openrouterApiKey
+     */
+    openrouterCredentialType: 'system' | 'manager' | 'manual' | '';
+    /** Credential with the API key of OpenRouter, like "system.credentials.openrouter" (for "manager") */
+    openrouterCredentialId: string;
+    /** API key of OpenRouter (openrouter.ai), for "manual" */
+    openrouterApiKey: string;
+    /** TTS model of OpenRouter, like "elevenlabs/eleven-v3" */
+    openrouterModel: string;
+    /** Voice of the model, like "george". Empty - the default voice of the provider */
+    openrouterVoice: string;
+    /** Tone, pacing or emotion, like "calm and friendly". Only some models use it (e.g. Gemini, Fish Audio) */
+    openrouterInstructions: string;
+    /** Speed: 1 - normal, bigger values are faster. Only some models use it */
+    openrouterSpeed: number | string;
     /** True if the configuration was already converted from version 1 to version 2 */
     convertedV1toV2: boolean;
     /** Model and vocoder for CoquiTTS, like "ljspeech univnet" */
@@ -326,6 +351,7 @@ export type TestOptions = {
     squeezeboxDevice?: string;
     wiimDevice?: string;
     assistantDevice?: string;
+    bluetoothPlayerDevice?: string;
     alexaDevice?: string;
     alexaCommand?: 'speak' | 'announcement';
     boseInstance?: string;
@@ -353,6 +379,8 @@ export type TestOptions = {
     yandexDrunk?: boolean;
     yandexIll?: boolean;
     yandexRobot?: boolean;
+    awsCredentialType?: 'manager' | 'manual' | '';
+    awsCredentialId?: string;
     awsAccessKey?: string;
     awsSecretKey?: string;
     awsRegion?: string;
@@ -364,6 +392,13 @@ export type TestOptions = {
     piperVoice?: string;
     piperSpeaker?: string;
     piperLengthScale?: number | string;
+    openrouterCredentialType?: 'system' | 'manager' | 'manual' | '';
+    openrouterCredentialId?: string;
+    openrouterApiKey?: string;
+    openrouterModel?: string;
+    openrouterVoice?: string;
+    openrouterInstructions?: string;
+    openrouterSpeed?: number | string;
     coquiVocoder?: string;
     cloudAppKey?: string;
     cloudInstance?: string;
@@ -376,6 +411,7 @@ export type TestOptions = {
      * In this case the cached files may be used, because it is not a test of the voice settings.
      */
     useCache?: boolean;
+    /** Called when the task is done, with the reason if it was not played */
     callback?: (error?: string) => void;
 };
 

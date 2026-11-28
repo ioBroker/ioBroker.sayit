@@ -52,6 +52,10 @@
                             "label": "Assistant satellites"
                         },
                         {
+                            "value": "bluetoothPlayer",
+                            "label": "Bluetooth speakers (bluetooth-player)"
+                        },
+                        {
                             "value": "alexa",
                             "label": "Alexa"
                         },
@@ -183,6 +187,8 @@
                 "announce": {
                     "newLine": true,
                     "type": "fileSelector",
+                    "label": "Announce",
+                    "help": "announce_help",
                     "fileTypes": "audio",
                     "pattern": "tts.userfiles/*.mp3",
                     "objectID": "sayit.%INSTANCE%",
@@ -386,6 +392,17 @@
                     "label": "Device",
                     "hidden": "data.type !== 'assistant'",
                     "command": "browseAssistant",
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 2,
+                    "xl": 2
+                },
+                "bluetoothPlayerDevice": {
+                    "type": "selectSendTo",
+                    "label": "Device",
+                    "hidden": "data.type !== 'bluetoothPlayer'",
+                    "command": "browseBluetoothPlayer",
                     "xs": 12,
                     "sm": 6,
                     "md": 4,
@@ -600,7 +617,9 @@
                     "label": "Test",
                     "command": "test",
                     "jsonData": "${JSON.stringify(data)}",
-                    "icon": "send"
+                    "icon": "send",
+                    "showProcess": true,
+                    "timeout": 180000
                 }
             }
         },
@@ -612,11 +631,12 @@
                     "type": "select",
                     "noTranslation": true,
                     "label": "Provider",
-                    "defaultFunc": "!data.engine ? 'google' : data.engine === 'freeTTS' ? 'freeTTS' : data.engine === 'piper' ? 'piper' : data.engine.startsWith('ru_YA') ? 'yandex' : data.engine.includes('_AP_') ? 'polly' : data.engine.includes('_CLOUD_') ? 'cloud' : data.engine.includes('CoquiTTS') ? 'CoquiTTS' : data.engine.includes('-') && data.engine !== 'zh-CN' ? 'PicoTTS' : 'google'",
+                    "defaultFunc": "!data.engine ? 'google' : data.engine === 'freeTTS' ? 'freeTTS' : data.engine === 'piper' ? 'piper' : data.engine === 'openrouter' ? 'openrouter' : data.engine.startsWith('ru_YA') ? 'yandex' : data.engine.includes('_AP_') ? 'polly' : data.engine.includes('_CLOUD_') ? 'cloud' : data.engine.includes('CoquiTTS') ? 'CoquiTTS' : data.engine.includes('-') && data.engine !== 'zh-CN' ? 'PicoTTS' : 'google'",
                     "options": [
                         { "value": "google", "label": "Google" },
                         { "value": "freeTTS", "label": "FreeTTS (freetts.org)" },
                         { "value": "piper", "label": "Piper (local server)" },
+                        { "value": "openrouter", "label": "OpenRouter (many providers, API key)" },
                         { "value": "yandex", "label": "Yandex" },
                         { "value": "cloud", "label": "ioBroker Cloud" },
                         { "value": "PicoTTS", "label": "PicoTTS (offline)" },
@@ -700,6 +720,11 @@
                             "label": "Piper (local server)",
                             "value": "piper",
                             "hidden": "data.engineProvider && data.engineProvider !== 'piper' && data.engine !== 'piper'"
+                        },
+                        {
+                            "label": "OpenRouter",
+                            "value": "openrouter",
+                            "hidden": "data.engineProvider && data.engineProvider !== 'openrouter' && data.engine !== 'openrouter'"
                         },
                         {
                             "label": "Yandex - Русский",
@@ -1621,6 +1646,135 @@
                     "lg": 2,
                     "xl": 2
                 },
+                "openrouterCredentialType": {
+                    "newLine": true,
+                    "type": "select",
+                    "label": "Credentials type",
+                    "help": "openrouter_key_help",
+                    "options": [
+                        { "label": "System-wide AI settings", "value": "system" },
+                        { "label": "System credentials", "value": "manager" },
+                        { "label": "Manual", "value": "manual" }
+                    ],
+                    "default": "system",
+                    "hidden": "data.engine != 'openrouter'",
+                    "xs": 12,
+                    "sm": 12,
+                    "md": 6,
+                    "lg": 4,
+                    "xl": 4
+                },
+                "_openrouterSystemInfo": {
+                    "newLine": true,
+                    "type": "textSendTo",
+                    "command": "getOpenRouterSystemInfo",
+                    "container": "div",
+                    "alsoDependsOn": ["openrouterCredentialType", "engine"],
+                    "hidden": "data.engine != 'openrouter' || (data.openrouterCredentialType || 'system') !== 'system'",
+                    "xs": 12,
+                    "sm": 12,
+                    "md": 8,
+                    "lg": 6,
+                    "xl": 6
+                },
+                "_openrouterSystemLink": {
+                    "type": "staticLink",
+                    "label": "Open the AI settings of the system",
+                    "href": "#tab-intro/system/tabAi",
+                    "target": "_blank",
+                    "button": true,
+                    "variant": "outlined",
+                    "icon": "info",
+                    "hidden": "data.engine != 'openrouter' || (data.openrouterCredentialType || 'system') !== 'system'",
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 3,
+                    "xl": 3
+                },
+                "openrouterCredentialId": {
+                    "newLine": true,
+                    "type": "credential",
+                    "credentialType": "ai",
+                    "label": "Credential",
+                    "hidden": "data.engine != 'openrouter' || data.openrouterCredentialType !== 'manager'",
+                    "xs": 12,
+                    "sm": 12,
+                    "md": 6,
+                    "lg": 4,
+                    "xl": 4
+                },
+                "openrouterApiKey": {
+                    "newLine": true,
+                    "type": "password",
+                    "label": "API Key",
+                    "helpLink": "https://openrouter.ai/settings/keys",
+                    "hidden": "data.engine != 'openrouter' || data.openrouterCredentialType !== 'manual'",
+                    "xs": 12,
+                    "sm": 12,
+                    "md": 6,
+                    "lg": 4,
+                    "xl": 4
+                },
+                "openrouterModel": {
+                    "newLine": true,
+                    "type": "selectSendTo",
+                    "command": "getOpenRouterModels",
+                    "label": "Model",
+                    "help": "openrouter_model_help",
+                    "helpLink": "https://openrouter.ai/models?output_modalities=speech",
+                    "noTranslation": true,
+                    "manual": true,
+                    "hidden": "data.engine != 'openrouter'",
+                    "xs": 12,
+                    "sm": 12,
+                    "md": 6,
+                    "lg": 4,
+                    "xl": 4
+                },
+                "openrouterVoice": {
+                    "newLine": true,
+                    "type": "selectSendTo",
+                    "command": "getOpenRouterVoices",
+                    "jsonData": "${JSON.stringify({ model: data.openrouterModel })}",
+                    "alsoDependsOn": ["openrouterModel"],
+                    "label": "Voice",
+                    "help": "openrouter_voice_help",
+                    "noTranslation": true,
+                    "manual": true,
+                    "hidden": "data.engine != 'openrouter'",
+                    "xs": 12,
+                    "sm": 12,
+                    "md": 6,
+                    "lg": 4,
+                    "xl": 4
+                },
+                "openrouterInstructions": {
+                    "newLine": true,
+                    "type": "text",
+                    "label": "Instructions",
+                    "help": "openrouter_instructions_help",
+                    "hidden": "data.engine != 'openrouter'",
+                    "xs": 12,
+                    "sm": 12,
+                    "md": 6,
+                    "lg": 4,
+                    "xl": 4
+                },
+                "openrouterSpeed": {
+                    "type": "number",
+                    "label": "Speed",
+                    "help": "openrouter_speed_help",
+                    "min": 0.25,
+                    "max": 4,
+                    "step": 0.05,
+                    "hidden": "data.engine != 'openrouter'",
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 2,
+                    "xl": 2
+                },
                 "yandexKey": {
                     "newLine": true,
                     "type": "text",
@@ -1729,11 +1883,38 @@
                     "lg": 3,
                     "xl": 3
                 },
+                "awsCredentialType": {
+                    "newLine": true,
+                    "type": "select",
+                    "label": "Credentials type",
+                    "options": [
+                        { "label": "System credentials", "value": "manager" },
+                        { "label": "Manual", "value": "manual" }
+                    ],
+                    "default": "manual",
+                    "hidden": "!data.engine || !data.engine.includes('_AP_')",
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 3,
+                    "lg": 2,
+                    "xl": 2
+                },
+                "awsCredentialId": {
+                    "type": "credential",
+                    "credentialType": "aws",
+                    "label": "Credential",
+                    "hidden": "!data.engine || !data.engine.includes('_AP_') || data.awsCredentialType !== 'manager'",
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 6,
+                    "lg": 4,
+                    "xl": 4
+                },
                 "awsAccessKey": {
                     "newLine": true,
                     "type": "text",
                     "label": "Access Key",
-                    "hidden": "!data.engine || !data.engine.includes('_AP_')",
+                    "hidden": "!data.engine || !data.engine.includes('_AP_') || data.awsCredentialType === 'manager'",
                     "xs": 12,
                     "sm": 6,
                     "md": 3,
@@ -1743,7 +1924,7 @@
                 "awsSecretKey": {
                     "type": "password",
                     "label": "Secret Key",
-                    "hidden": "!data.engine || !data.engine.includes('_AP_')",
+                    "hidden": "!data.engine || !data.engine.includes('_AP_') || data.awsCredentialType === 'manager'",
                     "xs": 12,
                     "sm": 6,
                     "md": 3,
@@ -1753,7 +1934,7 @@
                 "awsRegion": {
                     "type": "text",
                     "label": "AWS Region",
-                    "hidden": "!data.engine || !data.engine.includes('_AP_')",
+                    "hidden": "!data.engine || !data.engine.includes('_AP_') || data.awsCredentialType === 'manager'",
                     "xs": 12,
                     "sm": 6,
                     "md": 3,

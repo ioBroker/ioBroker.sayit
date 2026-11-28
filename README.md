@@ -38,6 +38,8 @@ Actually, the following outputs are supported:
 
 - *Assistant satellites* - play text on the voice satellites of the [assistant](https://github.com/ioBroker/ioBroker.assistant) adapter. Select the instance (e.g. `assistant.0`) to play the text on all satellites (state `tts.text`) or one satellite (state `satellites.<id>.tts`). The text is spoken with the voice selected in sayit, the assistant adapter only plays the generated mp3 file, so it needs [ffmpeg](https://ffmpeg.org/) on its host. Be sure the Web Adapter is enabled, so the assistant adapter can read the generated mp3 files.
 
+- *Bluetooth speakers (bluetooth-player)* - play text on the Bluetooth speakers of the [bluetooth-player](https://github.com/ioBroker/ioBroker.bluetooth-player) adapter. Select the instance (e.g. `bluetooth-player.0`) to play the text on all speakers or one speaker. sayit sends the message `announce` and waits for its answer, which tells if the text was heard (e.g. the error "Bluetooth not connected" of a speaker that is off); older versions of bluetooth-player get the state `control.announce` or `speakers.<id>.announce`. The adapter reads the generated file from the ioBroker file storage, so no web server is required (also when bluetooth-player runs on another host). The text is played over the current playback (radio, Music Assistant, AirPlay), which continues afterward. The volume of sayit (`tts.volume`) is the volume of the announcement.
+
 - *Alexa* - say text on an Echo device (or a group) with the [alexa2](https://github.com/Apollon77/ioBroker.alexa2) adapter. Alexa speaks the text with its **own voice**, so the voice (engine) of sayit, the cache and the announcement sound are not used, and sound files (mp3, wav) cannot be played. The text is written into the state `Commands.speak` or `Commands.announcement` (with the chime of Alexa, only if announcements are enabled for the device and "Do not disturb" is off). Long texts are split into blocks of 250 characters, the volume is set before the text and restored afterward by the alexa2 adapter. As Alexa speaks in the cloud, sayit can only estimate the duration of the text before the next one is sent.
 
 - *Fully Kiosk Browser* - play text on an Android tablet with [Fully Kiosk Browser](https://www.fully-kiosk.com) and the [fullybrowser](https://github.com/arteck/ioBroker.fullybrowser) adapter (version 3.0.5 or newer). The REST command `playSound` is sent via the state `Commands.setRAW` of the device and the volume is set via `Commands.setAudioVolume`. Be sure the Web Adapter is enabled, so the tablet can read the generated mp3 files.
@@ -70,9 +72,20 @@ Online:
   The language is not selected by the engine, but by the voice, e.g. `de-DE-KatjaNeural`.
   An API key from the [pricing page](https://freetts.org/pricing) is required. The free tier of the service
   appends a spoken "generated with freeTTS.org" to every text, so it cannot be used for announcements.
+- OpenRouter: the text-to-speech models of many providers (e.g. ElevenLabs, Google Gemini, Mistral, Microsoft, Deepgram)
+  with one API key from [openrouter.ai](https://openrouter.ai/settings/keys). The speech costs credits of the OpenRouter account.
+  The key comes, as in admin and javascript, from:
+  - the system-wide AI settings (admin: system settings → AI, admin 8.3.6 or newer), if their provider is OpenRouter (default),
+  - a credential of the central credential store (admin: settings → credentials, admin 7.9 or newer), e.g. `system.credentials.openrouter`,
+  - or the settings of sayit (manual).
+
+  The models and their voices are read from OpenRouter in the configuration dialog. Some models (e.g. Gemini, Fish Audio)
+  take instructions for the tone, like "calm and friendly", some can change the speed.
 - Cloud: To use Cloud voices you need configured and running `cloud` adapter or enter app-key directly in settings
 - Amazon Web Services Polly:
   To use AWS Polly voices, you need to create an access key and secret key [here](https://console.aws.amazon.com/iam/home). The Amazon documentation can you find [here](http://docs.aws.amazon.com/general/latest/gr/managing-aws-access-keys.html).
+  The keys and the region can be entered in the settings of sayit or taken from a credential of the central credential
+  store (admin: settings → credentials, template "AWS", admin 7.9.13 or newer), e.g. `system.credentials.aws`.
 
 Offline:
 - PicoTTS (linux only): English, German, Italian, Spanish, French;
@@ -209,6 +222,13 @@ A request is limited to 10000 characters, so longer texts are split and said one
 - **piper** - the server, the voice, the speaker and the speed are taken from the instance configuration
 
 Like by FreeTTS, the language is a part of the voice, e.g. `de_DE-thorsten-high`. If no voice is selected, the default voice of the server is used.
+
+#### OpenRouter
+- **openrouter** - the model, the voice, the instructions and the speed are taken from the instance configuration
+
+The model and the voice, e.g. `elevenlabs/eleven-v3` and `sarah`, are selected in the configuration dialog. Select a voice
+that fits the language of the texts. Models that deliver no mp3 file (Google Gemini) deliver a WAV file, which is converted
+to mp3. The models that deliver neither mp3 nor WAV are not offered. Enable the cache to pay every text only once.
 
 #### Yandex
 - **ru_YA:Yandex** - Русский
@@ -349,6 +369,15 @@ Like by FreeTTS, the language is a part of the voice, e.g. `de_DE-thorsten-high`
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### **WORK IN PROGRESS**
+- (@GermanBluefox) The test buttons of the settings report why nothing was played (e.g. no device selected) instead of "Ok"
+- (@GermanBluefox) Bluetooth speakers: sayit waits for the answer of bluetooth-player, so the test button tells why the text was not heard (e.g. "Bluetooth not connected"), and the next text starts right after the announcement
+- (@GermanBluefox) "Test text generation" plays the generated sound in the settings dialog (needs a json-config with `audio` in the answer of `sendTo`), older versions of admin open it in a new window as before
+- (@GermanBluefox) Added OpenRouter as a new TTS engine: the text-to-speech models of many providers (ElevenLabs, Google Gemini, Mistral, Microsoft, ...) with one API key. The key can come from the system-wide AI settings, from the central credential store or from the settings of sayit
+- (@GermanBluefox) AWS Polly can take the keys and the region from a credential of the central credential store
+- (@GermanBluefox) The announcement selector of the settings has a label and a hint; a test with an announcement answers after the text, not after the announcement
+- (@GermanBluefox) Added the output type "Bluetooth speakers" for the speakers of the bluetooth-player adapter: the text is played over the current playback, which continues afterward
+
 ### 5.8.0 (2026-11-23)
 - (@GermanBluefox) Added the standard commands of the shared catalog: speech.speak, speech.playSound, speech.synthesize
 

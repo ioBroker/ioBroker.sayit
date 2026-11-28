@@ -12,6 +12,8 @@ export default [
             'test/**/*.js',
             '*.config.mjs',
             'build/**/*',
+            // ioBroker of the integration test (npm run test:integration)
+            'tmp/**',
             'admin/build',
             'admin/words.js',
             'admin/admin.d.ts',

@@ -36,12 +36,27 @@ export default class Speech2Device {
     /** ID of the Aura state that was not found and already reported, to log the error only once */
     private auraMissing: string | null = null;
     private config: SayItAdapterConfig;
+    /** Why the last call of playFile did not play, e.g. "No ... defined". Empty if it played */
+    lastFailure = '';
 
     constructor(adapter: ioBroker.Adapter, options: Speech2DeviceOptions) {
         this.adapter = adapter;
         this.options = options;
         this.MP3FILE = options.MP3FILE;
         this.config = adapter.config as SayItAdapterConfig;
+    }
+
+    /**
+     * Log why the output does not play and keep the reason for the caller of playFile
+     *
+     * @param text the reason
+     * @param level level of the log
+     * @returns always false
+     */
+    #fail(text: string, level: 'warn' | 'error' = 'warn'): false {
+        this.adapter.log[level](text);
+        this.lastFailure = text;
+        return false;
     }
 
     /**
@@ -310,11 +325,13 @@ export default class Speech2Device {
         try {
             if (this.auraExist !== id) {
                 if (!(await this.adapter.getForeignObjectAsync(id))) {
-                    if (this.auraMissing !== id) {
-                        this.adapter.log.error(`Cannot play in Aura, because ${id} was not found`);
-                        this.auraMissing = id;
-                    }
                     this.auraExist = null;
+                    // the error is logged only once, but every caller gets the reason
+                    if (this.auraMissing !== id) {
+                        this.auraMissing = id;
+                        return this.#fail(`Cannot play in Aura, because ${id} was not found`, 'error');
+                    }
+                    this.lastFailure = `Cannot play in Aura, because ${id} was not found`;
                     return false;
                 }
                 this.auraExist = id;
@@ -334,9 +351,8 @@ export default class Speech2Device {
             await this.adapter.setForeignStateAsync(id, JSON.stringify(payload));
             return true;
         } catch (e) {
-            this.adapter.log.error(`Cannot control Aura: ${e}`);
             this.auraExist = null;
-            return false;
+            return this.#fail(`Cannot control Aura: ${e}`, 'error');
         }
     }
 
@@ -389,8 +405,7 @@ export default class Speech2Device {
             this.adapter.log.info(`Send to sonos ${fileName}`);
             this.adapter.sendTo('sonos', 'send', fileName);
         } else {
-            this.adapter.log.warn('Web server is unavailable!');
-            return false;
+            return this.#fail('Web server is unavailable!');
         }
 
         return true;
@@ -421,8 +436,7 @@ export default class Speech2Device {
             this.adapter.log.info(`Send to heos ${fileName}`);
             this.adapter.sendTo('heos', 'send', fileName);
         } else {
-            this.adapter.log.warn('Web server is unavailable!');
-            return false;
+            return this.#fail('Web server is unavailable!');
         }
 
         return true;
@@ -438,25 +452,22 @@ export default class Speech2Device {
     async #sayItSqueezebox(props: SayItDeviceProps): Promise<boolean> {
         const squeezeboxDevice = props.testOptions?.squeezeboxDevice || this.config.squeezeboxDevice;
         if (!squeezeboxDevice) {
-            this.adapter.log.warn('No squeezebox player defined');
-            return false;
+            return this.#fail('No squeezebox player defined');
         }
 
         // The state "Announce" exists since squeezeboxrpc 2.0.0
         const announceId = `${squeezeboxDevice}.Announce`;
         const obj = await this.adapter.getForeignObjectAsync(announceId);
         if (!obj) {
-            this.adapter.log.warn(
+            return this.#fail(
                 `State "${announceId}" not found. Please update the squeezeboxrpc adapter to 2.0.0 or newer`,
             );
-            return false;
         }
 
         const result = await this.#uploadToStates(props);
         const webLink = await this.#getWebLink(props.testOptions);
         if (!webLink) {
-            this.adapter.log.warn('Web server is unavailable!');
-            return false;
+            return this.#fail('Web server is unavailable!');
         }
 
         // The volume of the announcement is defined in the configuration of the squeezeboxrpc adapter
@@ -480,8 +491,7 @@ export default class Speech2Device {
     async #sayItWiim(props: SayItDeviceProps): Promise<boolean> {
         const wiimDevice = props.testOptions?.wiimDevice || this.config.wiimDevice;
         if (!wiimDevice) {
-            this.adapter.log.warn('No WiiM streamer defined');
-            return false;
+            return this.#fail('No WiiM streamer defined');
         }
 
         // The wiim adapter communicates with WiiM devices via https and with Arylic/LinkPlay devices via http
@@ -490,8 +500,7 @@ export default class Speech2Device {
         const promptId = isWiim ? `${wiimDevice}.play_URL` : `${wiimDevice}.playPromptUrl`;
         const obj = await this.adapter.getForeignObjectAsync(promptId);
         if (!obj) {
-            this.adapter.log.warn(`State "${promptId}" not found. Please update the wiim adapter`);
-            return false;
+            return this.#fail(`State "${promptId}" not found. Please update the wiim adapter`);
         }
         this.adapter.log.debug(
             isWiim
@@ -502,8 +511,7 @@ export default class Speech2Device {
         const result = await this.#uploadToStates(props);
         const webLink = await this.#getWebLink(props.testOptions);
         if (!webLink) {
-            this.adapter.log.warn('Web server is unavailable!');
-            return false;
+            return this.#fail('Web server is unavailable!');
         }
 
         // The prompt is played with the actual volume of the streamer
@@ -525,8 +533,7 @@ export default class Speech2Device {
     async #sayItAssistant(props: SayItDeviceProps): Promise<boolean> {
         const assistantDevice = props.testOptions?.assistantDevice || this.config.assistantDevice;
         if (!assistantDevice) {
-            this.adapter.log.warn('No assistant instance or satellite defined');
-            return false;
+            return this.#fail('No assistant instance or satellite defined');
         }
 
         const ttsId = /^assistant\.\d+$/.test(assistantDevice)
@@ -534,15 +541,13 @@ export default class Speech2Device {
             : `${assistantDevice}.tts`;
         const obj = await this.adapter.getForeignObjectAsync(ttsId);
         if (!obj) {
-            this.adapter.log.warn(`State "${ttsId}" not found. Please check the assistant adapter`);
-            return false;
+            return this.#fail(`State "${ttsId}" not found. Please check the assistant adapter`);
         }
 
         const result = await this.#uploadToStates(props);
         const webLink = await this.#getWebLink(props.testOptions);
         if (!webLink) {
-            this.adapter.log.warn('Web server is unavailable!');
-            return false;
+            return this.#fail('Web server is unavailable!');
         }
 
         // The assistant adapter downloads the file with ffmpeg and plays it with the volume of the satellite
@@ -550,6 +555,76 @@ export default class Speech2Device {
         this.adapter.log.info(`Set "${ttsId}" to ${url}`);
         await this.adapter.setForeignStateAsync(ttsId, url);
 
+        return true;
+    }
+
+    /**
+     * Play the file on the Bluetooth speakers of the bluetooth-player adapter.
+     * "bluetooth-player.0" plays on all speakers (state "control.announce"),
+     * "bluetooth-player.0.speakers.<id>" plays on one speaker (state "announce" of the speaker).
+     * The adapter reads the file from the ioBroker file storage (so no web server is required, also on another host),
+     * plays it over the current playback and continues that afterwards (radio, Music Assistant, AirPlay).
+     * It answers the message "announce" when the announcement is over, with the reason if it was not heard (e.g. the
+     * speaker is not connected), so the caller (like the test button) learns about it.
+     *
+     * @param props Text, volume and options of the task
+     * @returns True if the announcement was played (or sent to an older bluetooth-player, which does not answer)
+     */
+    async #sayItBluetoothPlayer(props: SayItDeviceProps): Promise<boolean> {
+        const device = props.testOptions?.bluetoothPlayerDevice || this.config.bluetoothPlayerDevice;
+        if (!device) {
+            return this.#fail('No bluetooth-player instance or speaker defined');
+        }
+
+        const instance = device.match(/^bluetooth-player\.\d+/)?.[0] || device;
+        const announceId = instance === device ? `${device}.control.announce` : `${device}.announce`;
+        const obj = await this.adapter.getForeignObjectAsync(announceId);
+        if (!obj) {
+            return this.#fail(
+                `State "${announceId}" not found. Please update the bluetooth-player adapter or check the speaker`,
+            );
+        }
+
+        props.volume ||= props.testOptions?.volume
+            ? parseInt(props.testOptions.volume as string, 10)
+            : this.options.sayLastVolume;
+        const result = await this.#uploadToStates(props);
+
+        // The file in the ioBroker storage without "?ts=...", like "/sayit.0/tts.mp3"
+        const payload: { file: string; volume?: number } = { file: result.fileInDB.replace(/\?.*$/, '') };
+        const volume = Math.round(Number(props.volume));
+        if (Number.isFinite(volume) && volume > 0) {
+            payload.volume = Math.min(100, volume);
+        }
+        const alive = await this.adapter.getForeignStateAsync(`system.adapter.${instance}.alive`);
+        if (!alive?.val) {
+            return this.#fail(`${instance} is not running`);
+        }
+
+        // One speaker: "bluetooth-player.0.speakers.<id>"
+        const speakers = instance === device ? undefined : [device.split('.').pop() || ''];
+        this.adapter.log.info(`Announcement on ${device}: ${JSON.stringify(payload)}`);
+        // The answer comes when the announcement is over; connecting a speaker can take half a minute
+        const timeout = (Math.ceil(Number(props.duration) || 0) + 90) * 1000;
+        let answer: { error?: string } | undefined;
+        try {
+            answer = (await this.adapter.sendToAsync(instance, 'announce', { ...payload, speakers }, { timeout })) as
+                { error?: string } | undefined;
+        } catch (e) {
+            return this.#fail(`${instance} did not answer the announcement: ${(e as Error).message}`);
+        }
+
+        if (answer?.error && /unknown command/i.test(answer.error)) {
+            // An older bluetooth-player knows only the state and does not tell if the announcement was heard
+            await this.adapter.setForeignStateAsync(announceId, JSON.stringify(payload));
+            return true;
+        }
+        if (answer?.error) {
+            // e.g. "Kitchen: Bluetooth not connected"
+            return this.#fail(`The announcement was not heard: ${answer.error}`);
+        }
+        // The announcement is over, the queue must not wait for its duration once more
+        props.duration = 0;
         return true;
     }
 
@@ -622,12 +697,10 @@ export default class Speech2Device {
     async #sayItAlexa(props: SayItDeviceProps): Promise<boolean> {
         const alexaDevice = props.testOptions?.alexaDevice || this.config.alexaDevice;
         if (!alexaDevice) {
-            this.adapter.log.warn('No Alexa device defined');
-            return false;
+            return this.#fail('No Alexa device defined');
         }
         if (Speech2Device.isPlayFile(props.text)) {
-            this.adapter.log.warn(`Alexa cannot play the file "${props.text}"`);
-            return false;
+            return this.#fail(`Alexa cannot play the file "${props.text}"`);
         }
 
         const command =
@@ -635,10 +708,9 @@ export default class Speech2Device {
         const commandId = `${alexaDevice}.Commands.${command}`;
         const obj = await this.adapter.getForeignObjectAsync(commandId);
         if (!obj) {
-            this.adapter.log.warn(
+            return this.#fail(
                 `State "${commandId}" not found. Does the device support commands of the alexa2 adapter?`,
             );
-            return false;
         }
 
         const text = Speech2Device.splitAlexaText(props.text);
@@ -671,22 +743,19 @@ export default class Speech2Device {
     async #sayItKodi(props: SayItDeviceProps): Promise<boolean> {
         const kodiInstance = props.testOptions?.kodiInstance || this.config.kodiInstance;
         if (!kodiInstance) {
-            this.adapter.log.warn('No Kodi instance defined');
-            return false;
+            return this.#fail('No Kodi instance defined');
         }
 
         const openId = `${kodiInstance}.open`;
         const obj = await this.adapter.getForeignObjectAsync(openId);
         if (!obj) {
-            this.adapter.log.warn(`State "${openId}" not found. Please check the kodi adapter`);
-            return false;
+            return this.#fail(`State "${openId}" not found. Please check the kodi adapter`);
         }
 
         const result = await this.#uploadToStates(props);
         const webLink = await this.#getWebLink(props.testOptions);
         if (!webLink) {
-            this.adapter.log.warn('Web server is unavailable!');
-            return false;
+            return this.#fail('Web server is unavailable!');
         }
 
         // The file is played with the actual volume of Kodi
@@ -709,34 +778,29 @@ export default class Speech2Device {
         const asteriskInstance = props.testOptions?.asteriskInstance || this.config.asteriskInstance;
         const telnr = props.testOptions?.asteriskTelnr || this.config.asteriskTelnr;
         if (!asteriskInstance) {
-            this.adapter.log.warn('No asterisk instance defined');
-            return false;
+            return this.#fail('No asterisk instance defined');
         }
         if (!telnr) {
-            this.adapter.log.warn('No telephone number defined for the call with the asterisk adapter');
-            return false;
+            return this.#fail('No telephone number defined for the call with the asterisk adapter');
         }
 
         const instanceObj = (await this.adapter.getForeignObjectAsync(`system.adapter.${asteriskInstance}`)) as
             ioBroker.InstanceObject | null | undefined;
         if (!instanceObj) {
-            this.adapter.log.warn(`Instance "${asteriskInstance}" not found`);
-            return false;
+            return this.#fail(`Instance "${asteriskInstance}" not found`);
         }
         if (instanceObj.common?.host && this.adapter.host && instanceObj.common.host !== this.adapter.host) {
-            this.adapter.log.warn(
+            return this.#fail(
                 `"${asteriskInstance}" runs on the host "${instanceObj.common.host}" and sayit on "${this.adapter.host}". ` +
                     'Both must run on the same host, because the asterisk adapter reads the generated file from the disk',
             );
-            return false;
         }
 
         // The file must be on the disk, as the asterisk adapter cannot download it
         const result = await this.#uploadToStates(props, true);
         const audiofile = result.fileOnDisk;
         if (!audiofile || !/\.(mp3|gsm)$/i.test(audiofile)) {
-            this.adapter.log.warn(`The asterisk adapter can play only mp3 or gsm files and not "${audiofile}"`);
-            return false;
+            return this.#fail(`The asterisk adapter can play only mp3 or gsm files and not "${audiofile}"`);
         }
 
         const callerid = props.testOptions?.asteriskCallerId || this.config.asteriskCallerId;
@@ -768,12 +832,10 @@ export default class Speech2Device {
             });
         });
         if (!response) {
-            this.adapter.log.warn(`No answer from "${asteriskInstance}" in 90 seconds`);
-            return false;
+            return this.#fail(`No answer from "${asteriskInstance}" in 90 seconds`);
         }
         if (response.error) {
-            this.adapter.log.warn(`"${asteriskInstance}" cannot call ${telnr}: ${response.error}`);
-            return false;
+            return this.#fail(`"${asteriskInstance}" cannot call ${telnr}: ${response.error}`);
         }
 
         return true;
@@ -822,20 +884,17 @@ export default class Speech2Device {
     async #sayItBose(props: SayItDeviceProps): Promise<boolean> {
         const boseInstance = props.testOptions?.boseInstance || this.config.boseInstance;
         if (!boseInstance) {
-            this.adapter.log.warn('No Bose SoundTouch instance defined');
-            return false;
+            return this.#fail('No Bose SoundTouch instance defined');
         }
         const address = await this.#getBoseAddress(boseInstance);
         if (!address) {
-            this.adapter.log.warn(`Cannot find the IP address of the Bose speaker of "${boseInstance}"`);
-            return false;
+            return this.#fail(`Cannot find the IP address of the Bose speaker of "${boseInstance}"`);
         }
 
         const result = await this.#uploadToStates(props);
         const webLink = await this.#getWebLink(props.testOptions);
         if (!webLink) {
-            this.adapter.log.warn('Web server is unavailable!');
-            return false;
+            return this.#fail('Web server is unavailable!');
         }
 
         const url = `${webLink}${result.fileInDB}`;
@@ -866,16 +925,14 @@ export default class Speech2Device {
             const answer = typeof response.data === 'string' ? response.data : JSON.stringify(response.data);
             // The speaker answers "<status>/speaker</status>" if the notification was accepted
             if (response.status !== 200 || !answer.includes('<status>')) {
-                this.adapter.log.warn(
+                return this.#fail(
                     `Bose speaker ${address} rejected the notification (HTTP ${response.status}): ${answer}. ` +
                         'Only some models support it (e.g. SoundTouch 10, 20 and 30 Series III), ' +
                         'and the speaker checks the app key at the Bose cloud',
                 );
-                return false;
             }
         } catch (e) {
-            this.adapter.log.error(`Cannot send the notification to the Bose speaker ${address}: ${e}`);
-            return false;
+            return this.#fail(`Cannot send the notification to the Bose speaker ${address}: ${e}`, 'error');
         }
 
         // The speaker needs a moment to pause the playback, and a new notification during a notification is rejected
@@ -894,17 +951,13 @@ export default class Speech2Device {
     async #sayItFully(props: SayItDeviceProps): Promise<boolean> {
         const fullyDevice = props.testOptions?.fullyDevice || this.config.fullyDevice;
         if (!fullyDevice) {
-            this.adapter.log.warn('No Fully Kiosk Browser device defined');
-            return false;
+            return this.#fail('No Fully Kiosk Browser device defined');
         }
 
         const rawId = `${fullyDevice}.Commands.setRAW`;
         const obj = await this.adapter.getForeignObjectAsync(rawId);
         if (!obj) {
-            this.adapter.log.warn(
-                `State "${rawId}" not found. Please update the fullybrowser adapter to 3.0.5 or newer`,
-            );
-            return false;
+            return this.#fail(`State "${rawId}" not found. Please update the fullybrowser adapter to 3.0.5 or newer`);
         }
 
         props.volume ||= props.testOptions?.volume
@@ -914,8 +967,7 @@ export default class Speech2Device {
         const result = await this.#uploadToStates(props);
         const webLink = await this.#getWebLink(props.testOptions);
         if (!webLink) {
-            this.adapter.log.warn('Web server is unavailable!');
-            return false;
+            return this.#fail('Web server is unavailable!');
         }
 
         if (props.volume) {
@@ -955,8 +1007,7 @@ export default class Speech2Device {
             this.adapter.log.info(`Send to MPD ${fileName}`);
             this.adapter.sendTo('mpd', 'say', fileName);
         } else {
-            this.adapter.log.warn('Web server is unavailable!');
-            return false;
+            return this.#fail('Web server is unavailable!');
         }
 
         return true;
@@ -1047,8 +1098,7 @@ export default class Speech2Device {
             });
         }
 
-        this.adapter.log.warn('Web server is unavailable!');
-        return false;
+        return this.#fail('Web server is unavailable!');
     }
 
     /**
@@ -1186,8 +1236,7 @@ export default class Speech2Device {
                 }
             }
         } else {
-            this.adapter.log.warn('No MediaPlayer24 server defined');
-            return false;
+            return this.#fail('No MediaPlayer24 server defined');
         }
         props.duration += 2;
 
@@ -1261,8 +1310,7 @@ export default class Speech2Device {
                 }
             });
         } else {
-            this.adapter.log.warn('No FTP server or port defined');
-            return false;
+            return this.#fail('No FTP server or port defined');
         }
 
         props.duration += 2;
@@ -1303,8 +1351,7 @@ export default class Speech2Device {
                 try {
                     await this.#exec(cmd);
                 } catch (e) {
-                    this.adapter.log.error(`Cannot play: ${e}`);
-                    return false;
+                    return this.#fail(`Cannot play: ${e}`, 'error');
                 }
             } else if (p === 'linux') {
                 // linux
@@ -1318,28 +1365,24 @@ export default class Speech2Device {
                 try {
                     await this.#exec(cmd);
                 } catch (e) {
-                    this.adapter.log.error(`Cannot play: ${e}`);
-                    return false;
+                    return this.#fail(`Cannot play: ${e}`, 'error');
                 }
             } else if (p.match(/^win/)) {
                 // windows
                 try {
                     await this.#spawn(normalize(join(__dirname, '..', 'cmdmp3', 'cmdmp3.exe')), [result.fileOnDisk]);
                 } catch (e) {
-                    this.adapter.log.error(`Cannot play: ${e}`);
-                    return false;
+                    return this.#fail(`Cannot play: ${e}`, 'error');
                 }
             } else if (p === 'darwin') {
                 // mac osx
                 try {
                     await this.#spawn('/usr/bin/afplay', [result.fileOnDisk]);
                 } catch (e) {
-                    this.adapter.log.error(`Cannot play: ${e}`);
-                    return false;
+                    return this.#fail(`Cannot play: ${e}`, 'error');
                 }
             } else {
-                this.adapter.log.error(`Unsupported platform: ${p}`);
-                return false;
+                return this.#fail(`Unsupported platform: ${p}`, 'error');
             }
         }
 
@@ -1373,12 +1416,10 @@ export default class Speech2Device {
             try {
                 await this.#spawn(normalize(join(__dirname, '..', 'say', 'SayStatic.exe')), [props.text]);
             } catch (error) {
-                this.adapter.log.error(`sayItWindows: ${error}`);
-                return false;
+                return this.#fail(`sayItWindows: ${error}`, 'error');
             }
         } else {
-            this.adapter.log.error('sayItWindows: only windows OS is supported for Windows default mode');
-            return false;
+            return this.#fail('sayItWindows: only windows OS is supported for Windows default mode', 'error');
         }
 
         props.duration += 2;
@@ -1456,6 +1497,7 @@ export default class Speech2Device {
      * @returns True if the file was played
      */
     async playFile(props: SayItDeviceProps): Promise<boolean> {
+        this.lastFailure = '';
         const type = props.testOptions?.type || props.type;
         if (type === 'browser') {
             return await this.#sayItBrowser(props);
@@ -1487,6 +1529,9 @@ export default class Speech2Device {
         if (type === 'assistant') {
             return await this.#sayItAssistant(props);
         }
+        if (type === 'bluetoothPlayer') {
+            return await this.#sayItBluetoothPlayer(props);
+        }
         if (type === 'alexa') {
             return await this.#sayItAlexa(props);
         }
@@ -1512,7 +1557,6 @@ export default class Speech2Device {
             return await this.#sayItGoogleHome(props);
         }
 
-        this.adapter.log.error(`Unknown play type: ${type as string}`);
-        return false;
+        return this.#fail(`Unknown play type: ${type as string}`, 'error');
     }
 }

@@ -177,7 +177,11 @@
   "protectedNative": [
     "ftpPassword",
     "freettsApiKey",
-    "awsSecretKey"
+    "awsSecretKey",
+    "openrouterApiKey"
+  ],
+  "encryptedNative": [
+    "openrouterApiKey"
   ],
   "native": {
     "type": "system",
@@ -193,6 +197,7 @@
     "squeezeboxDevice": "",
     "wiimDevice": "",
     "assistantDevice": "",
+    "bluetoothPlayerDevice": "",
     "alexaDevice": "",
     "alexaCommand": "speak",
     "boseInstance": "",
@@ -229,6 +234,8 @@
     "yandexDrunk": false,
     "yandexIll": false,
     "yandexRobot": false,
+    "awsCredentialType": "manual",
+    "awsCredentialId": "",
     "awsAccessKey": "",
     "awsSecretKey": "",
     "awsRegion": "",
@@ -241,6 +248,13 @@
     "piperVoice": "",
     "piperSpeaker": "",
     "piperLengthScale": 1,
+    "openrouterCredentialType": "system",
+    "openrouterCredentialId": "",
+    "openrouterApiKey": "",
+    "openrouterModel": "",
+    "openrouterVoice": "",
+    "openrouterInstructions": "",
+    "openrouterSpeed": 1,
     "convertedV1toV2": false
   },
   "instanceObjects": [
